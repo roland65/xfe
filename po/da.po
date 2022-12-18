@@ -1,0 +1,6987 @@
+# Xfe - X File Explorer, a file manager for X
+# Copyright (C) 2002-2007 Roland Baudin
+# This file is distributed under the same license as the Xfe package.
+# Vidar Jon Bauge <vidarjon@tiscali.dk>, 2006
+# 
+msgid ""
+msgstr ""
+"Project-Id-Version: Xfe 0.99\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-03-14 10:23+0100\n"
+"PO-Revision-Date: 2007-04-03 16:36+0100\n"
+"Last-Translator: Jonas Bardino <jonas@meshtechnologies.com>\n"
+"Language-Team: Danish\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#. Usage message
+#: ../src/main.cpp:333
+#, fuzzy
+msgid ""
+"\n"
+"Usage: xfe [options...] [FOLDER|FILE...]\n"
+"\n"
+"    [options...] are the following:\n"
+"\n"
+"        -h,   --help         Print (this) help screen and exit.\n"
+"        -v,   --version      Print version information and exit.\n"
+"        -i,   --iconic       Start iconified.\n"
+"        -m,   --maximized    Start maximized.\n"
+"        -p n, --panel n      Force panel view mode to n (n=0 => Tree and one "
+"panel,\n"
+"                             n=1 => One panel, n=2 => Two panels, n=3 => "
+"Tree and two panels).\n"
+"\n"
+"    [FOLDER|FILE...] is a list of folders or files to open on startup.\n"
+"    The first two folders are displayed in the file panels, the others are "
+"ignored.\n"
+"    The number of files to open is not limited.\n"
+"\n"
+msgstr ""
+"\n"
+"Brug: xfe [valg] [sti] \n"
+"\n"
+"    [valg] kan være en af følgende:\n"
+"\n"
+"        -h, --help         Vis (denne) hjælpetekst og afslut.\n"
+"        -v, --version      Vis versionsoplysninger og afslut.\n"
+"        -i, --iconic       Start som ikon.\n"
+"        -m, --maximized    Start maksimeret.\n"
+"\n"
+"    [sti] er stien til mappen du vil åbne\n"
+"    ved opstart.\n"
+"\n"
+
+#: ../src/main.cpp:467
+#, c-format
+msgid "Warning: Unknown panel mode, revert to last saved panel mode\n"
+msgstr ""
+
+#: ../src/main.cpp:566 ../src/main.cpp:572 ../src/XFilePackage.cpp:889
+#: ../src/XFilePackage.cpp:895 ../src/XFileImage.cpp:2864
+#: ../src/XFileImage.cpp:2870 ../src/XFileWrite.cpp:355
+#: ../src/XFileWrite.cpp:361
+msgid "Error loading icons"
+msgstr "Fejl under åbning af ikonfiler"
+
+#: ../src/main.cpp:566 ../src/XFilePackage.cpp:889 ../src/XFileImage.cpp:2864
+#: ../src/XFileWrite.cpp:355
+#, fuzzy
+msgid ""
+"Icon path doesn't exist, icon theme was set back to default. Please check "
+"your icon path!"
+msgstr "Kunne ikke åbne ikonfiler. Kontrolllér venligst ikon stien!"
+
+#: ../src/main.cpp:572 ../src/XFilePackage.cpp:895 ../src/XFileImage.cpp:2870
+#: ../src/XFileWrite.cpp:361
+#, fuzzy
+msgid "Unable to load some icons. Please check your icon theme!"
+msgstr "Kunne ikke åbne ikonfiler. Kontrolllér venligst ikon stien!"
+
+#. Permissions
+#: ../src/Properties.cpp:57 ../src/Properties.cpp:77 ../src/FileList.cpp:155
+msgid "User"
+msgstr "Bruger"
+
+#: ../src/Properties.cpp:59 ../src/Properties.cpp:63 ../src/Properties.cpp:67
+msgid "Read"
+msgstr "Læs"
+
+#: ../src/Properties.cpp:60 ../src/Properties.cpp:64 ../src/Properties.cpp:68
+msgid "Write"
+msgstr "Skriv"
+
+#: ../src/Properties.cpp:61 ../src/Properties.cpp:65 ../src/Properties.cpp:69
+msgid "Execute"
+msgstr "Kør"
+
+#: ../src/Properties.cpp:62 ../src/Properties.cpp:80 ../src/FileList.cpp:156
+msgid "Group"
+msgstr "Gruppe"
+
+#: ../src/Properties.cpp:66
+msgid "Others"
+msgstr "Andre"
+
+#: ../src/Properties.cpp:70
+msgid "Special"
+msgstr ""
+
+#: ../src/Properties.cpp:71
+msgid "Set UID"
+msgstr ""
+
+#: ../src/Properties.cpp:72
+msgid "Set GID"
+msgstr ""
+
+#: ../src/Properties.cpp:73
+msgid "Sticky"
+msgstr ""
+
+#. Owner
+#: ../src/Properties.cpp:76
+msgid "Owner"
+msgstr "Ejer"
+
+#. Command
+#: ../src/Properties.cpp:109
+msgid "Command"
+msgstr "Kommando"
+
+#: ../src/Properties.cpp:112
+msgid "Set marked"
+msgstr "Markér"
+
+#: ../src/Properties.cpp:113
+msgid "Recursively"
+msgstr "Rekursivt"
+
+#: ../src/Properties.cpp:114
+msgid "Clear marked"
+msgstr "Fjern markering"
+
+#: ../src/Properties.cpp:116
+msgid "Files and folders"
+msgstr "Skjulte mapper"
+
+#: ../src/Properties.cpp:117
+msgid "Add marked"
+msgstr "Tilføj til markering"
+
+#: ../src/Properties.cpp:118
+msgid "Folders only"
+msgstr "Kun mapper"
+
+#: ../src/Properties.cpp:119
+msgid "Owner only"
+msgstr "Kun ejer"
+
+#: ../src/Properties.cpp:120
+msgid "Files only"
+msgstr "Kun mapper"
+
+#. Construct window for one file
+#. Construct window for multiple files
+#: ../src/Properties.cpp:165 ../src/Properties.cpp:676
+#: ../src/Properties.cpp:929 ../src/Properties.cpp:960
+msgid "Properties"
+msgstr "Egenskaber"
+
+#. Accept
+#. Accept button
+#. Accept
+#: ../src/Properties.cpp:193 ../src/Properties.cpp:948 ../src/FontDialog.cpp:46
+#: ../src/HistInputDialog.cpp:54 ../src/InputDialog.cpp:30
+#: ../src/BrowseInputDialog.cpp:40 ../src/ArchInputDialog.cpp:36
+#: ../src/Preferences.cpp:168 ../src/WriteWindow.cpp:187
+#: ../src/Keybindings.cpp:77 ../src/KeybindingsDialog.cpp:30
+msgid "&Accept"
+msgstr "&Accepter"
+
+#. Cancel
+#. Cancel Button
+#. Cancel
+#. Cancel button
+#. Cancel
+#: ../src/Properties.cpp:198 ../src/Properties.cpp:952 ../src/File.cpp:58
+#: ../src/FileDialog.cpp:130 ../src/FontDialog.cpp:47 ../src/MessageBox.cpp:94
+#: ../src/MessageBox.cpp:106 ../src/MessageBox.cpp:113
+#: ../src/MessageBox.cpp:119 ../src/MessageBox.cpp:126
+#: ../src/CommandWindow.cpp:58 ../src/CommandWindow.cpp:87
+#: ../src/HistInputDialog.cpp:57 ../src/InputDialog.cpp:33
+#: ../src/BrowseInputDialog.cpp:43 ../src/ArchInputDialog.cpp:39
+#: ../src/Preferences.cpp:173 ../src/OverwriteBox.cpp:48
+#: ../src/OverwriteBox.cpp:58 ../src/OverwriteBox.cpp:98
+#: ../src/OverwriteBox.cpp:108 ../src/ExecuteBox.cpp:38
+#: ../src/WriteWindow.cpp:191 ../src/foxhacks.cpp:809 ../src/foxhacks.cpp:880
+#: ../src/Keybindings.cpp:81 ../src/KeybindingsDialog.cpp:33
+msgid "&Cancel"
+msgstr "Afbryd"
+
+#. First item is General
+#. First tab - General options
+#: ../src/Properties.cpp:204 ../src/Properties.cpp:958
+#: ../src/Preferences.cpp:179
+msgid "&General"
+msgstr "&Generelt"
+
+#. Second item is Access Permissions
+#: ../src/Properties.cpp:210 ../src/Properties.cpp:974
+#: ../src/FileDialog.cpp:1603 ../src/XFileExplorer.cpp:1016
+#: ../src/XFileExplorer.cpp:1046 ../src/XFileImage.cpp:927
+msgid "&Permissions"
+msgstr "Rettigheder"
+
+#. Third tab - file associations
+#: ../src/Properties.cpp:220
+msgid "&File Associations"
+msgstr "&Filtilknytninger"
+
+#: ../src/Properties.cpp:226
+msgid "Extension:"
+msgstr "Endelse:"
+
+#: ../src/Properties.cpp:234
+msgid "Description:"
+msgstr "Beskrivelse:"
+
+#: ../src/Properties.cpp:238
+msgid "Open:"
+msgstr "Åbn:"
+
+#: ../src/Properties.cpp:240 ../src/Properties.cpp:264
+#: ../src/Properties.cpp:270 ../src/Properties.cpp:279
+#: ../src/Properties.cpp:283 ../src/Preferences.cpp:395
+#: ../src/Preferences.cpp:401 ../src/Preferences.cpp:407
+#: ../src/Preferences.cpp:413 ../src/Preferences.cpp:419
+#: ../src/Preferences.cpp:425 ../src/Preferences.cpp:431
+#: ../src/Preferences.cpp:437 ../src/Preferences.cpp:443
+#: ../src/Preferences.cpp:449 ../src/Preferences.cpp:458
+#: ../src/Preferences.cpp:464
+#, fuzzy
+msgid "\tSelect file..."
+msgstr " Vælg..."
+
+#: ../src/Properties.cpp:244
+msgid "View:"
+msgstr "Vis:"
+
+#: ../src/Properties.cpp:245
+msgid "Edit:"
+msgstr "Redigér:"
+
+#. archive
+#: ../src/Properties.cpp:254
+msgid "Extract:"
+msgstr "Udpak:"
+
+#: ../src/Properties.cpp:259
+msgid "Install/Upgrade:"
+msgstr "Installér/Opgradér:"
+
+#: ../src/Properties.cpp:277
+msgid "Big Icon:"
+msgstr "Store Ikoner:"
+
+#: ../src/Properties.cpp:281
+msgid "Mini Icon:"
+msgstr "Små Ikoner:"
+
+#. File name
+#: ../src/Properties.cpp:286 ../src/FileList.cpp:146
+msgid "Name"
+msgstr "Navn"
+
+#: ../src/Properties.cpp:304 ../src/HistInputDialog.cpp:84
+#: ../src/BrowseInputDialog.cpp:72 ../src/ArchInputDialog.cpp:55
+msgid "=> Warning: file name is not UTF-8 encoded!"
+msgstr ""
+
+#: ../src/Properties.cpp:380
+#, c-format
+msgid "Filesystem (%s)"
+msgstr "Filsystem (%s)"
+
+#. Default folder type
+#. Folder or mount point
+#: ../src/Properties.cpp:428 ../src/Properties.cpp:551
+#: ../src/Properties.cpp:1104 ../src/DirList.cpp:1931 ../src/IconList.cpp:2479
+#: ../src/FileList.cpp:149 ../src/FileList.cpp:4319 ../src/FileList.cpp:4325
+#: ../src/FileList.cpp:5015 ../src/FileList.cpp:5021 ../src/FileList.cpp:5128
+#: ../src/SearchPanel.cpp:1978 ../src/SearchPanel.cpp:1984
+#: ../src/SearchWindow.cpp:182
+msgid "Folder"
+msgstr "Mappe"
+
+#: ../src/Properties.cpp:435 ../src/Properties.cpp:584 ../src/FileList.cpp:4332
+#: ../src/FileList.cpp:5028 ../src/FileList.cpp:5132
+#: ../src/SearchPanel.cpp:1991
+msgid "Character Device"
+msgstr "Character Device"
+
+#: ../src/Properties.cpp:439 ../src/Properties.cpp:588 ../src/FileList.cpp:4338
+#: ../src/FileList.cpp:5034 ../src/FileList.cpp:5136
+#: ../src/SearchPanel.cpp:1997
+msgid "Block Device"
+msgstr "Block Device"
+
+#: ../src/Properties.cpp:443 ../src/Properties.cpp:592 ../src/FileList.cpp:4344
+#: ../src/FileList.cpp:5040 ../src/FileList.cpp:5140
+#: ../src/SearchPanel.cpp:2003
+msgid "Named Pipe"
+msgstr "Named Pipe"
+
+#: ../src/Properties.cpp:447 ../src/Properties.cpp:596 ../src/FileList.cpp:4350
+#: ../src/FileList.cpp:5046 ../src/FileList.cpp:5144
+#: ../src/SearchPanel.cpp:2009 ../src/SearchWindow.cpp:184
+msgid "Socket"
+msgstr "Socket"
+
+#: ../src/Properties.cpp:478 ../src/Properties.cpp:522
+#: ../src/Properties.cpp:600 ../src/FileList.cpp:4356 ../src/FileList.cpp:5052
+#: ../src/FileList.cpp:5148 ../src/SearchPanel.cpp:2015
+msgid "Executable"
+msgstr "Kørbar fil"
+
+#: ../src/Properties.cpp:483 ../src/Properties.cpp:527
+#: ../src/Properties.cpp:605 ../src/Properties.cpp:1076
+#: ../src/Properties.cpp:1092 ../src/FileList.cpp:4366 ../src/FileList.cpp:5062
+#: ../src/FileList.cpp:5152 ../src/SearchPanel.cpp:2025
+msgid "Document"
+msgstr "Dokument"
+
+#: ../src/Properties.cpp:539 ../src/FileList.cpp:4395 ../src/FileList.cpp:5109
+#: ../src/FilePanel.cpp:6366 ../src/SearchPanel.cpp:2050
+#: ../src/SearchPanel.cpp:4343
+msgid "Broken link"
+msgstr "Ugyldige lænker"
+
+#: ../src/Properties.cpp:610 ../src/FileList.cpp:4406 ../src/FileList.cpp:4410
+#: ../src/FileList.cpp:5120 ../src/FileList.cpp:5155
+#: ../src/SearchPanel.cpp:2061 ../src/SearchPanel.cpp:2065
+#, fuzzy
+msgid "Link to "
+msgstr "Lænke til "
+
+#: ../src/Properties.cpp:660 ../src/DirList.cpp:1966 ../src/DirList.cpp:1983
+#: ../src/IconList.cpp:2479 ../src/FileList.cpp:4520 ../src/FileList.cpp:5266
+#: ../src/FileList.cpp:5283 ../src/SearchPanel.cpp:2091
+msgid "Mount point"
+msgstr "Monteringspunkt"
+
+#: ../src/Properties.cpp:662
+msgid "Mount type:"
+msgstr "Monteringstype"
+
+#: ../src/Properties.cpp:664
+msgid "Used:"
+msgstr "Brugt:"
+
+#: ../src/Properties.cpp:666
+msgid "Free:"
+msgstr "Ledig:"
+
+#: ../src/Properties.cpp:668
+msgid "File system:"
+msgstr "Filsystem:"
+
+#. Location bar
+#: ../src/Properties.cpp:670 ../src/Properties.cpp:684
+#: ../src/XFileExplorer.cpp:766
+msgid "Location:"
+msgstr "Adresse:"
+
+#: ../src/Properties.cpp:678 ../src/Properties.cpp:966
+msgid "Type:"
+msgstr "Type:"
+
+#: ../src/Properties.cpp:680 ../src/Properties.cpp:968
+msgid "Total size:"
+msgstr "Total størrelse"
+
+#: ../src/Properties.cpp:690
+#, fuzzy
+msgid "Link to:"
+msgstr "Lænke til "
+
+#: ../src/Properties.cpp:695
+#, fuzzy
+msgid "Broken link to:"
+msgstr "Ugyldig lænke til "
+
+#: ../src/Properties.cpp:704
+#, fuzzy
+msgid "Original location:"
+msgstr "\tTøm adresselinjen\tFjern indholdet i adresselinjen."
+
+#: ../src/Properties.cpp:708
+msgid "File Time"
+msgstr "Fil tid"
+
+#: ../src/Properties.cpp:710
+msgid "Last Modified:"
+msgstr "Sidst modificeret:"
+
+#: ../src/Properties.cpp:712
+msgid "Last Changed:"
+msgstr "Sidst ændret:"
+
+#: ../src/Properties.cpp:714
+msgid "Last Accessed:"
+msgstr "Sidst åbnet:"
+
+#: ../src/Properties.cpp:718
+msgid "Startup Notification"
+msgstr ""
+
+#: ../src/Properties.cpp:719
+msgid "Disable startup notification for this executable"
+msgstr ""
+
+#: ../src/Properties.cpp:746
+#, fuzzy
+msgid "Deletion Date:"
+msgstr "Dato for sletning"
+
+#: ../src/Properties.cpp:809 ../src/Properties.cpp:2082
+#: ../src/Properties.cpp:2148 ../src/XFileExplorer.cpp:3948
+#, fuzzy, c-format
+msgid "%s (%lu bytes)"
+msgstr "%s (%llu bytes)"
+
+#: ../src/Properties.cpp:811 ../src/Properties.cpp:2084
+#: ../src/Properties.cpp:2150 ../src/XFileExplorer.cpp:3950
+#, c-format
+msgid "%s (%llu bytes)"
+msgstr "%s (%llu bytes)"
+
+#: ../src/Properties.cpp:813
+msgid "Size:"
+msgstr "Størrelse:"
+
+#: ../src/Properties.cpp:962
+msgid "Selection:"
+msgstr "Valg"
+
+#: ../src/Properties.cpp:1087 ../src/Properties.cpp:1094
+#: ../src/Properties.cpp:1109
+msgid "Multiple types"
+msgstr "Flere Typer"
+
+#. Number of selected files
+#: ../src/Properties.cpp:1113
+#, fuzzy, c-format
+msgid "%d items"
+msgstr " Elementer"
+
+#: ../src/Properties.cpp:1118
+#, fuzzy, c-format
+msgid "%d file, %d folder"
+msgstr "%d elementer i %d mappe(r) og %d file(r)"
+
+#: ../src/Properties.cpp:1122
+#, fuzzy, c-format
+msgid "%d file, %d folders"
+msgstr "%d elementer i %d mappe(r) og %d file(r)"
+
+#: ../src/Properties.cpp:1126
+#, fuzzy, c-format
+msgid "%d files, %d folder"
+msgstr "%d elementer i %d mappe(r) og %d file(r)"
+
+#: ../src/Properties.cpp:1130
+#, fuzzy, c-format
+msgid "%d files, %d folders"
+msgstr "%d elementer i %d mappe(r) og %d file(r)"
+
+#: ../src/Properties.cpp:1252
+#, fuzzy
+msgid "Change properties of the selected folder?"
+msgstr "\tVis egenskaber for markerede filer (F9)"
+
+#: ../src/Properties.cpp:1256
+#, fuzzy
+msgid "Change properties of the selected file?"
+msgstr "\tVis egenskaber for markerede filer (F9)"
+
+#: ../src/Properties.cpp:1259 ../src/Properties.cpp:1628
+#, fuzzy
+msgid "Confirm Change Properties"
+msgstr "Egenskaber"
+
+#: ../src/Properties.cpp:1401 ../src/Properties.cpp:1414
+#: ../src/Properties.cpp:1418 ../src/Properties.cpp:1499
+#: ../src/Properties.cpp:1529 ../src/Properties.cpp:1579
+#: ../src/Properties.cpp:1701 ../src/Properties.cpp:1732
+#: ../src/Properties.cpp:1785 ../src/DirList.cpp:865 ../src/DirList.cpp:916
+#: ../src/DirList.cpp:1495 ../src/DirPanel.cpp:978 ../src/DirPanel.cpp:1912
+#: ../src/DirPanel.cpp:1978 ../src/DirPanel.cpp:2108 ../src/DirPanel.cpp:2158
+#: ../src/DirPanel.cpp:2178 ../src/DirPanel.cpp:2276 ../src/DirPanel.cpp:2304
+#: ../src/DirPanel.cpp:2388 ../src/DirPanel.cpp:2421 ../src/DirPanel.cpp:2571
+#: ../src/DirPanel.cpp:2613 ../src/DirPanel.cpp:2620 ../src/FileDialog.cpp:962
+#: ../src/FileDialog.cpp:969 ../src/FileDialog.cpp:1027
+#: ../src/FileDialog.cpp:1034 ../src/FileList.cpp:759 ../src/FileList.cpp:806
+#: ../src/FilePanel.cpp:1832 ../src/FilePanel.cpp:1897
+#: ../src/FilePanel.cpp:2017 ../src/FilePanel.cpp:2083
+#: ../src/FilePanel.cpp:2219 ../src/FilePanel.cpp:2276
+#: ../src/FilePanel.cpp:2303 ../src/FilePanel.cpp:2575
+#: ../src/FilePanel.cpp:2798 ../src/FilePanel.cpp:3089
+#: ../src/FilePanel.cpp:3678 ../src/FilePanel.cpp:3685
+#: ../src/FilePanel.cpp:3767 ../src/FilePanel.cpp:3774
+#: ../src/FilePanel.cpp:3874 ../src/FilePanel.cpp:4246
+#: ../src/FilePanel.cpp:4920 ../src/FilePanel.cpp:5947 ../src/Bookmarks.cpp:90
+#: ../src/SearchPanel.cpp:908 ../src/SearchPanel.cpp:2576
+#: ../src/SearchPanel.cpp:3090 ../src/SearchPanel.cpp:3330
+#: ../src/SearchPanel.cpp:3800 ../src/SearchPanel.cpp:3807
+#: ../src/SearchPanel.cpp:3927 ../src/SearchPanel.cpp:3993
+#: ../src/SearchPanel.cpp:4095 ../src/SearchPanel.cpp:4145
+#: ../src/SearchPanel.cpp:4165 ../src/XFileExplorer.cpp:2218
+#: ../src/XFileExplorer.cpp:2234 ../src/XFileExplorer.cpp:2254
+msgid "Warning"
+msgstr "Advarsel"
+
+#: ../src/Properties.cpp:1401
+#, fuzzy
+msgid "Invalid file name, operation cancelled"
+msgstr "Flytning af filer afbrudt!"
+
+#: ../src/Properties.cpp:1414 ../src/DirPanel.cpp:1760 ../src/DirPanel.cpp:2620
+#: ../src/FileDialog.cpp:969 ../src/FilePanel.cpp:3685
+#, fuzzy
+msgid "The / character is not allowed in folder names, operation cancelled"
+msgstr "Sletning af fil afbrudt!"
+
+#: ../src/Properties.cpp:1418 ../src/FileDialog.cpp:1034
+#: ../src/FilePanel.cpp:3774
+#, fuzzy
+msgid "The / character is not allowed in file names, operation cancelled"
+msgstr "Sletning af fil afbrudt!"
+
+#. Error message box
+#. Error
+#: ../src/Properties.cpp:1427 ../src/Properties.cpp:1434
+#: ../src/Properties.cpp:1439 ../src/Properties.cpp:1512
+#: ../src/Properties.cpp:1516 ../src/Properties.cpp:1541
+#: ../src/Properties.cpp:1592 ../src/Properties.cpp:1596
+#: ../src/Properties.cpp:1713 ../src/Properties.cpp:1717
+#: ../src/Properties.cpp:1797 ../src/Properties.cpp:1801 ../src/DirList.cpp:857
+#: ../src/DirList.cpp:908 ../src/DirPanel.cpp:599 ../src/DirPanel.cpp:956
+#: ../src/DirPanel.cpp:960 ../src/DirPanel.cpp:1076 ../src/DirPanel.cpp:1080
+#: ../src/DirPanel.cpp:1760 ../src/DirPanel.cpp:1805 ../src/DirPanel.cpp:1812
+#: ../src/DirPanel.cpp:1819 ../src/DirPanel.cpp:1826 ../src/DirPanel.cpp:1833
+#: ../src/DirPanel.cpp:1840 ../src/DirPanel.cpp:1847 ../src/DirPanel.cpp:1905
+#: ../src/DirPanel.cpp:1971 ../src/DirPanel.cpp:2100 ../src/DirPanel.cpp:2150
+#: ../src/DirPanel.cpp:2170 ../src/DirPanel.cpp:2218 ../src/DirPanel.cpp:2333
+#: ../src/DirPanel.cpp:2381 ../src/DirPanel.cpp:2414 ../src/DirPanel.cpp:2510
+#: ../src/DirPanel.cpp:2538 ../src/DirPanel.cpp:2542 ../src/DirPanel.cpp:2556
+#: ../src/DirPanel.cpp:2640 ../src/DirPanel.cpp:2644 ../src/DirPanel.cpp:2671
+#: ../src/DirPanel.cpp:2675 ../src/DirPanel.cpp:2687 ../src/DirPanel.cpp:2697
+#: ../src/DirPanel.cpp:2701 ../src/DirPanel.cpp:2753 ../src/DirPanel.cpp:2757
+#: ../src/DirPanel.cpp:2780 ../src/DirPanel.cpp:2784 ../src/DirPanel.cpp:2796
+#: ../src/File.cpp:212 ../src/File.cpp:899 ../src/File.cpp:907
+#: ../src/File.cpp:916 ../src/File.cpp:940 ../src/File.cpp:1196
+#: ../src/File.cpp:1203 ../src/File.cpp:1213 ../src/File.cpp:1239
+#: ../src/File.cpp:1265 ../src/File.cpp:1273 ../src/File.cpp:1282
+#: ../src/File.cpp:1301 ../src/File.cpp:1434 ../src/File.cpp:1472
+#: ../src/File.cpp:1480 ../src/File.cpp:1499 ../src/File.cpp:1572
+#: ../src/File.cpp:1576 ../src/File.cpp:1986 ../src/File.cpp:1990
+#: ../src/File.cpp:2010 ../src/File.cpp:2014 ../src/File.cpp:2083
+#: ../src/File.cpp:2099 ../src/FileDialog.cpp:283 ../src/FileDialog.cpp:348
+#: ../src/FileDialog.cpp:989 ../src/FileDialog.cpp:993
+#: ../src/FileDialog.cpp:1045 ../src/FileDialog.cpp:1054
+#: ../src/FileDialog.cpp:1058 ../src/FileDialog.cpp:1071
+#: ../src/FileDialog.cpp:1075 ../src/MessageBox.cpp:196 ../src/FileList.cpp:751
+#: ../src/FileList.cpp:798 ../src/FilePanel.cpp:1061 ../src/FilePanel.cpp:1065
+#: ../src/FilePanel.cpp:1084 ../src/FilePanel.cpp:1088
+#: ../src/FilePanel.cpp:1194 ../src/FilePanel.cpp:1390
+#: ../src/FilePanel.cpp:1915 ../src/FilePanel.cpp:1922
+#: ../src/FilePanel.cpp:1929 ../src/FilePanel.cpp:1936
+#: ../src/FilePanel.cpp:1943 ../src/FilePanel.cpp:1950
+#: ../src/FilePanel.cpp:1957 ../src/FilePanel.cpp:2010
+#: ../src/FilePanel.cpp:2076 ../src/FilePanel.cpp:2211
+#: ../src/FilePanel.cpp:2268 ../src/FilePanel.cpp:2295
+#: ../src/FilePanel.cpp:2360 ../src/FilePanel.cpp:2367
+#: ../src/FilePanel.cpp:2540 ../src/FilePanel.cpp:2567
+#: ../src/FilePanel.cpp:2737 ../src/FilePanel.cpp:2764
+#: ../src/FilePanel.cpp:2768 ../src/FilePanel.cpp:2783
+#: ../src/FilePanel.cpp:2837 ../src/FilePanel.cpp:3546
+#: ../src/FilePanel.cpp:3596 ../src/FilePanel.cpp:3600
+#: ../src/FilePanel.cpp:3637 ../src/FilePanel.cpp:3641
+#: ../src/FilePanel.cpp:3705 ../src/FilePanel.cpp:3709
+#: ../src/FilePanel.cpp:3785 ../src/FilePanel.cpp:3794
+#: ../src/FilePanel.cpp:3798 ../src/FilePanel.cpp:3813
+#: ../src/FilePanel.cpp:3817 ../src/FilePanel.cpp:3884
+#: ../src/FilePanel.cpp:3899 ../src/FilePanel.cpp:4808
+#: ../src/FilePanel.cpp:4812 ../src/FilePanel.cpp:4823
+#: ../src/FilePanel.cpp:4833 ../src/FilePanel.cpp:4837
+#: ../src/FilePanel.cpp:4861 ../src/FilePanel.cpp:4865
+#: ../src/FilePanel.cpp:5030 ../src/FilePanel.cpp:5034
+#: ../src/FilePanel.cpp:5188 ../src/FilePanel.cpp:5240
+#: ../src/FilePanel.cpp:5244 ../src/FilePanel.cpp:5480
+#: ../src/FilePanel.cpp:5768 ../src/FilePanel.cpp:5772
+#: ../src/FilePanel.cpp:5797 ../src/FilePanel.cpp:5801
+#: ../src/FilePanel.cpp:5828 ../src/FilePanel.cpp:5832
+#: ../src/FilePanel.cpp:5905 ../src/FilePanel.cpp:5909
+#: ../src/FilePanel.cpp:5932 ../src/FilePanel.cpp:5936
+#: ../src/FilePanel.cpp:6055 ../src/FilePanel.cpp:6069
+#: ../src/FilePanel.cpp:6086 ../src/FilePanel.cpp:6181
+#: ../src/FilePanel.cpp:6185 ../src/FilePanel.cpp:6233
+#: ../src/FilePanel.cpp:6237 ../src/CommandWindow.cpp:199
+#: ../src/CommandWindow.cpp:203 ../src/SearchPanel.cpp:394
+#: ../src/SearchPanel.cpp:589 ../src/SearchPanel.cpp:816
+#: ../src/SearchPanel.cpp:820 ../src/SearchPanel.cpp:1753
+#: ../src/SearchPanel.cpp:1796 ../src/SearchPanel.cpp:2537
+#: ../src/SearchPanel.cpp:2541 ../src/SearchPanel.cpp:2830
+#: ../src/SearchPanel.cpp:2855 ../src/SearchPanel.cpp:2906
+#: ../src/SearchPanel.cpp:3059 ../src/SearchPanel.cpp:3082
+#: ../src/SearchPanel.cpp:3734 ../src/SearchPanel.cpp:3825
+#: ../src/SearchPanel.cpp:3832 ../src/SearchPanel.cpp:3839
+#: ../src/SearchPanel.cpp:3846 ../src/SearchPanel.cpp:3853
+#: ../src/SearchPanel.cpp:3860 ../src/SearchPanel.cpp:3867
+#: ../src/SearchPanel.cpp:3920 ../src/SearchPanel.cpp:3986
+#: ../src/SearchPanel.cpp:4087 ../src/SearchPanel.cpp:4137
+#: ../src/SearchPanel.cpp:4157 ../src/SearchPanel.cpp:4206
+#: ../src/SearchPanel.cpp:4210 ../src/SearchPanel.cpp:4483
+#: ../src/SearchPanel.cpp:4497 ../src/SearchPanel.cpp:4514
+#: ../src/SearchWindow.cpp:829 ../src/SearchWindow.cpp:833
+#: ../src/SearchWindow.cpp:956 ../src/XFileExplorer.cpp:2270
+#: ../src/XFileExplorer.cpp:2274 ../src/XFileExplorer.cpp:2312
+#: ../src/XFileExplorer.cpp:2335 ../src/XFileExplorer.cpp:2339
+#: ../src/XFileExplorer.cpp:2357 ../src/XFileExplorer.cpp:2361
+#: ../src/XFileExplorer.cpp:3111 ../src/XFileExplorer.cpp:3133
+#: ../src/XFileExplorer.cpp:3137 ../src/XFileExplorer.cpp:3149
+#: ../src/XFileExplorer.cpp:3160 ../src/XFileExplorer.cpp:3164
+#: ../src/XFileExplorer.cpp:3709 ../src/XFileExplorer.cpp:3711
+#: ../src/XFileExplorer.cpp:3752 ../src/XFileExplorer.cpp:3797
+#: ../src/XFileExplorer.cpp:3799 ../src/XFileExplorer.cpp:3826
+#: ../src/XFileExplorer.cpp:3828 ../src/XFileExplorer.cpp:3871
+#: ../src/XFileExplorer.cpp:3873 ../src/XFileExplorer.cpp:3880
+#: ../src/XFileExplorer.cpp:3990 ../src/XFileExplorer.cpp:3992
+#: ../src/XFileExplorer.cpp:4005 ../src/XFileExplorer.cpp:4007
+#: ../src/XFileExplorer.cpp:4058 ../src/XFileExplorer.cpp:4512
+#: ../src/XFileExplorer.cpp:4586 ../src/XFileExplorer.cpp:4591
+#: ../src/XFileExplorer.cpp:4596 ../src/XFilePackage.cpp:350
+#: ../src/XFilePackage.cpp:369 ../src/XFilePackage.cpp:396
+#: ../src/XFilePackage.cpp:419 ../src/XFilePackage.cpp:521
+#: ../src/XFilePackage.cpp:585 ../src/XFilePackage.cpp:617
+#: ../src/XFilePackage.cpp:923 ../src/XFileImage.cpp:1669
+#: ../src/XFileImage.cpp:1936 ../src/XFileImage.cpp:1980
+#: ../src/WriteWindow.cpp:1892 ../src/Keybindings.cpp:887
+#: ../src/Keybindings.cpp:905 ../src/Keybindings.cpp:923
+#: ../src/Keybindings.cpp:941 ../src/Keybindings.cpp:1031
+#: ../src/Keybindings.cpp:1049 ../src/Keybindings.cpp:1139
+#: ../src/Keybindings.cpp:1157 ../src/Keybindings.cpp:1247
+#: ../src/Keybindings.cpp:1265
+msgid "Error"
+msgstr "Fejl"
+
+#: ../src/Properties.cpp:1427 ../src/Properties.cpp:1439
+#: ../src/DirPanel.cpp:1805 ../src/DirPanel.cpp:1826 ../src/DirPanel.cpp:1833
+#: ../src/DirPanel.cpp:2218 ../src/DirPanel.cpp:2333 ../src/FilePanel.cpp:1922
+#: ../src/FilePanel.cpp:1950 ../src/FilePanel.cpp:1957
+#: ../src/FilePanel.cpp:2360 ../src/FilePanel.cpp:2837
+#: ../src/FilePanel.cpp:5188 ../src/FilePanel.cpp:5480
+#: ../src/SearchPanel.cpp:2830 ../src/SearchPanel.cpp:2855
+#: ../src/SearchPanel.cpp:3825 ../src/SearchPanel.cpp:3846
+#: ../src/SearchPanel.cpp:3853
+#, c-format
+msgid "Can't write to %s: Permission denied"
+msgstr "Kunne ikke skrive til %s: Adgang nægtet"
+
+#: ../src/Properties.cpp:1434 ../src/DirPanel.cpp:1812 ../src/DirPanel.cpp:1840
+#: ../src/FilePanel.cpp:1915 ../src/FilePanel.cpp:1936
+#: ../src/SearchPanel.cpp:3832 ../src/SearchPanel.cpp:3860
+#, c-format
+msgid "Folder %s doesn't exist"
+msgstr "Mappen %s findes ikke"
+
+#: ../src/Properties.cpp:1447 ../src/DirPanel.cpp:1917
+#: ../src/FilePanel.cpp:2022 ../src/SearchPanel.cpp:3932
+msgid "File rename"
+msgstr "Giv nyt navn"
+
+#: ../src/Properties.cpp:1462 ../src/Properties.cpp:1653
+msgid "File owner"
+msgstr "Ejer"
+
+#: ../src/Properties.cpp:1499 ../src/Properties.cpp:1701
+msgid "Change owner cancelled!"
+msgstr "Ændring af ejer afbrudt!"
+
+#: ../src/Properties.cpp:1512 ../src/Properties.cpp:1713
+#, fuzzy, c-format
+msgid "Chown in %s failed: %s"
+msgstr "Chmod af %s mislykkedes: %s"
+
+#: ../src/Properties.cpp:1516 ../src/Properties.cpp:1717
+#, fuzzy, c-format
+msgid "Chown in %s failed"
+msgstr "Chmod af %s mislykkedes: %s"
+
+#: ../src/Properties.cpp:1529 ../src/Properties.cpp:1732
+msgid ""
+"Setting special permissions could be unsafe! Is that you really want to do?"
+msgstr ""
+
+#: ../src/Properties.cpp:1541 ../src/Properties.cpp:1592
+#: ../src/Properties.cpp:1797
+#, c-format
+msgid "Chmod in %s failed: %s"
+msgstr "Chmod af %s mislykkedes: %s"
+
+#: ../src/Properties.cpp:1545 ../src/Properties.cpp:1738
+msgid "File permissions"
+msgstr "Rettigheder"
+
+#: ../src/Properties.cpp:1579
+msgid "Change file permissions cancelled!"
+msgstr "Ændring af rettigheder afbrudt!"
+
+#: ../src/Properties.cpp:1596 ../src/Properties.cpp:1801
+#, fuzzy, c-format
+msgid "Chmod in %s failed"
+msgstr "Chmod af %s mislykkedes: %s"
+
+#: ../src/Properties.cpp:1628
+#, fuzzy
+msgid "Apply permissions to the selected items?"
+msgstr " markerede filer"
+
+#: ../src/Properties.cpp:1785
+msgid "Change file(s) permissions cancelled!"
+msgstr "Ændring af rettigheder afbrudt!"
+
+#: ../src/Properties.cpp:1936 ../src/HistInputDialog.cpp:150
+#: ../src/Preferences.cpp:656
+#, fuzzy
+msgid "Select an executable file"
+msgstr " Mappen :"
+
+#: ../src/Properties.cpp:1939 ../src/Preferences.cpp:659
+msgid "All files"
+msgstr "Alle filer"
+
+#: ../src/Properties.cpp:1986
+msgid "PNG Images"
+msgstr "PNG billeder"
+
+#: ../src/Properties.cpp:1987
+msgid "GIF Images"
+msgstr "GIF billeder"
+
+#: ../src/Properties.cpp:1988
+msgid "BMP Images"
+msgstr "BMP billeder"
+
+#: ../src/Properties.cpp:1990
+#, fuzzy
+msgid "Select an icon file"
+msgstr " Mappen :"
+
+#: ../src/Properties.cpp:2090 ../src/Properties.cpp:2156
+#, fuzzy, c-format
+msgid "%u file, %u subfolder"
+msgstr "%d elementer i %d mappe(r) og %d file(r)"
+
+#: ../src/Properties.cpp:2094 ../src/Properties.cpp:2160
+#, fuzzy, c-format
+msgid "%u file, %u subfolders"
+msgstr "%d elementer i %d mappe(r) og %d file(r)"
+
+#: ../src/Properties.cpp:2098 ../src/Properties.cpp:2164
+#, fuzzy, c-format
+msgid "%u files, %u subfolder"
+msgstr "%d elementer i %d mappe(r) og %d file(r)"
+
+#: ../src/Properties.cpp:2102 ../src/Properties.cpp:2168
+#: ../src/XFileExplorer.cpp:3952
+#, fuzzy, c-format
+msgid "%u files, %u subfolders"
+msgstr "%d elementer i %d mappe(r) og %d file(r)"
+
+#: ../src/DirList.cpp:677 ../src/FileList.cpp:574
+#, fuzzy
+msgid "Copy here"
+msgstr "Kopiér "
+
+#: ../src/DirList.cpp:678 ../src/FileList.cpp:575
+#, fuzzy
+msgid "Move here"
+msgstr "Flyt "
+
+#: ../src/DirList.cpp:679 ../src/FileList.cpp:576
+#, fuzzy
+msgid "Link here"
+msgstr "Lænke"
+
+#: ../src/DirList.cpp:681 ../src/FileList.cpp:578
+#, fuzzy
+msgid "Cancel"
+msgstr "Afbryd"
+
+#: ../src/DirList.cpp:723 ../src/DirPanel.cpp:1874 ../src/DirPanel.cpp:2008
+#: ../src/FileList.cpp:618 ../src/FilePanel.cpp:1979 ../src/FilePanel.cpp:2112
+#: ../src/SearchPanel.cpp:3889 ../src/SearchPanel.cpp:4022
+msgid "File copy"
+msgstr "Kopiér fil"
+
+#: ../src/DirList.cpp:727 ../src/DirPanel.cpp:1932 ../src/DirPanel.cpp:2012
+#: ../src/FileList.cpp:622 ../src/FilePanel.cpp:2037 ../src/FilePanel.cpp:2116
+#: ../src/SearchPanel.cpp:3947 ../src/SearchPanel.cpp:4026
+msgid "File move"
+msgstr "Flyt fil"
+
+#: ../src/DirList.cpp:731 ../src/FileList.cpp:626
+msgid "File symlink"
+msgstr "Symbolsk lænke"
+
+#: ../src/DirList.cpp:765 ../src/DirPanel.cpp:1629 ../src/FileList.cpp:660
+#: ../src/FilePanel.cpp:1683 ../src/FilePanel.cpp:1727
+#: ../src/SearchPanel.cpp:3649 ../src/WriteWindow.cpp:687
+msgid "Copy"
+msgstr "Kopiér"
+
+#: ../src/DirList.cpp:773 ../src/FileList.cpp:668
+#, c-format
+msgid ""
+"Copy %s files/folders.\n"
+"From: %s"
+msgstr ""
+
+#: ../src/DirList.cpp:778 ../src/DirPanel.cpp:1688 ../src/DirPanel.cpp:1694
+#: ../src/DirPanel.cpp:1704 ../src/DirPanel.cpp:1714 ../src/FileList.cpp:673
+#: ../src/FilePanel.cpp:1742 ../src/FilePanel.cpp:1748
+#: ../src/FilePanel.cpp:1758 ../src/FilePanel.cpp:1768
+#: ../src/SearchPanel.cpp:3664 ../src/SearchPanel.cpp:3670
+msgid "Move"
+msgstr "Flyt"
+
+#: ../src/DirList.cpp:786 ../src/FileList.cpp:681
+#, c-format
+msgid ""
+"Move %s files/folders.\n"
+"From: %s"
+msgstr ""
+
+#: ../src/DirList.cpp:791 ../src/DirPanel.cpp:1724 ../src/DirPanel.cpp:1983
+#: ../src/DirPanel.cpp:2016 ../src/FileList.cpp:686 ../src/FilePanel.cpp:1778
+#: ../src/FilePanel.cpp:2088 ../src/FilePanel.cpp:2120
+#: ../src/FilePanel.cpp:3903 ../src/SearchPanel.cpp:3680
+#: ../src/SearchPanel.cpp:3998 ../src/SearchPanel.cpp:4030
+msgid "Symlink"
+msgstr "Symbolsk lænke"
+
+#: ../src/DirList.cpp:796 ../src/DirPanel.cpp:1745 ../src/DirPanel.cpp:1773
+#: ../src/FileList.cpp:691 ../src/FilePanel.cpp:1801 ../src/FilePanel.cpp:1845
+#: ../src/SearchPanel.cpp:3703 ../src/SearchPanel.cpp:3747
+msgid "To:"
+msgstr "Til:"
+
+#: ../src/DirList.cpp:857 ../src/DirPanel.cpp:1971 ../src/DirPanel.cpp:2150
+#: ../src/FileList.cpp:751 ../src/FilePanel.cpp:2076 ../src/FilePanel.cpp:2268
+#: ../src/SearchPanel.cpp:3986 ../src/SearchPanel.cpp:4137
+msgid "An error has occurred during the move file operation!"
+msgstr "Der opstod en fejl under flytningen!"
+
+#: ../src/DirList.cpp:865 ../src/DirPanel.cpp:1978 ../src/DirPanel.cpp:2158
+#: ../src/FileList.cpp:759 ../src/FilePanel.cpp:2083 ../src/FilePanel.cpp:2276
+#: ../src/SearchPanel.cpp:3993 ../src/SearchPanel.cpp:4145
+msgid "Move file operation cancelled!"
+msgstr "Flytning af filer afbrudt!"
+
+#: ../src/DirList.cpp:908 ../src/DirPanel.cpp:1905 ../src/DirPanel.cpp:2100
+#: ../src/FileList.cpp:798 ../src/FilePanel.cpp:2010 ../src/FilePanel.cpp:2211
+#: ../src/SearchPanel.cpp:3920 ../src/SearchPanel.cpp:4087
+msgid "An error has occurred during the copy file operation!"
+msgstr "Der opstod en fejl under kopieringen!"
+
+#: ../src/DirList.cpp:916 ../src/DirPanel.cpp:1912 ../src/DirPanel.cpp:2108
+#: ../src/FileList.cpp:806 ../src/FilePanel.cpp:2017 ../src/FilePanel.cpp:2219
+#: ../src/SearchPanel.cpp:3927 ../src/SearchPanel.cpp:4095
+msgid "Copy file operation cancelled!"
+msgstr "Kopiering af filer afbrudt!"
+
+#: ../src/DirList.cpp:1495 ../src/XFileExplorer.cpp:2234
+#, c-format
+msgid "Mount point %s is not responding..."
+msgstr "Monteringspunkt %s svarer ikke."
+
+#: ../src/DirList.cpp:2021
+#, fuzzy
+msgid "Link to Folder"
+msgstr "Lænke til "
+
+#: ../src/DirPanel.cpp:449
+msgid "Folders"
+msgstr "Mapper"
+
+#: ../src/DirPanel.cpp:470
+msgid "Show hidden folders"
+msgstr "Vis skjulte filer"
+
+#: ../src/DirPanel.cpp:470
+#, fuzzy
+msgid "Hide hidden folders"
+msgstr "Skjulte mapper"
+
+#: ../src/DirPanel.cpp:473 ../src/DirPanel.cpp:3125
+#, fuzzy
+msgid "0 bytes in root"
+msgstr "0 bytes"
+
+#: ../src/DirPanel.cpp:553 ../src/FilePanel.cpp:377
+msgid "Panel is active"
+msgstr ""
+
+#: ../src/DirPanel.cpp:568 ../src/FilePanel.cpp:404
+#, fuzzy
+msgid "Activate panel"
+msgstr "To &paneler\tCtrl-F3"
+
+#: ../src/DirPanel.cpp:599 ../src/FileDialog.cpp:283 ../src/FileDialog.cpp:348
+#: ../src/FilePanel.cpp:1194 ../src/FilePanel.cpp:1390
+#: ../src/SearchPanel.cpp:394 ../src/SearchPanel.cpp:589
+#: ../src/SearchPanel.cpp:1796 ../src/XFileImage.cpp:1936
+#: ../src/XFileImage.cpp:1980
+#, c-format
+msgid " Permission to: %s denied."
+msgstr " Adgang til %s nægtet."
+
+#. Panel menu items
+#: ../src/DirPanel.cpp:734 ../src/DirPanel.cpp:748
+msgid "New &folder..."
+msgstr "Ny Mappe"
+
+#: ../src/DirPanel.cpp:737 ../src/DirPanel.cpp:751
+msgid "&Hidden folders"
+msgstr "Skjulte mapper"
+
+#: ../src/DirPanel.cpp:738 ../src/DirPanel.cpp:752 ../src/FileDialog.cpp:1605
+#: ../src/FilePanel.cpp:4540 ../src/FilePanel.cpp:4583
+#: ../src/SearchPanel.cpp:2358 ../src/XFileImage.cpp:929
+#, fuzzy
+msgid "Ignore c&ase"
+msgstr "I&gnorer store/små bogstaver"
+
+#: ../src/DirPanel.cpp:739 ../src/DirPanel.cpp:753
+msgid "&Reverse order"
+msgstr "Omvendt rækkefølge"
+
+#: ../src/DirPanel.cpp:740 ../src/DirPanel.cpp:754
+msgid "E&xpand tree"
+msgstr "Udvid træ"
+
+#: ../src/DirPanel.cpp:741 ../src/DirPanel.cpp:755
+msgid "Collap&se tree"
+msgstr "&Sammenfold træ"
+
+#: ../src/DirPanel.cpp:757 ../src/FilePanel.cpp:4586
+#: ../src/SearchPanel.cpp:2361
+#, fuzzy
+msgid "Pane&l"
+msgstr "&Panel"
+
+#: ../src/DirPanel.cpp:767
+msgid "M&ount"
+msgstr "Montér"
+
+#: ../src/DirPanel.cpp:768
+msgid "Unmoun&t"
+msgstr "Afmontér"
+
+#: ../src/DirPanel.cpp:772 ../src/FilePanel.cpp:4667
+#: ../src/SearchPanel.cpp:2416
+msgid "&Add to archive..."
+msgstr "Tilføj til &arkiv"
+
+#: ../src/DirPanel.cpp:774 ../src/FilePanel.cpp:4686
+#: ../src/SearchPanel.cpp:2436 ../src/XFileExplorer.cpp:880
+#: ../src/WriteWindow.cpp:810 ../src/WriteWindow.cpp:851
+msgid "&Copy"
+msgstr "Kopiér"
+
+#: ../src/DirPanel.cpp:775 ../src/FilePanel.cpp:4687
+#: ../src/SearchPanel.cpp:2437 ../src/XFileExplorer.cpp:886
+msgid "C&ut"
+msgstr "Klip"
+
+#: ../src/DirPanel.cpp:776 ../src/FilePanel.cpp:4517 ../src/FilePanel.cpp:4560
+#: ../src/FilePanel.cpp:4688 ../src/XFileExplorer.cpp:892
+#: ../src/WriteWindow.cpp:822 ../src/WriteWindow.cpp:853
+msgid "&Paste"
+msgstr "Sæt ind"
+
+#: ../src/DirPanel.cpp:778 ../src/FilePanel.cpp:4690
+#: ../src/SearchPanel.cpp:2439 ../src/XFileExplorer.cpp:819
+msgid "Re&name..."
+msgstr "Omdøb"
+
+#: ../src/DirPanel.cpp:779
+msgid "Cop&y to..."
+msgstr "Kopiér &til..."
+
+#: ../src/DirPanel.cpp:780 ../src/FilePanel.cpp:4692
+#: ../src/SearchPanel.cpp:2441 ../src/XFileExplorer.cpp:831
+msgid "&Move to..."
+msgstr "Flyt til ..."
+
+#: ../src/DirPanel.cpp:781 ../src/FilePanel.cpp:4693
+#: ../src/SearchPanel.cpp:2442
+#, fuzzy
+msgid "Symlin&k to..."
+msgstr "Symbolsk læn&ke..."
+
+#: ../src/DirPanel.cpp:782 ../src/XFileExplorer.cpp:843
+msgid "Mo&ve to trash"
+msgstr "Flyt til papirkurv"
+
+#: ../src/DirPanel.cpp:783 ../src/XFileExplorer.cpp:849
+#, fuzzy
+msgid "R&estore from trash"
+msgstr "Tøm papirkurven"
+
+#: ../src/DirPanel.cpp:784 ../src/FilePanel.cpp:4696
+#: ../src/SearchPanel.cpp:2444 ../src/XFileExplorer.cpp:855
+msgid "&Delete"
+msgstr "Slet"
+
+#: ../src/DirPanel.cpp:786
+msgid "Prop&erties"
+msgstr "Egenskaber"
+
+#: ../src/DirPanel.cpp:956 ../src/DirPanel.cpp:1076 ../src/DirPanel.cpp:2671
+#: ../src/DirPanel.cpp:2697 ../src/DirPanel.cpp:2753 ../src/DirPanel.cpp:2780
+#: ../src/File.cpp:1986 ../src/File.cpp:2010 ../src/FilePanel.cpp:1061
+#: ../src/FilePanel.cpp:1084 ../src/FilePanel.cpp:3596
+#: ../src/FilePanel.cpp:3637 ../src/FilePanel.cpp:4808
+#: ../src/FilePanel.cpp:4833 ../src/FilePanel.cpp:4861
+#: ../src/FilePanel.cpp:5030 ../src/FilePanel.cpp:5768
+#: ../src/FilePanel.cpp:5797 ../src/FilePanel.cpp:5905
+#: ../src/FilePanel.cpp:5932 ../src/FilePanel.cpp:6181
+#: ../src/FilePanel.cpp:6233 ../src/SearchPanel.cpp:816
+#: ../src/SearchPanel.cpp:2537 ../src/XFileExplorer.cpp:3133
+#: ../src/XFileExplorer.cpp:3160 ../src/XFileExplorer.cpp:3709
+#: ../src/XFileExplorer.cpp:3797 ../src/XFileExplorer.cpp:3826
+#: ../src/XFileExplorer.cpp:3871
+#, fuzzy, c-format
+msgid "Can't enter folder %s: %s"
+msgstr "Kan ikke slette mappen "
+
+#: ../src/DirPanel.cpp:960 ../src/DirPanel.cpp:1080 ../src/DirPanel.cpp:2675
+#: ../src/DirPanel.cpp:2701 ../src/DirPanel.cpp:2757 ../src/DirPanel.cpp:2784
+#: ../src/File.cpp:1990 ../src/File.cpp:2014 ../src/FilePanel.cpp:1065
+#: ../src/FilePanel.cpp:1088 ../src/FilePanel.cpp:3600
+#: ../src/FilePanel.cpp:3641 ../src/FilePanel.cpp:4812
+#: ../src/FilePanel.cpp:4837 ../src/FilePanel.cpp:4865
+#: ../src/FilePanel.cpp:5034 ../src/FilePanel.cpp:5772
+#: ../src/FilePanel.cpp:5801 ../src/FilePanel.cpp:5909
+#: ../src/FilePanel.cpp:5936 ../src/FilePanel.cpp:6185
+#: ../src/FilePanel.cpp:6237 ../src/SearchPanel.cpp:820
+#: ../src/SearchPanel.cpp:2541 ../src/XFileExplorer.cpp:3137
+#: ../src/XFileExplorer.cpp:3164 ../src/XFileExplorer.cpp:3711
+#: ../src/XFileExplorer.cpp:3799 ../src/XFileExplorer.cpp:3828
+#: ../src/XFileExplorer.cpp:3873
+#, fuzzy, c-format
+msgid "Can't enter folder %s"
+msgstr "Kan ikke slette mappen "
+
+#: ../src/DirPanel.cpp:978 ../src/FileDialog.cpp:1027 ../src/FilePanel.cpp:1897
+#: ../src/FilePanel.cpp:3767 ../src/FilePanel.cpp:3874
+#: ../src/FilePanel.cpp:4246 ../src/FilePanel.cpp:4920
+#: ../src/SearchPanel.cpp:908 ../src/SearchPanel.cpp:2576
+#: ../src/SearchPanel.cpp:3800
+#, fuzzy
+msgid "File name is empty, operation cancelled"
+msgstr "Sletning af fil afbrudt!"
+
+#. File object
+#: ../src/DirPanel.cpp:1065 ../src/FilePanel.cpp:5019
+#: ../src/SearchPanel.cpp:2671
+msgid "Create archive"
+msgstr "Opret arkiv"
+
+#: ../src/DirPanel.cpp:1633 ../src/DirPanel.cpp:1677 ../src/FilePanel.cpp:1687
+#: ../src/FilePanel.cpp:1731 ../src/SearchPanel.cpp:3653
+msgid "Copy "
+msgstr "Kopiér "
+
+#: ../src/DirPanel.cpp:1650 ../src/DirPanel.cpp:1682 ../src/FilePanel.cpp:1704
+#: ../src/FilePanel.cpp:1736
+#, fuzzy, c-format
+msgid "Copy %s items from: %s"
+msgstr ""
+" filer/mapper.\n"
+"Fra: "
+
+#: ../src/DirPanel.cpp:1656 ../src/DirPanel.cpp:1663 ../src/FilePanel.cpp:1710
+#: ../src/FilePanel.cpp:1717 ../src/SearchPanel.cpp:3632
+#: ../src/SearchPanel.cpp:3639
+msgid "Rename"
+msgstr "Omdøb"
+
+#: ../src/DirPanel.cpp:1660 ../src/FilePanel.cpp:1714
+#: ../src/SearchPanel.cpp:3636
+msgid "Rename "
+msgstr "Omdøb "
+
+#: ../src/DirPanel.cpp:1673
+msgid "Copy to"
+msgstr "Kopiér til"
+
+#: ../src/DirPanel.cpp:1692 ../src/DirPanel.cpp:1708 ../src/FilePanel.cpp:1746
+#: ../src/FilePanel.cpp:1762 ../src/SearchPanel.cpp:3668
+msgid "Move "
+msgstr "Flyt "
+
+#: ../src/DirPanel.cpp:1698 ../src/DirPanel.cpp:1718 ../src/FilePanel.cpp:1752
+#: ../src/FilePanel.cpp:1772
+#, fuzzy, c-format
+msgid "Move %s items from: %s"
+msgstr ""
+" filer/mapper.\n"
+"Fra: "
+
+#: ../src/DirPanel.cpp:1728 ../src/FilePanel.cpp:1782
+#: ../src/SearchPanel.cpp:3684
+msgid "Symlink "
+msgstr "Symbolsk lænke "
+
+#: ../src/DirPanel.cpp:1734 ../src/FilePanel.cpp:1788
+#, fuzzy, c-format
+msgid "Symlink %s items from: %s"
+msgstr ""
+" filer/mapper.\n"
+"Fra: "
+
+#: ../src/DirPanel.cpp:1819 ../src/DirPanel.cpp:1847 ../src/FilePanel.cpp:1929
+#: ../src/FilePanel.cpp:1943 ../src/SearchPanel.cpp:3839
+#: ../src/SearchPanel.cpp:3867
+#, c-format
+msgid "%s is not a folder"
+msgstr "%s er ikke en mappe"
+
+#: ../src/DirPanel.cpp:2170 ../src/FilePanel.cpp:2295
+#: ../src/SearchPanel.cpp:4157
+#, fuzzy
+msgid "An error has occurred during the symlink operation!"
+msgstr "Der opstod en fejl under flytningen!"
+
+#: ../src/DirPanel.cpp:2178 ../src/FilePanel.cpp:2303
+#: ../src/SearchPanel.cpp:4165
+#, fuzzy
+msgid "Symlink operation cancelled!"
+msgstr " handling afbrudt!"
+
+#: ../src/DirPanel.cpp:2228 ../src/FilePanel.cpp:2874
+#: ../src/SearchPanel.cpp:3143
+#, fuzzy, c-format
+msgid "Definitively delete folder %s ?"
+msgstr "Slet mappen permanent: "
+
+#: ../src/DirPanel.cpp:2229 ../src/DirPanel.cpp:2249 ../src/DirPanel.cpp:2265
+#: ../src/FilePanel.cpp:2885 ../src/FilePanel.cpp:2949
+#: ../src/FilePanel.cpp:2961 ../src/FilePanel.cpp:3008
+#: ../src/FilePanel.cpp:3023 ../src/SearchPanel.cpp:3154
+#: ../src/SearchPanel.cpp:3210 ../src/SearchPanel.cpp:3256
+#: ../src/SearchPanel.cpp:3271
+msgid "Confirm Delete"
+msgstr "Bekræft sletning"
+
+#. File object
+#. Delete trash can info folder
+#: ../src/DirPanel.cpp:2237 ../src/FilePanel.cpp:2895
+#: ../src/SearchPanel.cpp:3164 ../src/XFileExplorer.cpp:3970
+#: ../src/XFileExplorer.cpp:3976
+msgid "File delete"
+msgstr "Slet fil"
+
+#: ../src/DirPanel.cpp:2248 ../src/FilePanel.cpp:2945
+#: ../src/SearchPanel.cpp:3209
+#, fuzzy, c-format
+msgid "Folder %s is not empty, delete it anyway?"
+msgstr " er skrivebeskyttet, slet aligevel?"
+
+#: ../src/DirPanel.cpp:2264
+#, fuzzy, c-format
+msgid "Folder %s is write-protected, definitively delete it anyway?"
+msgstr " er skrivebeskyttet, slet permanent aligevel?"
+
+#: ../src/DirPanel.cpp:2276 ../src/DirPanel.cpp:2304
+msgid "Delete folder operation cancelled!"
+msgstr "Sletning af mappe afbrudt!"
+
+#: ../src/DirPanel.cpp:2342 ../src/FilePanel.cpp:2404
+#: ../src/SearchPanel.cpp:2932
+#, fuzzy, c-format
+msgid "Move folder %s to trash can?"
+msgstr "Smid i papirkurven"
+
+#: ../src/DirPanel.cpp:2343 ../src/DirPanel.cpp:2361 ../src/FilePanel.cpp:2416
+#: ../src/FilePanel.cpp:2475 ../src/FilePanel.cpp:2489
+#: ../src/SearchPanel.cpp:2944 ../src/SearchPanel.cpp:2998
+#: ../src/SearchPanel.cpp:3012
+msgid "Confirm Trash"
+msgstr "Bekræft udsmidning"
+
+#. File object
+#: ../src/DirPanel.cpp:2351 ../src/FilePanel.cpp:2427
+#: ../src/SearchPanel.cpp:2955
+msgid "Move to trash"
+msgstr "Smid i papirkurven"
+
+#: ../src/DirPanel.cpp:2360
+#, fuzzy, c-format
+msgid "Folder %s is write-protected, move it to trash can anyway?"
+msgstr " er skrivebeskyttet, slet aligevel?"
+
+#: ../src/DirPanel.cpp:2381 ../src/DirPanel.cpp:2414 ../src/FilePanel.cpp:2540
+#: ../src/FilePanel.cpp:2567 ../src/SearchPanel.cpp:3059
+#: ../src/SearchPanel.cpp:3082
+msgid "An error has occurred during the move to trash operation!"
+msgstr "Der opstod en fejl under flytning til papirkurven!"
+
+#: ../src/DirPanel.cpp:2388 ../src/DirPanel.cpp:2421
+msgid "Move to trash folder operation cancelled!"
+msgstr "Flytning af filer afbrudt!"
+
+#. File object
+#: ../src/DirPanel.cpp:2447 ../src/FilePanel.cpp:2632
+#, fuzzy
+msgid "Restore from trash"
+msgstr "Tøm papirkurven"
+
+#: ../src/DirPanel.cpp:2493 ../src/FilePanel.cpp:2712
+#, c-format
+msgid "Restore folder %s to its original location %s ?"
+msgstr ""
+
+#: ../src/DirPanel.cpp:2495 ../src/DirPanel.cpp:2522 ../src/FilePanel.cpp:2724
+#: ../src/FilePanel.cpp:2749
+#, fuzzy
+msgid "Confirm Restore"
+msgstr "Bekræft sletning"
+
+#: ../src/DirPanel.cpp:2510 ../src/FilePanel.cpp:2737
+#, c-format
+msgid "Restore information not available for %s"
+msgstr ""
+
+#: ../src/DirPanel.cpp:2521 ../src/FilePanel.cpp:2748
+#, c-format
+msgid "Parent folder %s does not exist, do you want to create it?"
+msgstr ""
+
+#: ../src/DirPanel.cpp:2538 ../src/DirPanel.cpp:2640
+#, fuzzy, c-format
+msgid "Can't create folder %s : %s"
+msgstr "Kan ikke overskrive mappen %s. Den er ikke tom"
+
+#: ../src/DirPanel.cpp:2542 ../src/DirPanel.cpp:2644 ../src/FilePanel.cpp:2768
+#: ../src/FilePanel.cpp:3709 ../src/FilePanel.cpp:5244
+#, fuzzy, c-format
+msgid "Can't create folder %s"
+msgstr "Kan ikke slette mappen "
+
+#: ../src/DirPanel.cpp:2556 ../src/FilePanel.cpp:2783
+#, fuzzy
+msgid "An error has occurred during the restore from trash operation!"
+msgstr "Der opstod en fejl under flytning til papirkurven!"
+
+#: ../src/DirPanel.cpp:2571 ../src/FilePanel.cpp:2798
+#, fuzzy
+msgid "Restore from trash file operation cancelled!"
+msgstr "Flytning af filer afbrudt!"
+
+#: ../src/DirPanel.cpp:2606 ../src/FilePanel.cpp:3669
+#, fuzzy
+msgid "Create new folder:"
+msgstr "Opret ny mappe..."
+
+#: ../src/DirPanel.cpp:2606 ../src/FileDialog.cpp:956 ../src/FilePanel.cpp:3669
+msgid "New Folder"
+msgstr "Ny mappe"
+
+#: ../src/DirPanel.cpp:2613 ../src/FileDialog.cpp:962 ../src/FilePanel.cpp:3678
+#, fuzzy
+msgid "Folder name is empty, operation cancelled"
+msgstr "Sletning af fil afbrudt!"
+
+#: ../src/DirPanel.cpp:2687 ../src/FilePanel.cpp:4823
+#: ../src/XFileExplorer.cpp:3111 ../src/XFileExplorer.cpp:3149
+#: ../src/XFileExplorer.cpp:3752 ../src/XFileImage.cpp:1669
+#: ../src/WriteWindow.cpp:1892
+#, fuzzy, c-format
+msgid "Can't execute command %s"
+msgstr "Kør kommando"
+
+#: ../src/DirPanel.cpp:2735 ../src/FilePanel.cpp:5888
+msgid "Mount"
+msgstr "Montér"
+
+#: ../src/DirPanel.cpp:2741 ../src/FilePanel.cpp:4594 ../src/FilePanel.cpp:5894
+msgid "Unmount"
+msgstr "Afmontér"
+
+#. File object
+#: ../src/DirPanel.cpp:2767 ../src/FilePanel.cpp:5919
+msgid " file system..."
+msgstr " filsystem..."
+
+#. Mount/unmount file system
+#: ../src/DirPanel.cpp:2772 ../src/FilePanel.cpp:5924
+#, fuzzy
+msgid " the folder:"
+msgstr " mappen :"
+
+#: ../src/DirPanel.cpp:2795 ../src/FilePanel.cpp:5946
+msgid " operation cancelled!"
+msgstr " handling afbrudt!"
+
+#. Refresh the status label
+#: ../src/DirPanel.cpp:3157
+#, fuzzy
+msgid " in root"
+msgstr " i "
+
+#. Labels and progress bar
+#: ../src/File.cpp:105 ../src/File.cpp:120
+#, fuzzy
+msgid "Source:"
+msgstr "Kilde :"
+
+#: ../src/File.cpp:106 ../src/File.cpp:121
+#, fuzzy
+msgid "Target:"
+msgstr "Mål :"
+
+#: ../src/File.cpp:111
+#, fuzzy
+msgid "Copied data:"
+msgstr "Sidst ændret"
+
+#: ../src/File.cpp:126
+#, fuzzy
+msgid "Moved data:"
+msgstr "Sidst ændret"
+
+#. Labels
+#. Set labels for progress dialog
+#: ../src/File.cpp:135 ../src/File.cpp:1133
+#, fuzzy
+msgid "Delete:"
+msgstr "Slet :"
+
+#: ../src/File.cpp:136
+#, fuzzy
+msgid "From:"
+msgstr "Fra :"
+
+#. Labels
+#. Set labels for progress dialog
+#: ../src/File.cpp:145 ../src/File.cpp:1625 ../src/File.cpp:1653
+#: ../src/File.cpp:1717
+msgid "Changing permissions..."
+msgstr "Ændring af rettigheder..."
+
+#: ../src/File.cpp:146 ../src/File.cpp:156 ../src/File.cpp:1627
+#: ../src/File.cpp:1719 ../src/File.cpp:1821 ../src/File.cpp:1910
+#, fuzzy
+msgid "File:"
+msgstr "Fil :"
+
+#. Labels
+#. Set labels for progress dialog
+#: ../src/File.cpp:155 ../src/File.cpp:1819 ../src/File.cpp:1850
+#: ../src/File.cpp:1908
+msgid "Changing owner..."
+msgstr "Ændring af ejer..."
+
+#. Labels
+#: ../src/File.cpp:166
+msgid "Mount file system..."
+msgstr "Montér filsystem..."
+
+#: ../src/File.cpp:167
+#, fuzzy
+msgid "Mount the folder:"
+msgstr "Montér mappen :"
+
+#. Labels
+#: ../src/File.cpp:173
+msgid "Unmount file system..."
+msgstr "Afmontér filsystem..."
+
+#: ../src/File.cpp:174
+#, fuzzy
+msgid "Unmount the folder:"
+msgstr "Afmontér mappen :"
+
+#: ../src/File.cpp:300
+#, c-format
+msgid ""
+"Folder %s already exists.\n"
+"Overwrite?\n"
+"=> Caution, files within this folder could be overwritten!"
+msgstr ""
+
+#: ../src/File.cpp:304 ../src/File.cpp:2031
+#, fuzzy, c-format
+msgid ""
+"File %s already exists.\n"
+"Overwrite?"
+msgstr " findes allerede. Overskriv?"
+
+#: ../src/File.cpp:382 ../src/File.cpp:386 ../src/File.cpp:393
+#: ../src/File.cpp:397 ../src/File.cpp:2032
+msgid "Confirm Overwrite"
+msgstr "Bekræft overskrivning"
+
+#: ../src/File.cpp:458 ../src/File.cpp:553 ../src/File.cpp:649
+#, fuzzy, c-format
+msgid "Can't copy file %s: %s"
+msgstr "Kan ikke kopiere filen "
+
+#: ../src/File.cpp:462 ../src/File.cpp:557 ../src/File.cpp:653
+#, fuzzy, c-format
+msgid "Can't copy file %s"
+msgstr "Kan ikke kopiere filen "
+
+#. Set labels for progress dialog
+#: ../src/File.cpp:524 ../src/File.cpp:950 ../src/File.cpp:1315
+#, fuzzy
+msgid "Source: "
+msgstr "Kilde : "
+
+#: ../src/File.cpp:529 ../src/File.cpp:955 ../src/File.cpp:1320
+#, fuzzy
+msgid "Target: "
+msgstr "Mål : "
+
+#: ../src/File.cpp:604
+#, fuzzy, c-format
+msgid "Can't preserve date when copying file %s : %s"
+msgstr "Kan ikke overskrive mappen %s. Den er ikke tom"
+
+#: ../src/File.cpp:608
+#, fuzzy, c-format
+msgid "Can't preserve date when copying file %s"
+msgstr "Kan ikke overskrive mappen %s. Den er ikke tom"
+
+#: ../src/File.cpp:750
+#, fuzzy, c-format
+msgid "Can't copy folder %s : Permission denied"
+msgstr "Kunne ikke skrive til %s: Adgang nægtet"
+
+#: ../src/File.cpp:754
+#, fuzzy, c-format
+msgid "Can't copy file %s : Permission denied"
+msgstr "Kunne ikke skrive til %s: Adgang nægtet"
+
+#: ../src/File.cpp:791
+#, fuzzy, c-format
+msgid "Can't preserve date when copying folder %s: %s"
+msgstr "Kan ikke overskrive mappen %s. Den er ikke tom"
+
+#: ../src/File.cpp:795
+#, fuzzy, c-format
+msgid "Can't preserve date when copying folder %s"
+msgstr "Kan ikke overskrive mappen %s. Den er ikke tom"
+
+#: ../src/File.cpp:899 ../src/File.cpp:1196 ../src/File.cpp:1265
+#: ../src/File.cpp:1472
+#, c-format
+msgid "Source %s doesn't exist"
+msgstr "Mappen %s findes ikke"
+
+#: ../src/File.cpp:907 ../src/File.cpp:940 ../src/File.cpp:1203
+#: ../src/File.cpp:1273 ../src/File.cpp:1301 ../src/File.cpp:1480
+#: ../src/File.cpp:1499
+#, fuzzy, c-format
+msgid "Destination %s is identical to source"
+msgstr "Kilden %s er identisk med målet"
+
+#: ../src/File.cpp:916 ../src/File.cpp:1282
+#, c-format
+msgid "Target %s is a sub-folder of source"
+msgstr ""
+
+#. Set labels for progress dialog
+#: ../src/File.cpp:1048
+#, fuzzy
+msgid "Delete folder: "
+msgstr "Slet mappe : "
+
+#: ../src/File.cpp:1054 ../src/File.cpp:1139
+#, fuzzy
+msgid "From: "
+msgstr "Fra : "
+
+#: ../src/File.cpp:1095
+#, fuzzy, c-format
+msgid "Can't delete folder %s: %s"
+msgstr "Kan ikke slette mappen "
+
+#: ../src/File.cpp:1099
+#, fuzzy, c-format
+msgid "Can't delete folder %s"
+msgstr "Kan ikke slette mappen "
+
+#: ../src/File.cpp:1160
+#, fuzzy, c-format
+msgid "Can't delete file %s: %s"
+msgstr "Kan ikke slette filen "
+
+#: ../src/File.cpp:1164
+#, fuzzy, c-format
+msgid "Can't delete file %s"
+msgstr "Kan ikke slette filen "
+
+#: ../src/File.cpp:1213
+#, fuzzy, c-format
+msgid "Destination %s already exists"
+msgstr "Filen eller mappen %s findes allerede"
+
+#: ../src/File.cpp:1239 ../src/File.cpp:1434
+#, fuzzy, c-format
+msgid "Can't rename to target %s: %s"
+msgstr "Kan ikke omdøbe til målet %s"
+
+#: ../src/File.cpp:1572
+#, fuzzy, c-format
+msgid "Can't symlink %s: %s"
+msgstr "Opret ny fil..."
+
+#: ../src/File.cpp:1576
+#, fuzzy, c-format
+msgid "Can't symlink %s"
+msgstr "Opret ny fil..."
+
+#: ../src/File.cpp:1655 ../src/File.cpp:1852
+#, fuzzy
+msgid "Folder: "
+msgstr "Mappe : "
+
+#. Make and show command window
+#. File object
+#: ../src/File.cpp:1997 ../src/FilePanel.cpp:5177 ../src/FilePanel.cpp:5341
+#: ../src/FilePanel.cpp:5469 ../src/SearchPanel.cpp:2819
+#: ../src/SearchPanel.cpp:2844
+msgid "Extract archive"
+msgstr "Udpak arkiv"
+
+#. Make and show command window
+#: ../src/File.cpp:2042
+msgid "Add to archive"
+msgstr "Føj til arkiv"
+
+#: ../src/File.cpp:2083 ../src/FilePanel.cpp:6069 ../src/SearchPanel.cpp:4497
+#, fuzzy, c-format
+msgid "Failed command: %s"
+msgstr "Kommandoen mislykkedes: %s"
+
+#: ../src/File.cpp:2111 ../src/File.cpp:2115
+msgid "Success"
+msgstr "Succes"
+
+#: ../src/File.cpp:2111
+#, c-format
+msgid "Folder %s was successfully mounted."
+msgstr "Montering af mappen %s fuldført."
+
+#: ../src/File.cpp:2115
+#, c-format
+msgid "Folder %s was successfully unmounted."
+msgstr "Afmontering af mappen %s fuldført."
+
+#. Make and show command window
+#: ../src/File.cpp:2126
+msgid "Install/Upgrade package"
+msgstr "Installér/Opgradér pakke"
+
+#: ../src/File.cpp:2131 ../src/XFilePackage.cpp:378
+#, fuzzy, c-format
+msgid "Installing package: %s \n"
+msgstr "Installerer pakke : "
+
+#. Make and show command window
+#: ../src/File.cpp:2144
+msgid "Uninstall package"
+msgstr "Afinstallér pakke"
+
+#: ../src/File.cpp:2149 ../src/XFilePackage.cpp:428
+#, fuzzy, c-format
+msgid "Uninstalling package: %s \n"
+msgstr "Afinstallér pakke : "
+
+#: ../src/FileDialog.cpp:120
+msgid "&File Name:"
+msgstr "&Filnavn:"
+
+#: ../src/FileDialog.cpp:122 ../src/MessageBox.cpp:73 ../src/MessageBox.cpp:78
+#: ../src/MessageBox.cpp:95 ../src/foxhacks.cpp:879
+msgid "&OK"
+msgstr "&OK"
+
+#: ../src/FileDialog.cpp:124
+msgid "File F&ilter:"
+msgstr "Filf&ilter:"
+
+#: ../src/FileDialog.cpp:129
+msgid "Read Only"
+msgstr "Skrivebeskyttet"
+
+#: ../src/FileDialog.cpp:141 ../src/Preferences.cpp:779
+#: ../src/XFileExplorer.cpp:597 ../src/XFileImage.cpp:408
+#, fuzzy
+msgid "Go to previous folder"
+msgstr "\tTilbage\tGå en mappe tilbage."
+
+#: ../src/FileDialog.cpp:148 ../src/Preferences.cpp:783
+#: ../src/XFileExplorer.cpp:604 ../src/XFileImage.cpp:414
+#, fuzzy
+msgid "Go to next folder"
+msgstr "\tFrem\tGå en mappe frem."
+
+#: ../src/FileDialog.cpp:154 ../src/Preferences.cpp:787
+#: ../src/SearchPanel.cpp:171 ../src/XFileExplorer.cpp:611
+#: ../src/XFileImage.cpp:420
+#, fuzzy
+msgid "Go to parent folder"
+msgstr " Mappen :"
+
+#: ../src/FileDialog.cpp:159 ../src/Preferences.cpp:791
+#: ../src/XFileExplorer.cpp:618 ../src/XFileImage.cpp:428
+#, fuzzy
+msgid "Go to home folder"
+msgstr " mappen :"
+
+#: ../src/FileDialog.cpp:164 ../src/Preferences.cpp:859
+#: ../src/XFileImage.cpp:433
+#, fuzzy
+msgid "Go to working folder"
+msgstr "\tGå til arbejdsmappen\tTilbage til arbejdsmappen."
+
+#: ../src/FileDialog.cpp:169
+#, fuzzy
+msgid "New folder"
+msgstr "Ny mappe"
+
+#: ../src/FileDialog.cpp:174 ../src/Preferences.cpp:815
+#: ../src/SearchPanel.cpp:214 ../src/XFileExplorer.cpp:751
+#: ../src/XFileImage.cpp:442
+#, fuzzy
+msgid "Big icon list"
+msgstr "Store &ikoner"
+
+#: ../src/FileDialog.cpp:179 ../src/Preferences.cpp:819
+#: ../src/SearchPanel.cpp:219 ../src/XFileExplorer.cpp:756
+#: ../src/XFileImage.cpp:447
+#, fuzzy
+msgid "Small icon list"
+msgstr "&Små ikoner"
+
+#: ../src/FileDialog.cpp:184 ../src/Preferences.cpp:823
+#: ../src/SearchPanel.cpp:224 ../src/XFileExplorer.cpp:761
+#: ../src/XFileImage.cpp:452
+#, fuzzy
+msgid "Detailed file list"
+msgstr "&Filliste\t\tVis filliste."
+
+#: ../src/FileDialog.cpp:189 ../src/FilePanel.cpp:236 ../src/XFileImage.cpp:636
+#, fuzzy
+msgid "Show hidden files"
+msgstr "Vis skjulte filer"
+
+#: ../src/FileDialog.cpp:189 ../src/FilePanel.cpp:236 ../src/XFileImage.cpp:636
+#, fuzzy
+msgid "Hide hidden files"
+msgstr "Skjulte filer"
+
+#: ../src/FileDialog.cpp:194 ../src/FilePanel.cpp:240
+#: ../src/SearchPanel.cpp:234 ../src/XFileImage.cpp:640
+#, fuzzy
+msgid "Show thumbnails"
+msgstr "\tVis miniaturer"
+
+#: ../src/FileDialog.cpp:194 ../src/FilePanel.cpp:240
+#: ../src/SearchPanel.cpp:234 ../src/XFileImage.cpp:640
+#, fuzzy
+msgid "Hide thumbnails"
+msgstr "\tSkjul miniaturer"
+
+#: ../src/FileDialog.cpp:956
+msgid "Create new folder..."
+msgstr "Opret ny mappe..."
+
+#: ../src/FileDialog.cpp:1019
+#, fuzzy
+msgid "Create new file..."
+msgstr "Opret ny mappe..."
+
+#: ../src/FileDialog.cpp:1019 ../src/FilePanel.cpp:3758
+msgid "New File"
+msgstr "Ny fil"
+
+#: ../src/FileDialog.cpp:1045 ../src/FilePanel.cpp:3785
+#: ../src/FilePanel.cpp:3884
+#, c-format
+msgid "File or folder %s already exists"
+msgstr "Filen eller mappen %s findes allerede"
+
+#: ../src/FileDialog.cpp:1580 ../src/XFileImage.cpp:906
+#, fuzzy
+msgid "Go ho&me"
+msgstr "Gå til &hjemmemappen\tCtrl-H"
+
+#: ../src/FileDialog.cpp:1581 ../src/XFileImage.cpp:907
+msgid "Go &work"
+msgstr ""
+
+#: ../src/FileDialog.cpp:1582 ../src/XFileExplorer.cpp:781
+#, fuzzy
+msgid "New &file..."
+msgstr "Ny &fil..."
+
+#: ../src/FileDialog.cpp:1583 ../src/FilePanel.cpp:4513
+#: ../src/FilePanel.cpp:4556
+msgid "New f&older..."
+msgstr "Ny mappe..."
+
+#: ../src/FileDialog.cpp:1585 ../src/FilePanel.cpp:4519
+#: ../src/FilePanel.cpp:4562 ../src/XFileExplorer.cpp:998
+#: ../src/XFileExplorer.cpp:1028 ../src/XFileImage.cpp:775
+#: ../src/XFileImage.cpp:909
+msgid "&Hidden files"
+msgstr "Skjulte filer"
+
+#: ../src/FileDialog.cpp:1586 ../src/FilePanel.cpp:4520
+#: ../src/FilePanel.cpp:4563 ../src/SearchPanel.cpp:2311
+#: ../src/SearchPanel.cpp:2339 ../src/XFileImage.cpp:910
+msgid "Thum&bnails"
+msgstr "Minia&turer"
+
+#: ../src/FileDialog.cpp:1588 ../src/FilePanel.cpp:4522
+#: ../src/FilePanel.cpp:4565 ../src/SearchPanel.cpp:2313
+#: ../src/SearchPanel.cpp:2341 ../src/XFileImage.cpp:912
+msgid "B&ig icons"
+msgstr "Store &ikoner"
+
+#: ../src/FileDialog.cpp:1589 ../src/FilePanel.cpp:4523
+#: ../src/FilePanel.cpp:4566 ../src/SearchPanel.cpp:2314
+#: ../src/SearchPanel.cpp:2342 ../src/XFileExplorer.cpp:1002
+#: ../src/XFileExplorer.cpp:1032 ../src/XFileImage.cpp:795
+#: ../src/XFileImage.cpp:913
+msgid "&Small icons"
+msgstr "&Små ikoner"
+
+#: ../src/FileDialog.cpp:1590 ../src/XFileImage.cpp:914
+#, fuzzy
+msgid "Fu&ll file list"
+msgstr "Detaljeret filliste"
+
+#: ../src/FileDialog.cpp:1592 ../src/FilePanel.cpp:4526
+#: ../src/FilePanel.cpp:4569 ../src/SearchPanel.cpp:2317
+#: ../src/SearchPanel.cpp:2345 ../src/XFileExplorer.cpp:1005
+#: ../src/XFileExplorer.cpp:1035 ../src/XFileImage.cpp:817
+#: ../src/XFileImage.cpp:916
+msgid "&Rows"
+msgstr "&Rækker"
+
+#: ../src/FileDialog.cpp:1593 ../src/FilePanel.cpp:4527
+#: ../src/FilePanel.cpp:4570 ../src/SearchPanel.cpp:2318
+#: ../src/SearchPanel.cpp:2346 ../src/XFileExplorer.cpp:1006
+#: ../src/XFileExplorer.cpp:1036 ../src/XFileImage.cpp:818
+#: ../src/XFileImage.cpp:917
+msgid "&Columns"
+msgstr "Kolonner"
+
+#: ../src/FileDialog.cpp:1594 ../src/FilePanel.cpp:4528
+#: ../src/FilePanel.cpp:4571 ../src/SearchPanel.cpp:2319
+#: ../src/XFileExplorer.cpp:1007 ../src/XFileExplorer.cpp:1037
+#: ../src/XFileImage.cpp:918
+msgid "Autosize"
+msgstr ""
+
+#: ../src/FileDialog.cpp:1596 ../src/FilePanel.cpp:4530
+#: ../src/FilePanel.cpp:4573 ../src/SearchPanel.cpp:2321
+#: ../src/SearchPanel.cpp:2349 ../src/XFileExplorer.cpp:1009
+#: ../src/XFileExplorer.cpp:1039 ../src/XFileImage.cpp:920
+msgid "&Name"
+msgstr "&Navn"
+
+#: ../src/FileDialog.cpp:1597 ../src/FilePanel.cpp:4531
+#: ../src/FilePanel.cpp:4574 ../src/SearchPanel.cpp:2322
+#: ../src/SearchPanel.cpp:2350 ../src/XFileExplorer.cpp:1010
+#: ../src/XFileExplorer.cpp:1040 ../src/XFileImage.cpp:921
+msgid "Si&ze"
+msgstr "Størrelse"
+
+#: ../src/FileDialog.cpp:1598 ../src/FilePanel.cpp:4532
+#: ../src/FilePanel.cpp:4575 ../src/SearchPanel.cpp:2323
+#: ../src/SearchPanel.cpp:2351 ../src/XFileImage.cpp:922
+msgid "&Type"
+msgstr "&Type"
+
+#: ../src/FileDialog.cpp:1599 ../src/FilePanel.cpp:4533
+#: ../src/FilePanel.cpp:4576 ../src/SearchPanel.cpp:2324
+#: ../src/SearchPanel.cpp:2352 ../src/XFileExplorer.cpp:1012
+#: ../src/XFileExplorer.cpp:1042 ../src/XFileImage.cpp:923
+msgid "E&xtension"
+msgstr "Endelse"
+
+#: ../src/FileDialog.cpp:1600 ../src/FilePanel.cpp:4534
+#: ../src/FilePanel.cpp:4577 ../src/SearchPanel.cpp:2325
+#: ../src/SearchPanel.cpp:2353 ../src/XFileImage.cpp:924
+msgid "&Date"
+msgstr "&Dato"
+
+#: ../src/FileDialog.cpp:1601 ../src/FilePanel.cpp:4535
+#: ../src/FilePanel.cpp:4578 ../src/SearchPanel.cpp:2326
+#: ../src/SearchPanel.cpp:2354 ../src/XFileImage.cpp:925
+#, fuzzy
+msgid "&User"
+msgstr "Bruger"
+
+#: ../src/FileDialog.cpp:1602 ../src/FilePanel.cpp:4536
+#: ../src/FilePanel.cpp:4579 ../src/SearchPanel.cpp:2327
+#: ../src/SearchPanel.cpp:2355 ../src/XFileImage.cpp:926
+#, fuzzy
+msgid "&Group"
+msgstr "Gruppe"
+
+#: ../src/FileDialog.cpp:1606 ../src/FilePanel.cpp:4541
+#: ../src/FilePanel.cpp:4584 ../src/SearchPanel.cpp:2331
+#: ../src/SearchPanel.cpp:2359 ../src/XFileImage.cpp:930
+#, fuzzy
+msgid "Fold&ers first"
+msgstr "Mapper"
+
+#: ../src/FileDialog.cpp:1607 ../src/FilePanel.cpp:4542
+#: ../src/FilePanel.cpp:4585 ../src/SearchPanel.cpp:2332
+#: ../src/SearchPanel.cpp:2360 ../src/XFileExplorer.cpp:1022
+#: ../src/XFileExplorer.cpp:1052 ../src/XFileImage.cpp:931
+msgid "Re&verse order"
+msgstr "Omvendt &rækkefølge"
+
+#. Font families, to be filled later
+#: ../src/FontDialog.cpp:53
+#, fuzzy
+msgid "&Family:"
+msgstr "&Fil"
+
+#. Font weights
+#: ../src/FontDialog.cpp:62
+msgid "&Weight:"
+msgstr ""
+
+#. Font styles
+#: ../src/FontDialog.cpp:68
+msgid "&Style:"
+msgstr ""
+
+#. Font sizes, to be filled later
+#: ../src/FontDialog.cpp:74
+#, fuzzy
+msgid "Si&ze:"
+msgstr "Størrelse:"
+
+#. Character set choice
+#: ../src/FontDialog.cpp:82
+#, fuzzy
+msgid "Character Set:"
+msgstr "Character Device"
+
+#: ../src/FontDialog.cpp:85 ../src/FontDialog.cpp:117 ../src/FontDialog.cpp:133
+msgid "Any"
+msgstr ""
+
+#: ../src/FontDialog.cpp:86
+msgid "West European"
+msgstr ""
+
+#: ../src/FontDialog.cpp:87
+msgid "East European"
+msgstr ""
+
+#: ../src/FontDialog.cpp:88
+msgid "South European"
+msgstr ""
+
+#: ../src/FontDialog.cpp:89
+msgid "North European"
+msgstr ""
+
+#: ../src/FontDialog.cpp:90
+msgid "Cyrillic"
+msgstr ""
+
+#: ../src/FontDialog.cpp:91
+msgid "Arabic"
+msgstr ""
+
+#: ../src/FontDialog.cpp:92
+#, fuzzy
+msgid "Greek"
+msgstr "Ledig:"
+
+#: ../src/FontDialog.cpp:93
+msgid "Hebrew"
+msgstr ""
+
+#: ../src/FontDialog.cpp:94
+#, fuzzy
+msgid "Turkish"
+msgstr "Papi&rkurv"
+
+#: ../src/FontDialog.cpp:95
+msgid "Nordic"
+msgstr ""
+
+#: ../src/FontDialog.cpp:96
+msgid "Thai"
+msgstr ""
+
+#: ../src/FontDialog.cpp:97
+msgid "Baltic"
+msgstr ""
+
+#: ../src/FontDialog.cpp:98
+msgid "Celtic"
+msgstr ""
+
+#: ../src/FontDialog.cpp:99
+msgid "Russian"
+msgstr ""
+
+#: ../src/FontDialog.cpp:100
+msgid "Central European (cp1250)"
+msgstr ""
+
+#: ../src/FontDialog.cpp:101
+msgid "Russian (cp1251)"
+msgstr ""
+
+#: ../src/FontDialog.cpp:102
+msgid "Latin1 (cp1252)"
+msgstr ""
+
+#: ../src/FontDialog.cpp:103
+msgid "Greek (cp1253)"
+msgstr ""
+
+#: ../src/FontDialog.cpp:104
+msgid "Turkish (cp1254)"
+msgstr ""
+
+#: ../src/FontDialog.cpp:105
+msgid "Hebrew (cp1255)"
+msgstr ""
+
+#: ../src/FontDialog.cpp:106
+msgid "Arabic (cp1256)"
+msgstr ""
+
+#: ../src/FontDialog.cpp:107
+msgid "Baltic (cp1257)"
+msgstr ""
+
+#: ../src/FontDialog.cpp:108
+msgid "Vietnam (cp1258)"
+msgstr ""
+
+#: ../src/FontDialog.cpp:109
+msgid "Thai (cp874)"
+msgstr ""
+
+#: ../src/FontDialog.cpp:110
+msgid "UNICODE"
+msgstr ""
+
+#. Set width
+#: ../src/FontDialog.cpp:114
+#, fuzzy
+msgid "Set Width:"
+msgstr "Åbn med"
+
+#: ../src/FontDialog.cpp:118
+msgid "Ultra condensed"
+msgstr ""
+
+#: ../src/FontDialog.cpp:119
+msgid "Extra condensed"
+msgstr ""
+
+#: ../src/FontDialog.cpp:120
+msgid "Condensed"
+msgstr ""
+
+#: ../src/FontDialog.cpp:121
+msgid "Semi condensed"
+msgstr ""
+
+#: ../src/FontDialog.cpp:122
+#, fuzzy
+msgid "Normal"
+msgstr "Normalskrifttype:"
+
+#: ../src/FontDialog.cpp:123
+msgid "Semi expanded"
+msgstr ""
+
+#: ../src/FontDialog.cpp:124
+#, fuzzy
+msgid "Expanded"
+msgstr "Udvid træ"
+
+#: ../src/FontDialog.cpp:125
+msgid "Extra expanded"
+msgstr ""
+
+#: ../src/FontDialog.cpp:126
+msgid "Ultra expanded"
+msgstr ""
+
+#. Pitch
+#: ../src/FontDialog.cpp:130
+msgid "Pitch:"
+msgstr ""
+
+#: ../src/FontDialog.cpp:134
+#, fuzzy
+msgid "Fixed"
+msgstr "Find"
+
+#: ../src/FontDialog.cpp:135
+msgid "Variable"
+msgstr ""
+
+#: ../src/FontDialog.cpp:140
+msgid "Scalable:"
+msgstr ""
+
+#: ../src/FontDialog.cpp:144
+#, fuzzy
+msgid "All Fonts:"
+msgstr "Skrifttyper"
+
+#: ../src/FontDialog.cpp:148
+#, fuzzy
+msgid "Preview:"
+msgstr "Vis:"
+
+#. Space before tab is used to set the correct button height
+#: ../src/MessageBox.cpp:86 ../src/XFileExplorer.cpp:681
+#, fuzzy
+msgid "Launch Xfe as root"
+msgstr "\tKør Xfe som root (Shift-F3)"
+
+#: ../src/MessageBox.cpp:100 ../src/MessageBox.cpp:108
+#: ../src/MessageBox.cpp:128
+msgid "&No"
+msgstr "&Nej"
+
+#: ../src/MessageBox.cpp:101 ../src/MessageBox.cpp:107
+#: ../src/MessageBox.cpp:127 ../src/OverwriteBox.cpp:51
+#: ../src/OverwriteBox.cpp:59 ../src/OverwriteBox.cpp:101
+#: ../src/OverwriteBox.cpp:109
+msgid "&Yes"
+msgstr "&Ja"
+
+#: ../src/MessageBox.cpp:114 ../src/MessageBox.cpp:120
+#: ../src/XFileExplorer.cpp:869 ../src/XFilePackage.cpp:224
+#: ../src/XFileImage.cpp:727 ../src/WriteWindow.cpp:788
+msgid "&Quit"
+msgstr "Afslut"
+
+#: ../src/MessageBox.cpp:121 ../src/WriteWindow.cpp:753
+msgid "&Save"
+msgstr "G&em"
+
+#: ../src/MessageBox.cpp:129 ../src/OverwriteBox.cpp:52
+#: ../src/OverwriteBox.cpp:102
+msgid "Yes for &All"
+msgstr "Ja til &alle"
+
+#: ../src/MessageBox.cpp:160 ../src/XFileExplorer.cpp:3836
+#, fuzzy
+msgid "Enter the user password:"
+msgstr "Indtast kodeordet for root :"
+
+#: ../src/MessageBox.cpp:166 ../src/XFileExplorer.cpp:3842
+#, fuzzy
+msgid "Enter the root password:"
+msgstr "Indtast kodeordet for root :"
+
+#: ../src/MessageBox.cpp:196 ../src/XFileExplorer.cpp:3880
+#, fuzzy
+msgid "An error has occurred!"
+msgstr "Der opstod en fejl under flytningen!"
+
+#: ../src/IconList.cpp:2494 ../src/IconList.cpp:2500 ../src/IconList.cpp:2513
+#: ../src/IconList.cpp:2519 ../src/foxhacks.cpp:199 ../src/foxhacks.cpp:205
+#, fuzzy
+msgid "Name: "
+msgstr "Navn"
+
+#: ../src/IconList.cpp:2494 ../src/IconList.cpp:2502 ../src/foxhacks.cpp:199
+#: ../src/foxhacks.cpp:205
+#, fuzzy
+msgid "Size in root: "
+msgstr " i "
+
+#: ../src/IconList.cpp:2494 ../src/IconList.cpp:2502 ../src/IconList.cpp:2513
+#: ../src/IconList.cpp:2521 ../src/foxhacks.cpp:199 ../src/foxhacks.cpp:205
+#, fuzzy
+msgid "Type: "
+msgstr "Type:"
+
+#: ../src/IconList.cpp:2495 ../src/IconList.cpp:2503 ../src/IconList.cpp:2514
+#: ../src/IconList.cpp:2522 ../src/foxhacks.cpp:200 ../src/foxhacks.cpp:206
+#, fuzzy
+msgid "Modified date: "
+msgstr "Sidst ændret"
+
+#: ../src/IconList.cpp:2495 ../src/IconList.cpp:2505 ../src/IconList.cpp:2514
+#: ../src/IconList.cpp:2524 ../src/foxhacks.cpp:200 ../src/foxhacks.cpp:206
+#, fuzzy
+msgid "User: "
+msgstr "Bruger"
+
+#: ../src/IconList.cpp:2495 ../src/IconList.cpp:2505 ../src/IconList.cpp:2514
+#: ../src/IconList.cpp:2524 ../src/foxhacks.cpp:200 ../src/foxhacks.cpp:206
+#, fuzzy
+msgid "Group: "
+msgstr "Gruppe"
+
+#: ../src/IconList.cpp:2496 ../src/IconList.cpp:2505 ../src/IconList.cpp:2515
+#: ../src/IconList.cpp:2524 ../src/foxhacks.cpp:201 ../src/foxhacks.cpp:207
+#, fuzzy
+msgid "Permissions: "
+msgstr "Rettigheder"
+
+#: ../src/IconList.cpp:2501 ../src/IconList.cpp:2520
+msgid "Original path: "
+msgstr ""
+
+#: ../src/IconList.cpp:2504 ../src/IconList.cpp:2523 ../src/foxhacks.cpp:206
+#, fuzzy
+msgid "Deletion date: "
+msgstr "Dato for sletning"
+
+#: ../src/IconList.cpp:2513 ../src/IconList.cpp:2521
+#, fuzzy
+msgid "Size: "
+msgstr "Størrelse:"
+
+#: ../src/FileList.cpp:151
+msgid "Size"
+msgstr "Størrelse"
+
+#: ../src/FileList.cpp:152
+msgid "Type"
+msgstr "Type"
+
+#: ../src/FileList.cpp:153
+msgid "Extension"
+msgstr "Endelse"
+
+#: ../src/FileList.cpp:154
+#, fuzzy
+msgid "Modified date"
+msgstr "Sidst ændret"
+
+#: ../src/FileList.cpp:157
+msgid "Permissions"
+msgstr "Rettigheder"
+
+#: ../src/FileList.cpp:4482 ../src/FileList.cpp:5227 ../src/XFileImage.cpp:1471
+#: ../src/XFileImage.cpp:2099 ../src/XFileImage.cpp:2153
+#: ../src/XFileImage.cpp:2244
+msgid "Unable to load image"
+msgstr "Kan ikke åbne billede: %s"
+
+#: ../src/FileList.cpp:4673 ../src/XFileExplorer.cpp:1018
+#: ../src/XFileExplorer.cpp:1048
+msgid "Original path"
+msgstr ""
+
+#: ../src/FileList.cpp:4674 ../src/FilePanel.cpp:4538 ../src/FilePanel.cpp:4581
+#: ../src/XFileExplorer.cpp:1017 ../src/XFileExplorer.cpp:1047
+msgid "Deletion date"
+msgstr "Dato for sletning"
+
+#: ../src/FilePanel.cpp:244 ../src/FilePanel.cpp:4401
+msgid "Filter"
+msgstr "Filter"
+
+#: ../src/FilePanel.cpp:248 ../src/SearchPanel.cpp:240
+msgid "Status"
+msgstr "Status"
+
+#: ../src/FilePanel.cpp:1034 ../src/SearchPanel.cpp:789
+#, c-format
+msgid "File %s is an executable text file, what do you want to do?"
+msgstr ""
+
+#: ../src/FilePanel.cpp:1035 ../src/SearchPanel.cpp:790
+#, fuzzy
+msgid "Confirm Execute"
+msgstr "Bekræft sletning"
+
+#. Make and show command window
+#. The CommandWindow object will delete itself when closed!
+#. Make and show command window
+#: ../src/FilePanel.cpp:1074 ../src/SearchPanel.cpp:829
+#: ../src/XFileExplorer.cpp:3738
+msgid "Command log"
+msgstr "Kommando log"
+
+#: ../src/FilePanel.cpp:1832
+#, fuzzy
+msgid ""
+"The / character is not allowed in file or folder names, operation cancelled"
+msgstr "Sletning af fil afbrudt!"
+
+#: ../src/FilePanel.cpp:1876 ../src/SearchPanel.cpp:3779
+#, fuzzy
+msgid "To folder:"
+msgstr "Flyt mappen "
+
+#: ../src/FilePanel.cpp:2367 ../src/SearchPanel.cpp:2906
+#, fuzzy, c-format
+msgid "Can't write to trash location %s: Permission denied"
+msgstr "Kunne ikke skrive til %s: Adgang nægtet"
+
+#: ../src/FilePanel.cpp:2408 ../src/SearchPanel.cpp:2936
+#, fuzzy, c-format
+msgid "Move file %s to trash can?"
+msgstr "Smid i papirkurven"
+
+#: ../src/FilePanel.cpp:2413 ../src/SearchPanel.cpp:2941
+#, fuzzy, c-format
+msgid "Move %s selected items to trash can?"
+msgstr "\tSmid markerede filer i papirkurven (Del, F8)"
+
+#: ../src/FilePanel.cpp:2471 ../src/SearchPanel.cpp:2994
+#, fuzzy, c-format
+msgid "File %s is write-protected, move it anyway to trash can?"
+msgstr " er skrivebeskyttet, slet aligevel?"
+
+#: ../src/FilePanel.cpp:2575 ../src/SearchPanel.cpp:3090
+msgid "Move to trash file operation cancelled!"
+msgstr "Flytning af filer afbrudt!"
+
+#: ../src/FilePanel.cpp:2716
+#, c-format
+msgid "Restore file %s to its original location %s ?"
+msgstr ""
+
+#: ../src/FilePanel.cpp:2721
+#, fuzzy, c-format
+msgid "Restore %s selected items to their original locations?"
+msgstr "\tSmid markerede filer i papirkurven (Del, F8)"
+
+#: ../src/FilePanel.cpp:2764 ../src/FilePanel.cpp:3705
+#: ../src/FilePanel.cpp:5240
+#, fuzzy, c-format
+msgid "Can't create folder %s: %s"
+msgstr "Kan ikke overskrive mappen %s. Den er ikke tom"
+
+#: ../src/FilePanel.cpp:2878 ../src/SearchPanel.cpp:3147
+#, fuzzy, c-format
+msgid "Definitively delete file %s ?"
+msgstr "Slet mappen permanent: "
+
+#: ../src/FilePanel.cpp:2883 ../src/SearchPanel.cpp:3152
+#, fuzzy, c-format
+msgid "Definitively delete %s selected items?"
+msgstr "  Slet markerede elementer ?  "
+
+#: ../src/FilePanel.cpp:3004 ../src/SearchPanel.cpp:3252
+#, fuzzy, c-format
+msgid "File %s is write-protected, delete it anyway?"
+msgstr " er skrivebeskyttet, slet aligevel?"
+
+#: ../src/FilePanel.cpp:3089 ../src/SearchPanel.cpp:3330
+msgid "Delete file operation cancelled!"
+msgstr "Sletning af fil afbrudt!"
+
+#: ../src/FilePanel.cpp:3496 ../src/Preferences.cpp:1010
+#: ../src/SearchPanel.cpp:1703
+msgid "Compare"
+msgstr ""
+
+#: ../src/FilePanel.cpp:3496 ../src/SearchPanel.cpp:1703
+msgid "With:"
+msgstr ""
+
+#: ../src/FilePanel.cpp:3546 ../src/SearchPanel.cpp:1753
+#, c-format
+msgid ""
+"Program %s not found. Please define a file comparator program in the "
+"Preferences dialog!"
+msgstr ""
+
+#: ../src/FilePanel.cpp:3758
+#, fuzzy
+msgid "Create new file:"
+msgstr "Opret ny fil..."
+
+#: ../src/FilePanel.cpp:3794
+#, fuzzy, c-format
+msgid "Can't create file %s: %s"
+msgstr "Kan ikke overskrive mappen %s. Den er ikke tom"
+
+#: ../src/FilePanel.cpp:3798
+#, fuzzy, c-format
+msgid "Can't create file %s"
+msgstr "Kan ikke slette mappen "
+
+#: ../src/FilePanel.cpp:3813
+#, fuzzy, c-format
+msgid "Can't set permissions in %s: %s"
+msgstr "Opret ny fil..."
+
+#: ../src/FilePanel.cpp:3817
+#, fuzzy, c-format
+msgid "Can't set permissions in %s"
+msgstr "Kunne ikke skrive til %s: Adgang nægtet"
+
+#: ../src/FilePanel.cpp:3865
+#, fuzzy
+msgid "Create new symbolic link:"
+msgstr "Opret ny fil..."
+
+#: ../src/FilePanel.cpp:3865
+#, fuzzy
+msgid "New Symlink"
+msgstr "Symbolsk lænke"
+
+#. Select target
+#: ../src/FilePanel.cpp:3889
+msgid "Select the symlink refered file or folder"
+msgstr ""
+
+#: ../src/FilePanel.cpp:3899
+#, fuzzy, c-format
+msgid "Symlink source %s does not exist"
+msgstr "Mappen %s findes ikke"
+
+#: ../src/FilePanel.cpp:4227 ../src/SearchPanel.cpp:889
+#, fuzzy
+msgid "Open selected file(s) with:"
+msgstr "Åbn markerede filer med :"
+
+#: ../src/FilePanel.cpp:4227 ../src/SearchPanel.cpp:889
+msgid "Open With"
+msgstr "Åbn med"
+
+#: ../src/FilePanel.cpp:4227 ../src/SearchPanel.cpp:889
+msgid "A&ssociate"
+msgstr "Tilknyt"
+
+#: ../src/FilePanel.cpp:4401
+#, fuzzy
+msgid "Show files:"
+msgstr "Vis filer :"
+
+#. Menu items
+#: ../src/FilePanel.cpp:4512
+#, fuzzy
+msgid "New& file..."
+msgstr "Ny &fil..."
+
+#: ../src/FilePanel.cpp:4514 ../src/FilePanel.cpp:4557
+#: ../src/XFileExplorer.cpp:793
+#, fuzzy
+msgid "New s&ymlink..."
+msgstr "Ny &fil..."
+
+#: ../src/FilePanel.cpp:4515 ../src/FilePanel.cpp:4558
+msgid "Fi&lter..."
+msgstr "Fi&lter..."
+
+#: ../src/FilePanel.cpp:4524 ../src/FilePanel.cpp:4567
+#: ../src/SearchPanel.cpp:2343
+#, fuzzy
+msgid "&Full file list"
+msgstr "Detaljeret filliste"
+
+#: ../src/FilePanel.cpp:4537 ../src/FilePanel.cpp:4580
+#: ../src/SearchPanel.cpp:2328 ../src/SearchPanel.cpp:2356
+#, fuzzy
+msgid "Per&missions"
+msgstr "Rettigheder"
+
+#: ../src/FilePanel.cpp:4555
+#, fuzzy
+msgid "Ne&w file..."
+msgstr "Ny &fil..."
+
+#: ../src/FilePanel.cpp:4593 ../src/XFileExplorer.cpp:1107
+msgid "&Mount"
+msgstr "&Montér"
+
+#: ../src/FilePanel.cpp:4602 ../src/SearchPanel.cpp:2368
+msgid "Open &with..."
+msgstr "Åbn med..."
+
+#: ../src/FilePanel.cpp:4603 ../src/SearchPanel.cpp:2369
+#: ../src/XFileExplorer.cpp:813
+msgid "&Open"
+msgstr "Åbn"
+
+#: ../src/FilePanel.cpp:4614 ../src/FilePanel.cpp:4618
+#, fuzzy
+msgid "Extr&act to folder "
+msgstr "Kan ikke kopiere mappen "
+
+#: ../src/FilePanel.cpp:4625 ../src/FilePanel.cpp:4632
+#: ../src/FilePanel.cpp:4637 ../src/SearchPanel.cpp:2385
+msgid "&Extract here"
+msgstr "Udpak h&er"
+
+#: ../src/FilePanel.cpp:4627 ../src/FilePanel.cpp:4639
+#: ../src/SearchPanel.cpp:2380 ../src/SearchPanel.cpp:2390
+msgid "E&xtract to..."
+msgstr "Udpak til..."
+
+#: ../src/FilePanel.cpp:4645 ../src/FilePanel.cpp:4653
+#: ../src/SearchPanel.cpp:2396 ../src/SearchPanel.cpp:2402
+#: ../src/XFileExplorer.cpp:959 ../src/XFileImage.cpp:335
+#: ../src/WriteWindow.cpp:598
+msgid "&View"
+msgstr "&Vis"
+
+#: ../src/FilePanel.cpp:4646
+msgid "Install/Up&grade"
+msgstr "Installér/op&gradér"
+
+#: ../src/FilePanel.cpp:4647
+msgid "Un&install"
+msgstr "Af&installér"
+
+#: ../src/FilePanel.cpp:4654 ../src/ExecuteBox.cpp:41
+#: ../src/SearchPanel.cpp:2403 ../src/XFileExplorer.cpp:921
+#: ../src/WriteWindow.cpp:594
+msgid "&Edit"
+msgstr "R&edigér"
+
+#: ../src/FilePanel.cpp:4657 ../src/SearchPanel.cpp:2406
+#, fuzzy
+msgid "Com&pare..."
+msgstr "E&rstat"
+
+#: ../src/FilePanel.cpp:4661 ../src/SearchPanel.cpp:2410
+msgid "Com&pare"
+msgstr ""
+
+#: ../src/FilePanel.cpp:4672
+#, fuzzy
+msgid "Packages &query "
+msgstr "Pakke forespørgsel "
+
+#: ../src/FilePanel.cpp:4680 ../src/SearchPanel.cpp:2429
+#, fuzzy
+msgid "Scripts"
+msgstr "&Beskrivelse"
+
+#: ../src/FilePanel.cpp:4683 ../src/SearchPanel.cpp:2432
+#, fuzzy
+msgid "&Go to script folder"
+msgstr " Mappen :"
+
+#: ../src/FilePanel.cpp:4691 ../src/SearchPanel.cpp:2440
+msgid "Copy &to..."
+msgstr "Kopiér &til..."
+
+#: ../src/FilePanel.cpp:4694 ../src/SearchPanel.cpp:2443
+#, fuzzy
+msgid "M&ove to trash"
+msgstr "Smid i papirkurven"
+
+#: ../src/FilePanel.cpp:4695
+#, fuzzy
+msgid "Restore &from trash"
+msgstr "Tøm papirkurven"
+
+#: ../src/FilePanel.cpp:4698 ../src/SearchPanel.cpp:2446
+#, fuzzy
+msgid "Compare &sizes"
+msgstr "Kilde :"
+
+#: ../src/FilePanel.cpp:4699 ../src/SearchPanel.cpp:2447
+#, fuzzy
+msgid "P&roperties"
+msgstr "Egenskaber"
+
+#. File selection dialog
+#. File dialog
+#. File selection dialog
+#: ../src/FilePanel.cpp:5060 ../src/HistInputDialog.cpp:142
+#: ../src/BrowseInputDialog.cpp:124 ../src/ArchInputDialog.cpp:117
+#: ../src/SearchPanel.cpp:2691
+#, fuzzy
+msgid "Select a destination folder"
+msgstr " Vælg..."
+
+#: ../src/FilePanel.cpp:5063 ../src/HistInputDialog.cpp:162
+#: ../src/BrowseInputDialog.cpp:140 ../src/ArchInputDialog.cpp:121
+#: ../src/SearchPanel.cpp:2694 ../src/SearchWindow.cpp:1151
+#: ../src/XFilePackage.cpp:318 ../src/XFileImage.cpp:181
+#: ../src/WriteWindow.cpp:1540
+msgid "All Files"
+msgstr "Alle Filer"
+
+#. File object
+#: ../src/FilePanel.cpp:5523
+msgid "Package Install/Upgrade"
+msgstr "Installér/Opgradér pakke"
+
+#. File object
+#: ../src/FilePanel.cpp:5572
+msgid "Package Uninstall"
+msgstr "Afinstallér pakke"
+
+#: ../src/FilePanel.cpp:5781 ../src/CommandWindow.cpp:184
+#: ../src/SearchWindow.cpp:809 ../src/startupnotification.cpp:164
+#: ../src/xfeutils.cpp:1711
+#, c-format
+msgid "Error: Fork failed: %s\n"
+msgstr ""
+
+#: ../src/FilePanel.cpp:5828 ../src/SearchPanel.cpp:4206
+#, fuzzy, c-format
+msgid "Can't create script folder %s: %s"
+msgstr "Kan ikke overskrive mappen %s. Den er ikke tom"
+
+#: ../src/FilePanel.cpp:5832 ../src/SearchPanel.cpp:4210
+#, fuzzy, c-format
+msgid "Can't create script folder %s"
+msgstr "Kan ikke slette mappen "
+
+#: ../src/FilePanel.cpp:6055 ../src/SearchPanel.cpp:4483
+#: ../src/XFilePackage.cpp:923
+msgid "No compatible package manager (rpm or dpkg) found!"
+msgstr "Kunne ikke finde et program til at håndtere pakken (rpm eller dpkg)!"
+
+#: ../src/FilePanel.cpp:6120 ../src/SearchPanel.cpp:4548
+#, fuzzy, c-format
+msgid "File %s does not belong to any package."
+msgstr " tilhører pakken : "
+
+#: ../src/FilePanel.cpp:6121 ../src/FilePanel.cpp:6126
+#: ../src/SearchPanel.cpp:410 ../src/SearchPanel.cpp:605
+#: ../src/SearchPanel.cpp:1812 ../src/SearchPanel.cpp:4549
+#: ../src/SearchPanel.cpp:4554
+msgid "Information"
+msgstr "Information"
+
+#: ../src/FilePanel.cpp:6125 ../src/SearchPanel.cpp:4553
+#, fuzzy, c-format
+msgid "File %s belongs to the package: %s"
+msgstr " tilhører pakken : "
+
+#. Make and show command window
+#: ../src/FilePanel.cpp:6220 ../src/SearchPanel.cpp:2887
+#, fuzzy
+msgid "Sizes of Selected Items"
+msgstr " markerede filer"
+
+#: ../src/FilePanel.cpp:6253 ../src/SearchPanel.cpp:4245
+msgid "0 bytes"
+msgstr "0 bytes"
+
+#: ../src/FilePanel.cpp:6299 ../src/SearchPanel.cpp:4276
+#, fuzzy, c-format
+msgid "%s in %s selected items (%s folder, %s file)"
+msgstr " markerede filer"
+
+#: ../src/FilePanel.cpp:6303 ../src/SearchPanel.cpp:4280
+#, fuzzy, c-format
+msgid "%s in %s selected items (%s folder, %s files)"
+msgstr " markerede filer"
+
+#: ../src/FilePanel.cpp:6307 ../src/SearchPanel.cpp:4284
+#, fuzzy, c-format
+msgid "%s in %s selected items (%s folders, %s file)"
+msgstr " markerede filer"
+
+#: ../src/FilePanel.cpp:6311 ../src/SearchPanel.cpp:4288
+#, fuzzy, c-format
+msgid "%s in %s selected items (%s folders, %s files)"
+msgstr " markerede filer"
+
+#: ../src/FilePanel.cpp:6322
+#, fuzzy
+msgid "1 item (1 folder)"
+msgstr " mappen :"
+
+#: ../src/FilePanel.cpp:6336 ../src/FilePanel.cpp:6351
+#: ../src/SearchPanel.cpp:4313 ../src/SearchPanel.cpp:4328
+#, c-format
+msgid "%s items (%s folders, %s files)"
+msgstr ""
+
+#: ../src/FilePanel.cpp:6339 ../src/SearchPanel.cpp:4316
+#, fuzzy, c-format
+msgid "%s items (%s folder, %s file)"
+msgstr "%d elementer i %d mappe(r) og %d file(r)"
+
+#: ../src/FilePanel.cpp:6343 ../src/SearchPanel.cpp:4320
+#, fuzzy, c-format
+msgid "%s items (%s folder, %s files)"
+msgstr "%d elementer i %d mappe(r) og %d file(r)"
+
+#: ../src/FilePanel.cpp:6347 ../src/SearchPanel.cpp:4324
+#, fuzzy, c-format
+msgid "%s items (%s folders, %s file)"
+msgstr "%d elementer i %d mappe(r) og %d file(r)"
+
+#: ../src/FilePanel.cpp:6371 ../src/SearchPanel.cpp:4348
+#: ../src/SearchWindow.cpp:183
+msgid "Link"
+msgstr "Lænke"
+
+#: ../src/FilePanel.cpp:6402
+#, fuzzy, c-format
+msgid " - Filter: %s"
+msgstr "Filter"
+
+#: ../src/Bookmarks.cpp:91
+msgid "Bookmarks limit number reached. The last bookmark will be deleted..."
+msgstr ""
+"Makismalt antal bogmærker nået. Det sidste bogmærke vil blive slettet..."
+
+#: ../src/Bookmarks.cpp:137
+#, fuzzy
+msgid "Confirm Clear Bookmarks"
+msgstr "Fjern bogmærker"
+
+#: ../src/Bookmarks.cpp:137
+#, fuzzy
+msgid "Do you really want to clear all your bookmarks?"
+msgstr "Vil du virkelig afslutte Xfe?"
+
+#: ../src/CommandWindow.cpp:57 ../src/CommandWindow.cpp:86
+msgid "Cl&ose"
+msgstr "Luk"
+
+#: ../src/CommandWindow.cpp:66 ../src/CommandWindow.cpp:95
+msgid ""
+"Please wait...\n"
+"\n"
+msgstr ""
+
+#: ../src/CommandWindow.cpp:199 ../src/SearchWindow.cpp:829
+#, fuzzy, c-format
+msgid "Can't duplicate pipes: %s"
+msgstr "Kan ikke slette filen "
+
+#: ../src/CommandWindow.cpp:203 ../src/SearchWindow.cpp:833
+#, fuzzy
+msgid "Can't duplicate pipes"
+msgstr "Kan ikke slette filen "
+
+#: ../src/CommandWindow.cpp:294
+msgid ""
+"\n"
+">>>> COMMAND CANCELLED <<<<"
+msgstr ""
+"\n"
+">>>> KOMMANDO AFBRUDT <<<<"
+
+#: ../src/CommandWindow.cpp:298
+msgid ""
+"\n"
+">>>> END OF COMMAND <<<<"
+msgstr ""
+"\n"
+">>>> KOMMANDO AFSLUTTET <<<<"
+
+#: ../src/HistInputDialog.cpp:81 ../src/BrowseInputDialog.cpp:69
+#: ../src/ArchInputDialog.cpp:57
+#, fuzzy
+msgid "\tSelect destination..."
+msgstr " Vælg..."
+
+#: ../src/HistInputDialog.cpp:146 ../src/BrowseInputDialog.cpp:128
+#, fuzzy
+msgid "Select a file"
+msgstr " Mappen :"
+
+#: ../src/HistInputDialog.cpp:154 ../src/BrowseInputDialog.cpp:132
+#, fuzzy
+msgid "Select a file or a destination folder"
+msgstr " Mappen :"
+
+#: ../src/ArchInputDialog.cpp:30
+msgid "Add To Archive"
+msgstr "Tilføj til arkiv"
+
+#: ../src/ArchInputDialog.cpp:47
+#, fuzzy
+msgid "New archive name:"
+msgstr "Giv nyt navn"
+
+#: ../src/ArchInputDialog.cpp:61
+#, fuzzy
+msgid "Format:"
+msgstr "Fra :"
+
+#: ../src/ArchInputDialog.cpp:63
+msgid "tar.gz\tArchive format is tar.gz"
+msgstr ""
+
+#: ../src/ArchInputDialog.cpp:64
+msgid "zip\tArchive format is zip"
+msgstr ""
+
+#: ../src/ArchInputDialog.cpp:65
+msgid "7z\tArchive format is 7z"
+msgstr ""
+
+#: ../src/ArchInputDialog.cpp:66
+msgid "tar.bz2\tArchive format is tar.bz2"
+msgstr ""
+
+#: ../src/ArchInputDialog.cpp:67
+msgid "tar.xz\tArchive format is tar.xz"
+msgstr ""
+
+#: ../src/ArchInputDialog.cpp:68
+msgid "tar\tArchive format is tar"
+msgstr ""
+
+#: ../src/ArchInputDialog.cpp:69
+msgid "tar.Z\tArchive format is tar.Z"
+msgstr ""
+
+#: ../src/ArchInputDialog.cpp:70
+msgid "gz\tArchive format is gz"
+msgstr ""
+
+#: ../src/ArchInputDialog.cpp:71
+msgid "bz2\tArchive format is bz2"
+msgstr ""
+
+#: ../src/ArchInputDialog.cpp:72
+msgid "xz\tArchive format is xz"
+msgstr ""
+
+#: ../src/ArchInputDialog.cpp:73
+msgid "Z\tArchive format is Z"
+msgstr ""
+
+#. Construct window
+#: ../src/Preferences.cpp:135
+msgid "Preferences"
+msgstr "Indstillinger"
+
+#: ../src/Preferences.cpp:137
+msgid "Current Theme"
+msgstr "Aktuelt Tema"
+
+#: ../src/Preferences.cpp:182
+msgid "Options"
+msgstr "Valg"
+
+#: ../src/Preferences.cpp:183
+msgid "Use trash can for file deletion (safe delete)"
+msgstr "Brug papirkurven ved sletning af filer (sikker sletning)"
+
+#: ../src/Preferences.cpp:184
+msgid "Include a command to bypass the trash can (permanent delete)"
+msgstr ""
+"Inkludér en kommando til at slette udenom papirkurv (permanent sletning)"
+
+#: ../src/Preferences.cpp:185
+msgid "Auto save layout"
+msgstr "Husk layout"
+
+#: ../src/Preferences.cpp:186
+msgid "Save window position"
+msgstr ""
+
+#: ../src/Preferences.cpp:187
+#, fuzzy
+msgid "Single click folder open"
+msgstr "Filåbning ved enkeltklik"
+
+#: ../src/Preferences.cpp:188
+msgid "Single click file open"
+msgstr "Filåbning ved enkeltklik"
+
+#: ../src/Preferences.cpp:189
+#, fuzzy
+msgid "Display tooltips in file and folder lists"
+msgstr "\tVis detaljer\tDetaljeret listevisning af mappeindhold."
+
+#: ../src/Preferences.cpp:190
+msgid "Relative resizing of file lists"
+msgstr ""
+
+#: ../src/Preferences.cpp:191
+msgid "Display a path linker above file lists"
+msgstr ""
+
+#: ../src/Preferences.cpp:193
+msgid "Notify when applications start up"
+msgstr ""
+
+#: ../src/Preferences.cpp:195
+#, fuzzy
+msgid "Don't execute text files"
+msgstr "Bekræft sletning"
+
+#: ../src/Preferences.cpp:198
+msgid ""
+"Date format used in file and folder lists:\n"
+"(Type 'man strftime' in a terminal for help on the format)"
+msgstr ""
+
+#. Second tab - Modes
+#: ../src/Preferences.cpp:204
+msgid "&Modes"
+msgstr ""
+
+#: ../src/Preferences.cpp:211
+msgid "Starting mode"
+msgstr ""
+
+#: ../src/Preferences.cpp:213
+#, fuzzy
+msgid "Start in home folder"
+msgstr " Mappen :"
+
+#: ../src/Preferences.cpp:214
+#, fuzzy
+msgid "Start in current folder"
+msgstr " Mappen :"
+
+#: ../src/Preferences.cpp:215
+#, fuzzy
+msgid "Start in last visited folder"
+msgstr " Mappen :"
+
+#: ../src/Preferences.cpp:217
+msgid "Scrolling mode"
+msgstr ""
+
+#: ../src/Preferences.cpp:220
+msgid "Smooth scrolling in file lists and text windows"
+msgstr ""
+
+#: ../src/Preferences.cpp:224
+msgid "Mouse scrolling speed:"
+msgstr "Hastighed for bladring med mus"
+
+#: ../src/Preferences.cpp:227
+#, fuzzy
+msgid "Scrollbar width:"
+msgstr "Rammefarve"
+
+#: ../src/Preferences.cpp:231
+#, fuzzy
+msgid "Root mode"
+msgstr "Kør i konsollen"
+
+#: ../src/Preferences.cpp:232
+#, fuzzy
+msgid "Allow root mode"
+msgstr "Kør i konsollen"
+
+#: ../src/Preferences.cpp:233
+msgid "Authentication using sudo (uses user password)"
+msgstr ""
+
+#: ../src/Preferences.cpp:234
+msgid "Authentication using su (uses root password)"
+msgstr ""
+
+#: ../src/Preferences.cpp:238
+#, fuzzy
+msgid "sudo command:"
+msgstr "Kommandoen mislykkedes: %s"
+
+#: ../src/Preferences.cpp:240
+#, fuzzy
+msgid "su command:"
+msgstr "Kør kommando"
+
+#. Third tab - Dialogs
+#: ../src/Preferences.cpp:324
+#, fuzzy
+msgid "&Dialogs"
+msgstr "Farvevælg"
+
+#: ../src/Preferences.cpp:326
+msgid "Confirmations"
+msgstr "Bekræftelser"
+
+#: ../src/Preferences.cpp:327
+msgid "Confirm copy/move/rename/symlink"
+msgstr ""
+
+#: ../src/Preferences.cpp:328
+msgid "Confirm drag and drop"
+msgstr ""
+
+#: ../src/Preferences.cpp:329
+msgid "Confirm move to trash/restore from trash"
+msgstr ""
+
+#: ../src/Preferences.cpp:330
+#, fuzzy
+msgid "Confirm delete"
+msgstr "Bekræft sletning"
+
+#: ../src/Preferences.cpp:331
+#, fuzzy
+msgid "Confirm delete non empty folders"
+msgstr "Kan ikke slette mappen %s"
+
+#: ../src/Preferences.cpp:332
+msgid "Confirm overwrite"
+msgstr "Bekræft overskrivning"
+
+#: ../src/Preferences.cpp:333
+#, fuzzy
+msgid "Confirm execute text files"
+msgstr "Bekræft sletning"
+
+#: ../src/Preferences.cpp:334
+#, fuzzy
+msgid "Confirm change properties"
+msgstr "Egenskaber"
+
+#. Warning window
+#: ../src/Preferences.cpp:336 ../src/SearchWindow.cpp:482
+msgid "Warnings"
+msgstr "Advarsler"
+
+#: ../src/Preferences.cpp:337
+msgid "Warn when setting current folder in search window"
+msgstr ""
+
+#: ../src/Preferences.cpp:339
+msgid "Warn when mount points are not responding"
+msgstr "Advar når monteringspunkter ikke svarer"
+
+#: ../src/Preferences.cpp:340
+#, fuzzy
+msgid "Display mount / unmount success messages"
+msgstr "Giv besked ved vellykket montering/afmontering"
+
+#: ../src/Preferences.cpp:342
+msgid "Warn when date preservation failed"
+msgstr ""
+
+#: ../src/Preferences.cpp:343
+msgid "Warn if running as root"
+msgstr "Advarsel ved start som root"
+
+#. Fourth tab - Programs
+#: ../src/Preferences.cpp:388
+msgid "&Programs"
+msgstr "&Programmer"
+
+#: ../src/Preferences.cpp:390
+#, fuzzy
+msgid "Default programs"
+msgstr "Terminal :"
+
+#: ../src/Preferences.cpp:393
+#, fuzzy
+msgid "Text viewer:"
+msgstr "Standard tekstviser :"
+
+#: ../src/Preferences.cpp:399
+#, fuzzy
+msgid "Text editor:"
+msgstr "Standard tekstredigering :"
+
+#: ../src/Preferences.cpp:405
+#, fuzzy
+msgid "File comparator:"
+msgstr "Rettigheder"
+
+#: ../src/Preferences.cpp:411
+#, fuzzy
+msgid "Image editor:"
+msgstr "Standard tekstredigering :"
+
+#: ../src/Preferences.cpp:417
+#, fuzzy
+msgid "Image viewer:"
+msgstr "Standard billedviser :"
+
+#: ../src/Preferences.cpp:423
+#, fuzzy
+msgid "Archiver:"
+msgstr "Opret arkiv"
+
+#: ../src/Preferences.cpp:429
+#, fuzzy
+msgid "Pdf viewer:"
+msgstr "Standard tekstviser :"
+
+#: ../src/Preferences.cpp:435
+#, fuzzy
+msgid "Audio player:"
+msgstr "Standard billedviser :"
+
+#: ../src/Preferences.cpp:441
+#, fuzzy
+msgid "Video player:"
+msgstr "Standard billedviser :"
+
+#: ../src/Preferences.cpp:447
+#, fuzzy
+msgid "Terminal:"
+msgstr "&Terminal"
+
+#: ../src/Preferences.cpp:453
+msgid "Volume management"
+msgstr ""
+
+#: ../src/Preferences.cpp:456
+#, fuzzy
+msgid "Mount:"
+msgstr "Montér"
+
+#: ../src/Preferences.cpp:462
+#, fuzzy
+msgid "Unmount:"
+msgstr "Afmontér"
+
+#. Fifth tab - Appearance
+#: ../src/Preferences.cpp:470
+msgid "&Appearance"
+msgstr ""
+
+#: ../src/Preferences.cpp:472
+msgid "Color theme"
+msgstr "Farvetema"
+
+#: ../src/Preferences.cpp:482
+msgid "Custom colors"
+msgstr "Personlige farver"
+
+#: ../src/Preferences.cpp:487
+msgid "Double click to customize the color"
+msgstr ""
+
+#: ../src/Preferences.cpp:489
+msgid "Base color"
+msgstr "Basisfarve"
+
+#: ../src/Preferences.cpp:490
+msgid "Border color"
+msgstr "Rammefarve"
+
+#: ../src/Preferences.cpp:491
+msgid "Background color"
+msgstr "Baggrundsfarve"
+
+#: ../src/Preferences.cpp:492
+#, fuzzy
+msgid "Text color"
+msgstr "Basisfarve"
+
+#: ../src/Preferences.cpp:493
+msgid "Selection background color"
+msgstr "Baggrundsfarve for valg"
+
+#: ../src/Preferences.cpp:494
+#, fuzzy
+msgid "Selection text color"
+msgstr "Forgrundsfarve for valg"
+
+#: ../src/Preferences.cpp:495
+msgid "File list background color"
+msgstr "Baggrundsfarve for filliste"
+
+#: ../src/Preferences.cpp:496
+#, fuzzy
+msgid "File list text color"
+msgstr "Baggrundsfarve for fillistevalg"
+
+#: ../src/Preferences.cpp:497
+msgid "File list highlight color"
+msgstr "Baggrundsfarve for fillistevalg"
+
+#: ../src/Preferences.cpp:498
+#, fuzzy
+msgid "Progress bar color"
+msgstr "Rammefarve"
+
+#: ../src/Preferences.cpp:499
+#, fuzzy
+msgid "Attention color"
+msgstr "Basisfarve"
+
+#: ../src/Preferences.cpp:500
+#, fuzzy
+msgid "Scrollbar color"
+msgstr "Rammefarve"
+
+#. Monitor resolution
+#: ../src/Preferences.cpp:504
+msgid "Screen resolution"
+msgstr ""
+
+#: ../src/Preferences.cpp:506
+msgid "DPI:"
+msgstr ""
+
+#. Controls theme
+#: ../src/Preferences.cpp:514
+#, fuzzy
+msgid "Controls"
+msgstr "Skrifttyper"
+
+#: ../src/Preferences.cpp:516
+msgid "Standard (classic controls)"
+msgstr ""
+
+#: ../src/Preferences.cpp:517
+msgid "Clearlooks (modern looking controls)"
+msgstr ""
+
+#. Find iconpath from the Xfe registry settings or set it to DEFAULTICONPATH
+#: ../src/Preferences.cpp:520
+msgid "Icon theme path"
+msgstr "Sti til ikon-temaer"
+
+#: ../src/Preferences.cpp:523
+#, fuzzy
+msgid "\tSelect path..."
+msgstr " Vælg..."
+
+#. Sixth tab - Fonts
+#: ../src/Preferences.cpp:528
+msgid "&Fonts"
+msgstr "&Skrifttyper"
+
+#: ../src/Preferences.cpp:530
+msgid "Fonts"
+msgstr "Skrifttyper"
+
+#: ../src/Preferences.cpp:533
+#, fuzzy
+msgid "Normal font:"
+msgstr "Normalskrifttype:"
+
+#: ../src/Preferences.cpp:535 ../src/Preferences.cpp:541
+msgid " Select..."
+msgstr " Vælg..."
+
+#: ../src/Preferences.cpp:539
+msgid "Text font:"
+msgstr "Tekstskrifttype:"
+
+#. Seventh tab - Key bindings
+#: ../src/Preferences.cpp:546
+msgid "&Key Bindings"
+msgstr ""
+
+#: ../src/Preferences.cpp:548 ../src/Keybindings.cpp:63
+msgid "Key Bindings"
+msgstr ""
+
+#: ../src/Preferences.cpp:551
+msgid "Modify key bindings..."
+msgstr ""
+
+#. ,0,0,0,0,20,20);
+#: ../src/Preferences.cpp:552
+msgid "Restore default key bindings..."
+msgstr ""
+
+#: ../src/Preferences.cpp:634
+#, fuzzy
+msgid "Select an icon theme folder or an icon file"
+msgstr " Mappen :"
+
+#: ../src/Preferences.cpp:723
+msgid "Change Normal Font"
+msgstr "Vælg normalskrifttype"
+
+#: ../src/Preferences.cpp:747
+msgid "Change Text Font"
+msgstr "Vælg skrifttype"
+
+#: ../src/Preferences.cpp:795 ../src/XFileExplorer.cpp:626
+#, fuzzy
+msgid "Create new file"
+msgstr "Opret ny fil..."
+
+#: ../src/Preferences.cpp:799 ../src/XFileExplorer.cpp:629
+#, fuzzy
+msgid "Create new folder"
+msgstr "Opret ny mappe..."
+
+#: ../src/Preferences.cpp:803
+#, fuzzy
+msgid "Copy to clipboard"
+msgstr "Kopiér\tCtrl-C\tKopiér. (Ctrl-C)"
+
+#: ../src/Preferences.cpp:807
+#, fuzzy
+msgid "Cut to clipboard"
+msgstr "Klip\tCtrl-X\tKlip. (Ctrl-X)"
+
+#: ../src/Preferences.cpp:811 ../src/XFileExplorer.cpp:661
+#, fuzzy
+msgid "Paste from clipboard"
+msgstr "\tSæt ind (Ctrl-V)"
+
+#: ../src/Preferences.cpp:827
+#, fuzzy
+msgid "Open file"
+msgstr "&Åbn fil...\tCtrl-O"
+
+#: ../src/Preferences.cpp:831
+#, fuzzy
+msgid "Quit application"
+msgstr "Applikation"
+
+#: ../src/Preferences.cpp:835
+#, fuzzy
+msgid "Select all"
+msgstr "Markér &Alle"
+
+#: ../src/Preferences.cpp:839
+#, fuzzy
+msgid "Deselect all"
+msgstr "Slet markering\tCtrl-Z"
+
+#: ../src/Preferences.cpp:843
+#, fuzzy
+msgid "Invert selection"
+msgstr "&Invertér markering\tCtrl-I"
+
+#: ../src/Preferences.cpp:847
+#, fuzzy
+msgid "Display help"
+msgstr "&Værktøjslinje\t\tVis værktøjslinjen"
+
+#: ../src/Preferences.cpp:851
+#, fuzzy
+msgid "Toggle display hidden files"
+msgstr "Vis skjulte filer"
+
+#: ../src/Preferences.cpp:855
+#, fuzzy
+msgid "Toggle display thumbnails"
+msgstr "\tVis miniaturer"
+
+#: ../src/Preferences.cpp:863
+#, fuzzy
+msgid "Close window"
+msgstr "Nyt &vindue\tF3"
+
+#: ../src/Preferences.cpp:867
+#, fuzzy
+msgid "Print file"
+msgstr "Udskriv fil"
+
+#: ../src/Preferences.cpp:871 ../src/XFileExplorer.cpp:690
+#: ../src/WriteWindow.cpp:717 ../src/WriteWindow.cpp:2090
+msgid "Search"
+msgstr "&Søg"
+
+#: ../src/Preferences.cpp:875
+#, fuzzy
+msgid "Search previous"
+msgstr "Find ikoner i"
+
+#: ../src/Preferences.cpp:879
+#, fuzzy
+msgid "Search next"
+msgstr "&Søg"
+
+#: ../src/Preferences.cpp:883 ../src/XFileExplorer.cpp:737
+#: ../src/XFileImage.cpp:461
+#, fuzzy
+msgid "Vertical panels"
+msgstr "To &paneler\tCtrl-F3"
+
+#: ../src/Preferences.cpp:887 ../src/XFileExplorer.cpp:743
+#: ../src/XFileImage.cpp:467
+#, fuzzy
+msgid "Horizontal panels"
+msgstr "To &paneler\tCtrl-F3"
+
+#: ../src/Preferences.cpp:897 ../src/XFileExplorer.cpp:621
+#, fuzzy
+msgid "Refresh panels"
+msgstr "Venstre pane&l"
+
+#: ../src/Preferences.cpp:901
+#, fuzzy
+msgid "Create new symbolic link"
+msgstr "Opret ny fil..."
+
+#: ../src/Preferences.cpp:905
+#, fuzzy
+msgid "File properties"
+msgstr "Egenskaber"
+
+#: ../src/Preferences.cpp:909
+#, fuzzy
+msgid "Move files to trash"
+msgstr "Smid i papirkurven"
+
+#: ../src/Preferences.cpp:913
+#, fuzzy
+msgid "Restore files from trash"
+msgstr "Tøm papirkurven"
+
+#: ../src/Preferences.cpp:917
+#, fuzzy
+msgid "Delete files"
+msgstr "Slet mappe : "
+
+#: ../src/Preferences.cpp:921
+#, fuzzy
+msgid "Create new window"
+msgstr "Opret ny fil..."
+
+#: ../src/Preferences.cpp:925
+#, fuzzy
+msgid "Create new root window"
+msgstr "Nyt &root vindue\tShift-F3"
+
+#: ../src/Preferences.cpp:929 ../src/XFileExplorer.cpp:684
+#: ../src/XFileExplorer.cpp:3718
+msgid "Execute command"
+msgstr "Kør kommando"
+
+#: ../src/Preferences.cpp:933 ../src/XFileExplorer.cpp:687
+#, fuzzy
+msgid "Launch terminal"
+msgstr "\tKør Xfe som root (Shift-F3)"
+
+#: ../src/Preferences.cpp:938
+#, fuzzy
+msgid "Mount file system (Linux only)"
+msgstr "Montér filsystem..."
+
+#: ../src/Preferences.cpp:942
+#, fuzzy
+msgid "Unmount file system (Linux only)"
+msgstr "Afmontér filsystem..."
+
+#: ../src/Preferences.cpp:946
+#, fuzzy
+msgid "One panel mode"
+msgstr "Venstre pane&l"
+
+#: ../src/Preferences.cpp:950
+#, fuzzy
+msgid "Tree and panel mode"
+msgstr "T&ræ og panel\tCtrl-F2"
+
+#: ../src/Preferences.cpp:954
+#, fuzzy
+msgid "Two panels mode"
+msgstr "To &paneler\tCtrl-F3"
+
+#: ../src/Preferences.cpp:958
+#, fuzzy
+msgid "Tree and two panels mode"
+msgstr "Træ og to p&aneler\tCtrl-F4"
+
+#: ../src/Preferences.cpp:962
+#, fuzzy
+msgid "Clear location bar"
+msgstr "\tTøm adresselinjen\tFjern indholdet i adresselinjen."
+
+#: ../src/Preferences.cpp:966
+#, fuzzy
+msgid "Rename file"
+msgstr "Omdøb "
+
+#: ../src/Preferences.cpp:970
+#, fuzzy
+msgid "Copy files to location"
+msgstr "\tGå\tGå til den valgte adresse."
+
+#: ../src/Preferences.cpp:974
+#, fuzzy
+msgid "Move files to location"
+msgstr "\tGå\tGå til den valgte adresse."
+
+#: ../src/Preferences.cpp:978
+#, fuzzy
+msgid "Symlink files to location"
+msgstr "\tGå\tGå til den valgte adresse."
+
+#: ../src/Preferences.cpp:982
+#, fuzzy
+msgid "Add bookmark"
+msgstr "Tilføj til bogmærker\tCtrl-B"
+
+#: ../src/Preferences.cpp:986
+#, fuzzy
+msgid "Synchronize panels"
+msgstr "&Et panel\tCtrl-F1"
+
+#: ../src/Preferences.cpp:990
+#, fuzzy
+msgid "Switch panels"
+msgstr "To &paneler\tCtrl-F3"
+
+#: ../src/Preferences.cpp:994
+#, fuzzy
+msgid "Go to trash can"
+msgstr "Smid i papirkurven"
+
+#: ../src/Preferences.cpp:998 ../src/XFileExplorer.cpp:3961
+msgid "Empty trash can"
+msgstr "Tøm papirkurven"
+
+#: ../src/Preferences.cpp:1002
+#, fuzzy
+msgid "View"
+msgstr "Vis:"
+
+#: ../src/Preferences.cpp:1006
+#, fuzzy
+msgid "Edit"
+msgstr "Redigér:"
+
+#: ../src/Preferences.cpp:1014
+#, fuzzy
+msgid "Toggle display hidden folders"
+msgstr "Vis skjulte filer"
+
+#: ../src/Preferences.cpp:1018
+#, fuzzy
+msgid "Filter files"
+msgstr "Fil tid"
+
+#: ../src/Preferences.cpp:1029
+msgid "Zoom image to 100%"
+msgstr ""
+
+#: ../src/Preferences.cpp:1033
+#, fuzzy
+msgid "Zoom to fit window"
+msgstr "Gå til linje"
+
+#: ../src/Preferences.cpp:1037
+msgid "Rotate image to left"
+msgstr ""
+
+#: ../src/Preferences.cpp:1041
+msgid "Rotate image to right"
+msgstr ""
+
+#: ../src/Preferences.cpp:1045
+msgid "Mirror image horizontally"
+msgstr ""
+
+#: ../src/Preferences.cpp:1049
+msgid "Mirror image vertically"
+msgstr ""
+
+#: ../src/Preferences.cpp:1059
+#, fuzzy
+msgid "Create new document"
+msgstr "Opret ny mappe..."
+
+#: ../src/Preferences.cpp:1063
+#, fuzzy
+msgid "Save changes to file"
+msgstr "Gem %s i fil?"
+
+#: ../src/Preferences.cpp:1067 ../src/WriteWindow.cpp:700
+#, fuzzy
+msgid "Goto line"
+msgstr "Gå til linje"
+
+#: ../src/Preferences.cpp:1071
+#, fuzzy
+msgid "Undo last change"
+msgstr "&Fortryd\tCtrl-Z\tFortryd seneste ændring. (Ctrl-Z)"
+
+#: ../src/Preferences.cpp:1075
+#, fuzzy
+msgid "Redo last change"
+msgstr "&Fortryd\tCtrl-Z\tFortryd seneste ændring. (Ctrl-Z)"
+
+#: ../src/Preferences.cpp:1079
+#, fuzzy
+msgid "Replace string"
+msgstr "Erstat"
+
+#: ../src/Preferences.cpp:1083
+#, fuzzy
+msgid "Toggle word wrap mode"
+msgstr "Ombryd tekst\tCtrl-K\tTekstombrydning til. (Ctrl-K)"
+
+#: ../src/Preferences.cpp:1087
+#, fuzzy
+msgid "Toggle line numbers mode"
+msgstr "Vis &linjenumre\tCtrl-T\tVis linjenumre. (Ctrl-T)"
+
+#: ../src/Preferences.cpp:1091
+#, fuzzy
+msgid "Toggle lower case mode"
+msgstr "&Overskrivning\t\tSkift til overskrivnings-tilstand."
+
+#: ../src/Preferences.cpp:1095
+#, fuzzy
+msgid "Toggle upper case mode"
+msgstr "&Overskrivning\t\tSkift til overskrivnings-tilstand."
+
+#. Confirmation message
+#: ../src/Preferences.cpp:1114
+#, fuzzy
+msgid ""
+"Do you really want to restore the default key bindings?\n"
+"\n"
+"All your customizations will be lost!"
+msgstr ""
+"Vil du virkelig tømme papirkurven?\n"
+"\n"
+"Indholdet vil blive slettet permanent!"
+
+#: ../src/Preferences.cpp:1115
+msgid "Restore default key bindings"
+msgstr ""
+
+#. Ask the user if he wants to restart Xfe
+#: ../src/Preferences.cpp:1213 ../src/Preferences.cpp:1869
+#: ../src/XFileImage.cpp:1504 ../src/Keybindings.cpp:266
+msgid "Restart"
+msgstr "Genstart"
+
+#: ../src/Preferences.cpp:1213 ../src/Keybindings.cpp:266
+#, fuzzy
+msgid ""
+"Key bindings will be changed after restart.\n"
+"Restart X File Explorer now?"
+msgstr ""
+"Tekstskrifttypen vil blive ændret efter genstart.\n"
+"Genstart X File Explorer nu?"
+
+#: ../src/Preferences.cpp:1869
+#, fuzzy
+msgid ""
+"Preferences will be changed after restart.\n"
+"Restart X File Explorer now?"
+msgstr ""
+"Tekstskrifttypen vil blive ændret efter genstart.\n"
+"Genstart X File Explorer nu?"
+
+#: ../src/OverwriteBox.cpp:49 ../src/OverwriteBox.cpp:99
+msgid "&Skip"
+msgstr "Ignorer"
+
+#: ../src/OverwriteBox.cpp:50 ../src/OverwriteBox.cpp:100
+msgid "Skip A&ll"
+msgstr "Ignorer A&lle"
+
+#: ../src/OverwriteBox.cpp:82
+#, fuzzy
+msgid "Source size:"
+msgstr "Kilde :"
+
+#: ../src/OverwriteBox.cpp:84 ../src/OverwriteBox.cpp:90
+#, fuzzy
+msgid "- Modified date:"
+msgstr "Sidst ændret"
+
+#: ../src/OverwriteBox.cpp:88
+#, fuzzy
+msgid "Target size:"
+msgstr "Mål :"
+
+#: ../src/ExecuteBox.cpp:39
+#, fuzzy
+msgid "E&xecute"
+msgstr "Kør"
+
+#: ../src/ExecuteBox.cpp:40
+#, fuzzy
+msgid "Execute in Console &Mode"
+msgstr "Kør i konsollen"
+
+#. Close
+#: ../src/TextWindow.cpp:28 ../src/TextWindow.cpp:47
+#: ../src/XFilePackage.cpp:254 ../src/WriteWindow.cpp:761
+msgid "&Close"
+msgstr "Luk"
+
+#: ../src/SearchPanel.cpp:165
+#, fuzzy
+msgid "Refresh panel"
+msgstr "Venstre pane&l"
+
+#: ../src/SearchPanel.cpp:177 ../src/XFileExplorer.cpp:637
+#, fuzzy
+msgid "Copy selected files to clipboard"
+msgstr "\tKopiér (Ctrl-C, F5)"
+
+#: ../src/SearchPanel.cpp:182 ../src/XFileExplorer.cpp:651
+#, fuzzy
+msgid "Cut selected files to clipboard"
+msgstr "\tKlip (Ctrl-X)"
+
+#: ../src/SearchPanel.cpp:187 ../src/XFileExplorer.cpp:664
+#, fuzzy
+msgid "Show properties of selected files"
+msgstr "\tVis egenskaber for markerede filer (F9)"
+
+#: ../src/SearchPanel.cpp:198 ../src/XFileExplorer.cpp:669
+#, fuzzy
+msgid "Move selected files to trash can"
+msgstr "\tSmid markerede filer i papirkurven (Del, F8)"
+
+#: ../src/SearchPanel.cpp:203 ../src/XFileExplorer.cpp:675
+#, fuzzy
+msgid "Delete selected files"
+msgstr "\tSlet markerede filer (Shift-Del)"
+
+#: ../src/SearchPanel.cpp:410 ../src/SearchPanel.cpp:605
+#: ../src/SearchPanel.cpp:1812
+#, c-format
+msgid "Current folder has been set to '%s'"
+msgstr ""
+
+#: ../src/SearchPanel.cpp:2315 ../src/XFileExplorer.cpp:1003
+#: ../src/XFileExplorer.cpp:1033
+msgid "F&ull file list"
+msgstr "Detaljeret filliste"
+
+#: ../src/SearchPanel.cpp:2330 ../src/XFileExplorer.cpp:1020
+#: ../src/XFileExplorer.cpp:1050
+msgid "I&gnore case"
+msgstr "I&gnorer store/små bogstaver"
+
+#: ../src/SearchPanel.cpp:2347 ../src/XFileImage.cpp:819
+msgid "&Autosize"
+msgstr ""
+
+#: ../src/SearchPanel.cpp:2421
+#, fuzzy
+msgid "&Packages query "
+msgstr "Pakke forespørgsel "
+
+#: ../src/SearchPanel.cpp:2435
+#, fuzzy
+msgid "&Go to parent folder"
+msgstr " Mappen :"
+
+#: ../src/SearchPanel.cpp:3658
+#, fuzzy, c-format
+msgid "Copy %s items"
+msgstr ""
+" filer/mapper.\n"
+"Fra: "
+
+#: ../src/SearchPanel.cpp:3674
+#, fuzzy, c-format
+msgid "Move %s items"
+msgstr ""
+" filer/mapper.\n"
+"Fra: "
+
+#: ../src/SearchPanel.cpp:3690
+#, fuzzy, c-format
+msgid "Symlink %s items"
+msgstr ""
+" filer/mapper.\n"
+"Fra: "
+
+#: ../src/SearchPanel.cpp:3734
+msgid ""
+"Character '/' is not allowed in file or folder names, operation cancelled"
+msgstr ""
+
+#: ../src/SearchPanel.cpp:3807
+msgid "You must enter an absolute path!"
+msgstr ""
+
+#: ../src/SearchPanel.cpp:4231
+#, fuzzy
+msgid "0 item"
+msgstr " Elementer"
+
+#: ../src/SearchPanel.cpp:4299
+#, fuzzy
+msgid "1 item"
+msgstr " Elementer"
+
+#: ../src/SearchWindow.cpp:71
+#, fuzzy
+msgid "Find files:"
+msgstr "Udskriv fil"
+
+#: ../src/SearchWindow.cpp:74
+msgid "Ignore case\tIgnore file name case"
+msgstr ""
+
+#. Hidden files
+#: ../src/SearchWindow.cpp:79
+#, fuzzy
+msgid "Hidden files\tShow hidden files and folders"
+msgstr " Mappen :"
+
+#: ../src/SearchWindow.cpp:84
+#, fuzzy
+msgid "In folder:"
+msgstr "Flyt mappen "
+
+#: ../src/SearchWindow.cpp:86
+#, fuzzy
+msgid "\tIn folder..."
+msgstr "Ny Mappe"
+
+#: ../src/SearchWindow.cpp:89
+#, fuzzy
+msgid "Text contains:"
+msgstr "Tekstskrifttype:"
+
+#: ../src/SearchWindow.cpp:92
+msgid "Ignore case\tIgnore text case"
+msgstr ""
+
+#. Search options
+#: ../src/SearchWindow.cpp:97
+#, fuzzy
+msgid "More options"
+msgstr "Find ikoner i"
+
+#: ../src/SearchWindow.cpp:98
+#, fuzzy
+msgid "Search options"
+msgstr "Find ikoner i"
+
+#: ../src/SearchWindow.cpp:99
+#, fuzzy
+msgid "Reset\tReset search options"
+msgstr "Find ikoner i"
+
+#: ../src/SearchWindow.cpp:115
+#, fuzzy
+msgid "Min size:"
+msgstr "Udskriv fil"
+
+#: ../src/SearchWindow.cpp:117
+#, fuzzy
+msgid "Filter by minimum file size (kBytes)"
+msgstr "Fil tid"
+
+#: ../src/SearchWindow.cpp:118 ../src/SearchWindow.cpp:123
+#: ../src/xfeutils.cpp:952
+msgid "kB"
+msgstr ""
+
+#: ../src/SearchWindow.cpp:120
+#, fuzzy
+msgid "Max size:"
+msgstr "Total størrelse"
+
+#: ../src/SearchWindow.cpp:122
+#, fuzzy
+msgid "Filter by maximum file size (kBytes)"
+msgstr "Fil tid"
+
+#. Modification date
+#: ../src/SearchWindow.cpp:126
+#, fuzzy
+msgid "Last modified before:"
+msgstr "Sidst modificeret:"
+
+#: ../src/SearchWindow.cpp:128
+msgid "Filter by maximum modification date (days)"
+msgstr ""
+
+#: ../src/SearchWindow.cpp:129 ../src/SearchWindow.cpp:134
+msgid "Days"
+msgstr ""
+
+#: ../src/SearchWindow.cpp:131
+#, fuzzy
+msgid "Last modified after:"
+msgstr "Sidst modificeret:"
+
+#: ../src/SearchWindow.cpp:133
+msgid "Filter by minimum modification date (days)"
+msgstr ""
+
+#. User and group
+#: ../src/SearchWindow.cpp:137
+#, fuzzy
+msgid "User:"
+msgstr "Bruger"
+
+#: ../src/SearchWindow.cpp:140
+#, fuzzy
+msgid "\tFilter by user name"
+msgstr "Fil tid"
+
+#: ../src/SearchWindow.cpp:142
+#, fuzzy
+msgid "Group:"
+msgstr "Gruppe"
+
+#: ../src/SearchWindow.cpp:145
+#, fuzzy
+msgid "\tFilter by group name"
+msgstr "Fil tid"
+
+#. File type
+#: ../src/SearchWindow.cpp:178
+#, fuzzy
+msgid "File type:"
+msgstr "Filsystem:"
+
+#: ../src/SearchWindow.cpp:181
+#, fuzzy
+msgid "File"
+msgstr "Fil :"
+
+#: ../src/SearchWindow.cpp:185
+msgid "Pipe"
+msgstr ""
+
+#: ../src/SearchWindow.cpp:187
+#, fuzzy
+msgid "\tFilter by file type"
+msgstr "Fil tid"
+
+#. Permissions (in octal)
+#: ../src/SearchWindow.cpp:190
+#, fuzzy
+msgid "Permissions:"
+msgstr "Rettigheder"
+
+#: ../src/SearchWindow.cpp:194
+#, fuzzy
+msgid "\tFilter by permissions (octal)"
+msgstr "Rettigheder"
+
+#. Empty files
+#: ../src/SearchWindow.cpp:197
+#, fuzzy
+msgid "Empty files:"
+msgstr "Vis filer :"
+
+#: ../src/SearchWindow.cpp:198
+#, fuzzy
+msgid "\tEmpty files only"
+msgstr "Vis filer :"
+
+#: ../src/SearchWindow.cpp:202
+#, fuzzy
+msgid "Follow symbolic links:"
+msgstr "Opret ny fil..."
+
+#: ../src/SearchWindow.cpp:203
+#, fuzzy
+msgid "\tSearch while following symbolic links"
+msgstr "Opret ny fil..."
+
+#: ../src/SearchWindow.cpp:207
+#, fuzzy
+msgid "Non recursive:"
+msgstr "Rekursivt"
+
+#: ../src/SearchWindow.cpp:208
+msgid "\tDon't search folders recursively"
+msgstr ""
+
+#: ../src/SearchWindow.cpp:212
+#, fuzzy
+msgid "Ignore other file systems:"
+msgstr "Afmontér filsystem..."
+
+#: ../src/SearchWindow.cpp:213
+msgid "\tDon't search in other file systems"
+msgstr ""
+
+#. Start
+#: ../src/SearchWindow.cpp:223
+msgid "&Start\tStart the search (F3)"
+msgstr ""
+
+#. Stop
+#: ../src/SearchWindow.cpp:226
+msgid "&Stop\tStop the search (Esc)"
+msgstr ""
+
+#: ../src/SearchWindow.cpp:782
+#, fuzzy
+msgid ">>>> Search started - Please wait... <<<<"
+msgstr "Find ikoner i"
+
+#. Update item count
+#: ../src/SearchWindow.cpp:912 ../src/SearchWindow.cpp:945
+#, fuzzy
+msgid " items"
+msgstr " Elementer"
+
+#: ../src/SearchWindow.cpp:938
+#, fuzzy
+msgid ">>>> Search results <<<<"
+msgstr "Find ikoner i"
+
+#: ../src/SearchWindow.cpp:956
+msgid "Input / Output error"
+msgstr ""
+
+#: ../src/SearchWindow.cpp:973
+#, fuzzy
+msgid ">>>> Search stopped... <<<<"
+msgstr "&Søg"
+
+#: ../src/SearchWindow.cpp:1147
+#, fuzzy
+msgid "Select path"
+msgstr " Vælg..."
+
+#: ../src/XFileExplorer.cpp:632
+#, fuzzy
+msgid "Create new symlink"
+msgstr "Opret ny fil..."
+
+#: ../src/XFileExplorer.cpp:672
+#, fuzzy
+msgid "Restore selected files from trash can"
+msgstr "\tSmid markerede filer i papirkurven (Del, F8)"
+
+#: ../src/XFileExplorer.cpp:678
+#, fuzzy
+msgid "Launch Xfe"
+msgstr "\tKør Xfe som root (Shift-F3)"
+
+#: ../src/XFileExplorer.cpp:690
+#, fuzzy
+msgid "Search files and folders..."
+msgstr " Mappen :"
+
+#: ../src/XFileExplorer.cpp:697
+msgid "Mount (Linux only)"
+msgstr ""
+
+#: ../src/XFileExplorer.cpp:702
+msgid "Unmount (Linux only)"
+msgstr ""
+
+#: ../src/XFileExplorer.cpp:711
+#, fuzzy
+msgid "Show one panel"
+msgstr "\tVis ét panel (Ctrl-F1)"
+
+#: ../src/XFileExplorer.cpp:717
+#, fuzzy
+msgid "Show tree and panel"
+msgstr "\tVis træ og panel (Ctrl-F2)"
+
+#: ../src/XFileExplorer.cpp:723
+#, fuzzy
+msgid "Show two panels"
+msgstr "\tVis to paneler (Ctrl-F3)"
+
+#: ../src/XFileExplorer.cpp:729
+#, fuzzy
+msgid "Show tree and two panels"
+msgstr "\tVis træ og to paneler (Ctrl-F4)"
+
+#: ../src/XFileExplorer.cpp:768
+#, fuzzy
+msgid "Clear location"
+msgstr "\tTøm adresselinjen\tFjern indholdet i adresselinjen."
+
+#: ../src/XFileExplorer.cpp:773
+#, fuzzy
+msgid "Go to location"
+msgstr "\tGå\tGå til den valgte adresse."
+
+#: ../src/XFileExplorer.cpp:787
+#, fuzzy
+msgid "New fo&lder..."
+msgstr "Ny Mappe"
+
+#: ../src/XFileExplorer.cpp:799
+#, fuzzy
+msgid "Go &home"
+msgstr "Gå til &hjemmemappen\tCtrl-H"
+
+#: ../src/XFileExplorer.cpp:805
+#, fuzzy
+msgid "&Refresh"
+msgstr "Opdaté&r\tCtrl-R"
+
+#: ../src/XFileExplorer.cpp:825
+#, fuzzy
+msgid "&Copy to..."
+msgstr "Kopiér &til..."
+
+#: ../src/XFileExplorer.cpp:837
+#, fuzzy
+msgid "&Symlink to..."
+msgstr "Symbolsk læn&ke..."
+
+#: ../src/XFileExplorer.cpp:861
+#, fuzzy
+msgid "&Properties"
+msgstr "Egenskaber"
+
+#: ../src/XFileExplorer.cpp:875 ../src/XFilePackage.cpp:201
+#: ../src/XFileImage.cpp:327 ../src/WriteWindow.cpp:590
+msgid "&File"
+msgstr "&Fil"
+
+#: ../src/XFileExplorer.cpp:900
+#, fuzzy
+msgid "&Select all"
+msgstr "Markér &Alle"
+
+#: ../src/XFileExplorer.cpp:906
+#, fuzzy
+msgid "&Deselect all"
+msgstr "Slet markering\tCtrl-Z"
+
+#: ../src/XFileExplorer.cpp:912
+#, fuzzy
+msgid "&Invert selection"
+msgstr "&Invertér markering\tCtrl-I"
+
+#: ../src/XFileExplorer.cpp:919
+msgid "P&references"
+msgstr "Indstillinge&r"
+
+#: ../src/XFileExplorer.cpp:925
+#, fuzzy
+msgid "&General toolbar"
+msgstr "&Generelt"
+
+#: ../src/XFileExplorer.cpp:926
+#, fuzzy
+msgid "&Tools toolbar"
+msgstr "&Værktøjslinje\t\tVis værktøjslinjen"
+
+#: ../src/XFileExplorer.cpp:927
+#, fuzzy
+msgid "&Panel toolbar"
+msgstr "Værk&tøjslinje"
+
+#: ../src/XFileExplorer.cpp:928
+msgid "&Location bar"
+msgstr "Adresse&linje"
+
+#: ../src/XFileExplorer.cpp:929
+msgid "&Status bar"
+msgstr "&Statuslinje"
+
+#: ../src/XFileExplorer.cpp:933
+#, fuzzy
+msgid "&One panel"
+msgstr "Venstre pane&l"
+
+#: ../src/XFileExplorer.cpp:937
+#, fuzzy
+msgid "T&ree and panel"
+msgstr "T&ræ og panel\tCtrl-F2"
+
+#: ../src/XFileExplorer.cpp:941
+#, fuzzy
+msgid "Two &panels"
+msgstr "To &paneler\tCtrl-F3"
+
+#: ../src/XFileExplorer.cpp:945
+#, fuzzy
+msgid "Tr&ee and two panels"
+msgstr "Træ og to p&aneler\tCtrl-F4"
+
+#: ../src/XFileExplorer.cpp:951 ../src/XFileImage.cpp:808
+#, fuzzy
+msgid "&Vertical panels"
+msgstr "To &paneler\tCtrl-F3"
+
+#: ../src/XFileExplorer.cpp:955 ../src/XFileImage.cpp:812
+#, fuzzy
+msgid "&Horizontal panels"
+msgstr "To &paneler\tCtrl-F3"
+
+#: ../src/XFileExplorer.cpp:963
+#, fuzzy
+msgid "&Add bookmark"
+msgstr "Tilføj til bogmærker\tCtrl-B"
+
+#: ../src/XFileExplorer.cpp:991
+msgid "&Clear bookmarks"
+msgstr "Fjern bogmærker"
+
+#: ../src/XFileExplorer.cpp:993
+msgid "&Bookmarks"
+msgstr "&Bogmærker"
+
+#: ../src/XFileExplorer.cpp:997
+msgid "&Filter..."
+msgstr "&Filter..."
+
+#: ../src/XFileExplorer.cpp:999 ../src/XFileExplorer.cpp:1029
+#: ../src/XFileImage.cpp:781
+msgid "&Thumbnails"
+msgstr "Minia&turer"
+
+#: ../src/XFileExplorer.cpp:1001 ../src/XFileExplorer.cpp:1031
+#: ../src/XFileImage.cpp:789
+msgid "&Big icons"
+msgstr "Store ikoner"
+
+#: ../src/XFileExplorer.cpp:1011 ../src/XFileExplorer.cpp:1041
+msgid "T&ype"
+msgstr "T&ype"
+
+#: ../src/XFileExplorer.cpp:1013 ../src/XFileExplorer.cpp:1043
+#, fuzzy
+msgid "D&ate"
+msgstr "&Dato"
+
+#: ../src/XFileExplorer.cpp:1014 ../src/XFileExplorer.cpp:1044
+#, fuzzy
+msgid "Us&er"
+msgstr "Bruger"
+
+#: ../src/XFileExplorer.cpp:1015 ../src/XFileExplorer.cpp:1045
+#, fuzzy
+msgid "Gr&oup"
+msgstr "Gruppe"
+
+#: ../src/XFileExplorer.cpp:1021
+#, fuzzy
+msgid "Fol&ders first"
+msgstr "Mapper"
+
+#: ../src/XFileExplorer.cpp:1023 ../src/XFileExplorer.cpp:3538
+#: ../src/XFileExplorer.cpp:3589
+msgid "&Left panel"
+msgstr "Venstre pane&l"
+
+#: ../src/XFileExplorer.cpp:1027
+msgid "&Filter"
+msgstr "&Filter"
+
+#: ../src/XFileExplorer.cpp:1051
+#, fuzzy
+msgid "&Folders first"
+msgstr "Mapper"
+
+#: ../src/XFileExplorer.cpp:1053 ../src/XFileExplorer.cpp:3537
+#: ../src/XFileExplorer.cpp:3588
+msgid "&Right panel"
+msgstr "Høj&re panel"
+
+#: ../src/XFileExplorer.cpp:1058
+#, fuzzy
+msgid "New &window"
+msgstr "Nyt &vindue\tF3"
+
+#: ../src/XFileExplorer.cpp:1064
+#, fuzzy
+msgid "New &root window"
+msgstr "Nyt &root vindue\tShift-F3"
+
+#: ../src/XFileExplorer.cpp:1072
+#, fuzzy
+msgid "E&xecute command..."
+msgstr "Kør kommando"
+
+#: ../src/XFileExplorer.cpp:1078
+#, fuzzy
+msgid "&Terminal"
+msgstr "&Terminal"
+
+#: ../src/XFileExplorer.cpp:1084
+#, fuzzy
+msgid "&Synchronize panels"
+msgstr "&Et panel\tCtrl-F1"
+
+#: ../src/XFileExplorer.cpp:1090
+#, fuzzy
+msgid "Sw&itch panels"
+msgstr "To &paneler\tCtrl-F3"
+
+#: ../src/XFileExplorer.cpp:1096
+#, fuzzy
+msgid "Go to script folder"
+msgstr " Mappen :"
+
+#: ../src/XFileExplorer.cpp:1098
+#, fuzzy
+msgid "&Search files..."
+msgstr "&Søg"
+
+#: ../src/XFileExplorer.cpp:1111
+#, fuzzy
+msgid "&Unmount"
+msgstr "Afmontér"
+
+#: ../src/XFileExplorer.cpp:1115
+msgid "&Tools"
+msgstr "Værk&tøjslinje"
+
+#: ../src/XFileExplorer.cpp:1120
+#, fuzzy
+msgid "&Go to trash"
+msgstr "Smid i papirkurven"
+
+#: ../src/XFileExplorer.cpp:1126
+#, fuzzy
+msgid "&Trash size"
+msgstr "Total størrelse"
+
+#: ../src/XFileExplorer.cpp:1128
+#, fuzzy
+msgid "&Empty trash can"
+msgstr "Tøm papirkurven"
+
+#: ../src/XFileExplorer.cpp:1135 ../src/XFileExplorer.cpp:4240
+msgid "T&rash"
+msgstr "Papi&rkurv"
+
+#: ../src/XFileExplorer.cpp:1140 ../src/XFileExplorer.cpp:1147
+#: ../src/XFileExplorer.cpp:4243 ../src/XFileExplorer.cpp:4254
+#: ../src/XFilePackage.cpp:209 ../src/XFileImage.cpp:343
+#: ../src/WriteWindow.cpp:614
+msgid "&Help"
+msgstr "&Hjælp"
+
+#: ../src/XFileExplorer.cpp:1146
+msgid "&About X File Explorer"
+msgstr "Om X File Explorer"
+
+#: ../src/XFileExplorer.cpp:2218
+msgid "Running Xfe as root!"
+msgstr "Du kører Xfe som root!"
+
+#: ../src/XFileExplorer.cpp:2253
+#, c-format
+msgid ""
+"Starting from Xfe 1.32, the location of the configuration files has changed "
+"to '%s'.\n"
+"Note you can manually edit the new configuration files to import your old "
+"customizations..."
+msgstr ""
+
+#: ../src/XFileExplorer.cpp:2270
+#, fuzzy, c-format
+msgid "Can't create Xfe config folder %s: %s"
+msgstr "Kan ikke overskrive mappen %s. Den er ikke tom"
+
+#: ../src/XFileExplorer.cpp:2274
+#, fuzzy, c-format
+msgid "Can't create Xfe config folder %s"
+msgstr "Kan ikke overskrive mappen %s. Den er ikke tom"
+
+#: ../src/XFileExplorer.cpp:2296
+msgid "No global xferc file found! Please select a configuration file..."
+msgstr ""
+"Kunne ikke finde en global xferc! Vælg venligst en konfigurationsfil..."
+
+#: ../src/XFileExplorer.cpp:2300
+msgid "XFE configuration file"
+msgstr "XFE konfigurationsfil"
+
+#: ../src/XFileExplorer.cpp:2312
+msgid "Xfe cannot run without a global xferc configuration file"
+msgstr ""
+
+#: ../src/XFileExplorer.cpp:2335 ../src/XFileExplorer.cpp:3990
+#, fuzzy, c-format
+msgid "Can't create trash can 'files' folder %s: %s"
+msgstr "Kan ikke overskrive mappen %s. Den er ikke tom"
+
+#: ../src/XFileExplorer.cpp:2339 ../src/XFileExplorer.cpp:3992
+#, fuzzy, c-format
+msgid "Can't create trash can 'files' folder %s"
+msgstr "Kan ikke overskrive mappen %s. Den er ikke tom"
+
+#: ../src/XFileExplorer.cpp:2357 ../src/XFileExplorer.cpp:4005
+#, fuzzy, c-format
+msgid "Can't create trash can 'info' folder %s: %s"
+msgstr "Kan ikke overskrive mappen %s. Den er ikke tom"
+
+#: ../src/XFileExplorer.cpp:2361 ../src/XFileExplorer.cpp:4007
+#, fuzzy, c-format
+msgid "Can't create trash can 'info' folder %s"
+msgstr "Kan ikke overskrive mappen %s. Den er ikke tom"
+
+#: ../src/XFileExplorer.cpp:3181
+msgid "Help"
+msgstr "Hjælp"
+
+#: ../src/XFileExplorer.cpp:3211
+#, fuzzy, c-format
+msgid "X File Explorer Version %s"
+msgstr "Om X File Explorer "
+
+#: ../src/XFileExplorer.cpp:3212
+#, fuzzy
+msgid "Based on X WinCommander by Maxim Baranov\n"
+msgstr ""
+"\n"
+"\n"
+"Copyright (C) 2002-2007 Roland Baudin (roland65@free.fr)\n"
+"\n"
+"Baseret på X WinCommander af Maxim Baranov\n"
+
+#: ../src/XFileExplorer.cpp:3214
+msgid ""
+"\n"
+"Translators\n"
+"-------------\n"
+"Argentinian Spanish: Bruno Gilberto Luciani\n"
+"Brazilian Portuguese: Eduardo R.B.S., Jose Carlos Medeiros,\n"
+"Phantom X, Tomas Acauan Schertel\n"
+"Bosnian: Samir Ribi, Bajrami Emran, Balagija Jasmina,\n"
+"Bilalovi, Omar Cogo Emir\n"
+"Catalan: muzzol\n"
+"Chinese: Xin Li\n"
+"Chinese (Taïwan): Wei-Lun Chao\n"
+"Colombian Spanish: Vladimir Támara (Pasos de Jesús)\n"
+"Czech: David Vachulka\n"
+"Danish: Jonas Bardino, Vidar Jon Bauge\n"
+"Dutch: Hans Strijards\n"
+"Finnish: Kimmo Siira\n"
+"French: Claude Leo Mercier, Roland Baudin\n"
+"German: Bastian Kleineidam, Joachim Wiedorn, Tim Benke, Jens Körner\n"
+"Greek: Nikos Papadopoulos\n"
+"Hungarian: Attila Szervac, Sandor Sipos\n"
+"Italian: Claudio Fontana, Giorgio Moscardi\n"
+"Japanese: Karl Skewes\n"
+"Norwegian: Vidar Jon Bauge\n"
+"Polish: Jacek Dziura, Franciszek Janowski\n"
+"Portuguese: Miguel Santinho\n"
+"Russian: Dimitri Sertolov, Vad Vad\n"
+"Spanish: Felix Medrano Sanz, Lucas 'Basurero' Vieites,\n"
+"Martin Carr\n"
+"Swedish: Anders F. Bjorklund\n"
+"Turkish: erkaN\n"
+msgstr ""
+
+#: ../src/XFileExplorer.cpp:3246
+#, fuzzy
+msgid "About X File Explorer"
+msgstr "Om X File Explorer"
+
+#: ../src/XFileExplorer.cpp:3509 ../src/XFileExplorer.cpp:3557
+#, fuzzy
+msgid "&Panel"
+msgstr "&Panel"
+
+#: ../src/XFileExplorer.cpp:3718
+#, fuzzy
+msgid "Execute the command:"
+msgstr "Kør kommandoen :"
+
+#: ../src/XFileExplorer.cpp:3718
+#, fuzzy
+msgid "Console mode"
+msgstr "Kør i konsollen"
+
+#: ../src/XFileExplorer.cpp:3896
+#, fuzzy
+msgid "Search files and folders"
+msgstr " Mappen :"
+
+#. Confirmation message
+#: ../src/XFileExplorer.cpp:3958
+#, fuzzy
+msgid "Do you really want to empty the trash can?"
+msgstr "Vil du virkelig afslutte Xfe?"
+
+#: ../src/XFileExplorer.cpp:3958
+msgid " in "
+msgstr " i "
+
+#: ../src/XFileExplorer.cpp:3959
+#, fuzzy
+msgid ""
+"\n"
+"\n"
+"All items will be definitively lost!"
+msgstr ""
+"Vil du virkelig tømme papirkurven?\n"
+"\n"
+"Indholdet vil blive slettet permanent!"
+
+#: ../src/XFileExplorer.cpp:4049
+#, fuzzy, c-format
+msgid ""
+"Trash size: %s (%s files, %s subfolders)\n"
+"\n"
+"Modified date: %s"
+msgstr "Sidst ændret"
+
+#: ../src/XFileExplorer.cpp:4051
+#, fuzzy
+msgid "Trash size"
+msgstr "Total størrelse"
+
+#: ../src/XFileExplorer.cpp:4058
+#, fuzzy, c-format
+msgid "Trash can 'files' folder %s is not readable!"
+msgstr "Kan ikke overskrive mappen %s. Den er ikke tom"
+
+#: ../src/XFileExplorer.cpp:4512 ../src/XFileExplorer.cpp:4586
+#, fuzzy, c-format
+msgid "Command not found: %s"
+msgstr "Kan ikke slette mappen "
+
+#: ../src/XFileExplorer.cpp:4591
+#, fuzzy, c-format
+msgid "Invalid file association: %s"
+msgstr "&Filtilknytninger"
+
+#: ../src/XFileExplorer.cpp:4596
+#, fuzzy, c-format
+msgid "File association not found: %s"
+msgstr "&Filtilknytninger"
+
+#: ../src/XFilePackage.cpp:205 ../src/XFileImage.cpp:339
+#: ../src/WriteWindow.cpp:606
+msgid "&Preferences"
+msgstr "&Indstillinger"
+
+#: ../src/XFilePackage.cpp:213
+#, fuzzy
+msgid "Open package file"
+msgstr "\tÅbn pakke (Ctrl-O)"
+
+#: ../src/XFilePackage.cpp:218 ../src/XFileImage.cpp:701
+#: ../src/WriteWindow.cpp:747
+#, fuzzy
+msgid "&Open..."
+msgstr "Åbn"
+
+#. Preferences menu
+#. View Menu entries
+#: ../src/XFilePackage.cpp:232 ../src/XFileImage.cpp:822
+#: ../src/WriteWindow.cpp:858
+#, fuzzy
+msgid "&Toolbar"
+msgstr "&Værktøjslinje\t\tVis værktøjslinjen"
+
+#. Help Menu entries
+#: ../src/XFilePackage.cpp:235
+#, fuzzy
+msgid "&About X File Package"
+msgstr "Om X File Image"
+
+#. Uninstall
+#: ../src/XFilePackage.cpp:257
+msgid "&Uninstall"
+msgstr "&Afinstallér"
+
+#. Install/Upgrade
+#: ../src/XFilePackage.cpp:260
+msgid "&Install/Upgrade"
+msgstr "&Installér/Opgradér"
+
+#. First item is Description
+#: ../src/XFilePackage.cpp:266
+msgid "&Description"
+msgstr "&Beskrivelse"
+
+#. Second item is File List
+#: ../src/XFilePackage.cpp:272
+msgid "File &List"
+msgstr "&Filoversigt"
+
+#: ../src/XFilePackage.cpp:304
+#, fuzzy, c-format
+msgid ""
+"X File Package Version %s is a simple rpm or deb package manager.\n"
+"\n"
+msgstr ""
+" er en enkel rpm og deb pakkebehandler.\n"
+"\n"
+"Copyright (C) 2002-2007 Roland Baudin (roland65@free.fr)"
+
+#: ../src/XFilePackage.cpp:306
+#, fuzzy
+msgid "About X File Package"
+msgstr "Om X File Image"
+
+#: ../src/XFilePackage.cpp:319
+msgid "RPM source packages"
+msgstr "RPM kildepakker"
+
+#: ../src/XFilePackage.cpp:320
+msgid "RPM packages"
+msgstr "RPM pakker"
+
+#: ../src/XFilePackage.cpp:321
+msgid "DEB packages"
+msgstr "DEB pakker"
+
+#: ../src/XFilePackage.cpp:325 ../src/WriteWindow.cpp:1552
+msgid "Open Document"
+msgstr "Åbn Dokument"
+
+#: ../src/XFilePackage.cpp:350 ../src/XFilePackage.cpp:396
+msgid "No package loaded"
+msgstr "Ingen pakke åbnet"
+
+#: ../src/XFilePackage.cpp:369 ../src/XFilePackage.cpp:419
+#: ../src/XFilePackage.cpp:521 ../src/XFilePackage.cpp:585
+msgid "Unknown package format"
+msgstr "Ukendt pakkeformat"
+
+#. Make and show command window
+#: ../src/XFilePackage.cpp:374
+msgid "Install/Upgrade Package"
+msgstr "Installér/Opgradér pakke..."
+
+#. Make and show command window
+#: ../src/XFilePackage.cpp:424
+msgid "Uninstall Package"
+msgstr "Afinstallér pakke..."
+
+#: ../src/XFilePackage.cpp:573
+msgid "[RPM package]\n"
+msgstr "[RPM pakke]\n"
+
+#: ../src/XFilePackage.cpp:578
+msgid "[DEB package]\n"
+msgstr "[DEB pakke]\n"
+
+#: ../src/XFilePackage.cpp:617
+#, c-format
+msgid "Query of %s failed!"
+msgstr "Forespørgsel på %s mislykkedes!"
+
+#: ../src/XFilePackage.cpp:641 ../src/XFileImage.cpp:1354
+#: ../src/WriteWindow.cpp:1072 ../src/WriteWindow.cpp:1082
+#: ../src/WriteWindow.cpp:1094
+msgid "Error Loading File"
+msgstr "Fejl under åbning af fil"
+
+#: ../src/XFilePackage.cpp:641 ../src/XFileImage.cpp:1354
+#: ../src/WriteWindow.cpp:1072 ../src/WriteWindow.cpp:1177
+#, c-format
+msgid "Unable to open file: %s"
+msgstr "Kan ikke åbne filen: %s"
+
+#. Usage message
+#: ../src/XFilePackage.cpp:719
+#, fuzzy
+msgid ""
+"\n"
+"Usage: xfp [options] [package] \n"
+"\n"
+"    [options] can be any of the following:\n"
+"\n"
+"        -h, --help         Print (this) help screen and exit.\n"
+"        -v, --version      Print version information and exit.\n"
+"\n"
+"    [package] is the path to the rpm or deb package you want to open on "
+"start up.\n"
+"\n"
+msgstr ""
+"\n"
+"Brug: xfq [valg] [pakke] \n"
+"\n"
+"    [valg] kan være en af følgende:\n"
+"\n"
+"        -h, --help         Vis (denne) hjælpetekst og afslut.\n"
+"        -v, --version      Vis versionsoplysninger og afslut.\n"
+"\n"
+"    [pakke] er stien til rpm- eller deb-pakken, du vil åbne ved opstart.\n"
+"\n"
+"\n"
+
+#: ../src/XFileImage.cpp:182
+msgid "GIF Image"
+msgstr "GIF billede"
+
+#: ../src/XFileImage.cpp:183
+msgid "BMP Image"
+msgstr "BMP billede"
+
+#: ../src/XFileImage.cpp:184
+msgid "XPM Image"
+msgstr "XPM billede"
+
+#: ../src/XFileImage.cpp:185
+msgid "PCX Image"
+msgstr "PCX billede"
+
+#: ../src/XFileImage.cpp:186
+msgid "ICO Image"
+msgstr "ICO billede"
+
+#: ../src/XFileImage.cpp:187
+msgid "RGB Image"
+msgstr "RGB billede"
+
+#: ../src/XFileImage.cpp:188
+msgid "XBM Image"
+msgstr "XBM billede"
+
+#: ../src/XFileImage.cpp:189
+msgid "TARGA Image"
+msgstr "TARGA billede"
+
+#: ../src/XFileImage.cpp:190
+msgid "PPM Image"
+msgstr "PPM billede"
+
+#: ../src/XFileImage.cpp:191
+msgid "PNG Image"
+msgstr "PNG billede"
+
+#: ../src/XFileImage.cpp:192 ../src/XFileImage.cpp:193
+msgid "JPEG Image"
+msgstr "JPEG billede"
+
+#: ../src/XFileImage.cpp:194 ../src/XFileImage.cpp:195
+msgid "TIFF Image"
+msgstr "TIFF billede"
+
+#: ../src/XFileImage.cpp:331
+msgid "&Image"
+msgstr "B&illede"
+
+#: ../src/XFileImage.cpp:648 ../src/WriteWindow.cpp:664
+#, fuzzy
+msgid "Open"
+msgstr "Åbn:"
+
+#: ../src/XFileImage.cpp:648 ../src/XFileImage.cpp:701
+#, fuzzy
+msgid "Open image file."
+msgstr "Åbn billedfil"
+
+#: ../src/XFileImage.cpp:652 ../src/XFileImage.cpp:1648
+#: ../src/WriteWindow.cpp:677 ../src/WriteWindow.cpp:1871
+msgid "Print"
+msgstr "Udskriv fil"
+
+#: ../src/XFileImage.cpp:652 ../src/XFileImage.cpp:707
+#, fuzzy
+msgid "Print image file."
+msgstr "Kan ikke flytte filen "
+
+#. Note : Ctrl+ and Ctrl- cannot be changed from the registry!
+#. Toolbar button: Zoom in
+#: ../src/XFileImage.cpp:660
+#, fuzzy
+msgid "Zoom in"
+msgstr "Gå til linje"
+
+#: ../src/XFileImage.cpp:660 ../src/XFileImage.cpp:734
+msgid "Zoom in image."
+msgstr ""
+
+#. Toolbar button: Zoom out
+#: ../src/XFileImage.cpp:665
+msgid "Zoom out"
+msgstr ""
+
+#: ../src/XFileImage.cpp:665 ../src/XFileImage.cpp:735
+msgid "Zoom out image."
+msgstr ""
+
+#: ../src/XFileImage.cpp:671
+msgid "Zoom 100%"
+msgstr ""
+
+#: ../src/XFileImage.cpp:671 ../src/XFileImage.cpp:738
+msgid "Zoom image to 100%."
+msgstr ""
+
+#: ../src/XFileImage.cpp:675
+#, fuzzy
+msgid "Zoom to fit"
+msgstr "Gå til linje"
+
+#: ../src/XFileImage.cpp:675 ../src/XFileImage.cpp:744
+msgid "Zoom to fit window."
+msgstr ""
+
+#: ../src/XFileImage.cpp:682
+msgid "Rotate left"
+msgstr ""
+
+#: ../src/XFileImage.cpp:682
+msgid "Rotate left image."
+msgstr ""
+
+#: ../src/XFileImage.cpp:686
+msgid "Rotate right"
+msgstr ""
+
+#: ../src/XFileImage.cpp:686
+msgid "Rotate right image."
+msgstr ""
+
+#: ../src/XFileImage.cpp:690
+msgid "Mirror horizontally"
+msgstr ""
+
+#: ../src/XFileImage.cpp:690
+msgid "Mirror image horizontally."
+msgstr ""
+
+#: ../src/XFileImage.cpp:694
+msgid "Mirror vertically"
+msgstr ""
+
+#: ../src/XFileImage.cpp:694
+msgid "Mirror image vertically."
+msgstr ""
+
+#: ../src/XFileImage.cpp:707 ../src/WriteWindow.cpp:768
+#, fuzzy
+msgid "&Print..."
+msgstr "Udskriv fil"
+
+#: ../src/XFileImage.cpp:721
+#, fuzzy
+msgid "&Clear recent files"
+msgstr "&Tøm seneste filer"
+
+#: ../src/XFileImage.cpp:721
+#, fuzzy
+msgid "Clear recent file menu."
+msgstr "&Tøm seneste filer"
+
+#: ../src/XFileImage.cpp:727
+#, fuzzy
+msgid "Quit Xfi."
+msgstr "Afslutter Xfe"
+
+#. Image Menu entries
+#: ../src/XFileImage.cpp:734
+msgid "Zoom &in"
+msgstr ""
+
+#: ../src/XFileImage.cpp:735
+msgid "Zoom &out"
+msgstr ""
+
+#: ../src/XFileImage.cpp:738
+msgid "Zoo&m 100%"
+msgstr ""
+
+#: ../src/XFileImage.cpp:744
+msgid "Zoom to fit &window"
+msgstr ""
+
+#: ../src/XFileImage.cpp:750
+msgid "Rotate &right"
+msgstr ""
+
+#: ../src/XFileImage.cpp:750
+msgid "Rotate right."
+msgstr ""
+
+#: ../src/XFileImage.cpp:756
+msgid "Rotate &left"
+msgstr ""
+
+#: ../src/XFileImage.cpp:756
+msgid "Rotate left."
+msgstr ""
+
+#: ../src/XFileImage.cpp:762
+msgid "Mirror &horizontally"
+msgstr ""
+
+#: ../src/XFileImage.cpp:762
+msgid "Mirror horizontally."
+msgstr ""
+
+#: ../src/XFileImage.cpp:768
+msgid "Mirror &vertically"
+msgstr ""
+
+#: ../src/XFileImage.cpp:768
+msgid "Mirror vertically."
+msgstr ""
+
+#: ../src/XFileImage.cpp:775
+#, fuzzy
+msgid "Show hidden files and folders."
+msgstr " Mappen :"
+
+#: ../src/XFileImage.cpp:781
+#, fuzzy
+msgid "Show image thumbnails."
+msgstr "\tVis miniaturer"
+
+#: ../src/XFileImage.cpp:789
+#, fuzzy
+msgid "Display folders with big icons."
+msgstr "\tVis ikoner\tVis mappeindhold med store ikoner."
+
+#: ../src/XFileImage.cpp:795
+#, fuzzy
+msgid "Display folders with small icons."
+msgstr "\tVis liste\tVis mappeindhold med små ikoner."
+
+#: ../src/XFileImage.cpp:801
+#, fuzzy
+msgid "&Detailed file list"
+msgstr "Detaljeret filliste"
+
+#: ../src/XFileImage.cpp:801
+#, fuzzy
+msgid "Display detailed folder listing."
+msgstr "\tVis detaljer\tDetaljeret listevisning af mappeindhold."
+
+#: ../src/XFileImage.cpp:817
+#, fuzzy
+msgid "View icons row-wise."
+msgstr "Ikoner på &række\t\tVis ikoner på række."
+
+#: ../src/XFileImage.cpp:818
+#, fuzzy
+msgid "View icons column-wise."
+msgstr "Ikoner i &kolonner\t\tVis ikoner i kolonner"
+
+#: ../src/XFileImage.cpp:819
+msgid "Autosize icon names."
+msgstr ""
+
+#: ../src/XFileImage.cpp:822 ../src/WriteWindow.cpp:858
+#, fuzzy
+msgid "Display toolbar."
+msgstr "Værktøjslinjen\t\tVis værktøjslinjen"
+
+#: ../src/XFileImage.cpp:823
+#, fuzzy
+msgid "&File list"
+msgstr "Detaljeret filliste"
+
+#: ../src/XFileImage.cpp:823
+#, fuzzy
+msgid "Display file list."
+msgstr "&Filliste\t\tVis filliste."
+
+#: ../src/XFileImage.cpp:824
+#, fuzzy
+msgid "File list &before"
+msgstr "Baggrundsfarve for fillistevalg"
+
+#: ../src/XFileImage.cpp:824
+#, fuzzy
+msgid "Display file list before image window."
+msgstr "\tVis ikoner\tVis mappeindhold med store ikoner."
+
+#: ../src/XFileImage.cpp:825
+#, fuzzy
+msgid "&Filter images"
+msgstr "Fil tid"
+
+#: ../src/XFileImage.cpp:825
+#, fuzzy
+msgid "List only image files."
+msgstr "&Filliste\t\tVis filliste."
+
+#: ../src/XFileImage.cpp:826
+msgid "Fit &window when opening"
+msgstr ""
+
+#: ../src/XFileImage.cpp:826
+#, fuzzy
+msgid "Zoom to fit window when opening an image."
+msgstr ""
+"Tilpas vindue ved åbning\t\tZoom ved åbning så vinduet passer til billedet."
+
+#: ../src/XFileImage.cpp:831
+#, fuzzy
+msgid "&About X File Image"
+msgstr "Om X File Image"
+
+#: ../src/XFileImage.cpp:831
+#, fuzzy
+msgid "About X File Image."
+msgstr "Om X File Image"
+
+#: ../src/XFileImage.cpp:1333
+#, c-format
+msgid ""
+"X File Image Version %s is a simple image viewer.\n"
+"\n"
+msgstr ""
+
+#: ../src/XFileImage.cpp:1335
+msgid "About X File Image"
+msgstr "Om X File Image"
+
+#: ../src/XFileImage.cpp:1442 ../src/XFileImage.cpp:1448
+#: ../src/XFileImage.cpp:1464
+msgid "Error Loading Image"
+msgstr "Fejl under åbning af billede"
+
+#: ../src/XFileImage.cpp:1442 ../src/XFileImage.cpp:1448
+#, c-format
+msgid "Unsupported type: %s"
+msgstr "Ikke understøttet type: %s"
+
+#: ../src/XFileImage.cpp:1464
+#, fuzzy
+msgid "Unable to load image, the file may be corrupted"
+msgstr "Kan ikke åbne hele filen: %s"
+
+#: ../src/XFileImage.cpp:1504
+#, fuzzy
+msgid ""
+"Change will be taken into account after restart.\n"
+"Restart X File Image now?"
+msgstr ""
+"Tekstskrifttypen vil blive ændret efter genstart.\n"
+"Genstart X File Explorer nu?"
+
+#: ../src/XFileImage.cpp:1619
+msgid "Open Image"
+msgstr "Åbn billedfil"
+
+#: ../src/XFileImage.cpp:1648 ../src/WriteWindow.cpp:1871
+#, fuzzy
+msgid ""
+"Print command: \n"
+"(ex: lpr -P <printer>)"
+msgstr ""
+"Indtast print kommando: \n"
+"(eksempelvis: lpr -P <printer>)"
+
+#. Usage message
+#: ../src/XFileImage.cpp:2685
+msgid ""
+"\n"
+"Usage: xfi [options] [image] \n"
+"\n"
+"    [options] can be any of the following:\n"
+"\n"
+"        -h, --help         Print (this) help screen and exit.\n"
+"        -v, --version      Print version information and exit.\n"
+"\n"
+"    [image] is the path to the image file you want to open on start up.\n"
+"\n"
+msgstr ""
+"\n"
+"Brug: xfi [valg] [billede] \n"
+"\n"
+"    [valg] kan være en af følgende:\n"
+"\n"
+"        -h, --help         Vis (denne) hjælpetekst og afslut.\n"
+"        -v, --version      Vis versionsoplysninger og afslut.\n"
+"\n"
+"    [billede] er stien til billedfilen du vil åbne\n"
+"    ved opstart.\n"
+"\n"
+"\n"
+
+#. Construct
+#. Set title
+#: ../src/WriteWindow.cpp:171 ../src/WriteWindow.cpp:178
+msgid "XFileWrite Preferences"
+msgstr "Indstillinger"
+
+#. First tab - Editor
+#: ../src/WriteWindow.cpp:197
+msgid "&Editor"
+msgstr "R&edigér"
+
+#: ../src/WriteWindow.cpp:199 ../src/WriteWindow.cpp:220
+msgid "Text"
+msgstr "Tekst"
+
+#: ../src/WriteWindow.cpp:202
+msgid "Wrap margin:"
+msgstr "Ombrydningsmargen:"
+
+#: ../src/WriteWindow.cpp:207
+msgid "Tabulation size:"
+msgstr "Tabulatorstørrelse:"
+
+#: ../src/WriteWindow.cpp:212
+#, fuzzy
+msgid "Strip carriage returns:"
+msgstr "Fjern carriage returns:               "
+
+#. Second tab - Colors
+#: ../src/WriteWindow.cpp:218
+msgid "&Colors"
+msgstr "Farver"
+
+#: ../src/WriteWindow.cpp:222
+msgid "Lines"
+msgstr "Linjer"
+
+#: ../src/WriteWindow.cpp:225
+msgid "Background:"
+msgstr "Baggrund:"
+
+#: ../src/WriteWindow.cpp:228
+msgid "Text:"
+msgstr "Tekst:"
+
+#: ../src/WriteWindow.cpp:231
+msgid "Selected text background:"
+msgstr "Baggrundsfarve for valg:"
+
+#: ../src/WriteWindow.cpp:234
+msgid "Selected text:"
+msgstr "Valgt tekst:"
+
+#: ../src/WriteWindow.cpp:237
+msgid "Highlighted text background:"
+msgstr "Baggrundsfarve for valg:"
+
+#: ../src/WriteWindow.cpp:240
+msgid "Highlighted text:"
+msgstr "Baggrundsfarve for valg:"
+
+#: ../src/WriteWindow.cpp:243
+msgid "Cursor:"
+msgstr "Rammefarve:"
+
+#: ../src/WriteWindow.cpp:246
+msgid "Line numbers background:"
+msgstr "Baggrundsfarve for linjenumre:"
+
+#: ../src/WriteWindow.cpp:249
+msgid "Line numbers foreground:"
+msgstr "Forgrundsfarve for linjenumre:"
+
+#: ../src/WriteWindow.cpp:602 ../src/foxhacks.cpp:862
+msgid "&Search"
+msgstr "&Søg"
+
+#: ../src/WriteWindow.cpp:610
+msgid "&Window"
+msgstr "&Vindue"
+
+#. Caption before number
+#: ../src/WriteWindow.cpp:643
+msgid "  Lines:"
+msgstr " Linjer:"
+
+#. Caption before number
+#: ../src/WriteWindow.cpp:650
+msgid "  Col:"
+msgstr "  Kol:"
+
+#. Caption before number
+#: ../src/WriteWindow.cpp:657
+msgid "  Line:"
+msgstr "  Linje:"
+
+#: ../src/WriteWindow.cpp:661
+msgid "New"
+msgstr ""
+
+#: ../src/WriteWindow.cpp:661 ../src/WriteWindow.cpp:741
+#, fuzzy
+msgid "Create new document."
+msgstr "Opret ny mappe..."
+
+#: ../src/WriteWindow.cpp:664 ../src/WriteWindow.cpp:747
+#, fuzzy
+msgid "Open document file."
+msgstr "Åbn Dokument"
+
+#: ../src/WriteWindow.cpp:667
+#, fuzzy
+msgid "Save"
+msgstr "G&em"
+
+#: ../src/WriteWindow.cpp:667
+#, fuzzy
+msgid "Save document."
+msgstr "Gem dokument"
+
+#: ../src/WriteWindow.cpp:670
+#, fuzzy
+msgid "Close"
+msgstr "Luk"
+
+#: ../src/WriteWindow.cpp:670
+#, fuzzy
+msgid "Close document file."
+msgstr "\tLuk (Ctrl-W)\tLuk dokument. (Ctrl-W)"
+
+#: ../src/WriteWindow.cpp:677 ../src/WriteWindow.cpp:768
+#, fuzzy
+msgid "Print document."
+msgstr "Overskriv dokument"
+
+#: ../src/WriteWindow.cpp:680
+#, fuzzy
+msgid "Quit"
+msgstr "Afslut"
+
+#: ../src/WriteWindow.cpp:680 ../src/WriteWindow.cpp:788
+#, fuzzy
+msgid "Quit X File Write."
+msgstr "Om X File Write"
+
+#: ../src/WriteWindow.cpp:687 ../src/WriteWindow.cpp:810
+#, fuzzy
+msgid "Copy selection to clipboard."
+msgstr "Kopiér\tCtrl-C\tKopiér. (Ctrl-C)"
+
+#: ../src/WriteWindow.cpp:690
+#, fuzzy
+msgid "Cut"
+msgstr "Klip"
+
+#: ../src/WriteWindow.cpp:690 ../src/WriteWindow.cpp:816
+#, fuzzy
+msgid "Cut selection to clipboard."
+msgstr "Klip\tCtrl-X\tKlip. (Ctrl-X)"
+
+#: ../src/WriteWindow.cpp:693
+#, fuzzy
+msgid "Paste"
+msgstr "Sæt ind"
+
+#: ../src/WriteWindow.cpp:693
+#, fuzzy
+msgid "Paste clipboard."
+msgstr "\tSæt ind (Ctrl-V)"
+
+#: ../src/WriteWindow.cpp:700 ../src/WriteWindow.cpp:841
+#, fuzzy
+msgid "Goto line number."
+msgstr "&Gå til linje nummer:"
+
+#: ../src/WriteWindow.cpp:707
+#, fuzzy
+msgid "Undo"
+msgstr "&Fortryd"
+
+#: ../src/WriteWindow.cpp:707 ../src/WriteWindow.cpp:795
+#, fuzzy
+msgid "Undo last change."
+msgstr "&Fortryd\tCtrl-Z\tFortryd seneste ændring. (Ctrl-Z)"
+
+#: ../src/WriteWindow.cpp:710
+#, fuzzy
+msgid "Redo"
+msgstr "Omgø&r fortryd"
+
+#: ../src/WriteWindow.cpp:710 ../src/WriteWindow.cpp:801
+msgid "Redo last undo."
+msgstr ""
+
+#: ../src/WriteWindow.cpp:717
+#, fuzzy
+msgid "Search text."
+msgstr "&Søg"
+
+#: ../src/WriteWindow.cpp:720
+#, fuzzy
+msgid "Search selection backward"
+msgstr "Baggrundsfarve for valg"
+
+#: ../src/WriteWindow.cpp:720 ../src/WriteWindow.cpp:875
+msgid "Search backward for selected text."
+msgstr ""
+
+#: ../src/WriteWindow.cpp:723
+msgid "Search selection forward"
+msgstr ""
+
+#: ../src/WriteWindow.cpp:723 ../src/WriteWindow.cpp:881
+#, fuzzy
+msgid "Search forward for selected text."
+msgstr "Søg &fremad\tCtrl-G\tSøg fremad efter næste forekomst. (Ctrl-G, F3)"
+
+#: ../src/WriteWindow.cpp:730
+msgid "Word wrap on"
+msgstr ""
+
+#: ../src/WriteWindow.cpp:730
+#, fuzzy
+msgid "Set word wrap on."
+msgstr "Ombryd tekst\tCtrl-K\tTekstombrydning til. (Ctrl-K)"
+
+#: ../src/WriteWindow.cpp:730
+msgid "Word wrap off"
+msgstr ""
+
+#: ../src/WriteWindow.cpp:730
+#, fuzzy
+msgid "Set word wrap off."
+msgstr "Ombryd tekst\tCtrl-K\tTekstombrydning til. (Ctrl-K)"
+
+#: ../src/WriteWindow.cpp:733
+#, fuzzy
+msgid "Show line numbers"
+msgstr "&Gå til linje nummer:"
+
+#: ../src/WriteWindow.cpp:733
+#, fuzzy
+msgid "Show line numbers."
+msgstr "&Gå til linje nummer:"
+
+#: ../src/WriteWindow.cpp:733
+#, fuzzy
+msgid "Hide line numbers"
+msgstr "&Gå til linje nummer:"
+
+#: ../src/WriteWindow.cpp:733
+#, fuzzy
+msgid "Hide line numbers."
+msgstr "&Gå til linje nummer:"
+
+#: ../src/WriteWindow.cpp:741
+#, fuzzy
+msgid "&New"
+msgstr "Ny &fil..."
+
+#: ../src/WriteWindow.cpp:753
+#, fuzzy
+msgid "Save changes to file."
+msgstr "Gem %s i fil?"
+
+#: ../src/WriteWindow.cpp:758
+msgid "Save &As..."
+msgstr ""
+
+#: ../src/WriteWindow.cpp:758
+#, fuzzy
+msgid "Save document to another file."
+msgstr "Gem som...\t\tGem dokument i en anden fil."
+
+#: ../src/WriteWindow.cpp:761
+#, fuzzy
+msgid "Close document."
+msgstr "Ikke-gemt dokument"
+
+#: ../src/WriteWindow.cpp:782
+msgid "&Clear Recent Files"
+msgstr "&Tøm seneste filer"
+
+#: ../src/WriteWindow.cpp:795 ../src/WriteWindow.cpp:848
+msgid "&Undo"
+msgstr "&Fortryd"
+
+#: ../src/WriteWindow.cpp:801 ../src/WriteWindow.cpp:849
+msgid "&Redo"
+msgstr "Omgø&r fortryd"
+
+#: ../src/WriteWindow.cpp:806
+#, fuzzy
+msgid "Revert to &saved"
+msgstr ""
+"Rul tilbage til gemt\t\tRul ændringer tilbage til senest gemte tilstand."
+
+#: ../src/WriteWindow.cpp:806
+#, fuzzy
+msgid "Revert to saved document."
+msgstr "Gem dokument"
+
+#: ../src/WriteWindow.cpp:816 ../src/WriteWindow.cpp:852
+msgid "Cu&t"
+msgstr "Klip"
+
+#: ../src/WriteWindow.cpp:822
+#, fuzzy
+msgid "Paste from clipboard."
+msgstr "\tSæt ind (Ctrl-V)"
+
+#: ../src/WriteWindow.cpp:829
+msgid "Lo&wer-case"
+msgstr ""
+
+#: ../src/WriteWindow.cpp:829
+#, fuzzy
+msgid "Change to lower case."
+msgstr "Ændring af ejer afbrudt!"
+
+#: ../src/WriteWindow.cpp:835
+msgid "Upp&er-case"
+msgstr ""
+
+#: ../src/WriteWindow.cpp:835
+#, fuzzy
+msgid "Change to upper case."
+msgstr "Ændring af ejer afbrudt!"
+
+#: ../src/WriteWindow.cpp:841
+#, fuzzy
+msgid "&Goto line..."
+msgstr "Gå til linje"
+
+#: ../src/WriteWindow.cpp:854
+msgid "Select &All"
+msgstr "Markér &Alle"
+
+#: ../src/WriteWindow.cpp:859
+#, fuzzy
+msgid "&Status line"
+msgstr "&Statuslinje"
+
+#: ../src/WriteWindow.cpp:859
+#, fuzzy
+msgid "Display status line."
+msgstr "&Statuslinjen\t\tVis statuslinjen."
+
+#: ../src/WriteWindow.cpp:863
+#, fuzzy
+msgid "&Search..."
+msgstr "&Søg"
+
+#: ../src/WriteWindow.cpp:863
+#, fuzzy
+msgid "Search for a string."
+msgstr "Søg efter:"
+
+#: ../src/WriteWindow.cpp:869
+#, fuzzy
+msgid "&Replace..."
+msgstr "E&rstat"
+
+#: ../src/WriteWindow.cpp:869
+#, fuzzy
+msgid "Search for a string and replace with another."
+msgstr "E&rstat...\tCtrl-R\tSøg og erstat i teksten. (Ctrl-R)"
+
+#: ../src/WriteWindow.cpp:875
+msgid "Search sel. &backward"
+msgstr ""
+
+#: ../src/WriteWindow.cpp:881
+#, fuzzy
+msgid "Search sel. &forward"
+msgstr "Søg efter:"
+
+#: ../src/WriteWindow.cpp:889
+msgid "&Word wrap"
+msgstr ""
+
+#: ../src/WriteWindow.cpp:889
+#, fuzzy
+msgid "Toggle word wrap mode."
+msgstr "Ombryd tekst\tCtrl-K\tTekstombrydning til. (Ctrl-K)"
+
+#: ../src/WriteWindow.cpp:895
+#, fuzzy
+msgid "&Line numbers"
+msgstr "&Gå til linje nummer:"
+
+#: ../src/WriteWindow.cpp:895
+#, fuzzy
+msgid "Toggle line numbers mode."
+msgstr "Vis &linjenumre\tCtrl-T\tVis linjenumre. (Ctrl-T)"
+
+#: ../src/WriteWindow.cpp:900
+msgid "&Overstrike"
+msgstr ""
+
+#: ../src/WriteWindow.cpp:900
+#, fuzzy
+msgid "Toggle overstrike mode."
+msgstr "&Overskrivning\t\tSkift til overskrivnings-tilstand."
+
+#: ../src/WriteWindow.cpp:902
+#, fuzzy
+msgid "&Font..."
+msgstr "&Skrifttyper"
+
+#: ../src/WriteWindow.cpp:902
+#, fuzzy
+msgid "Change text font."
+msgstr "Vælg skrifttype"
+
+#: ../src/WriteWindow.cpp:903
+#, fuzzy
+msgid "&More preferences..."
+msgstr "Indstillinge&r"
+
+#: ../src/WriteWindow.cpp:903
+#, fuzzy
+msgid "Change other options."
+msgstr "Flere indstillinger...\t\tValg af yderligere indstillinger."
+
+#: ../src/WriteWindow.cpp:959
+#, fuzzy
+msgid "&About X File Write"
+msgstr "Om X File Write"
+
+#: ../src/WriteWindow.cpp:959
+#, fuzzy
+msgid "About X File Write."
+msgstr "Om X File Write"
+
+#: ../src/WriteWindow.cpp:1082
+#, c-format
+msgid "File is too big: %s (%d bytes)"
+msgstr "Filen er for stor: %s (%d bytes)"
+
+#: ../src/WriteWindow.cpp:1094
+#, c-format
+msgid "Unable to read file: %s"
+msgstr "Kan ikke åbne filen: %s"
+
+#: ../src/WriteWindow.cpp:1159 ../src/WriteWindow.cpp:1166
+#: ../src/WriteWindow.cpp:1177 ../src/WriteWindow.cpp:1184
+#: ../src/WriteWindow.cpp:1206
+msgid "Error Saving File"
+msgstr "Fejl under gemning af fil"
+
+#: ../src/WriteWindow.cpp:1159
+#, fuzzy, c-format
+msgid "Unable to save file: %s"
+msgstr "Kan ikke åbne filen: %s"
+
+#: ../src/WriteWindow.cpp:1166
+#, c-format
+msgid ""
+"Not enough space left on device, unable to save file: %s\n"
+"\n"
+"=> To prevent losing data, you should save this file to another device "
+"before exiting!"
+msgstr ""
+
+#: ../src/WriteWindow.cpp:1184
+#, c-format
+msgid "File is too big: %s"
+msgstr "Filen er for stor: %s"
+
+#: ../src/WriteWindow.cpp:1206
+#, c-format
+msgid "File: %s truncated."
+msgstr "Fil: %s overskrevet"
+
+#: ../src/WriteWindow.cpp:1222 ../src/XFileWrite.cpp:392
+#: ../src/XFileWrite.cpp:406
+msgid "untitled"
+msgstr "uden titel"
+
+#: ../src/WriteWindow.cpp:1230
+#, c-format
+msgid "untitled%d"
+msgstr "uden titel%d"
+
+#: ../src/WriteWindow.cpp:1477
+#, c-format
+msgid ""
+"X File Write Version %s is a simple text editor.\n"
+"\n"
+msgstr ""
+
+#: ../src/WriteWindow.cpp:1479
+msgid "About X File Write"
+msgstr "Om X File Write"
+
+#: ../src/WriteWindow.cpp:1501
+msgid "Change Font"
+msgstr "Vælg skrifttype"
+
+#: ../src/WriteWindow.cpp:1541
+msgid "Text Files"
+msgstr "Tekstfiler"
+
+#: ../src/WriteWindow.cpp:1542
+msgid "C Source Files"
+msgstr "C kildekode"
+
+#: ../src/WriteWindow.cpp:1543 ../src/WriteWindow.cpp:1544
+#: ../src/WriteWindow.cpp:1545
+msgid "C++ Source Files"
+msgstr "C++ kildekode"
+
+#: ../src/WriteWindow.cpp:1546
+msgid "C/C++ Header Files"
+msgstr "C/C++ deklarationsfiler"
+
+#: ../src/WriteWindow.cpp:1547 ../src/WriteWindow.cpp:1548
+msgid "HTML Files"
+msgstr "HTML deklarationsfiler"
+
+#: ../src/WriteWindow.cpp:1549
+msgid "PHP Files"
+msgstr "PHP filer"
+
+#: ../src/WriteWindow.cpp:1670
+msgid "Unsaved Document"
+msgstr "Ikke-gemt dokument"
+
+#: ../src/WriteWindow.cpp:1670
+#, c-format
+msgid "Save %s to file?"
+msgstr "Gem %s i fil?"
+
+#: ../src/WriteWindow.cpp:1680 ../src/WriteWindow.cpp:1742
+msgid "Save Document"
+msgstr "Gem dokument"
+
+#: ../src/WriteWindow.cpp:1690 ../src/WriteWindow.cpp:1752
+msgid "Overwrite Document"
+msgstr "Overskriv dokument"
+
+#: ../src/WriteWindow.cpp:1690 ../src/WriteWindow.cpp:1752
+#, c-format
+msgid "Overwrite existing document: %s?"
+msgstr "Overskriv eksisterende dokument: %s?"
+
+#: ../src/WriteWindow.cpp:1841
+msgid " (changed)"
+msgstr " (Ændret)"
+
+#: ../src/WriteWindow.cpp:1851
+#, fuzzy
+msgid " (read only)"
+msgstr "Skrivebeskyttet"
+
+#: ../src/WriteWindow.cpp:1962
+msgid "READ ONLY"
+msgstr ""
+
+#: ../src/WriteWindow.cpp:1967
+msgid "OVR"
+msgstr "OVR"
+
+#: ../src/WriteWindow.cpp:1967
+msgid "INS"
+msgstr "INS"
+
+#: ../src/WriteWindow.cpp:2071
+msgid "File Was Changed"
+msgstr "Filen blev Ændret"
+
+#: ../src/WriteWindow.cpp:2071
+#, c-format
+msgid ""
+"%s\n"
+"was changed by another program. Reload this file from disk?"
+msgstr ""
+"%s\n"
+"er blevet ændret af et andet program. Genindlæs filen fra disk?"
+
+#: ../src/WriteWindow.cpp:2132
+msgid "Replace"
+msgstr "Erstat"
+
+#: ../src/WriteWindow.cpp:2293
+msgid "Goto Line"
+msgstr "Gå til linje"
+
+#: ../src/WriteWindow.cpp:2293
+msgid "&Goto line number:"
+msgstr "&Gå til linje nummer:"
+
+#. Usage message
+#: ../src/XFileWrite.cpp:217
+#, fuzzy
+msgid ""
+"\n"
+"Usage: xfw [options] [file1] [file2] [file3]...\n"
+"\n"
+"    [options] can be any of the following:\n"
+"\n"
+"        -r, --read-only    Open files in read-only mode.\n"
+"        -h, --help         Print (this) help screen and exit.\n"
+"        -v, --version      Print version information and exit.\n"
+"\n"
+"    [file1] [file2] [file3]... are the path(s) to the file(s) you want to "
+"open on start up.\n"
+"\n"
+msgstr ""
+"\n"
+"Brug: xfv [valg] [fil]...\n"
+"\n"
+"    [valg] kan være en af følgende:\n"
+"\n"
+"        -h, --help         Vis (denne) hjælpetekst og afslut.\n"
+"        -v, --version      Vis versionsoplysninger og afslut.\n"
+"\n"
+"    [fil] er stien til filen du vil åbne ved opstart.\n"
+"\n"
+"\n"
+
+#: ../src/foxhacks.cpp:164
+#, fuzzy
+msgid "Root folder"
+msgstr "Kør i konsollen"
+
+#: ../src/foxhacks.cpp:779
+msgid "Ready."
+msgstr "Klar"
+
+#: ../src/foxhacks.cpp:807
+msgid "&Replace"
+msgstr "E&rstat"
+
+#: ../src/foxhacks.cpp:808
+msgid "Re&place All"
+msgstr "Erstat alle"
+
+#: ../src/foxhacks.cpp:816
+msgid "Search for:"
+msgstr "Søg efter:"
+
+#: ../src/foxhacks.cpp:828
+msgid "Replace with:"
+msgstr "Erstat med:"
+
+#: ../src/foxhacks.cpp:841
+msgid "Ex&act"
+msgstr "Eks&akt"
+
+#: ../src/foxhacks.cpp:842
+msgid "&Ignore Case"
+msgstr "&Ignorer store/små bogstaver"
+
+#: ../src/foxhacks.cpp:843
+msgid "E&xpression"
+msgstr "&Udtryk"
+
+#: ../src/foxhacks.cpp:844
+msgid "&Backward"
+msgstr "&Baglæns"
+
+#: ../src/help.h:7
+#, c-format
+msgid ""
+"\n"
+" \n"
+" \n"
+"                                   XFE, X File Explorer File Manager\n"
+" \n"
+"                                     <http://roland65.free.fr/xfe>\n"
+"                                 <http://sourceforge.net/projects/xfe>\n"
+" \n"
+" \n"
+" \n"
+"  This program is free software; you can redistribute it and/or modify it "
+"under the terms of the GNU\n"
+"  General Public License as published by the Free Software Foundation; "
+"either version 2, or (at your option)\n"
+"  any later version.\n"
+" \n"
+"  This program is distributed in the hope that it will be useful, but "
+"WITHOUT ANY WARRANTY; \n"
+"  without even the implied warranty of MERCHANTABILITY or FITNESS FOR A "
+"PARTICULAR PURPOSE. \n"
+"  See the GNU General Public License for more details.\n"
+" \n"
+" \n"
+" \n"
+"   Description\n"
+"   =-=-=-=-=-=\n"
+" \n"
+"  X File Explorer (Xfe) is a lightweight file manager for X11, written using "
+"the FOX toolkit.\n"
+"  It is desktop independent and can easily be customized.\n"
+"  It has Commander or Explorer styles and it is very fast and small.\n"
+"  Xfe is based on the popular, but discontinued X Win Commander, originally "
+"written by Maxim Baranov.\n"
+" \n"
+" \n"
+" \n"
+"   Features\n"
+"   =-=-=-=-=\n"
+" \n"
+"     - Very fast graphic user interface\n"
+"     - UTF-8 support\n"
+"     - HiDPI monitor support\n"
+"     - Commander/Explorer interface with four file manager modes : a) one "
+"panel, b) a folder tree\n"
+"       and one panel, c) two panels and d) a folder tree and two panels\n"
+"     - Horizontal or vertical file panels stacking\n"
+"     - Panels synchronization and switching\n"
+"     - Integrated text editor and viewer (X File Write, Xfw)\n"
+"     - Integrated image viewer (X File Image, Xfi)\n"
+"     - Integrated package (rpm or deb) viewer / installer / uninstaller (X "
+"File Package, Xfp)\n"
+"     - Custom shell scripts (like Nautilus scripts)\n"
+"     - Search files and directories\n"
+"     - Natural sort order (foo10.txt comes after foo2.txt...)\n"
+"     - Copy/Cut/Paste files from and to your favorite desktop (GNOME/KDE/"
+"XFCE/ROX)\n"
+"     - Drag and Drop files from and to your favorite desktop (GNOME/KDE/XFCE/"
+"ROX)\n"
+"     - Disk usage command \n"
+"     - Root mode with authentication by su or sudo\n"
+"     - Status line\n"
+"     - File associations\n"
+"     - Optional trash can for file delete operations (compliant with "
+"freedesktop.org standards)\n"
+"     - Auto save registry\n"
+"     - Double click or single click file and folder navigation\n"
+"     - Mouse right click pop-up menu in tree list and file list\n"
+"     - Change file attributes\n"
+"     - Mount/Unmount devices (Linux only)\n"
+"     - Warn when mount point are not responding (Linux only)\n"
+"     - Toolbars\n"
+"     - Bookmarks\n"
+"     - Back and forward history lists for folder navigation\n"
+"     - Color themes (GNOME, KDE, Windows...)\n"
+"     - Icon themes (Xfe, GNOME, KDE, Tango, Windows...)\n"
+"     - Control themes (Standard or Clearlooks like)\n"
+"     - Create archives (tar, compress, zip, gzip, bzip2, xz and 7zip formats "
+"are supported)\n"
+"     - File comparison (through external tool)\n"
+"     - Extract archives (tar, compress, zip, gzip, bzip2, xz, lzh, rar, ace, "
+"arj and 7zip formats are supported)\n"
+"     - Tooltips with file properties\n"
+"     - Progress bars or dialogs for lengthy file operations\n"
+"     - Thumbnails image previews\n"
+"     - Configurable key bindings\n"
+"     - Startup notification (optional)\n"
+"     - and much more...\n"
+" \n"
+" \n"
+" \n"
+"   Default Key bindings\n"
+"   =-=-=-=-=-=-=-=-=-=-=\n"
+" \n"
+"  Below are the global default key bindings. These key bindings are common "
+"to all X File applications.\n"
+" \n"
+"     * Select all                         - Ctrl-A\n"
+"     * Copy to clipboard                  - Ctrl-C\n"
+"     * Search                             - Ctrl-F\n"
+"     * Search previous                    - Ctrl-Shift-G\n"
+"     * Search next                        - Ctrl-G\n"
+"     * Go to home folder                  - Ctrl-H\n"
+"     * Invert selection                   - Ctrl-I\n"
+"     * Open file                          - Ctrl-O\n"
+"     * Print file                         - Ctrl-P\n"
+"     * Quit application                   - Ctrl-Q\n"
+"     * Paste from clipboard               - Ctrl-V\n"
+"     * Close window                       - Ctrl-W\n"
+"     * Cut to clipboard                   - Ctrl-X\n"
+"     * Deselect all                       - Ctrl-Z\n"
+"     * Display help                       - F1\n"
+"     * Create new file                    - Ctrl-N\n"
+"     * Create new folder                  - F7\n"
+"     * Big icon list                      - F10\n"
+"     * Small icon list                    - F11\n"
+"     * Detailed file list                 - F12\n"
+"     * Toggle display hidden files        - Ctrl-F6\n"
+"     * Toggle display thumbnails          - Ctrl-F7\n"
+"     * Vertical panels                    - Ctrl-Shift-F1\n"
+"     * Horizontal panels                  - Ctrl-Shift-F2\n"
+"     * Go to working folder               - Shift-F2\n"
+"     * Go to parent folder                - Backspace\n"
+"     * Go to previous folder              - Ctrl-Backspace\n"
+"     * Go to next folder                  - Shift-Backspace\n"
+" \n"
+" \n"
+"  Below are the default X File Explorer key bindings. These key bindings are "
+"specific to the Xfe application.\n"
+" \n"
+"     * Add bookmark                      - Ctrl-B\n"
+"     * Filter files                      - Ctrl-D\n"
+"     * Execute command                   - Ctrl-E\n"
+"     * Create new symbolic link          - Ctrl-J\n"
+"     * Switch panels                     - Ctrl-K\n"
+"     * Clear location bar                - Ctrl-L\n"
+"     * Mount file system (Linux only)    - Ctrl-M\n"
+"     * Rename file                       - F2\n"
+"     * Refresh panels                    - Ctrl-R\n"
+"     * Symlink files to location         - Ctrl-S\n"
+"     * Launch terminal                   - Ctrl-T\n"
+"     * Unmount file system (Linux only)  - Ctrl-U\n"
+"     * Synchronize panels                - Ctrl-Y\n"
+"     * Create new window                 - F3\n"
+"     * Edit                              - F4\n"
+"     * Copy files to location            - F5\n"
+"     * Move files to location            - F6\n"
+"     * File properties                   - F9\n"
+"     * One panel mode                    - Ctrl-F1\n"
+"     * Tree and panel mode               - Ctrl-F2\n"
+"     * Two panels mode                   - Ctrl-F3\n"
+"     * Tree and two panels mode          - Ctrl-F4\n"
+"     * Toggle display hidden folders     - Ctrl-F5\n"
+"     * Go to trash can                   - Ctrl-F8\n"
+"     * Create new root window            - Shift-F3\n"
+"     * View                              - Shift-F4\n"
+"     * Move files to trash can           - Del\n"
+"     * Restore files from trash can      - Alt-Del\n"
+"     * Delete files                      - Shift-Del\n"
+"     * Empty trash can                   - Ctrl-Del\n"
+" \n"
+" \n"
+"  Below are the default X File Image key bindings. These key bindings are "
+"specific to the Xfi application.\n"
+" \n"
+"     * Zoom to fit window                - Ctrl-F\n"
+"     * Mirror image horizontally         - Ctrl-H\n"
+"     * Zoom image to 100%                - Ctrl-I\n"
+"     * Rotate image to left              - Ctrl-L\n"
+"     * Rotate image to right             - Ctrl-R\n"
+"     * Mirror image vertically           - Ctrl-V\n"
+" \n"
+" \n"
+"  Below are the default X File Write key bindings. These key bindings are "
+"specific to the Xfw application.\n"
+" \n"
+"     * Toggle word wrap mode             - Ctrl-K\n"
+"     * Goto line                         - Ctrl-L\n"
+"     * Create new document               - Ctrl-N\n"
+"     * Replace string                    - Ctrl-R\n"
+"     * Save changes to file              - Ctrl-S\n"
+"     * Toggle line numbers mode          - Ctrl-T\n"
+"     * Toggle upper case mode            - Ctrl-Shift-U\n"
+"     * Toggle lower case mode            - Ctrl-U\n"
+"     * Redo last change                  - Ctrl-Y\n"
+"     * Undo last change                  - Ctrl-Z\n"
+" \n"
+" \n"
+"  X File Package (Xfp) only use some of the global key bindings.\n"
+" \n"
+"  Note that all the default key bindings listed above can be customized in "
+"the Xfe Preferences dialog. However,\n"
+"  some key actions are hardcoded an cannot be changed. These include:\n"
+" \n"
+"     * Ctrl-+ and Ctrl--                 - zoom in and zoom out image in "
+"Xfi\n"
+"     * Shift-F10                         - display context menus in Xfe\n"
+"     * Space                             - select an item in file list\n"
+"     * Return                            - enter folders in file lists, open "
+"files, select button actions, etc.\n"
+"     * Esc                               - close current dialog, unselect "
+"files, etc.\n"
+" \n"
+" \n"
+" \n"
+"   Drag and Drop operations\n"
+"   =-=-=-=-=-=-=-=-=-=-=-=-=\n"
+" \n"
+"  Dragging a file or group or files (by moving the mouse while maintaining "
+"the left button pressed)\n"
+"  to a folder or a file panel optionally opens a dialog that allows one to "
+"select the file operation: copy,\n"
+"  move, link or cancel.\n"
+" \n"
+" \n"
+" \n"
+"   Trash system\n"
+"   =-=-=-=-=-=-=\n"
+" \n"
+"  Starting with version 1.32, Xfe implements a trash system that is fully "
+"compliant with the freedesktop.org\n"
+"  standards.\n"
+"  This allows the user to move files to the trash can and to restore files "
+"from within Xfe or your favorite\n"
+"  desktop.\n"
+"  Note that the trash files location is now: ~/.local/share/Trash/files\n"
+" \n"
+" \n"
+" \n"
+"   Configuration\n"
+"   =-=-=-=-=-=-=\n"
+" \n"
+"  You can perform any Xfe customization (layout, file associations, key "
+"bindings, etc.) without editing any file\n"
+"  by hand. However, you may want to understand the configuration principles, "
+"because some customizations can also\n"
+"  easily be done by manually editing the configurations files.\n"
+"  Be careful to quit Xfe before manually editing any configuration file, "
+"otherwise changes could not be taken\n"
+"  into account.\n"
+" \n"
+"  The system-wide configuration file xferc is located in /usr/share/xfe, /"
+"usr/local/share/xfe\n"
+"  or /opt/local/share/xfe, in the given order of precedence.\n"
+" \n"
+"  Starting with version 1.32, the location of the local configuration files "
+"has changed. This is to be compliant\n"
+"  with the freedesktop.org standards.\n"
+"  \n"
+"  The local configuration files for Xfe, Xfw, Xfi, Xfp are now located in "
+"the ~/.config/xfe folder.\n"
+"  They are named xferc, xfwrc, xfirc and xfprc.\n"
+"  \n"
+"  At the very first Xfe run, the system-wide configuration file is copied "
+"into the local configuration file\n"
+"  ~/.config/xfe/xferc which does not exists yet. If the system-wide "
+"configuration file is not found\n"
+"  (in case of an unusal install place), a dialog asks the user to select the "
+"right place. It is thus easier to\n"
+"  customize Xfe (this is particularly true for the file associations) by "
+"hand editing because all the local options\n"
+"  are located in the same file.\n"
+" \n"
+"  Default PNG icons are located in /usr/share/xfe/icons/xfe-theme or /usr/"
+"local/share/xfe/icons/xfe-theme, depending\n"
+"  on your installation. You can easily change the icon theme path in "
+"Preferences dialog.\n"
+" \n"
+" \n"
+" \n"
+"   HiDPI support\n"
+"   =-=-=-=-=-=-=\n"
+" \n"
+"  Starting with version 1.44, Xfe supports HiDPI monitors. All users have to "
+"do is to manually adjust the screen\n"
+"  resolution using the Edit / Preferences / Appearance / DPI option. A value "
+"of 200 - 240 dpi should be fine for Ultra\n"
+"  HD (4K) monitors.\n"
+" \n"
+" \n"
+" \n"
+"   Scripts\n"
+"   =-=-=-=\n"
+" \n"
+"  Custom shell scripts can be executed from within Xfe on the files that are "
+"selected in a panel. You have to first\n"
+"  select the files you want to proceed, then right click on the file list "
+"and go to the Scripts sub menu. Last, choose\n"
+"  the script you want to apply on the selected files.\n"
+" \n"
+"  The script files must be located in the ~/.config/xfe/scripts folder and "
+"have to be executable. You can organize\n"
+"  this folder as you like by using sub-folders. You can use the Tools / Go "
+"to script folder menu item to directly go\n"
+"  to the script folder and manage it.\n"
+" \n"
+"  Here is an example of a simple shell script that list each selected file "
+"on the terminal from where Xfe was\n"
+"  launched:\n"
+" \n"
+"  #!/bin/sh\n"
+"  for arg\n"
+"  do\n"
+"  /bin/ls -la \"$arg\"\n"
+"  done\n"
+" \n"
+"  You can of course use programs like xmessage, zenity or kdialog to display "
+"a window with buttons that allows you to\n"
+"  interact with the script. Here is a modification of the above example that "
+"uses xmessage:\n"
+" \n"
+"  #!/bin/sh\n"
+"  (\n"
+"  echo  \"ls -la\"\n"
+"  for arg\n"
+"  do\n"
+"  /bin/ls -la \"$arg\"\n"
+"  done\n"
+"  ) | xmessage -file -\n"
+" \n"
+"  Most often, it is possible to directly use Nautilus scripts found on the "
+"Internet without modifications.\n"
+" \n"
+" \n"
+" \n"
+"  Search files and directories\n"
+"  =-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n"
+" \n"
+" \n"
+"  Xfe can quickly search files and directories by using find and grep "
+"command backends. This is done through the\n"
+"  Tools / Search files menu item (or by using the Ctrl-F shortcut).\n"
+" \n"
+"  In the search window, users can then specify usual search patterns like "
+"name and text, but more sophisticated search\n"
+"  options are also available (size, date, permissions, users, groups, follow "
+"symlinks and empty files). Results appear\n"
+"  in a file list and users can use the right click menu to manage their "
+"files, the same way as they do in the file\n"
+"  panels.\n"
+" \n"
+"  The search can be interrupted by clicking on the Stop button or pressing "
+"the Escape key.\n"
+" \n"
+" \n"
+" \n"
+"   Non Latin based languages\n"
+"   =-=-=-=-=-=-=-=-=-=-=-=-=\n"
+" \n"
+"  Xfe can display its user interface and also the file names in non latin "
+"character based languages, provided that you\n"
+"  have selected a Unicode font that supports your character set. To select a "
+"suitable font, use the\n"
+"  Edit / Preferences / Font menu item.\n"
+" \n"
+"  Multilingual Unicode TrueType fonts can be found at this address: http://"
+"www.slovo.info/unifonts.htm\n"
+" \n"
+" \n"
+" \n"
+"   Tips\n"
+"   =-=-=\n"
+" \n"
+"  File list\n"
+"     - Select files and right click to open a context menu on the selected "
+"files\n"
+"     - Press Ctrl + right click to open a context menu on the file panel\n"
+"     - When dragging a file/folder to a folder, hold on the mouse on the "
+"folder to open it\n"
+" \n"
+"  Tree list\n"
+"     - Select a folder and right click to open a context menu on the "
+"selected folder\n"
+"     - Press Ctrl + right click to open a context menu on the tree panel\n"
+"     - When dragging a file/folder to a folder, hold on the mouse on the "
+"folder to expand it\n"
+" \n"
+"  Copy/paste file names\n"
+"     - Select a file and press Ctrl-C to copy its name into the clipboard. "
+"Then in a dialog,press Ctrl-V to paste\n"
+"       the file name.\n"
+"     - In a file operation dialog, select a filename in the line containing "
+"the source name and paste it directly\n"
+"       to the destination using the middle button of your mouse. Then modify "
+"it to suit your needs.\n"
+" \n"
+"  Add files to the clipboard\n"
+"     - You can select files from a directory, copy them to the clipboard by "
+"pressing Ctrl-C. This erases the previous\n"
+"       clipboard content. Then, you can move to another directory, select "
+"other files and add them to the clipboard\n"
+"       content by pressing Shift-Ctrl-C. This does not erase the previous "
+"clipboard content. At last, you can move\n"
+"       to the destination and press Ctrl-V to copy all the files you have in "
+"the clipboard. Of course, this also works\n"
+"       with Ctrl-X and Shift-Ctrl-X to cut and paste the files.\n"
+" \n"
+"  Startup notification\n"
+"     - Startup notification is the process that displays a feedback (a "
+"sandbox cursor or whatever) to the user when\n"
+"       he has started an action (file copying, application launching, etc.). "
+"Depending on the system, there can be\n"
+"       some issues with startup notification. If Xfe was compiled with "
+"startup notification support, the user can\n"
+"       disable it for all applications at the global Preferences level. He "
+"can also disable it for individual\n"
+"       applications, by using the dedicated option in the first tab of the "
+"Properties dialog. This latter way is\n"
+"       only available when the file is an executable. Disabling startup "
+"notification can be useful when starting\n"
+"       an old application that doesn't support the startup notification "
+"protocol (e.g. Xterm).\n"
+" \n"
+"   Root mode\n"
+"     - If you use the sudo root mode, it can be useful to add password "
+"feedback to the sudo command. For this purpose,\n"
+"       edit your sudoers file like this:\n"
+"           sudo visudo -f /etc/suoders\n"
+"       and then add 'pwfeedback' to the default options, as shown below:\n"
+"           Defaults         env_reset,pwfeedback\n"
+"       After that, you should see stars (like *****) when you type your "
+"password in the small authentication window.\n"
+" \n"
+" \n"
+" \n"
+"   Bugs\n"
+"   =-=-=\n"
+" \n"
+"  Please report any found bug to Roland Baudin <roland65@free.fr>. Don't "
+"forget to mention the Xfe version you use,\n"
+"  the FOX library version and your system name and version.\n"
+" \n"
+" \n"
+" \n"
+"   Translations\n"
+"   =-=-=-=-=-=-=\n"
+"  \n"
+"  Xfe is now available in 24 languages but some translations are only "
+"partial. To translate Xfe to your language,\n"
+"  open the Xfe.pot file located in the po folder of the source tree with a "
+"software like poedit, kbabel\n"
+"  or gtranslator and fill it with your translated strings (be careful to the "
+"hotkeys and c-format characters),\n"
+"  and then send it back to me. I'll be pleased to integrate your work in the "
+"next Xfe release.\n"
+" \n"
+" \n"
+" \n"
+"   Patches\n"
+"   =-=-=-=\n"
+" \n"
+"  If you have coded some interesting patch, please send it to me, I will try "
+"to include it in the next release...\n"
+" \n"
+" \n"
+"  Many thanks to Maxim Baranov for his excellent X Win Commander and to all "
+"people that have provided useful\n"
+"  patches, translations, tests and advices.\n"
+" \n"
+"  [Last revision: 19/06/2019]\n"
+" \n"
+"  "
+msgstr ""
+
+#. First tab is global key bindings
+#: ../src/Keybindings.cpp:87
+msgid "&Global Key Bindings"
+msgstr ""
+
+#: ../src/Keybindings.cpp:89
+msgid ""
+"These key bindings are common to all Xfe applications.\n"
+"Double click on an item to modify the selected key binding..."
+msgstr ""
+
+#. Second tab is Xfe key bindings
+#: ../src/Keybindings.cpp:93
+msgid "Xf&e Key Bindings"
+msgstr ""
+
+#: ../src/Keybindings.cpp:95
+msgid ""
+"These key bindings are specific to the X File Explorer application.\n"
+"Double click on an item to modify the selected key binding..."
+msgstr ""
+
+#. Third tab is Xfi key bindings
+#: ../src/Keybindings.cpp:99
+msgid "Xf&i Key Bindings"
+msgstr ""
+
+#: ../src/Keybindings.cpp:101
+msgid ""
+"These key bindings are specific to the X File Image application.\n"
+"Double click on an item to modify the selected key binding..."
+msgstr ""
+
+#. Fourth tab is Xfw key bindings
+#: ../src/Keybindings.cpp:105
+msgid "Xf&w Key Bindings"
+msgstr ""
+
+#: ../src/Keybindings.cpp:107
+msgid ""
+"These key bindings are specific to the X File Write application.\n"
+"Double click on an item to modify the selected key binding..."
+msgstr ""
+
+#: ../src/Keybindings.cpp:114 ../src/Keybindings.cpp:118
+#: ../src/Keybindings.cpp:122 ../src/Keybindings.cpp:126
+msgid "Action Name"
+msgstr ""
+
+#: ../src/Keybindings.cpp:115 ../src/Keybindings.cpp:119
+#: ../src/Keybindings.cpp:123 ../src/Keybindings.cpp:127
+msgid "Registry Key"
+msgstr ""
+
+#: ../src/Keybindings.cpp:116 ../src/Keybindings.cpp:120
+#: ../src/Keybindings.cpp:124 ../src/Keybindings.cpp:128
+msgid "Key Binding"
+msgstr ""
+
+#: ../src/Keybindings.cpp:856 ../src/Keybindings.cpp:1000
+#: ../src/Keybindings.cpp:1108 ../src/Keybindings.cpp:1216
+#, c-format
+msgid "Press the combination of keys you want to use for the action: %s"
+msgstr ""
+
+#: ../src/Keybindings.cpp:857 ../src/Keybindings.cpp:1001
+#: ../src/Keybindings.cpp:1109 ../src/Keybindings.cpp:1217
+msgid "[Press space to disable the key binding for this action]"
+msgstr ""
+
+#: ../src/Keybindings.cpp:858 ../src/Keybindings.cpp:1002
+#: ../src/Keybindings.cpp:1110 ../src/Keybindings.cpp:1218
+msgid "Modify Key Binding"
+msgstr ""
+
+#: ../src/Keybindings.cpp:887 ../src/Keybindings.cpp:1031
+#: ../src/Keybindings.cpp:1139 ../src/Keybindings.cpp:1247
+#, c-format
+msgid ""
+"The key binding %s is already used in the global section.\n"
+"You should erase the existing key binding before assigning it again."
+msgstr ""
+
+#: ../src/Keybindings.cpp:905 ../src/Keybindings.cpp:1049
+#, c-format
+msgid ""
+"The key binding %s is already used in the Xfe section.\n"
+"You should erase the existing key binding before assigning it again."
+msgstr ""
+
+#: ../src/Keybindings.cpp:923 ../src/Keybindings.cpp:1157
+#, c-format
+msgid ""
+"The key binding %s is already used in the Xfi section.\n"
+"You should erase the existing key binding before assigning it again."
+msgstr ""
+
+#: ../src/Keybindings.cpp:941 ../src/Keybindings.cpp:1265
+#, c-format
+msgid ""
+"The key binding %s is already used in the Xfw section.\n"
+"You should erase the existing key binding before assigning it again."
+msgstr ""
+
+#: ../src/startupnotification.cpp:81 ../src/startupnotification.cpp:133
+#: ../src/startupnotification.cpp:200 ../src/startupnotification.cpp:228
+#: ../src/startupnotification.cpp:257
+#, fuzzy, c-format
+msgid "Error: Can't enter folder %s: %s"
+msgstr "Kan ikke slette mappen "
+
+#: ../src/startupnotification.cpp:85 ../src/startupnotification.cpp:137
+#: ../src/startupnotification.cpp:204 ../src/startupnotification.cpp:232
+#: ../src/startupnotification.cpp:261
+#, fuzzy, c-format
+msgid "Error: Can't enter folder %s"
+msgstr "Kan ikke slette mappen "
+
+#: ../src/startupnotification.cpp:126
+#, fuzzy, c-format
+msgid "Error: Can't open display\n"
+msgstr " Mappen :"
+
+#: ../src/startupnotification.cpp:145
+#, c-format
+msgid "Start of %s"
+msgstr ""
+
+#: ../src/startupnotification.cpp:185 ../src/startupnotification.cpp:243
+#, fuzzy, c-format
+msgid "Error: Can't execute command %s"
+msgstr "Kør kommando"
+
+#: ../src/xfeutils.cpp:829 ../src/xfeutils.cpp:917
+#, fuzzy, c-format
+msgid "Error: Can't close folder %s\n"
+msgstr "Kan ikke slette mappen %s\n"
+
+#: ../src/xfeutils.cpp:936
+msgid "bytes"
+msgstr "bytes"
+
+#: ../src/xfeutils.cpp:940
+msgid "GB"
+msgstr "GB"
+
+#: ../src/xfeutils.cpp:946
+msgid "MB"
+msgstr "MB"
+
+#: ../src/xfeutils.cpp:1100
+#, fuzzy
+msgid "copy"
+msgstr "Kopiér fil"
+
+#: ../src/xfeutils.cpp:1413
+#, fuzzy, c-format
+msgid "Error: Can't read group list: %s"
+msgstr "Kan ikke slette mappen "
+
+#: ../src/xfeutils.cpp:1417
+#, fuzzy, c-format
+msgid "Error: Can't read group list"
+msgstr " Mappen :"
+
+#: ../xfe.desktop.in.h:1
+msgid "Xfe"
+msgstr ""
+
+#: ../xfe.desktop.in.h:2
+#, fuzzy
+msgid "File Manager"
+msgstr "Ejer"
+
+#: ../xfe.desktop.in.h:3
+msgid "A lightweight file manager for X Window"
+msgstr ""
+
+#: ../xfi.desktop.in.h:1
+msgid "Xfi"
+msgstr ""
+
+#: ../xfi.desktop.in.h:2
+#, fuzzy
+msgid "Image Viewer"
+msgstr "Standard billedviser :"
+
+#: ../xfi.desktop.in.h:3
+msgid "A simple image viewer for Xfe"
+msgstr ""
+
+#: ../xfw.desktop.in.h:1
+msgid "Xfw"
+msgstr ""
+
+#: ../xfw.desktop.in.h:2
+#, fuzzy
+msgid "Text Editor"
+msgstr "Standard tekstredigering :"
+
+#: ../xfw.desktop.in.h:3
+msgid "A simple text editor for Xfe"
+msgstr ""
+
+#: ../xfp.desktop.in.h:1
+msgid "Xfp"
+msgstr ""
+
+#: ../xfp.desktop.in.h:2
+#, fuzzy
+msgid "Package Manager"
+msgstr "Pakke forespørgsel "
+
+#: ../xfp.desktop.in.h:3
+#, fuzzy
+msgid "A simple package manager for Xfe"
+msgstr "Kunne ikke finde et program til at håndtere pakken (rpm eller dpkg)!"
+
+#~ msgid "&Themes"
+#~ msgstr "&Temaer"
+
+#, fuzzy
+#~ msgid "Never execute text files"
+#~ msgstr "Bekræft sletning"
+
+#~ msgid "KB"
+#~ msgstr "KB"
+
+#, fuzzy
+#~ msgid ""
+#~ "Scrolling mode will be changed after restart.\n"
+#~ "Restart X File Explorer now?"
+#~ msgstr ""
+#~ "Farverne vil blive ændret efter genstart.\n"
+#~ "Genstart X File Explorer nu?"
+
+#, fuzzy
+#~ msgid ""
+#~ "Path linker will be changed after restart.\n"
+#~ "Restart X File Explorer now?"
+#~ msgstr ""
+#~ "Tekstskrifttypen vil blive ændret efter genstart.\n"
+#~ "Genstart X File Explorer nu?"
+
+#, fuzzy
+#~ msgid ""
+#~ "Button style will be changed after restart.\n"
+#~ "Restart X File Explorer now?"
+#~ msgstr ""
+#~ "Tekstskrifttypen vil blive ændret efter genstart.\n"
+#~ "Genstart X File Explorer nu?"
+
+#~ msgid ""
+#~ "Normal font will be changed after restart.\n"
+#~ "Restart X File Explorer now?"
+#~ msgstr ""
+#~ "Normal font vil blive ændret efter genstart.\n"
+#~ "Genstart X File Explorer nu?"
+
+#~ msgid ""
+#~ "Text font will be changed after restart.\n"
+#~ "Restart X File Explorer now?"
+#~ msgstr ""
+#~ "Tekstskrifttypen vil blive ændret efter genstart.\n"
+#~ "Genstart X File Explorer nu?"
+
+#, fuzzy
+#~ msgid "!!!!!An error has occurred!"
+#~ msgstr "Der opstod en fejl under flytningen!"
+
+#, fuzzy
+#~ msgid "Set focus to panel"
+#~ msgstr "\tVis to paneler (Ctrl-F3)"
+
+#, fuzzy
+#~ msgid "Folder Usage"
+#~ msgstr "Mappe "
+
+#, fuzzy
+#~ msgid "Folder &Usage"
+#~ msgstr "Mappe "
+
+#, fuzzy
+#~ msgid "Confirm Properties"
+#~ msgstr "Bekræft overskrivning"
+
+#~ msgid "P&roperties..."
+#~ msgstr "Egenskaber..."
+
+#, fuzzy
+#~ msgid "&Properties..."
+#~ msgstr "Egenskaber..."
+
+#, fuzzy
+#~ msgid "&About X File Write..."
+#~ msgstr "Om X File Write"
+
+#, fuzzy
+#~ msgid "Can 't enter folder %s: %s"
+#~ msgstr "Kan ikke slette mappen "
+
+#, fuzzy
+#~ msgid "Can't enter folder %s : %s"
+#~ msgstr "Kan ikke slette mappen "
+
+#, fuzzy
+#~ msgid "Can't create trash can 'files' folder %s : %s"
+#~ msgstr "Kan ikke overskrive mappen %s. Den er ikke tom"
+
+#, fuzzy
+#~ msgid "Can 't execute command %s"
+#~ msgstr "Kør kommando"
+
+#, fuzzy
+#~ msgid "Can 't enter folder %s"
+#~ msgstr "Kan ikke slette mappen "
+
+#, fuzzy
+#~ msgid "Can 't create trash can 'files ' folder %s"
+#~ msgstr "Kan ikke overskrive mappen %s. Den er ikke tom"
+
+#, fuzzy
+#~ msgid "Can't create trash can 'info' folder %s : %s"
+#~ msgstr "Kan ikke overskrive mappen %s. Den er ikke tom"
+
+#, fuzzy
+#~ msgid "Can 't create trash can 'info ' folder %s"
+#~ msgstr "Kan ikke overskrive mappen %s. Den er ikke tom"
+
+#, fuzzy
+#~ msgid "Delete: "
+#~ msgstr "Slet : "
+
+#, fuzzy
+#~ msgid "File: "
+#~ msgstr "Fil : "
+
+#, fuzzy
+#~ msgid "About X File Explorer "
+#~ msgstr "Om X File Explorer"
+
+#, fuzzy
+#~ msgid "&Right panel "
+#~ msgstr "Høj&re panel"
+
+#, fuzzy
+#~ msgid "&Left panel "
+#~ msgstr "Venstre pane&l"
+
+#, fuzzy
+#~ msgid "Error "
+#~ msgstr "Fejl"
+
+#, fuzzy
+#~ msgid "Can't enter folder %s "
+#~ msgstr "Kan ikke slette mappen "
+
+#, fuzzy
+#~ msgid "Execute command "
+#~ msgstr "Kør kommando"
+
+#, fuzzy
+#~ msgid "Command log "
+#~ msgstr "Kommando log"
+
+#, fuzzy
+#~ msgid "Can't create trash can 'files' folder %s : %s "
+#~ msgstr "Kan ikke overskrive mappen %s. Den er ikke tom"
+
+#~ msgid "Non-existing file: %s"
+#~ msgstr "Filen findes ikke: %s"
+
+#, fuzzy
+#~ msgid "2Can't rename to target %s: %s"
+#~ msgstr "Kan ikke omdøbe til målet %s"
+
+#, fuzzy
+#~ msgid "Mouse scrolling"
+#~ msgstr "Hastighed for bladring med mus"
+
+#~ msgid "Mouse"
+#~ msgstr "Mus"
+
+#, fuzzy
+#~ msgid "Source size: %s - Modified date: %s"
+#~ msgstr "Sidst ændret"
+
+#, fuzzy
+#~ msgid "Target size: %s - Modified date: %s"
+#~ msgstr "Sidst ændret"
+
+#, fuzzy
+#~ msgid "Error: Failed to load %s icon. Please check your icon path...\n"
+#~ msgstr "Kunne ikke åbne ikonfiler. Kontrolllér venligst ikon stien!"
+
+#, fuzzy
+#~ msgid "Move to previous folder."
+#~ msgstr "\tTilbage\tGå en mappe tilbage."
+
+#, fuzzy
+#~ msgid "Move to next folder."
+#~ msgstr "\tFrem\tGå en mappe frem."
+
+#, fuzzy
+#~ msgid "Go up one folder"
+#~ msgstr "Montér mappen :"
+
+#, fuzzy
+#~ msgid "Move up to higher folder."
+#~ msgstr "\tGå til mappen over\tGå et mappenivå op."
+
+#, fuzzy
+#~ msgid "Back to home folder."
+#~ msgstr "\tGå til hjemmemappen\tTilbage til hjemmemappen."
+
+#, fuzzy
+#~ msgid "Back to working folder."
+#~ msgstr "\tGå til arbejdsmappen\tTilbage til arbejdsmappen."
+
+#, fuzzy
+#~ msgid "Show icons"
+#~ msgstr "Vis filer :"
+
+#, fuzzy
+#~ msgid "Show list"
+#~ msgstr "Vis filer :"
+
+#, fuzzy
+#~ msgid "Display folder with small icons."
+#~ msgstr "\tVis liste\tVis mappeindhold med små ikoner."
+
+#, fuzzy
+#~ msgid "Show details"
+#~ msgstr "\tVis miniaturer"
+
+#~ msgid ""
+#~ "\n"
+#~ "Usage: xfv [options] [file1] [file2] [file3]...\n"
+#~ "\n"
+#~ "    [options] can be any of the following:\n"
+#~ "\n"
+#~ "        -h, --help         Print (this) help screen and exit.\n"
+#~ "        -v, --version      Print version information and exit.\n"
+#~ "\n"
+#~ "    [file1] [file2] [file3]... are the path(s) to the file(s) you want to "
+#~ "open on start up.\n"
+#~ "\n"
+#~ msgstr ""
+#~ "\n"
+#~ "Brug: xfv [valg] [fil]... \n"
+#~ "\n"
+#~ "    [valg] kan være en af følgende:\n"
+#~ "\n"
+#~ "        -h, --help         Vis (denne) hjælpetekst og afslut.\n"
+#~ "        -v, --version      Vis versionsoplysninger og afslut.\n"
+#~ "\n"
+#~ "    [fil] er stien til filen du vil åbne\n"
+#~ "    ved opstart.\n"
+#~ "\n"
+#~ "\n"
+
+#~ msgid "Col:"
+#~ msgstr "Kol:"
+
+#~ msgid "Line:"
+#~ msgstr "Linje:"
+
+#, fuzzy
+#~ msgid "Open document."
+#~ msgstr "Åbn Dokument"
+
+#, fuzzy
+#~ msgid "Quit Xfv."
+#~ msgstr "Afslutter Xfe"
+
+#~ msgid "Find"
+#~ msgstr "Find"
+
+#, fuzzy
+#~ msgid "Find string again."
+#~ msgstr ""
+#~ "\tFind en tekststreng (Ctrl-F)\tFind en tekststreng i dokumentet. (Ctrl-F)"
+
+#, fuzzy
+#~ msgid "&Find..."
+#~ msgstr "&Find"
+
+#, fuzzy
+#~ msgid "Find a string in a document."
+#~ msgstr ""
+#~ "\tFind en tekststreng (Ctrl-F)\tFind en tekststreng i dokumentet. (Ctrl-F)"
+
+#, fuzzy
+#~ msgid "Display status bar."
+#~ msgstr "&Statuslinjen\t\tVis eller skjul statuslinjen."
+
+#, fuzzy
+#~ msgid "&About X File View"
+#~ msgstr "Om X File View"
+
+#, fuzzy
+#~ msgid "About X File View."
+#~ msgstr "Om X File View"
+
+#~ msgid "About X File View"
+#~ msgstr "Om X File View"
+
+#~ msgid "Error Reading File"
+#~ msgstr "Fejl under læsning af fil"
+
+#~ msgid "Unable to load entire file: %s"
+#~ msgstr "Kan ikke åbne hele filen: %s"
+
+#~ msgid "&Find"
+#~ msgstr "&Find"
+
+#~ msgid "Not Found"
+#~ msgstr "Ikke fundet"
+
+#~ msgid "String '%s' not found"
+#~ msgstr "Strengen '%s' blev ikke fundet"
+
+#, fuzzy
+#~ msgid "Text Viewer"
+#~ msgstr "Standard tekstviser :"
+
+#, fuzzy
+#~ msgid "Destination %s is identical to source!!"
+#~ msgstr "Kilden %s er identisk med målet"
+
+#, fuzzy
+#~ msgid "Destination %s is identical to source3"
+#~ msgstr "Kilden %s er identisk med målet"
+
+#, fuzzy
+#~ msgid "Destination %s is identical to source4"
+#~ msgstr "Kilden %s er identisk med målet"
+
+#, fuzzy
+#~ msgid "Destination %s is identical to source5"
+#~ msgstr "Kilden %s er identisk med målet"
+
+#, fuzzy
+#~ msgid "Destination %s is identical to source6"
+#~ msgstr "Kilden %s er identisk med målet"
+
+#, fuzzy
+#~ msgid "Destination %s is identical to source7"
+#~ msgstr "Kilden %s er identisk med målet"
+
+#, fuzzy
+#~ msgid "Ignore case"
+#~ msgstr "I&gnorer store/små bogstaver"
+
+#, fuzzy
+#~ msgid "In directory:"
+#~ msgstr " Mappen :"
+
+#, fuzzy
+#~ msgid "\tIn directory..."
+#~ msgstr " Mappen :"
+
+#, fuzzy
+#~ msgid "Re&store from trash"
+#~ msgstr "Tøm papirkurven"
+
+#, fuzzy
+#~ msgid "File size at least:"
+#~ msgstr "Skjulte mapper"
+
+#, fuzzy
+#~ msgid "File size at most:"
+#~ msgstr "&Filtilknytninger"
+
+#, fuzzy
+#~ msgid " Items"
+#~ msgstr " Elementer"
+
+#, fuzzy
+#~ msgid "Search results - "
+#~ msgstr "Find ikoner i"
+
+#, fuzzy
+#~ msgid "\tBig icon list\tDisplay folder with big icons."
+#~ msgstr "\tVis ikoner\tVis mappeindhold med store ikoner."
+
+#, fuzzy
+#~ msgid "\tSmall icon list\tDisplay folder with small icons."
+#~ msgstr "\tVis liste\tVis mappeindhold med små ikoner."
+
+#, fuzzy
+#~ msgid "\tDetailed list\tDisplay detailed folder listing."
+#~ msgstr "\tVis detaljer\tDetaljeret listevisning af mappeindhold."
+
+#, fuzzy
+#~ msgid "\tShow thumbnails (Ctrl-F7)"
+#~ msgstr "\tVis miniaturer"
+
+#, fuzzy
+#~ msgid "\tHide thumbnails (Ctrl-F7)"
+#~ msgstr "\tSkjul miniaturer"
+
+#, fuzzy
+#~ msgid "\tCopy selected files to clipboard (Ctrl-C)"
+#~ msgstr "\tKopiér (Ctrl-C, F5)"
+
+#, fuzzy
+#~ msgid "\tCut selected files to clipboard (Ctrl-X)"
+#~ msgstr "\tKlip (Ctrl-X)"
+
+#, fuzzy
+#~ msgid "\tShow properties of selected files (F9)"
+#~ msgstr "\tVis egenskaber for markerede filer (F9)"
+
+#, fuzzy
+#~ msgid "\tMove selected files to trash can (Del, F8)"
+#~ msgstr "\tSmid markerede filer i papirkurven (Del, F8)"
+
+#, fuzzy
+#~ msgid "\tDelete selected files (Shift-Del)"
+#~ msgstr "\tSlet markerede filer (Shift-Del)"
+
+#, fuzzy
+#~ msgid "Show hidden files and directories"
+#~ msgstr " Mappen :"
+
+#, fuzzy
+#~ msgid "Search files..."
+#~ msgstr " Vælg..."
+
+#~ msgid "Dir&ectories first"
+#~ msgstr "Mapper først"
+
+#~ msgid "&Directories first"
+#~ msgstr "Mapper først"
+
+#, fuzzy
+#~ msgid "Error: Can't enter directory %s: %s"
+#~ msgstr "Kan ikke slette mappen "
+
+#, fuzzy
+#~ msgid "Error: Can't enter directory %s"
+#~ msgstr " Mappen :"
+
+#, fuzzy
+#~ msgid "Go to working directory"
+#~ msgstr " Mappen :"
+
+#, fuzzy
+#~ msgid "Go to previous directory"
+#~ msgstr "\tTilbage\tGå en mappe tilbage."
+
+#, fuzzy
+#~ msgid "Go to next directory"
+#~ msgstr " Mappen :"
+
+#, fuzzy
+#~ msgid "Can't enter directory %s: %s"
+#~ msgstr "Kan ikke slette mappen "
+
+#, fuzzy
+#~ msgid "Can't enter directory %s"
+#~ msgstr " Mappen :"
+
+#, fuzzy
+#~ msgid "Directory name"
+#~ msgstr "Mapper"
+
+#~ msgid "Single click directory open"
+#~ msgstr "Mappeåbning ved enkeltklik"
+
+#~ msgid "Confirm quit"
+#~ msgstr "Bekræft afslutning"
+
+#~ msgid "Quitting Xfe"
+#~ msgstr "Afslutter Xfe"
+
+#, fuzzy
+#~ msgid "Display toolbar"
+#~ msgstr "&Værktøjslinje\t\tVis værktøjslinjen"
+
+#, fuzzy
+#~ msgid "Display or hide toolbar."
+#~ msgstr "Værk&tøjslinje\t\tVis eller skjul værktøjslinjen."
+
+#, fuzzy
+#~ msgid "Move the selected item to trash can?"
+#~ msgstr "\tSmid markerede filer i papirkurven (Del, F8)"
+
+#, fuzzy
+#~ msgid "Definitively delete the selected item?"
+#~ msgstr "  Slet markerede elementer ?  "
+
+#, fuzzy
+#~ msgid "&Execute"
+#~ msgstr "Kør"
+
+#, fuzzy
+#~ msgid "Warn if preserve date failed when copying"
+#~ msgstr "Kan ikke overskrive mappen %s. Den er ikke tom"
+
+#, fuzzy
+#~ msgid "Source path %s is included into target path"
+#~ msgstr "Kilden %s er identisk med målet"
+
+#, fuzzy
+#~ msgid "1An error has occurred during the copy file operation!"
+#~ msgstr "Der opstod en fejl under kopieringen!"
+
+#, fuzzy
+#~ msgid "File list: Unknown package format"
+#~ msgstr "Filliste : Ukendt pakkeformat"
+
+#, fuzzy
+#~ msgid "Description: Unknown package format"
+#~ msgstr "Beskrivelse : Ukendt pakkeformat"
+
+#, fuzzy
+#~ msgid ""
+#~ "An error has occurred! \n"
+#~ "Please check that the xfvt program is in your path."
+#~ msgstr ""
+#~ "Der opstod en fejl! \n"
+#~ "Bemærk venligst at der kræves en fungerende xterm for at kunne bruge root "
+#~ "tilstand."
+
+#, fuzzy
+#~ msgid ""
+#~ "An error has occurred! \n"
+#~ "Please note that the root mode requires the selection of a valid terminal "
+#~ "program in the Preferences menu."
+#~ msgstr ""
+#~ "Der opstod en fejl! \n"
+#~ "Bemærk venligst at der kræves en fungerende xterm for at kunne bruge root "
+#~ "tilstand."
+
+#, fuzzy
+#~ msgid ""
+#~ "An error has occurred! \n"
+#~ "Please note that the root mode requires a working terminal installed on "
+#~ "your system."
+#~ msgstr ""
+#~ "Der opstod en fejl! \n"
+#~ "Bemærk venligst at der kræves en fungerende xterm for at kunne bruge root "
+#~ "tilstand."
+
+#, fuzzy
+#~ msgid "Folder %s is not empty, move it anyway to trash can?"
+#~ msgstr " er skrivebeskyttet, slet aligevel?"
+
+#, fuzzy
+#~ msgid "Confirm delete/restore"
+#~ msgstr "Bekræft sletning"
+
+#, fuzzy
+#~ msgid "Copy  %s items from: %s"
+#~ msgstr ""
+#~ " filer/mapper.\n"
+#~ "Fra: "
+
+#, fuzzy
+#~ msgid "Can't create trash can files folder %s: %s"
+#~ msgstr "Kan ikke overskrive mappen %s. Den er ikke tom"
+
+#, fuzzy
+#~ msgid "Can't create trash can files folder %s"
+#~ msgstr "Kan ikke overskrive mappen %s. Den er ikke tom"
+
+#, fuzzy
+#~ msgid "Can't create trash can info folder %s: %s"
+#~ msgstr "Kan ikke overskrive mappen %s. Den er ikke tom"
+
+#, fuzzy
+#~ msgid "Can't create trash can info folder %s"
+#~ msgstr "Kan ikke overskrive mappen %s. Den er ikke tom"
+
+#~ msgid "Move folder "
+#~ msgstr "Flyt mappen "
+
+#~ msgid "File "
+#~ msgstr "Fil "
+
+#~ msgid "Can't copy folder "
+#~ msgstr "Kan ikke kopiere mappen "
+
+#, fuzzy
+#~ msgid ": Permission denied"
+#~ msgstr ": Adgang nægtet"
+
+#~ msgid "Can't copy file "
+#~ msgstr "Kan ikke kopiere filen "
+
+#, fuzzy
+#~ msgid "Installing package: "
+#~ msgstr "Installerer pakke : "
+
+#, fuzzy
+#~ msgid "Uninstalling package: "
+#~ msgstr "Afinstallér pakke : "
+
+#, fuzzy
+#~ msgid " items from: "
+#~ msgstr ""
+#~ " filer/mapper.\n"
+#~ "Fra: "
+
+#, fuzzy
+#~ msgid "  Move "
+#~ msgstr "Flyt "
+
+#, fuzzy
+#~ msgid " selected items to trash can?  "
+#~ msgstr "\tSmid markerede filer i papirkurven (Del, F8)"
+
+#, fuzzy
+#~ msgid "  Definitely delete "
+#~ msgstr "Slet mappen permanent: "
+
+#, fuzzy
+#~ msgid " selected items?  "
+#~ msgstr " markerede filer"
+
+#, fuzzy
+#~ msgid " is not empty, delete it anyway?"
+#~ msgstr " er skrivebeskyttet, slet aligevel?"
+
+#, fuzzy
+#~ msgid "X File Package Version "
+#~ msgstr "X File Image Version "
+
+#~ msgid "X File Image Version "
+#~ msgstr "X File Image Version "
+
+#~ msgid "X File Write Version "
+#~ msgstr "X File Write Version "
+
+#~ msgid "X File View Version "
+#~ msgstr "X File View Version "
+
+#, fuzzy
+#~ msgid "Restore folder "
+#~ msgstr "Flyt mappen "
+
+#, fuzzy
+#~ msgid " selected items from trash can?  "
+#~ msgstr "\tSmid markerede filer i papirkurven (Del, F8)"
+
+#, fuzzy
+#~ msgid "Go up"
+#~ msgstr "Gruppe"
+
+#, fuzzy
+#~ msgid "Go home"
+#~ msgstr "Gå til &hjemmemappen\tCtrl-H"
+
+#, fuzzy
+#~ msgid "Full file list"
+#~ msgstr "Detaljeret filliste"
+
+#, fuzzy
+#~ msgid "Execute a command"
+#~ msgstr "Kør kommando"
+
+#, fuzzy
+#~ msgid "Add a bookmark"
+#~ msgstr "Tilføj til bogmærker\tCtrl-B"
+
+#, fuzzy
+#~ msgid "Panel refresh"
+#~ msgstr "\tOpdatér (Ctrl-R)"
+
+#, fuzzy
+#~ msgid "Terminal"
+#~ msgstr "&Terminal"
+
+#~ msgid "Folder is already in the trash can! Definitively delete folder "
+#~ msgstr "Mappen findes allerede i papirkurven! Slet mappen permanent "
+
+#~ msgid "File is already in the trash can! Definitively delete file "
+#~ msgstr "Filen findes allerede i papirkurven! Slet filen permanent "
+
+#, fuzzy
+#~ msgid "Deleted from"
+#~ msgstr "Slet : "
+
+#, fuzzy
+#~ msgid "Deleted from: "
+#~ msgstr "Slet mappe : "

@@ -1,0 +1,6412 @@
+# translation of tr.po to Türkçe
+# translation of de.po to Türkçe
+# Xfe - X File Explorer, a file manager for X
+# Copyright (C) 2002-2003 Roland Baudin
+# This file is distributed under the same license as the xfe package.
+# Bastian Kleineidam <calvin@users.sf.net>, 2003
+# erkaN <erkaN@linux-sevenler.de>, 2003
+# Yaşar Çiv <yasarciv67@gmail.com>, 2019
+msgid ""
+msgstr ""
+"Project-Id-Version: Xfe 0.54.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-03-14 10:23+0100\n"
+"PO-Revision-Date: 2019-09-03 08:35+0200\n"
+"Last-Translator: Yaşar Çiv <yasarciv67@gmail.com>\n"
+"Language-Team: Türkçe <tr@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: KBabel 1.0\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Language: tr_TR\n"
+"X-Source-Language: C\n"
+
+#. Usage message
+#: ../src/main.cpp:333
+msgid ""
+"\n"
+"Usage: xfe [options...] [FOLDER|FILE...]\n"
+"\n"
+"    [options...] are the following:\n"
+"\n"
+"        -h,   --help         Print (this) help screen and exit.\n"
+"        -v,   --version      Print version information and exit.\n"
+"        -i,   --iconic       Start iconified.\n"
+"        -m,   --maximized    Start maximized.\n"
+"        -p n, --panel n      Force panel view mode to n (n=0 => Tree and one "
+"panel,\n"
+"                             n=1 => One panel, n=2 => Two panels, n=3 => "
+"Tree and two panels).\n"
+"\n"
+"    [FOLDER|FILE...] is a list of folders or files to open on startup.\n"
+"    The first two folders are displayed in the file panels, the others are "
+"ignored.\n"
+"    The number of files to open is not limited.\n"
+"\n"
+msgstr ""
+"\n"
+"Kullanım: xfe [seçenek...] [DİZİN|DOSYA...]\n"
+"\n"
+"    [seçenek...] aşağıdaki gibi:\n"
+"\n"
+"        -h,   --help         (bu) Yardım ekranını yazdır ve çık.\n"
+"        -v,   --version      Sürüm bilgisini yazdır ve çık.\n"
+"        -i,   --iconic       Simgeye başla.\n"
+"        -m,   --maximized    Büyütülmüş başla.\n"
+"        -p n, --panel n      Panel görünümü modunu n'ye zorla (n=0 => Üç ve "
+"bir panel,\n"
+"                             n=1 => Bir panel, n=2 => İki panel, n=3 => Üç "
+"ve iki panel).\n"
+"\n"
+"    [DİZİN|DOSYA...] açılışta açılacak dizinlerin veya dosyaların "
+"listesidir.\n"
+"    İlk iki dizin dosya panellerinde görüntülenir, diğerleri göz ardı "
+"edilir.\n"
+"    Açılacak dosya sayısı sınırlı değildir.\n"
+"\n"
+
+#: ../src/main.cpp:467
+#, c-format
+msgid "Warning: Unknown panel mode, revert to last saved panel mode\n"
+msgstr "Uyarı: Bilinmeyen panel modu, kaydedilmiş son panel moduna dönün\n"
+
+#: ../src/main.cpp:566 ../src/main.cpp:572 ../src/XFilePackage.cpp:889
+#: ../src/XFilePackage.cpp:895 ../src/XFileImage.cpp:2864
+#: ../src/XFileImage.cpp:2870 ../src/XFileWrite.cpp:355
+#: ../src/XFileWrite.cpp:361
+msgid "Error loading icons"
+msgstr "Simge yüklemesinde hata"
+
+#: ../src/main.cpp:566 ../src/XFilePackage.cpp:889 ../src/XFileImage.cpp:2864
+#: ../src/XFileWrite.cpp:355
+#, fuzzy
+msgid ""
+"Icon path doesn't exist, icon theme was set back to default. Please check "
+"your icon path!"
+msgstr "Bazı simgeler yüklenemiyor. Lütfen simgelerinizin yolunu kontrol edin!"
+
+#: ../src/main.cpp:572 ../src/XFilePackage.cpp:895 ../src/XFileImage.cpp:2870
+#: ../src/XFileWrite.cpp:361
+#, fuzzy
+msgid "Unable to load some icons. Please check your icon theme!"
+msgstr "Bazı simgeler yüklenemiyor. Lütfen simgelerinizin yolunu kontrol edin!"
+
+#. Permissions
+#: ../src/Properties.cpp:57 ../src/Properties.cpp:77 ../src/FileList.cpp:155
+msgid "User"
+msgstr "Kullanıcı"
+
+#: ../src/Properties.cpp:59 ../src/Properties.cpp:63 ../src/Properties.cpp:67
+msgid "Read"
+msgstr "Okuma"
+
+#: ../src/Properties.cpp:60 ../src/Properties.cpp:64 ../src/Properties.cpp:68
+msgid "Write"
+msgstr "Yazma"
+
+#: ../src/Properties.cpp:61 ../src/Properties.cpp:65 ../src/Properties.cpp:69
+msgid "Execute"
+msgstr "Çalıştırma"
+
+#: ../src/Properties.cpp:62 ../src/Properties.cpp:80 ../src/FileList.cpp:156
+msgid "Group"
+msgstr "Grup"
+
+#: ../src/Properties.cpp:66
+msgid "Others"
+msgstr "Diğerleri"
+
+#: ../src/Properties.cpp:70
+msgid "Special"
+msgstr "Özel"
+
+#: ../src/Properties.cpp:71
+msgid "Set UID"
+msgstr "UID Ayarla"
+
+#: ../src/Properties.cpp:72
+msgid "Set GID"
+msgstr "GID Ayarla"
+
+#: ../src/Properties.cpp:73
+msgid "Sticky"
+msgstr "Yapışkan"
+
+#. Owner
+#: ../src/Properties.cpp:76
+msgid "Owner"
+msgstr "Sahibi"
+
+#. Command
+#: ../src/Properties.cpp:109
+msgid "Command"
+msgstr "Komut"
+
+#: ../src/Properties.cpp:112
+msgid "Set marked"
+msgstr "İşaretli olarak ayarla"
+
+#: ../src/Properties.cpp:113
+msgid "Recursively"
+msgstr "Özyinelemeli"
+
+#: ../src/Properties.cpp:114
+msgid "Clear marked"
+msgstr "İşaretlemeyi sil"
+
+#: ../src/Properties.cpp:116
+msgid "Files and folders"
+msgstr "Dosya ve dizinler"
+
+#: ../src/Properties.cpp:117
+msgid "Add marked"
+msgstr "İşaretleme ekle"
+
+#: ../src/Properties.cpp:118
+msgid "Folders only"
+msgstr "Yalnızca dizinler"
+
+#: ../src/Properties.cpp:119
+msgid "Owner only"
+msgstr "Yalnızca sahibi"
+
+#: ../src/Properties.cpp:120
+msgid "Files only"
+msgstr "Yalnızca dosyalar"
+
+#. Construct window for one file
+#. Construct window for multiple files
+#: ../src/Properties.cpp:165 ../src/Properties.cpp:676
+#: ../src/Properties.cpp:929 ../src/Properties.cpp:960
+msgid "Properties"
+msgstr "Özellikler"
+
+#. Accept
+#. Accept button
+#. Accept
+#: ../src/Properties.cpp:193 ../src/Properties.cpp:948 ../src/FontDialog.cpp:46
+#: ../src/HistInputDialog.cpp:54 ../src/InputDialog.cpp:30
+#: ../src/BrowseInputDialog.cpp:40 ../src/ArchInputDialog.cpp:36
+#: ../src/Preferences.cpp:168 ../src/WriteWindow.cpp:187
+#: ../src/Keybindings.cpp:77 ../src/KeybindingsDialog.cpp:30
+msgid "&Accept"
+msgstr "K&abul Et"
+
+#. Cancel
+#. Cancel Button
+#. Cancel
+#. Cancel button
+#. Cancel
+#: ../src/Properties.cpp:198 ../src/Properties.cpp:952 ../src/File.cpp:58
+#: ../src/FileDialog.cpp:130 ../src/FontDialog.cpp:47 ../src/MessageBox.cpp:94
+#: ../src/MessageBox.cpp:106 ../src/MessageBox.cpp:113
+#: ../src/MessageBox.cpp:119 ../src/MessageBox.cpp:126
+#: ../src/CommandWindow.cpp:58 ../src/CommandWindow.cpp:87
+#: ../src/HistInputDialog.cpp:57 ../src/InputDialog.cpp:33
+#: ../src/BrowseInputDialog.cpp:43 ../src/ArchInputDialog.cpp:39
+#: ../src/Preferences.cpp:173 ../src/OverwriteBox.cpp:48
+#: ../src/OverwriteBox.cpp:58 ../src/OverwriteBox.cpp:98
+#: ../src/OverwriteBox.cpp:108 ../src/ExecuteBox.cpp:38
+#: ../src/WriteWindow.cpp:191 ../src/foxhacks.cpp:809 ../src/foxhacks.cpp:880
+#: ../src/Keybindings.cpp:81 ../src/KeybindingsDialog.cpp:33
+msgid "&Cancel"
+msgstr "&İptal Et"
+
+#. First item is General
+#. First tab - General options
+#: ../src/Properties.cpp:204 ../src/Properties.cpp:958
+#: ../src/Preferences.cpp:179
+msgid "&General"
+msgstr "&Genel"
+
+#. Second item is Access Permissions
+#: ../src/Properties.cpp:210 ../src/Properties.cpp:974
+#: ../src/FileDialog.cpp:1603 ../src/XFileExplorer.cpp:1016
+#: ../src/XFileExplorer.cpp:1046 ../src/XFileImage.cpp:927
+msgid "&Permissions"
+msgstr "İzinle&r"
+
+#. Third tab - file associations
+#: ../src/Properties.cpp:220
+msgid "&File Associations"
+msgstr "&Dosya İlişkileri"
+
+#: ../src/Properties.cpp:226
+msgid "Extension:"
+msgstr "Uzantı:"
+
+#: ../src/Properties.cpp:234
+msgid "Description:"
+msgstr "Tanım:"
+
+#: ../src/Properties.cpp:238
+msgid "Open:"
+msgstr "Aç:"
+
+#: ../src/Properties.cpp:240 ../src/Properties.cpp:264
+#: ../src/Properties.cpp:270 ../src/Properties.cpp:279
+#: ../src/Properties.cpp:283 ../src/Preferences.cpp:395
+#: ../src/Preferences.cpp:401 ../src/Preferences.cpp:407
+#: ../src/Preferences.cpp:413 ../src/Preferences.cpp:419
+#: ../src/Preferences.cpp:425 ../src/Preferences.cpp:431
+#: ../src/Preferences.cpp:437 ../src/Preferences.cpp:443
+#: ../src/Preferences.cpp:449 ../src/Preferences.cpp:458
+#: ../src/Preferences.cpp:464
+msgid "\tSelect file..."
+msgstr "\tDosya seç..."
+
+#: ../src/Properties.cpp:244
+msgid "View:"
+msgstr "Göster:"
+
+#: ../src/Properties.cpp:245
+msgid "Edit:"
+msgstr "Düzenle:"
+
+#. archive
+#: ../src/Properties.cpp:254
+msgid "Extract:"
+msgstr "Çıkar:"
+
+#: ../src/Properties.cpp:259
+msgid "Install/Upgrade:"
+msgstr "Kur/Yükselt:"
+
+#: ../src/Properties.cpp:277
+msgid "Big Icon:"
+msgstr "Büyük Simge:"
+
+#: ../src/Properties.cpp:281
+msgid "Mini Icon:"
+msgstr "Küçük Simge:"
+
+#. File name
+#: ../src/Properties.cpp:286 ../src/FileList.cpp:146
+msgid "Name"
+msgstr "İsim"
+
+#: ../src/Properties.cpp:304 ../src/HistInputDialog.cpp:84
+#: ../src/BrowseInputDialog.cpp:72 ../src/ArchInputDialog.cpp:55
+msgid "=> Warning: file name is not UTF-8 encoded!"
+msgstr "=> Uyarı: dosya adı UTF-8 kodlu değil!"
+
+#: ../src/Properties.cpp:380
+#, c-format
+msgid "Filesystem (%s)"
+msgstr "Dosya sistemi (%s)"
+
+#. Default folder type
+#. Folder or mount point
+#: ../src/Properties.cpp:428 ../src/Properties.cpp:551
+#: ../src/Properties.cpp:1104 ../src/DirList.cpp:1931 ../src/IconList.cpp:2479
+#: ../src/FileList.cpp:149 ../src/FileList.cpp:4319 ../src/FileList.cpp:4325
+#: ../src/FileList.cpp:5015 ../src/FileList.cpp:5021 ../src/FileList.cpp:5128
+#: ../src/SearchPanel.cpp:1978 ../src/SearchPanel.cpp:1984
+#: ../src/SearchWindow.cpp:182
+msgid "Folder"
+msgstr "Dizin"
+
+#: ../src/Properties.cpp:435 ../src/Properties.cpp:584 ../src/FileList.cpp:4332
+#: ../src/FileList.cpp:5028 ../src/FileList.cpp:5132
+#: ../src/SearchPanel.cpp:1991
+msgid "Character Device"
+msgstr "Karakter Aygıtı"
+
+#: ../src/Properties.cpp:439 ../src/Properties.cpp:588 ../src/FileList.cpp:4338
+#: ../src/FileList.cpp:5034 ../src/FileList.cpp:5136
+#: ../src/SearchPanel.cpp:1997
+msgid "Block Device"
+msgstr "Blok Aygıtı"
+
+#: ../src/Properties.cpp:443 ../src/Properties.cpp:592 ../src/FileList.cpp:4344
+#: ../src/FileList.cpp:5040 ../src/FileList.cpp:5140
+#: ../src/SearchPanel.cpp:2003
+msgid "Named Pipe"
+msgstr "İsimli Boru"
+
+#: ../src/Properties.cpp:447 ../src/Properties.cpp:596 ../src/FileList.cpp:4350
+#: ../src/FileList.cpp:5046 ../src/FileList.cpp:5144
+#: ../src/SearchPanel.cpp:2009 ../src/SearchWindow.cpp:184
+msgid "Socket"
+msgstr "Soket"
+
+#: ../src/Properties.cpp:478 ../src/Properties.cpp:522
+#: ../src/Properties.cpp:600 ../src/FileList.cpp:4356 ../src/FileList.cpp:5052
+#: ../src/FileList.cpp:5148 ../src/SearchPanel.cpp:2015
+msgid "Executable"
+msgstr "Çalıştırılabilir"
+
+#: ../src/Properties.cpp:483 ../src/Properties.cpp:527
+#: ../src/Properties.cpp:605 ../src/Properties.cpp:1076
+#: ../src/Properties.cpp:1092 ../src/FileList.cpp:4366 ../src/FileList.cpp:5062
+#: ../src/FileList.cpp:5152 ../src/SearchPanel.cpp:2025
+msgid "Document"
+msgstr "Belge"
+
+#: ../src/Properties.cpp:539 ../src/FileList.cpp:4395 ../src/FileList.cpp:5109
+#: ../src/FilePanel.cpp:6366 ../src/SearchPanel.cpp:2050
+#: ../src/SearchPanel.cpp:4343
+msgid "Broken link"
+msgstr "Kırık bağlantı"
+
+#: ../src/Properties.cpp:610 ../src/FileList.cpp:4406 ../src/FileList.cpp:4410
+#: ../src/FileList.cpp:5120 ../src/FileList.cpp:5155
+#: ../src/SearchPanel.cpp:2061 ../src/SearchPanel.cpp:2065
+msgid "Link to "
+msgstr "Bağlantı "
+
+#: ../src/Properties.cpp:660 ../src/DirList.cpp:1966 ../src/DirList.cpp:1983
+#: ../src/IconList.cpp:2479 ../src/FileList.cpp:4520 ../src/FileList.cpp:5266
+#: ../src/FileList.cpp:5283 ../src/SearchPanel.cpp:2091
+msgid "Mount point"
+msgstr "Bağlama noktası"
+
+#: ../src/Properties.cpp:662
+msgid "Mount type:"
+msgstr "Bağlama türü:"
+
+#: ../src/Properties.cpp:664
+msgid "Used:"
+msgstr "Kullanılan:"
+
+#: ../src/Properties.cpp:666
+msgid "Free:"
+msgstr "Boş:"
+
+#: ../src/Properties.cpp:668
+msgid "File system:"
+msgstr "Dosya sistemi:"
+
+#. Location bar
+#: ../src/Properties.cpp:670 ../src/Properties.cpp:684
+#: ../src/XFileExplorer.cpp:766
+msgid "Location:"
+msgstr "Konum:"
+
+#: ../src/Properties.cpp:678 ../src/Properties.cpp:966
+msgid "Type:"
+msgstr "Tür:"
+
+#: ../src/Properties.cpp:680 ../src/Properties.cpp:968
+msgid "Total size:"
+msgstr "Toplam boyut:"
+
+#: ../src/Properties.cpp:690
+msgid "Link to:"
+msgstr "Bağlantı:"
+
+#: ../src/Properties.cpp:695
+msgid "Broken link to:"
+msgstr "Kırık bağlantı:"
+
+#: ../src/Properties.cpp:704
+msgid "Original location:"
+msgstr "Asıl konum:"
+
+#: ../src/Properties.cpp:708
+msgid "File Time"
+msgstr "Dosya Tarihi"
+
+#: ../src/Properties.cpp:710
+msgid "Last Modified:"
+msgstr "Son Düzenleme:"
+
+#: ../src/Properties.cpp:712
+msgid "Last Changed:"
+msgstr "Son Değişiklik:"
+
+#: ../src/Properties.cpp:714
+msgid "Last Accessed:"
+msgstr "Son Erişim:"
+
+#: ../src/Properties.cpp:718
+msgid "Startup Notification"
+msgstr "Başlangıç Bildirimi"
+
+#: ../src/Properties.cpp:719
+msgid "Disable startup notification for this executable"
+msgstr "Bu çalıştırılabilir dosya için başlangıç bildirimini devre dışı bırak"
+
+#: ../src/Properties.cpp:746
+msgid "Deletion Date:"
+msgstr "Silme Tarihi:"
+
+#: ../src/Properties.cpp:809 ../src/Properties.cpp:2082
+#: ../src/Properties.cpp:2148 ../src/XFileExplorer.cpp:3948
+#, c-format
+msgid "%s (%lu bytes)"
+msgstr "%s (%lu bayt)"
+
+#: ../src/Properties.cpp:811 ../src/Properties.cpp:2084
+#: ../src/Properties.cpp:2150 ../src/XFileExplorer.cpp:3950
+#, c-format
+msgid "%s (%llu bytes)"
+msgstr "%s (%llu bayt)"
+
+#: ../src/Properties.cpp:813
+msgid "Size:"
+msgstr "Boyut:"
+
+#: ../src/Properties.cpp:962
+msgid "Selection:"
+msgstr "Seçim:"
+
+#: ../src/Properties.cpp:1087 ../src/Properties.cpp:1094
+#: ../src/Properties.cpp:1109
+msgid "Multiple types"
+msgstr "Çoklu türler"
+
+#. Number of selected files
+#: ../src/Properties.cpp:1113
+#, c-format
+msgid "%d items"
+msgstr "%d öğe"
+
+#: ../src/Properties.cpp:1118
+#, c-format
+msgid "%d file, %d folder"
+msgstr "%d dosya, %d dizin"
+
+#: ../src/Properties.cpp:1122
+#, c-format
+msgid "%d file, %d folders"
+msgstr "%d dosya, %d dizin"
+
+#: ../src/Properties.cpp:1126
+#, c-format
+msgid "%d files, %d folder"
+msgstr "%d dosya, %d dizin"
+
+#: ../src/Properties.cpp:1130
+#, c-format
+msgid "%d files, %d folders"
+msgstr "%d dosya, %d dizin"
+
+#: ../src/Properties.cpp:1252
+msgid "Change properties of the selected folder?"
+msgstr "Seçilen dizinin özellikleri değiştirilsin mi?"
+
+#: ../src/Properties.cpp:1256
+msgid "Change properties of the selected file?"
+msgstr "Seçilen dosyanın özellikleri değiştirilsin mi?"
+
+#: ../src/Properties.cpp:1259 ../src/Properties.cpp:1628
+msgid "Confirm Change Properties"
+msgstr "Özellik Değişikliklerini Onayla"
+
+#: ../src/Properties.cpp:1401 ../src/Properties.cpp:1414
+#: ../src/Properties.cpp:1418 ../src/Properties.cpp:1499
+#: ../src/Properties.cpp:1529 ../src/Properties.cpp:1579
+#: ../src/Properties.cpp:1701 ../src/Properties.cpp:1732
+#: ../src/Properties.cpp:1785 ../src/DirList.cpp:865 ../src/DirList.cpp:916
+#: ../src/DirList.cpp:1495 ../src/DirPanel.cpp:978 ../src/DirPanel.cpp:1912
+#: ../src/DirPanel.cpp:1978 ../src/DirPanel.cpp:2108 ../src/DirPanel.cpp:2158
+#: ../src/DirPanel.cpp:2178 ../src/DirPanel.cpp:2276 ../src/DirPanel.cpp:2304
+#: ../src/DirPanel.cpp:2388 ../src/DirPanel.cpp:2421 ../src/DirPanel.cpp:2571
+#: ../src/DirPanel.cpp:2613 ../src/DirPanel.cpp:2620 ../src/FileDialog.cpp:962
+#: ../src/FileDialog.cpp:969 ../src/FileDialog.cpp:1027
+#: ../src/FileDialog.cpp:1034 ../src/FileList.cpp:759 ../src/FileList.cpp:806
+#: ../src/FilePanel.cpp:1832 ../src/FilePanel.cpp:1897
+#: ../src/FilePanel.cpp:2017 ../src/FilePanel.cpp:2083
+#: ../src/FilePanel.cpp:2219 ../src/FilePanel.cpp:2276
+#: ../src/FilePanel.cpp:2303 ../src/FilePanel.cpp:2575
+#: ../src/FilePanel.cpp:2798 ../src/FilePanel.cpp:3089
+#: ../src/FilePanel.cpp:3678 ../src/FilePanel.cpp:3685
+#: ../src/FilePanel.cpp:3767 ../src/FilePanel.cpp:3774
+#: ../src/FilePanel.cpp:3874 ../src/FilePanel.cpp:4246
+#: ../src/FilePanel.cpp:4920 ../src/FilePanel.cpp:5947 ../src/Bookmarks.cpp:90
+#: ../src/SearchPanel.cpp:908 ../src/SearchPanel.cpp:2576
+#: ../src/SearchPanel.cpp:3090 ../src/SearchPanel.cpp:3330
+#: ../src/SearchPanel.cpp:3800 ../src/SearchPanel.cpp:3807
+#: ../src/SearchPanel.cpp:3927 ../src/SearchPanel.cpp:3993
+#: ../src/SearchPanel.cpp:4095 ../src/SearchPanel.cpp:4145
+#: ../src/SearchPanel.cpp:4165 ../src/XFileExplorer.cpp:2218
+#: ../src/XFileExplorer.cpp:2234 ../src/XFileExplorer.cpp:2254
+msgid "Warning"
+msgstr "Uyarı"
+
+#: ../src/Properties.cpp:1401
+msgid "Invalid file name, operation cancelled"
+msgstr "Geçersiz dosya adı, işlem iptal edildi"
+
+#: ../src/Properties.cpp:1414 ../src/DirPanel.cpp:1760 ../src/DirPanel.cpp:2620
+#: ../src/FileDialog.cpp:969 ../src/FilePanel.cpp:3685
+msgid "The / character is not allowed in folder names, operation cancelled"
+msgstr "Dizin adlarında / karakterine izin verilmiyor, işlem iptal edildi"
+
+#: ../src/Properties.cpp:1418 ../src/FileDialog.cpp:1034
+#: ../src/FilePanel.cpp:3774
+msgid "The / character is not allowed in file names, operation cancelled"
+msgstr "Dosya adlarında / karakterine izin verilmiyor, işlem iptal edildi"
+
+#. Error message box
+#. Error
+#: ../src/Properties.cpp:1427 ../src/Properties.cpp:1434
+#: ../src/Properties.cpp:1439 ../src/Properties.cpp:1512
+#: ../src/Properties.cpp:1516 ../src/Properties.cpp:1541
+#: ../src/Properties.cpp:1592 ../src/Properties.cpp:1596
+#: ../src/Properties.cpp:1713 ../src/Properties.cpp:1717
+#: ../src/Properties.cpp:1797 ../src/Properties.cpp:1801 ../src/DirList.cpp:857
+#: ../src/DirList.cpp:908 ../src/DirPanel.cpp:599 ../src/DirPanel.cpp:956
+#: ../src/DirPanel.cpp:960 ../src/DirPanel.cpp:1076 ../src/DirPanel.cpp:1080
+#: ../src/DirPanel.cpp:1760 ../src/DirPanel.cpp:1805 ../src/DirPanel.cpp:1812
+#: ../src/DirPanel.cpp:1819 ../src/DirPanel.cpp:1826 ../src/DirPanel.cpp:1833
+#: ../src/DirPanel.cpp:1840 ../src/DirPanel.cpp:1847 ../src/DirPanel.cpp:1905
+#: ../src/DirPanel.cpp:1971 ../src/DirPanel.cpp:2100 ../src/DirPanel.cpp:2150
+#: ../src/DirPanel.cpp:2170 ../src/DirPanel.cpp:2218 ../src/DirPanel.cpp:2333
+#: ../src/DirPanel.cpp:2381 ../src/DirPanel.cpp:2414 ../src/DirPanel.cpp:2510
+#: ../src/DirPanel.cpp:2538 ../src/DirPanel.cpp:2542 ../src/DirPanel.cpp:2556
+#: ../src/DirPanel.cpp:2640 ../src/DirPanel.cpp:2644 ../src/DirPanel.cpp:2671
+#: ../src/DirPanel.cpp:2675 ../src/DirPanel.cpp:2687 ../src/DirPanel.cpp:2697
+#: ../src/DirPanel.cpp:2701 ../src/DirPanel.cpp:2753 ../src/DirPanel.cpp:2757
+#: ../src/DirPanel.cpp:2780 ../src/DirPanel.cpp:2784 ../src/DirPanel.cpp:2796
+#: ../src/File.cpp:212 ../src/File.cpp:899 ../src/File.cpp:907
+#: ../src/File.cpp:916 ../src/File.cpp:940 ../src/File.cpp:1196
+#: ../src/File.cpp:1203 ../src/File.cpp:1213 ../src/File.cpp:1239
+#: ../src/File.cpp:1265 ../src/File.cpp:1273 ../src/File.cpp:1282
+#: ../src/File.cpp:1301 ../src/File.cpp:1434 ../src/File.cpp:1472
+#: ../src/File.cpp:1480 ../src/File.cpp:1499 ../src/File.cpp:1572
+#: ../src/File.cpp:1576 ../src/File.cpp:1986 ../src/File.cpp:1990
+#: ../src/File.cpp:2010 ../src/File.cpp:2014 ../src/File.cpp:2083
+#: ../src/File.cpp:2099 ../src/FileDialog.cpp:283 ../src/FileDialog.cpp:348
+#: ../src/FileDialog.cpp:989 ../src/FileDialog.cpp:993
+#: ../src/FileDialog.cpp:1045 ../src/FileDialog.cpp:1054
+#: ../src/FileDialog.cpp:1058 ../src/FileDialog.cpp:1071
+#: ../src/FileDialog.cpp:1075 ../src/MessageBox.cpp:196 ../src/FileList.cpp:751
+#: ../src/FileList.cpp:798 ../src/FilePanel.cpp:1061 ../src/FilePanel.cpp:1065
+#: ../src/FilePanel.cpp:1084 ../src/FilePanel.cpp:1088
+#: ../src/FilePanel.cpp:1194 ../src/FilePanel.cpp:1390
+#: ../src/FilePanel.cpp:1915 ../src/FilePanel.cpp:1922
+#: ../src/FilePanel.cpp:1929 ../src/FilePanel.cpp:1936
+#: ../src/FilePanel.cpp:1943 ../src/FilePanel.cpp:1950
+#: ../src/FilePanel.cpp:1957 ../src/FilePanel.cpp:2010
+#: ../src/FilePanel.cpp:2076 ../src/FilePanel.cpp:2211
+#: ../src/FilePanel.cpp:2268 ../src/FilePanel.cpp:2295
+#: ../src/FilePanel.cpp:2360 ../src/FilePanel.cpp:2367
+#: ../src/FilePanel.cpp:2540 ../src/FilePanel.cpp:2567
+#: ../src/FilePanel.cpp:2737 ../src/FilePanel.cpp:2764
+#: ../src/FilePanel.cpp:2768 ../src/FilePanel.cpp:2783
+#: ../src/FilePanel.cpp:2837 ../src/FilePanel.cpp:3546
+#: ../src/FilePanel.cpp:3596 ../src/FilePanel.cpp:3600
+#: ../src/FilePanel.cpp:3637 ../src/FilePanel.cpp:3641
+#: ../src/FilePanel.cpp:3705 ../src/FilePanel.cpp:3709
+#: ../src/FilePanel.cpp:3785 ../src/FilePanel.cpp:3794
+#: ../src/FilePanel.cpp:3798 ../src/FilePanel.cpp:3813
+#: ../src/FilePanel.cpp:3817 ../src/FilePanel.cpp:3884
+#: ../src/FilePanel.cpp:3899 ../src/FilePanel.cpp:4808
+#: ../src/FilePanel.cpp:4812 ../src/FilePanel.cpp:4823
+#: ../src/FilePanel.cpp:4833 ../src/FilePanel.cpp:4837
+#: ../src/FilePanel.cpp:4861 ../src/FilePanel.cpp:4865
+#: ../src/FilePanel.cpp:5030 ../src/FilePanel.cpp:5034
+#: ../src/FilePanel.cpp:5188 ../src/FilePanel.cpp:5240
+#: ../src/FilePanel.cpp:5244 ../src/FilePanel.cpp:5480
+#: ../src/FilePanel.cpp:5768 ../src/FilePanel.cpp:5772
+#: ../src/FilePanel.cpp:5797 ../src/FilePanel.cpp:5801
+#: ../src/FilePanel.cpp:5828 ../src/FilePanel.cpp:5832
+#: ../src/FilePanel.cpp:5905 ../src/FilePanel.cpp:5909
+#: ../src/FilePanel.cpp:5932 ../src/FilePanel.cpp:5936
+#: ../src/FilePanel.cpp:6055 ../src/FilePanel.cpp:6069
+#: ../src/FilePanel.cpp:6086 ../src/FilePanel.cpp:6181
+#: ../src/FilePanel.cpp:6185 ../src/FilePanel.cpp:6233
+#: ../src/FilePanel.cpp:6237 ../src/CommandWindow.cpp:199
+#: ../src/CommandWindow.cpp:203 ../src/SearchPanel.cpp:394
+#: ../src/SearchPanel.cpp:589 ../src/SearchPanel.cpp:816
+#: ../src/SearchPanel.cpp:820 ../src/SearchPanel.cpp:1753
+#: ../src/SearchPanel.cpp:1796 ../src/SearchPanel.cpp:2537
+#: ../src/SearchPanel.cpp:2541 ../src/SearchPanel.cpp:2830
+#: ../src/SearchPanel.cpp:2855 ../src/SearchPanel.cpp:2906
+#: ../src/SearchPanel.cpp:3059 ../src/SearchPanel.cpp:3082
+#: ../src/SearchPanel.cpp:3734 ../src/SearchPanel.cpp:3825
+#: ../src/SearchPanel.cpp:3832 ../src/SearchPanel.cpp:3839
+#: ../src/SearchPanel.cpp:3846 ../src/SearchPanel.cpp:3853
+#: ../src/SearchPanel.cpp:3860 ../src/SearchPanel.cpp:3867
+#: ../src/SearchPanel.cpp:3920 ../src/SearchPanel.cpp:3986
+#: ../src/SearchPanel.cpp:4087 ../src/SearchPanel.cpp:4137
+#: ../src/SearchPanel.cpp:4157 ../src/SearchPanel.cpp:4206
+#: ../src/SearchPanel.cpp:4210 ../src/SearchPanel.cpp:4483
+#: ../src/SearchPanel.cpp:4497 ../src/SearchPanel.cpp:4514
+#: ../src/SearchWindow.cpp:829 ../src/SearchWindow.cpp:833
+#: ../src/SearchWindow.cpp:956 ../src/XFileExplorer.cpp:2270
+#: ../src/XFileExplorer.cpp:2274 ../src/XFileExplorer.cpp:2312
+#: ../src/XFileExplorer.cpp:2335 ../src/XFileExplorer.cpp:2339
+#: ../src/XFileExplorer.cpp:2357 ../src/XFileExplorer.cpp:2361
+#: ../src/XFileExplorer.cpp:3111 ../src/XFileExplorer.cpp:3133
+#: ../src/XFileExplorer.cpp:3137 ../src/XFileExplorer.cpp:3149
+#: ../src/XFileExplorer.cpp:3160 ../src/XFileExplorer.cpp:3164
+#: ../src/XFileExplorer.cpp:3709 ../src/XFileExplorer.cpp:3711
+#: ../src/XFileExplorer.cpp:3752 ../src/XFileExplorer.cpp:3797
+#: ../src/XFileExplorer.cpp:3799 ../src/XFileExplorer.cpp:3826
+#: ../src/XFileExplorer.cpp:3828 ../src/XFileExplorer.cpp:3871
+#: ../src/XFileExplorer.cpp:3873 ../src/XFileExplorer.cpp:3880
+#: ../src/XFileExplorer.cpp:3990 ../src/XFileExplorer.cpp:3992
+#: ../src/XFileExplorer.cpp:4005 ../src/XFileExplorer.cpp:4007
+#: ../src/XFileExplorer.cpp:4058 ../src/XFileExplorer.cpp:4512
+#: ../src/XFileExplorer.cpp:4586 ../src/XFileExplorer.cpp:4591
+#: ../src/XFileExplorer.cpp:4596 ../src/XFilePackage.cpp:350
+#: ../src/XFilePackage.cpp:369 ../src/XFilePackage.cpp:396
+#: ../src/XFilePackage.cpp:419 ../src/XFilePackage.cpp:521
+#: ../src/XFilePackage.cpp:585 ../src/XFilePackage.cpp:617
+#: ../src/XFilePackage.cpp:923 ../src/XFileImage.cpp:1669
+#: ../src/XFileImage.cpp:1936 ../src/XFileImage.cpp:1980
+#: ../src/WriteWindow.cpp:1892 ../src/Keybindings.cpp:887
+#: ../src/Keybindings.cpp:905 ../src/Keybindings.cpp:923
+#: ../src/Keybindings.cpp:941 ../src/Keybindings.cpp:1031
+#: ../src/Keybindings.cpp:1049 ../src/Keybindings.cpp:1139
+#: ../src/Keybindings.cpp:1157 ../src/Keybindings.cpp:1247
+#: ../src/Keybindings.cpp:1265
+msgid "Error"
+msgstr "Hata"
+
+#: ../src/Properties.cpp:1427 ../src/Properties.cpp:1439
+#: ../src/DirPanel.cpp:1805 ../src/DirPanel.cpp:1826 ../src/DirPanel.cpp:1833
+#: ../src/DirPanel.cpp:2218 ../src/DirPanel.cpp:2333 ../src/FilePanel.cpp:1922
+#: ../src/FilePanel.cpp:1950 ../src/FilePanel.cpp:1957
+#: ../src/FilePanel.cpp:2360 ../src/FilePanel.cpp:2837
+#: ../src/FilePanel.cpp:5188 ../src/FilePanel.cpp:5480
+#: ../src/SearchPanel.cpp:2830 ../src/SearchPanel.cpp:2855
+#: ../src/SearchPanel.cpp:3825 ../src/SearchPanel.cpp:3846
+#: ../src/SearchPanel.cpp:3853
+#, c-format
+msgid "Can't write to %s: Permission denied"
+msgstr "%s yazılamadı: Erişim engellendi"
+
+#: ../src/Properties.cpp:1434 ../src/DirPanel.cpp:1812 ../src/DirPanel.cpp:1840
+#: ../src/FilePanel.cpp:1915 ../src/FilePanel.cpp:1936
+#: ../src/SearchPanel.cpp:3832 ../src/SearchPanel.cpp:3860
+#, c-format
+msgid "Folder %s doesn't exist"
+msgstr "%s dizini mevcut değil"
+
+#: ../src/Properties.cpp:1447 ../src/DirPanel.cpp:1917
+#: ../src/FilePanel.cpp:2022 ../src/SearchPanel.cpp:3932
+msgid "File rename"
+msgstr "Dosyayı yeniden adlandır"
+
+#: ../src/Properties.cpp:1462 ../src/Properties.cpp:1653
+msgid "File owner"
+msgstr "Dosya sahibi"
+
+#: ../src/Properties.cpp:1499 ../src/Properties.cpp:1701
+msgid "Change owner cancelled!"
+msgstr "Sahibin değişikliği iptal edildi!"
+
+#: ../src/Properties.cpp:1512 ../src/Properties.cpp:1713
+#, c-format
+msgid "Chown in %s failed: %s"
+msgstr "%s içinde Chown başarısız oldu: %s"
+
+#: ../src/Properties.cpp:1516 ../src/Properties.cpp:1717
+#, c-format
+msgid "Chown in %s failed"
+msgstr "%s içinde Chown başarısız oldu"
+
+#: ../src/Properties.cpp:1529 ../src/Properties.cpp:1732
+msgid ""
+"Setting special permissions could be unsafe! Is that you really want to do?"
+msgstr ""
+"Özel izinler ayarlamak güvensiz olabilir! Gerçekten yapmak istediğin bu mu?"
+
+#: ../src/Properties.cpp:1541 ../src/Properties.cpp:1592
+#: ../src/Properties.cpp:1797
+#, c-format
+msgid "Chmod in %s failed: %s"
+msgstr "%s içinde chmod başarısız oldu: %s"
+
+#: ../src/Properties.cpp:1545 ../src/Properties.cpp:1738
+msgid "File permissions"
+msgstr "Dosya izinleri"
+
+#: ../src/Properties.cpp:1579
+msgid "Change file permissions cancelled!"
+msgstr "Dosya izin değişiklikleri iptal edildi!"
+
+#: ../src/Properties.cpp:1596 ../src/Properties.cpp:1801
+#, c-format
+msgid "Chmod in %s failed"
+msgstr "%s içinde Chmod başarısız oldu"
+
+#: ../src/Properties.cpp:1628
+msgid "Apply permissions to the selected items?"
+msgstr "Seçilen öğelere izin uygulansın mı?"
+
+#: ../src/Properties.cpp:1785
+msgid "Change file(s) permissions cancelled!"
+msgstr "Dosya(ların) izin değişikliği iptal edildi!"
+
+#: ../src/Properties.cpp:1936 ../src/HistInputDialog.cpp:150
+#: ../src/Preferences.cpp:656
+msgid "Select an executable file"
+msgstr "Bir çalıştırılabilir dosya seç"
+
+#: ../src/Properties.cpp:1939 ../src/Preferences.cpp:659
+msgid "All files"
+msgstr "Tüm dosyalar"
+
+#: ../src/Properties.cpp:1986
+msgid "PNG Images"
+msgstr "PNG Resimleri"
+
+#: ../src/Properties.cpp:1987
+msgid "GIF Images"
+msgstr "GIF Resimleri"
+
+#: ../src/Properties.cpp:1988
+msgid "BMP Images"
+msgstr "BMP Resimleri"
+
+#: ../src/Properties.cpp:1990
+msgid "Select an icon file"
+msgstr "Bir simge dosyası seç"
+
+#: ../src/Properties.cpp:2090 ../src/Properties.cpp:2156
+#, c-format
+msgid "%u file, %u subfolder"
+msgstr "%u dosya, %u altdizin"
+
+#: ../src/Properties.cpp:2094 ../src/Properties.cpp:2160
+#, c-format
+msgid "%u file, %u subfolders"
+msgstr "%u dosya, %u altdizin"
+
+#: ../src/Properties.cpp:2098 ../src/Properties.cpp:2164
+#, c-format
+msgid "%u files, %u subfolder"
+msgstr "%u dosya, %u altdizin"
+
+#: ../src/Properties.cpp:2102 ../src/Properties.cpp:2168
+#: ../src/XFileExplorer.cpp:3952
+#, c-format
+msgid "%u files, %u subfolders"
+msgstr "%u dosya, %u altdizin"
+
+#: ../src/DirList.cpp:677 ../src/FileList.cpp:574
+msgid "Copy here"
+msgstr "Buraya kopyala"
+
+#: ../src/DirList.cpp:678 ../src/FileList.cpp:575
+msgid "Move here"
+msgstr "Buraya taşı"
+
+#: ../src/DirList.cpp:679 ../src/FileList.cpp:576
+msgid "Link here"
+msgstr "Buraya bağlantı ver"
+
+#: ../src/DirList.cpp:681 ../src/FileList.cpp:578
+msgid "Cancel"
+msgstr "İptal"
+
+#: ../src/DirList.cpp:723 ../src/DirPanel.cpp:1874 ../src/DirPanel.cpp:2008
+#: ../src/FileList.cpp:618 ../src/FilePanel.cpp:1979 ../src/FilePanel.cpp:2112
+#: ../src/SearchPanel.cpp:3889 ../src/SearchPanel.cpp:4022
+msgid "File copy"
+msgstr "Dosya kopyala"
+
+#: ../src/DirList.cpp:727 ../src/DirPanel.cpp:1932 ../src/DirPanel.cpp:2012
+#: ../src/FileList.cpp:622 ../src/FilePanel.cpp:2037 ../src/FilePanel.cpp:2116
+#: ../src/SearchPanel.cpp:3947 ../src/SearchPanel.cpp:4026
+msgid "File move"
+msgstr "Dosya taşı"
+
+#: ../src/DirList.cpp:731 ../src/FileList.cpp:626
+msgid "File symlink"
+msgstr "Dosyayı sembolik bağla"
+
+#: ../src/DirList.cpp:765 ../src/DirPanel.cpp:1629 ../src/FileList.cpp:660
+#: ../src/FilePanel.cpp:1683 ../src/FilePanel.cpp:1727
+#: ../src/SearchPanel.cpp:3649 ../src/WriteWindow.cpp:687
+msgid "Copy"
+msgstr "Kopyala"
+
+#: ../src/DirList.cpp:773 ../src/FileList.cpp:668
+#, c-format
+msgid ""
+"Copy %s files/folders.\n"
+"From: %s"
+msgstr ""
+"%s dosya/dizin kopyala.\n"
+"Şuradan: %s"
+
+#: ../src/DirList.cpp:778 ../src/DirPanel.cpp:1688 ../src/DirPanel.cpp:1694
+#: ../src/DirPanel.cpp:1704 ../src/DirPanel.cpp:1714 ../src/FileList.cpp:673
+#: ../src/FilePanel.cpp:1742 ../src/FilePanel.cpp:1748
+#: ../src/FilePanel.cpp:1758 ../src/FilePanel.cpp:1768
+#: ../src/SearchPanel.cpp:3664 ../src/SearchPanel.cpp:3670
+msgid "Move"
+msgstr "Taşı"
+
+#: ../src/DirList.cpp:786 ../src/FileList.cpp:681
+#, c-format
+msgid ""
+"Move %s files/folders.\n"
+"From: %s"
+msgstr ""
+"%s dosya/dizin taşı.\n"
+"Şuradan: %s"
+
+#: ../src/DirList.cpp:791 ../src/DirPanel.cpp:1724 ../src/DirPanel.cpp:1983
+#: ../src/DirPanel.cpp:2016 ../src/FileList.cpp:686 ../src/FilePanel.cpp:1778
+#: ../src/FilePanel.cpp:2088 ../src/FilePanel.cpp:2120
+#: ../src/FilePanel.cpp:3903 ../src/SearchPanel.cpp:3680
+#: ../src/SearchPanel.cpp:3998 ../src/SearchPanel.cpp:4030
+msgid "Symlink"
+msgstr "Sembolik bağ"
+
+#: ../src/DirList.cpp:796 ../src/DirPanel.cpp:1745 ../src/DirPanel.cpp:1773
+#: ../src/FileList.cpp:691 ../src/FilePanel.cpp:1801 ../src/FilePanel.cpp:1845
+#: ../src/SearchPanel.cpp:3703 ../src/SearchPanel.cpp:3747
+msgid "To:"
+msgstr "Şuraya:"
+
+#: ../src/DirList.cpp:857 ../src/DirPanel.cpp:1971 ../src/DirPanel.cpp:2150
+#: ../src/FileList.cpp:751 ../src/FilePanel.cpp:2076 ../src/FilePanel.cpp:2268
+#: ../src/SearchPanel.cpp:3986 ../src/SearchPanel.cpp:4137
+msgid "An error has occurred during the move file operation!"
+msgstr "Dosya taşıma işlemi sırasında bir hata oluştu!"
+
+#: ../src/DirList.cpp:865 ../src/DirPanel.cpp:1978 ../src/DirPanel.cpp:2158
+#: ../src/FileList.cpp:759 ../src/FilePanel.cpp:2083 ../src/FilePanel.cpp:2276
+#: ../src/SearchPanel.cpp:3993 ../src/SearchPanel.cpp:4145
+msgid "Move file operation cancelled!"
+msgstr "Dosya taşıma işlemi iptal edildi!"
+
+#: ../src/DirList.cpp:908 ../src/DirPanel.cpp:1905 ../src/DirPanel.cpp:2100
+#: ../src/FileList.cpp:798 ../src/FilePanel.cpp:2010 ../src/FilePanel.cpp:2211
+#: ../src/SearchPanel.cpp:3920 ../src/SearchPanel.cpp:4087
+msgid "An error has occurred during the copy file operation!"
+msgstr "Dosya kopyalama işlemi sırasında bir hata oluştu!"
+
+#: ../src/DirList.cpp:916 ../src/DirPanel.cpp:1912 ../src/DirPanel.cpp:2108
+#: ../src/FileList.cpp:806 ../src/FilePanel.cpp:2017 ../src/FilePanel.cpp:2219
+#: ../src/SearchPanel.cpp:3927 ../src/SearchPanel.cpp:4095
+msgid "Copy file operation cancelled!"
+msgstr "Dosya kopyalama işlemi iptal edildi!"
+
+#: ../src/DirList.cpp:1495 ../src/XFileExplorer.cpp:2234
+#, c-format
+msgid "Mount point %s is not responding..."
+msgstr "%s bağlantı noktası yanıt vermiyor..."
+
+#: ../src/DirList.cpp:2021
+msgid "Link to Folder"
+msgstr "Dizine Bağlantı ver"
+
+#: ../src/DirPanel.cpp:449
+msgid "Folders"
+msgstr "Dizinler"
+
+#: ../src/DirPanel.cpp:470
+msgid "Show hidden folders"
+msgstr "Gizli dizinleri göster"
+
+#: ../src/DirPanel.cpp:470
+msgid "Hide hidden folders"
+msgstr "Gizlenen dizinleri gizle"
+
+#: ../src/DirPanel.cpp:473 ../src/DirPanel.cpp:3125
+msgid "0 bytes in root"
+msgstr "kök içinde 0 bayt"
+
+#: ../src/DirPanel.cpp:553 ../src/FilePanel.cpp:377
+msgid "Panel is active"
+msgstr "Panel etkin"
+
+#: ../src/DirPanel.cpp:568 ../src/FilePanel.cpp:404
+msgid "Activate panel"
+msgstr "Paneli etkinleştir"
+
+#: ../src/DirPanel.cpp:599 ../src/FileDialog.cpp:283 ../src/FileDialog.cpp:348
+#: ../src/FilePanel.cpp:1194 ../src/FilePanel.cpp:1390
+#: ../src/SearchPanel.cpp:394 ../src/SearchPanel.cpp:589
+#: ../src/SearchPanel.cpp:1796 ../src/XFileImage.cpp:1936
+#: ../src/XFileImage.cpp:1980
+#, c-format
+msgid " Permission to: %s denied."
+msgstr " İzin: %s reddedildi."
+
+#. Panel menu items
+#: ../src/DirPanel.cpp:734 ../src/DirPanel.cpp:748
+msgid "New &folder..."
+msgstr "Yeni &dizin..."
+
+#: ../src/DirPanel.cpp:737 ../src/DirPanel.cpp:751
+msgid "&Hidden folders"
+msgstr "&Gizli dizinler"
+
+#: ../src/DirPanel.cpp:738 ../src/DirPanel.cpp:752 ../src/FileDialog.cpp:1605
+#: ../src/FilePanel.cpp:4540 ../src/FilePanel.cpp:4583
+#: ../src/SearchPanel.cpp:2358 ../src/XFileImage.cpp:929
+msgid "Ignore c&ase"
+msgstr "Durumu yoks&ay"
+
+#: ../src/DirPanel.cpp:739 ../src/DirPanel.cpp:753
+msgid "&Reverse order"
+msgstr "Te&rsine sıra"
+
+#: ../src/DirPanel.cpp:740 ../src/DirPanel.cpp:754
+msgid "E&xpand tree"
+msgstr "Ağacı &genişlet"
+
+#: ../src/DirPanel.cpp:741 ../src/DirPanel.cpp:755
+msgid "Collap&se tree"
+msgstr "Ağacı &daralt"
+
+#: ../src/DirPanel.cpp:757 ../src/FilePanel.cpp:4586
+#: ../src/SearchPanel.cpp:2361
+msgid "Pane&l"
+msgstr "Pane&l"
+
+#: ../src/DirPanel.cpp:767
+msgid "M&ount"
+msgstr "&Bağla"
+
+#: ../src/DirPanel.cpp:768
+msgid "Unmoun&t"
+msgstr "&Ayır"
+
+#: ../src/DirPanel.cpp:772 ../src/FilePanel.cpp:4667
+#: ../src/SearchPanel.cpp:2416
+msgid "&Add to archive..."
+msgstr "&Arşive ekle..."
+
+#: ../src/DirPanel.cpp:774 ../src/FilePanel.cpp:4686
+#: ../src/SearchPanel.cpp:2436 ../src/XFileExplorer.cpp:880
+#: ../src/WriteWindow.cpp:810 ../src/WriteWindow.cpp:851
+msgid "&Copy"
+msgstr "&Kopyala"
+
+#: ../src/DirPanel.cpp:775 ../src/FilePanel.cpp:4687
+#: ../src/SearchPanel.cpp:2437 ../src/XFileExplorer.cpp:886
+msgid "C&ut"
+msgstr "K&es"
+
+#: ../src/DirPanel.cpp:776 ../src/FilePanel.cpp:4517 ../src/FilePanel.cpp:4560
+#: ../src/FilePanel.cpp:4688 ../src/XFileExplorer.cpp:892
+#: ../src/WriteWindow.cpp:822 ../src/WriteWindow.cpp:853
+msgid "&Paste"
+msgstr "Ya&pıştır"
+
+#: ../src/DirPanel.cpp:778 ../src/FilePanel.cpp:4690
+#: ../src/SearchPanel.cpp:2439 ../src/XFileExplorer.cpp:819
+msgid "Re&name..."
+msgstr "Yeniden adla&ndır..."
+
+#: ../src/DirPanel.cpp:779
+msgid "Cop&y to..."
+msgstr "Şuraya kop&yala..."
+
+#: ../src/DirPanel.cpp:780 ../src/FilePanel.cpp:4692
+#: ../src/SearchPanel.cpp:2441 ../src/XFileExplorer.cpp:831
+msgid "&Move to..."
+msgstr "Şuraya &taşı..."
+
+#: ../src/DirPanel.cpp:781 ../src/FilePanel.cpp:4693
+#: ../src/SearchPanel.cpp:2442
+msgid "Symlin&k to..."
+msgstr "Şuraya semboli&k bağla..."
+
+#: ../src/DirPanel.cpp:782 ../src/XFileExplorer.cpp:843
+msgid "Mo&ve to trash"
+msgstr "Çö&pe taşı"
+
+#: ../src/DirPanel.cpp:783 ../src/XFileExplorer.cpp:849
+msgid "R&estore from trash"
+msgstr "Çöpten g&eri al"
+
+#: ../src/DirPanel.cpp:784 ../src/FilePanel.cpp:4696
+#: ../src/SearchPanel.cpp:2444 ../src/XFileExplorer.cpp:855
+msgid "&Delete"
+msgstr "&Sil"
+
+#: ../src/DirPanel.cpp:786
+msgid "Prop&erties"
+msgstr "Özellikl&er"
+
+#: ../src/DirPanel.cpp:956 ../src/DirPanel.cpp:1076 ../src/DirPanel.cpp:2671
+#: ../src/DirPanel.cpp:2697 ../src/DirPanel.cpp:2753 ../src/DirPanel.cpp:2780
+#: ../src/File.cpp:1986 ../src/File.cpp:2010 ../src/FilePanel.cpp:1061
+#: ../src/FilePanel.cpp:1084 ../src/FilePanel.cpp:3596
+#: ../src/FilePanel.cpp:3637 ../src/FilePanel.cpp:4808
+#: ../src/FilePanel.cpp:4833 ../src/FilePanel.cpp:4861
+#: ../src/FilePanel.cpp:5030 ../src/FilePanel.cpp:5768
+#: ../src/FilePanel.cpp:5797 ../src/FilePanel.cpp:5905
+#: ../src/FilePanel.cpp:5932 ../src/FilePanel.cpp:6181
+#: ../src/FilePanel.cpp:6233 ../src/SearchPanel.cpp:816
+#: ../src/SearchPanel.cpp:2537 ../src/XFileExplorer.cpp:3133
+#: ../src/XFileExplorer.cpp:3160 ../src/XFileExplorer.cpp:3709
+#: ../src/XFileExplorer.cpp:3797 ../src/XFileExplorer.cpp:3826
+#: ../src/XFileExplorer.cpp:3871
+#, c-format
+msgid "Can't enter folder %s: %s"
+msgstr "%s dizini girilemiyor: %s"
+
+#: ../src/DirPanel.cpp:960 ../src/DirPanel.cpp:1080 ../src/DirPanel.cpp:2675
+#: ../src/DirPanel.cpp:2701 ../src/DirPanel.cpp:2757 ../src/DirPanel.cpp:2784
+#: ../src/File.cpp:1990 ../src/File.cpp:2014 ../src/FilePanel.cpp:1065
+#: ../src/FilePanel.cpp:1088 ../src/FilePanel.cpp:3600
+#: ../src/FilePanel.cpp:3641 ../src/FilePanel.cpp:4812
+#: ../src/FilePanel.cpp:4837 ../src/FilePanel.cpp:4865
+#: ../src/FilePanel.cpp:5034 ../src/FilePanel.cpp:5772
+#: ../src/FilePanel.cpp:5801 ../src/FilePanel.cpp:5909
+#: ../src/FilePanel.cpp:5936 ../src/FilePanel.cpp:6185
+#: ../src/FilePanel.cpp:6237 ../src/SearchPanel.cpp:820
+#: ../src/SearchPanel.cpp:2541 ../src/XFileExplorer.cpp:3137
+#: ../src/XFileExplorer.cpp:3164 ../src/XFileExplorer.cpp:3711
+#: ../src/XFileExplorer.cpp:3799 ../src/XFileExplorer.cpp:3828
+#: ../src/XFileExplorer.cpp:3873
+#, c-format
+msgid "Can't enter folder %s"
+msgstr "%s dizini girilemiyor"
+
+#: ../src/DirPanel.cpp:978 ../src/FileDialog.cpp:1027 ../src/FilePanel.cpp:1897
+#: ../src/FilePanel.cpp:3767 ../src/FilePanel.cpp:3874
+#: ../src/FilePanel.cpp:4246 ../src/FilePanel.cpp:4920
+#: ../src/SearchPanel.cpp:908 ../src/SearchPanel.cpp:2576
+#: ../src/SearchPanel.cpp:3800
+msgid "File name is empty, operation cancelled"
+msgstr "Dosya adı boş, işlem iptal edildi"
+
+#. File object
+#: ../src/DirPanel.cpp:1065 ../src/FilePanel.cpp:5019
+#: ../src/SearchPanel.cpp:2671
+msgid "Create archive"
+msgstr "Arşiv oluştur"
+
+#: ../src/DirPanel.cpp:1633 ../src/DirPanel.cpp:1677 ../src/FilePanel.cpp:1687
+#: ../src/FilePanel.cpp:1731 ../src/SearchPanel.cpp:3653
+msgid "Copy "
+msgstr "Kopyala "
+
+#: ../src/DirPanel.cpp:1650 ../src/DirPanel.cpp:1682 ../src/FilePanel.cpp:1704
+#: ../src/FilePanel.cpp:1736
+#, c-format
+msgid "Copy %s items from: %s"
+msgstr "Şuradan %s öğe kopyala: %s"
+
+#: ../src/DirPanel.cpp:1656 ../src/DirPanel.cpp:1663 ../src/FilePanel.cpp:1710
+#: ../src/FilePanel.cpp:1717 ../src/SearchPanel.cpp:3632
+#: ../src/SearchPanel.cpp:3639
+msgid "Rename"
+msgstr "Yeniden adlandır"
+
+#: ../src/DirPanel.cpp:1660 ../src/FilePanel.cpp:1714
+#: ../src/SearchPanel.cpp:3636
+msgid "Rename "
+msgstr "Yeniden adlandır "
+
+#: ../src/DirPanel.cpp:1673
+msgid "Copy to"
+msgstr "Şuraya kopyala"
+
+#: ../src/DirPanel.cpp:1692 ../src/DirPanel.cpp:1708 ../src/FilePanel.cpp:1746
+#: ../src/FilePanel.cpp:1762 ../src/SearchPanel.cpp:3668
+msgid "Move "
+msgstr "Taşı "
+
+#: ../src/DirPanel.cpp:1698 ../src/DirPanel.cpp:1718 ../src/FilePanel.cpp:1752
+#: ../src/FilePanel.cpp:1772
+#, c-format
+msgid "Move %s items from: %s"
+msgstr "Şuradan %s öğe taşı: %s"
+
+#: ../src/DirPanel.cpp:1728 ../src/FilePanel.cpp:1782
+#: ../src/SearchPanel.cpp:3684
+msgid "Symlink "
+msgstr "Sembolik bağ "
+
+#: ../src/DirPanel.cpp:1734 ../src/FilePanel.cpp:1788
+#, c-format
+msgid "Symlink %s items from: %s"
+msgstr "Şuradan %s öğeyi sembolik bağla: %s"
+
+#: ../src/DirPanel.cpp:1819 ../src/DirPanel.cpp:1847 ../src/FilePanel.cpp:1929
+#: ../src/FilePanel.cpp:1943 ../src/SearchPanel.cpp:3839
+#: ../src/SearchPanel.cpp:3867
+#, c-format
+msgid "%s is not a folder"
+msgstr "%s bir dizin değil"
+
+#: ../src/DirPanel.cpp:2170 ../src/FilePanel.cpp:2295
+#: ../src/SearchPanel.cpp:4157
+msgid "An error has occurred during the symlink operation!"
+msgstr "Sembolik bağlama sırasında bir hata oluştu!"
+
+#: ../src/DirPanel.cpp:2178 ../src/FilePanel.cpp:2303
+#: ../src/SearchPanel.cpp:4165
+msgid "Symlink operation cancelled!"
+msgstr "Sembolik bağlama işlemi iptal edildi!"
+
+#: ../src/DirPanel.cpp:2228 ../src/FilePanel.cpp:2874
+#: ../src/SearchPanel.cpp:3143
+#, c-format
+msgid "Definitively delete folder %s ?"
+msgstr "%s dizini kesinlikle silinsin mi?"
+
+#: ../src/DirPanel.cpp:2229 ../src/DirPanel.cpp:2249 ../src/DirPanel.cpp:2265
+#: ../src/FilePanel.cpp:2885 ../src/FilePanel.cpp:2949
+#: ../src/FilePanel.cpp:2961 ../src/FilePanel.cpp:3008
+#: ../src/FilePanel.cpp:3023 ../src/SearchPanel.cpp:3154
+#: ../src/SearchPanel.cpp:3210 ../src/SearchPanel.cpp:3256
+#: ../src/SearchPanel.cpp:3271
+msgid "Confirm Delete"
+msgstr "Silmeyi Onayla"
+
+#. File object
+#. Delete trash can info folder
+#: ../src/DirPanel.cpp:2237 ../src/FilePanel.cpp:2895
+#: ../src/SearchPanel.cpp:3164 ../src/XFileExplorer.cpp:3970
+#: ../src/XFileExplorer.cpp:3976
+msgid "File delete"
+msgstr "Dosya sil"
+
+#: ../src/DirPanel.cpp:2248 ../src/FilePanel.cpp:2945
+#: ../src/SearchPanel.cpp:3209
+#, c-format
+msgid "Folder %s is not empty, delete it anyway?"
+msgstr "%s dizini boş değil, yinede silinsin mi?"
+
+#: ../src/DirPanel.cpp:2264
+#, c-format
+msgid "Folder %s is write-protected, definitively delete it anyway?"
+msgstr "%s dizini yazma korumalı, yine de kesin olarak silinsin mi?"
+
+#: ../src/DirPanel.cpp:2276 ../src/DirPanel.cpp:2304
+msgid "Delete folder operation cancelled!"
+msgstr "Dizin silme işlemi iptal edildi!"
+
+#: ../src/DirPanel.cpp:2342 ../src/FilePanel.cpp:2404
+#: ../src/SearchPanel.cpp:2932
+#, c-format
+msgid "Move folder %s to trash can?"
+msgstr "%s dizini çöp kutusuna taşınsın mı?"
+
+#: ../src/DirPanel.cpp:2343 ../src/DirPanel.cpp:2361 ../src/FilePanel.cpp:2416
+#: ../src/FilePanel.cpp:2475 ../src/FilePanel.cpp:2489
+#: ../src/SearchPanel.cpp:2944 ../src/SearchPanel.cpp:2998
+#: ../src/SearchPanel.cpp:3012
+msgid "Confirm Trash"
+msgstr "Çöpe Göndermeyi Onayla"
+
+#. File object
+#: ../src/DirPanel.cpp:2351 ../src/FilePanel.cpp:2427
+#: ../src/SearchPanel.cpp:2955
+msgid "Move to trash"
+msgstr "Çöpe taşı"
+
+#: ../src/DirPanel.cpp:2360
+#, c-format
+msgid "Folder %s is write-protected, move it to trash can anyway?"
+msgstr "%s dizini yazma korumalı, yine de çöp kutusuna taşınsın mı?"
+
+#: ../src/DirPanel.cpp:2381 ../src/DirPanel.cpp:2414 ../src/FilePanel.cpp:2540
+#: ../src/FilePanel.cpp:2567 ../src/SearchPanel.cpp:3059
+#: ../src/SearchPanel.cpp:3082
+msgid "An error has occurred during the move to trash operation!"
+msgstr "Çöpe taşıma işlemi sırasında bir hata oluştu!"
+
+#: ../src/DirPanel.cpp:2388 ../src/DirPanel.cpp:2421
+msgid "Move to trash folder operation cancelled!"
+msgstr "Çöpe dizin taşıma işlemi iptal edildi!"
+
+#. File object
+#: ../src/DirPanel.cpp:2447 ../src/FilePanel.cpp:2632
+msgid "Restore from trash"
+msgstr "Çöpten geri al"
+
+#: ../src/DirPanel.cpp:2493 ../src/FilePanel.cpp:2712
+#, c-format
+msgid "Restore folder %s to its original location %s ?"
+msgstr "%s dizini %s asıl konumuna geri alınsın mı?"
+
+#: ../src/DirPanel.cpp:2495 ../src/DirPanel.cpp:2522 ../src/FilePanel.cpp:2724
+#: ../src/FilePanel.cpp:2749
+msgid "Confirm Restore"
+msgstr "Geri Almayı Onayla"
+
+#: ../src/DirPanel.cpp:2510 ../src/FilePanel.cpp:2737
+#, c-format
+msgid "Restore information not available for %s"
+msgstr "%s için geri alma bilgisi mevcut değil"
+
+#: ../src/DirPanel.cpp:2521 ../src/FilePanel.cpp:2748
+#, c-format
+msgid "Parent folder %s does not exist, do you want to create it?"
+msgstr "%s üst dizini mevcut değil, oluşturmak ister misiniz?"
+
+#: ../src/DirPanel.cpp:2538 ../src/DirPanel.cpp:2640
+#, c-format
+msgid "Can't create folder %s : %s"
+msgstr "%s dizini oluşturulamıyor: %s"
+
+#: ../src/DirPanel.cpp:2542 ../src/DirPanel.cpp:2644 ../src/FilePanel.cpp:2768
+#: ../src/FilePanel.cpp:3709 ../src/FilePanel.cpp:5244
+#, c-format
+msgid "Can't create folder %s"
+msgstr "%s dizini oluşturulamıyor"
+
+#: ../src/DirPanel.cpp:2556 ../src/FilePanel.cpp:2783
+msgid "An error has occurred during the restore from trash operation!"
+msgstr "Çöpten geri alma işlemi sırasında bir hata oluştu!"
+
+#: ../src/DirPanel.cpp:2571 ../src/FilePanel.cpp:2798
+msgid "Restore from trash file operation cancelled!"
+msgstr "Çöpten dosya geri alma işlemi iptal edildi!"
+
+#: ../src/DirPanel.cpp:2606 ../src/FilePanel.cpp:3669
+msgid "Create new folder:"
+msgstr "Yeni dizin oluştur:"
+
+#: ../src/DirPanel.cpp:2606 ../src/FileDialog.cpp:956 ../src/FilePanel.cpp:3669
+msgid "New Folder"
+msgstr "Yeni Dizin"
+
+#: ../src/DirPanel.cpp:2613 ../src/FileDialog.cpp:962 ../src/FilePanel.cpp:3678
+msgid "Folder name is empty, operation cancelled"
+msgstr "Dizin adı boş, işlem iptal edildi"
+
+#: ../src/DirPanel.cpp:2687 ../src/FilePanel.cpp:4823
+#: ../src/XFileExplorer.cpp:3111 ../src/XFileExplorer.cpp:3149
+#: ../src/XFileExplorer.cpp:3752 ../src/XFileImage.cpp:1669
+#: ../src/WriteWindow.cpp:1892
+#, c-format
+msgid "Can't execute command %s"
+msgstr "%s komutu çalıştırılamıyor"
+
+#: ../src/DirPanel.cpp:2735 ../src/FilePanel.cpp:5888
+msgid "Mount"
+msgstr "Bağla"
+
+#: ../src/DirPanel.cpp:2741 ../src/FilePanel.cpp:4594 ../src/FilePanel.cpp:5894
+msgid "Unmount"
+msgstr "Ayır"
+
+#. File object
+#: ../src/DirPanel.cpp:2767 ../src/FilePanel.cpp:5919
+msgid " file system..."
+msgstr " dosya sistemi..."
+
+#. Mount/unmount file system
+#: ../src/DirPanel.cpp:2772 ../src/FilePanel.cpp:5924
+msgid " the folder:"
+msgstr " dizini:"
+
+#: ../src/DirPanel.cpp:2795 ../src/FilePanel.cpp:5946
+msgid " operation cancelled!"
+msgstr " işlem iptal edildi!"
+
+#. Refresh the status label
+#: ../src/DirPanel.cpp:3157
+msgid " in root"
+msgstr " kök içinde"
+
+#. Labels and progress bar
+#: ../src/File.cpp:105 ../src/File.cpp:120
+msgid "Source:"
+msgstr "Kaynak:"
+
+#: ../src/File.cpp:106 ../src/File.cpp:121
+msgid "Target:"
+msgstr "Hedef:"
+
+#: ../src/File.cpp:111
+msgid "Copied data:"
+msgstr "Kopyalanan veri:"
+
+#: ../src/File.cpp:126
+msgid "Moved data:"
+msgstr "Taşınan veri:"
+
+#. Labels
+#. Set labels for progress dialog
+#: ../src/File.cpp:135 ../src/File.cpp:1133
+msgid "Delete:"
+msgstr "Sil:"
+
+#: ../src/File.cpp:136
+msgid "From:"
+msgstr "Şuradan:"
+
+#. Labels
+#. Set labels for progress dialog
+#: ../src/File.cpp:145 ../src/File.cpp:1625 ../src/File.cpp:1653
+#: ../src/File.cpp:1717
+msgid "Changing permissions..."
+msgstr "İzinler değiştiriliyor..."
+
+#: ../src/File.cpp:146 ../src/File.cpp:156 ../src/File.cpp:1627
+#: ../src/File.cpp:1719 ../src/File.cpp:1821 ../src/File.cpp:1910
+msgid "File:"
+msgstr "Dosya:"
+
+#. Labels
+#. Set labels for progress dialog
+#: ../src/File.cpp:155 ../src/File.cpp:1819 ../src/File.cpp:1850
+#: ../src/File.cpp:1908
+msgid "Changing owner..."
+msgstr "Sahip değiştiriliyor..."
+
+#. Labels
+#: ../src/File.cpp:166
+msgid "Mount file system..."
+msgstr "Dosya sistemi bağla..."
+
+#: ../src/File.cpp:167
+msgid "Mount the folder:"
+msgstr "Dizini bağla:"
+
+#. Labels
+#: ../src/File.cpp:173
+msgid "Unmount file system..."
+msgstr "Dosya sistemini ayır..."
+
+#: ../src/File.cpp:174
+msgid "Unmount the folder:"
+msgstr "Dizini ayır:"
+
+#: ../src/File.cpp:300
+#, c-format
+msgid ""
+"Folder %s already exists.\n"
+"Overwrite?\n"
+"=> Caution, files within this folder could be overwritten!"
+msgstr ""
+"%s dizini zaten var.\n"
+"Üstüne yazılsın mı?\n"
+"=> Dikkat, bu dizindeki dosyaların üstüne yazılabilir!"
+
+#: ../src/File.cpp:304 ../src/File.cpp:2031
+#, c-format
+msgid ""
+"File %s already exists.\n"
+"Overwrite?"
+msgstr ""
+"%s dosyası zaten var.\n"
+"Üstüne yazılsın mı?"
+
+#: ../src/File.cpp:382 ../src/File.cpp:386 ../src/File.cpp:393
+#: ../src/File.cpp:397 ../src/File.cpp:2032
+msgid "Confirm Overwrite"
+msgstr "Üstüne Yazmayı Onayla"
+
+#: ../src/File.cpp:458 ../src/File.cpp:553 ../src/File.cpp:649
+#, c-format
+msgid "Can't copy file %s: %s"
+msgstr "%s dosyası kopyalanamıyor: %s"
+
+#: ../src/File.cpp:462 ../src/File.cpp:557 ../src/File.cpp:653
+#, c-format
+msgid "Can't copy file %s"
+msgstr "%s dosyası kopyalanamıyor"
+
+#. Set labels for progress dialog
+#: ../src/File.cpp:524 ../src/File.cpp:950 ../src/File.cpp:1315
+msgid "Source: "
+msgstr "Kaynak: "
+
+#: ../src/File.cpp:529 ../src/File.cpp:955 ../src/File.cpp:1320
+msgid "Target: "
+msgstr "Hedef: "
+
+#: ../src/File.cpp:604
+#, c-format
+msgid "Can't preserve date when copying file %s : %s"
+msgstr "%s dosyası kopyalanırken tarih korunamıyor: %s"
+
+#: ../src/File.cpp:608
+#, c-format
+msgid "Can't preserve date when copying file %s"
+msgstr "%s dosyası kopyalanırken tarih korunamıyor"
+
+#: ../src/File.cpp:750
+#, c-format
+msgid "Can't copy folder %s : Permission denied"
+msgstr "%s dizini kopyalanamıyor : İzin reddedildi"
+
+#: ../src/File.cpp:754
+#, c-format
+msgid "Can't copy file %s : Permission denied"
+msgstr "%s dosyası kopyalanamıyor: İzin reddedildi"
+
+#: ../src/File.cpp:791
+#, c-format
+msgid "Can't preserve date when copying folder %s: %s"
+msgstr "%s dizini kopyalanırken tarih korunamıyor: %s"
+
+#: ../src/File.cpp:795
+#, c-format
+msgid "Can't preserve date when copying folder %s"
+msgstr "%s dizini kopyalanırken tarih korunamıyor"
+
+#: ../src/File.cpp:899 ../src/File.cpp:1196 ../src/File.cpp:1265
+#: ../src/File.cpp:1472
+#, c-format
+msgid "Source %s doesn't exist"
+msgstr "%s kaynağı mevcut değil"
+
+#: ../src/File.cpp:907 ../src/File.cpp:940 ../src/File.cpp:1203
+#: ../src/File.cpp:1273 ../src/File.cpp:1301 ../src/File.cpp:1480
+#: ../src/File.cpp:1499
+#, c-format
+msgid "Destination %s is identical to source"
+msgstr "%s hedefi kaynağa özdeş"
+
+#: ../src/File.cpp:916 ../src/File.cpp:1282
+#, c-format
+msgid "Target %s is a sub-folder of source"
+msgstr "%s hedefi kaynağın alt dizini"
+
+#. Set labels for progress dialog
+#: ../src/File.cpp:1048
+msgid "Delete folder: "
+msgstr "Dizin sil: "
+
+#: ../src/File.cpp:1054 ../src/File.cpp:1139
+msgid "From: "
+msgstr "Şuradan: "
+
+#: ../src/File.cpp:1095
+#, c-format
+msgid "Can't delete folder %s: %s"
+msgstr "%s dizini silinemiyor: %s"
+
+#: ../src/File.cpp:1099
+#, c-format
+msgid "Can't delete folder %s"
+msgstr "%s dizini silinemiyor"
+
+#: ../src/File.cpp:1160
+#, c-format
+msgid "Can't delete file %s: %s"
+msgstr "%s dosyası silinemiyor: %s"
+
+#: ../src/File.cpp:1164
+#, c-format
+msgid "Can't delete file %s"
+msgstr "%s dosyası silinemiyor"
+
+#: ../src/File.cpp:1213
+#, c-format
+msgid "Destination %s already exists"
+msgstr "%s hedefi zaten var"
+
+#: ../src/File.cpp:1239 ../src/File.cpp:1434
+#, c-format
+msgid "Can't rename to target %s: %s"
+msgstr "%s hedefi yeniden adlandırılamıyor: %s"
+
+#: ../src/File.cpp:1572
+#, c-format
+msgid "Can't symlink %s: %s"
+msgstr "%s sembolik bağlanamıyor: %s"
+
+#: ../src/File.cpp:1576
+#, c-format
+msgid "Can't symlink %s"
+msgstr "%s sembolik bağlanamıyor"
+
+#: ../src/File.cpp:1655 ../src/File.cpp:1852
+msgid "Folder: "
+msgstr "Dizin: "
+
+#. Make and show command window
+#. File object
+#: ../src/File.cpp:1997 ../src/FilePanel.cpp:5177 ../src/FilePanel.cpp:5341
+#: ../src/FilePanel.cpp:5469 ../src/SearchPanel.cpp:2819
+#: ../src/SearchPanel.cpp:2844
+msgid "Extract archive"
+msgstr "Arşiv çıkar"
+
+#. Make and show command window
+#: ../src/File.cpp:2042
+msgid "Add to archive"
+msgstr "Arşive ekle"
+
+#: ../src/File.cpp:2083 ../src/FilePanel.cpp:6069 ../src/SearchPanel.cpp:4497
+#, c-format
+msgid "Failed command: %s"
+msgstr "Başarısız komut: %s"
+
+#: ../src/File.cpp:2111 ../src/File.cpp:2115
+msgid "Success"
+msgstr "İşlem başarılı"
+
+#: ../src/File.cpp:2111
+#, c-format
+msgid "Folder %s was successfully mounted."
+msgstr "%s dizini başarıyla bağlandı."
+
+#: ../src/File.cpp:2115
+#, c-format
+msgid "Folder %s was successfully unmounted."
+msgstr "%s dizini başarıyla ayrıldı."
+
+#. Make and show command window
+#: ../src/File.cpp:2126
+msgid "Install/Upgrade package"
+msgstr "Paket Kur/Yükselt"
+
+#: ../src/File.cpp:2131 ../src/XFilePackage.cpp:378
+#, c-format
+msgid "Installing package: %s \n"
+msgstr "Paketin kurulumu: %s \n"
+
+#. Make and show command window
+#: ../src/File.cpp:2144
+msgid "Uninstall package"
+msgstr "Paket kaldır"
+
+#: ../src/File.cpp:2149 ../src/XFilePackage.cpp:428
+#, c-format
+msgid "Uninstalling package: %s \n"
+msgstr "Paketin  kaldırılması: %s \n"
+
+#: ../src/FileDialog.cpp:120
+msgid "&File Name:"
+msgstr "&Dosya Adı:"
+
+#: ../src/FileDialog.cpp:122 ../src/MessageBox.cpp:73 ../src/MessageBox.cpp:78
+#: ../src/MessageBox.cpp:95 ../src/foxhacks.cpp:879
+msgid "&OK"
+msgstr "&Tamam"
+
+#: ../src/FileDialog.cpp:124
+msgid "File F&ilter:"
+msgstr "Dosya Süzgec&i:"
+
+#: ../src/FileDialog.cpp:129
+msgid "Read Only"
+msgstr "Salt Okunur"
+
+#: ../src/FileDialog.cpp:141 ../src/Preferences.cpp:779
+#: ../src/XFileExplorer.cpp:597 ../src/XFileImage.cpp:408
+msgid "Go to previous folder"
+msgstr "Önceki dizine git"
+
+#: ../src/FileDialog.cpp:148 ../src/Preferences.cpp:783
+#: ../src/XFileExplorer.cpp:604 ../src/XFileImage.cpp:414
+msgid "Go to next folder"
+msgstr "Sonraki dizine git"
+
+#: ../src/FileDialog.cpp:154 ../src/Preferences.cpp:787
+#: ../src/SearchPanel.cpp:171 ../src/XFileExplorer.cpp:611
+#: ../src/XFileImage.cpp:420
+msgid "Go to parent folder"
+msgstr "Üst dizine git"
+
+#: ../src/FileDialog.cpp:159 ../src/Preferences.cpp:791
+#: ../src/XFileExplorer.cpp:618 ../src/XFileImage.cpp:428
+msgid "Go to home folder"
+msgstr "Ana dizine git"
+
+#: ../src/FileDialog.cpp:164 ../src/Preferences.cpp:859
+#: ../src/XFileImage.cpp:433
+msgid "Go to working folder"
+msgstr "Çalışma dizinine git"
+
+#: ../src/FileDialog.cpp:169
+msgid "New folder"
+msgstr "Yeni dizin"
+
+#: ../src/FileDialog.cpp:174 ../src/Preferences.cpp:815
+#: ../src/SearchPanel.cpp:214 ../src/XFileExplorer.cpp:751
+#: ../src/XFileImage.cpp:442
+msgid "Big icon list"
+msgstr "Büyük simge listesi"
+
+#: ../src/FileDialog.cpp:179 ../src/Preferences.cpp:819
+#: ../src/SearchPanel.cpp:219 ../src/XFileExplorer.cpp:756
+#: ../src/XFileImage.cpp:447
+msgid "Small icon list"
+msgstr "Küçük simge listesi"
+
+#: ../src/FileDialog.cpp:184 ../src/Preferences.cpp:823
+#: ../src/SearchPanel.cpp:224 ../src/XFileExplorer.cpp:761
+#: ../src/XFileImage.cpp:452
+msgid "Detailed file list"
+msgstr "Ayrıntılı dosya listesi"
+
+#: ../src/FileDialog.cpp:189 ../src/FilePanel.cpp:236 ../src/XFileImage.cpp:636
+msgid "Show hidden files"
+msgstr "Gizlenmiş dosyaları göster"
+
+#: ../src/FileDialog.cpp:189 ../src/FilePanel.cpp:236 ../src/XFileImage.cpp:636
+msgid "Hide hidden files"
+msgstr "Gizlenmiş dosyaları gizle"
+
+#: ../src/FileDialog.cpp:194 ../src/FilePanel.cpp:240
+#: ../src/SearchPanel.cpp:234 ../src/XFileImage.cpp:640
+msgid "Show thumbnails"
+msgstr "Küçük resimleri göster"
+
+#: ../src/FileDialog.cpp:194 ../src/FilePanel.cpp:240
+#: ../src/SearchPanel.cpp:234 ../src/XFileImage.cpp:640
+msgid "Hide thumbnails"
+msgstr "Küçük resimleri gizle"
+
+#: ../src/FileDialog.cpp:956
+msgid "Create new folder..."
+msgstr "Yeni dizin oluştur..."
+
+#: ../src/FileDialog.cpp:1019
+msgid "Create new file..."
+msgstr "Yeni dosya oluştur..."
+
+#: ../src/FileDialog.cpp:1019 ../src/FilePanel.cpp:3758
+msgid "New File"
+msgstr "Yeni Dosya"
+
+#: ../src/FileDialog.cpp:1045 ../src/FilePanel.cpp:3785
+#: ../src/FilePanel.cpp:3884
+#, c-format
+msgid "File or folder %s already exists"
+msgstr "%s dosya veya dizini zaten var"
+
+#: ../src/FileDialog.cpp:1580 ../src/XFileImage.cpp:906
+msgid "Go ho&me"
+msgstr "E&ve git"
+
+#: ../src/FileDialog.cpp:1581 ../src/XFileImage.cpp:907
+msgid "Go &work"
+msgstr "İ&şe git"
+
+#: ../src/FileDialog.cpp:1582 ../src/XFileExplorer.cpp:781
+msgid "New &file..."
+msgstr "Yeni &dosya..."
+
+#: ../src/FileDialog.cpp:1583 ../src/FilePanel.cpp:4513
+#: ../src/FilePanel.cpp:4556
+msgid "New f&older..."
+msgstr "Yeni di&zin..."
+
+#: ../src/FileDialog.cpp:1585 ../src/FilePanel.cpp:4519
+#: ../src/FilePanel.cpp:4562 ../src/XFileExplorer.cpp:998
+#: ../src/XFileExplorer.cpp:1028 ../src/XFileImage.cpp:775
+#: ../src/XFileImage.cpp:909
+msgid "&Hidden files"
+msgstr "&Gizli dosyalar"
+
+#: ../src/FileDialog.cpp:1586 ../src/FilePanel.cpp:4520
+#: ../src/FilePanel.cpp:4563 ../src/SearchPanel.cpp:2311
+#: ../src/SearchPanel.cpp:2339 ../src/XFileImage.cpp:910
+msgid "Thum&bnails"
+msgstr "Küçük &resimler"
+
+#: ../src/FileDialog.cpp:1588 ../src/FilePanel.cpp:4522
+#: ../src/FilePanel.cpp:4565 ../src/SearchPanel.cpp:2313
+#: ../src/SearchPanel.cpp:2341 ../src/XFileImage.cpp:912
+msgid "B&ig icons"
+msgstr "Büyük &simgeler"
+
+#: ../src/FileDialog.cpp:1589 ../src/FilePanel.cpp:4523
+#: ../src/FilePanel.cpp:4566 ../src/SearchPanel.cpp:2314
+#: ../src/SearchPanel.cpp:2342 ../src/XFileExplorer.cpp:1002
+#: ../src/XFileExplorer.cpp:1032 ../src/XFileImage.cpp:795
+#: ../src/XFileImage.cpp:913
+msgid "&Small icons"
+msgstr "Küçük &simgeler"
+
+#: ../src/FileDialog.cpp:1590 ../src/XFileImage.cpp:914
+msgid "Fu&ll file list"
+msgstr "Tam dosya &listesi"
+
+#: ../src/FileDialog.cpp:1592 ../src/FilePanel.cpp:4526
+#: ../src/FilePanel.cpp:4569 ../src/SearchPanel.cpp:2317
+#: ../src/SearchPanel.cpp:2345 ../src/XFileExplorer.cpp:1005
+#: ../src/XFileExplorer.cpp:1035 ../src/XFileImage.cpp:817
+#: ../src/XFileImage.cpp:916
+msgid "&Rows"
+msgstr "Satı&rlar"
+
+#: ../src/FileDialog.cpp:1593 ../src/FilePanel.cpp:4527
+#: ../src/FilePanel.cpp:4570 ../src/SearchPanel.cpp:2318
+#: ../src/SearchPanel.cpp:2346 ../src/XFileExplorer.cpp:1006
+#: ../src/XFileExplorer.cpp:1036 ../src/XFileImage.cpp:818
+#: ../src/XFileImage.cpp:917
+msgid "&Columns"
+msgstr "Sütu&nlar"
+
+#: ../src/FileDialog.cpp:1594 ../src/FilePanel.cpp:4528
+#: ../src/FilePanel.cpp:4571 ../src/SearchPanel.cpp:2319
+#: ../src/XFileExplorer.cpp:1007 ../src/XFileExplorer.cpp:1037
+#: ../src/XFileImage.cpp:918
+msgid "Autosize"
+msgstr "Otomatik boyut"
+
+#: ../src/FileDialog.cpp:1596 ../src/FilePanel.cpp:4530
+#: ../src/FilePanel.cpp:4573 ../src/SearchPanel.cpp:2321
+#: ../src/SearchPanel.cpp:2349 ../src/XFileExplorer.cpp:1009
+#: ../src/XFileExplorer.cpp:1039 ../src/XFileImage.cpp:920
+msgid "&Name"
+msgstr "A&d"
+
+#: ../src/FileDialog.cpp:1597 ../src/FilePanel.cpp:4531
+#: ../src/FilePanel.cpp:4574 ../src/SearchPanel.cpp:2322
+#: ../src/SearchPanel.cpp:2350 ../src/XFileExplorer.cpp:1010
+#: ../src/XFileExplorer.cpp:1040 ../src/XFileImage.cpp:921
+msgid "Si&ze"
+msgstr "Bo&yut"
+
+#: ../src/FileDialog.cpp:1598 ../src/FilePanel.cpp:4532
+#: ../src/FilePanel.cpp:4575 ../src/SearchPanel.cpp:2323
+#: ../src/SearchPanel.cpp:2351 ../src/XFileImage.cpp:922
+msgid "&Type"
+msgstr "&Tür"
+
+#: ../src/FileDialog.cpp:1599 ../src/FilePanel.cpp:4533
+#: ../src/FilePanel.cpp:4576 ../src/SearchPanel.cpp:2324
+#: ../src/SearchPanel.cpp:2352 ../src/XFileExplorer.cpp:1012
+#: ../src/XFileExplorer.cpp:1042 ../src/XFileImage.cpp:923
+msgid "E&xtension"
+msgstr "U&zantı"
+
+#: ../src/FileDialog.cpp:1600 ../src/FilePanel.cpp:4534
+#: ../src/FilePanel.cpp:4577 ../src/SearchPanel.cpp:2325
+#: ../src/SearchPanel.cpp:2353 ../src/XFileImage.cpp:924
+msgid "&Date"
+msgstr "&Tarih"
+
+#: ../src/FileDialog.cpp:1601 ../src/FilePanel.cpp:4535
+#: ../src/FilePanel.cpp:4578 ../src/SearchPanel.cpp:2326
+#: ../src/SearchPanel.cpp:2354 ../src/XFileImage.cpp:925
+msgid "&User"
+msgstr "K&ullanıcı"
+
+#: ../src/FileDialog.cpp:1602 ../src/FilePanel.cpp:4536
+#: ../src/FilePanel.cpp:4579 ../src/SearchPanel.cpp:2327
+#: ../src/SearchPanel.cpp:2355 ../src/XFileImage.cpp:926
+msgid "&Group"
+msgstr "&Grup"
+
+#: ../src/FileDialog.cpp:1606 ../src/FilePanel.cpp:4541
+#: ../src/FilePanel.cpp:4584 ../src/SearchPanel.cpp:2331
+#: ../src/SearchPanel.cpp:2359 ../src/XFileImage.cpp:930
+msgid "Fold&ers first"
+msgstr "Önce dizinl&er"
+
+#: ../src/FileDialog.cpp:1607 ../src/FilePanel.cpp:4542
+#: ../src/FilePanel.cpp:4585 ../src/SearchPanel.cpp:2332
+#: ../src/SearchPanel.cpp:2360 ../src/XFileExplorer.cpp:1022
+#: ../src/XFileExplorer.cpp:1052 ../src/XFileImage.cpp:931
+msgid "Re&verse order"
+msgstr "Te&rsine sıra"
+
+#. Font families, to be filled later
+#: ../src/FontDialog.cpp:53
+msgid "&Family:"
+msgstr "Ai&le:"
+
+#. Font weights
+#: ../src/FontDialog.cpp:62
+msgid "&Weight:"
+msgstr "A&ğırlık:"
+
+#. Font styles
+#: ../src/FontDialog.cpp:68
+msgid "&Style:"
+msgstr "&Tarz:"
+
+#. Font sizes, to be filled later
+#: ../src/FontDialog.cpp:74
+msgid "Si&ze:"
+msgstr "Bo&yut:"
+
+#. Character set choice
+#: ../src/FontDialog.cpp:82
+msgid "Character Set:"
+msgstr "Karakter Kümesi:"
+
+#: ../src/FontDialog.cpp:85 ../src/FontDialog.cpp:117 ../src/FontDialog.cpp:133
+msgid "Any"
+msgstr "Herhangi"
+
+#: ../src/FontDialog.cpp:86
+msgid "West European"
+msgstr "Batı Avrupa"
+
+#: ../src/FontDialog.cpp:87
+msgid "East European"
+msgstr "Doğu Avrupa"
+
+#: ../src/FontDialog.cpp:88
+msgid "South European"
+msgstr "Güney Avrupa"
+
+#: ../src/FontDialog.cpp:89
+msgid "North European"
+msgstr "Kuzey Avrupa"
+
+#: ../src/FontDialog.cpp:90
+msgid "Cyrillic"
+msgstr "Kiril"
+
+#: ../src/FontDialog.cpp:91
+msgid "Arabic"
+msgstr "Arapça"
+
+#: ../src/FontDialog.cpp:92
+msgid "Greek"
+msgstr "Yunanca"
+
+#: ../src/FontDialog.cpp:93
+msgid "Hebrew"
+msgstr "İbranice"
+
+#: ../src/FontDialog.cpp:94
+msgid "Turkish"
+msgstr "Türkçe"
+
+#: ../src/FontDialog.cpp:95
+msgid "Nordic"
+msgstr "İskandinav"
+
+#: ../src/FontDialog.cpp:96
+msgid "Thai"
+msgstr "Tayland dili"
+
+#: ../src/FontDialog.cpp:97
+msgid "Baltic"
+msgstr "Baltık"
+
+#: ../src/FontDialog.cpp:98
+msgid "Celtic"
+msgstr "Keltçe"
+
+#: ../src/FontDialog.cpp:99
+msgid "Russian"
+msgstr "Rusça"
+
+#: ../src/FontDialog.cpp:100
+msgid "Central European (cp1250)"
+msgstr "Orta Avrupa (cp1250)"
+
+#: ../src/FontDialog.cpp:101
+msgid "Russian (cp1251)"
+msgstr "Rusça (cp1251)"
+
+#: ../src/FontDialog.cpp:102
+msgid "Latin1 (cp1252)"
+msgstr "Latin1 (cp1252)"
+
+#: ../src/FontDialog.cpp:103
+msgid "Greek (cp1253)"
+msgstr "Yunanca (cp1253)"
+
+#: ../src/FontDialog.cpp:104
+msgid "Turkish (cp1254)"
+msgstr "Türkçe (cp1254)"
+
+#: ../src/FontDialog.cpp:105
+msgid "Hebrew (cp1255)"
+msgstr "İbranice (cp1255)"
+
+#: ../src/FontDialog.cpp:106
+msgid "Arabic (cp1256)"
+msgstr "Arapça (cp1256)"
+
+#: ../src/FontDialog.cpp:107
+msgid "Baltic (cp1257)"
+msgstr "Baltık (cp1257)"
+
+#: ../src/FontDialog.cpp:108
+msgid "Vietnam (cp1258)"
+msgstr "Vietnamca (cp1258)"
+
+#: ../src/FontDialog.cpp:109
+msgid "Thai (cp874)"
+msgstr "Tayland dili (cp874)"
+
+#: ../src/FontDialog.cpp:110
+msgid "UNICODE"
+msgstr "UNICODE"
+
+#. Set width
+#: ../src/FontDialog.cpp:114
+msgid "Set Width:"
+msgstr "Genişliği Ayarla:"
+
+#: ../src/FontDialog.cpp:118
+msgid "Ultra condensed"
+msgstr "Çok fazla yoğun"
+
+#: ../src/FontDialog.cpp:119
+msgid "Extra condensed"
+msgstr "Fazla yoğun"
+
+#: ../src/FontDialog.cpp:120
+msgid "Condensed"
+msgstr "Yoğun"
+
+#: ../src/FontDialog.cpp:121
+msgid "Semi condensed"
+msgstr "Yarı yoğun"
+
+#: ../src/FontDialog.cpp:122
+msgid "Normal"
+msgstr "Normal"
+
+#: ../src/FontDialog.cpp:123
+msgid "Semi expanded"
+msgstr "Yarı genişletilmiş"
+
+#: ../src/FontDialog.cpp:124
+msgid "Expanded"
+msgstr "Genişletilmiş"
+
+#: ../src/FontDialog.cpp:125
+msgid "Extra expanded"
+msgstr "Fazla genişletilmiş"
+
+#: ../src/FontDialog.cpp:126
+msgid "Ultra expanded"
+msgstr "Çok fazla genişletilmiş"
+
+#. Pitch
+#: ../src/FontDialog.cpp:130
+msgid "Pitch:"
+msgstr "Saha:"
+
+#: ../src/FontDialog.cpp:134
+msgid "Fixed"
+msgstr "Sabit"
+
+#: ../src/FontDialog.cpp:135
+msgid "Variable"
+msgstr "Değişken"
+
+#: ../src/FontDialog.cpp:140
+msgid "Scalable:"
+msgstr "Ölçeklenebilir:"
+
+#: ../src/FontDialog.cpp:144
+msgid "All Fonts:"
+msgstr "Tüm Yazıtipleri:"
+
+#: ../src/FontDialog.cpp:148
+msgid "Preview:"
+msgstr "Önizleme:"
+
+#. Space before tab is used to set the correct button height
+#: ../src/MessageBox.cpp:86 ../src/XFileExplorer.cpp:681
+msgid "Launch Xfe as root"
+msgstr "Xfe'yi kök olarak başlat"
+
+#: ../src/MessageBox.cpp:100 ../src/MessageBox.cpp:108
+#: ../src/MessageBox.cpp:128
+msgid "&No"
+msgstr "&Hayır"
+
+#: ../src/MessageBox.cpp:101 ../src/MessageBox.cpp:107
+#: ../src/MessageBox.cpp:127 ../src/OverwriteBox.cpp:51
+#: ../src/OverwriteBox.cpp:59 ../src/OverwriteBox.cpp:101
+#: ../src/OverwriteBox.cpp:109
+msgid "&Yes"
+msgstr "&Evet"
+
+#: ../src/MessageBox.cpp:114 ../src/MessageBox.cpp:120
+#: ../src/XFileExplorer.cpp:869 ../src/XFilePackage.cpp:224
+#: ../src/XFileImage.cpp:727 ../src/WriteWindow.cpp:788
+msgid "&Quit"
+msgstr "&Çık"
+
+#: ../src/MessageBox.cpp:121 ../src/WriteWindow.cpp:753
+msgid "&Save"
+msgstr "&Kaydet"
+
+#: ../src/MessageBox.cpp:129 ../src/OverwriteBox.cpp:52
+#: ../src/OverwriteBox.cpp:102
+msgid "Yes for &All"
+msgstr "&Tümüne Evet"
+
+#: ../src/MessageBox.cpp:160 ../src/XFileExplorer.cpp:3836
+msgid "Enter the user password:"
+msgstr "Kullanıcı parolasını girin:"
+
+#: ../src/MessageBox.cpp:166 ../src/XFileExplorer.cpp:3842
+msgid "Enter the root password:"
+msgstr "Kök parolasını girin:"
+
+#: ../src/MessageBox.cpp:196 ../src/XFileExplorer.cpp:3880
+msgid "An error has occurred!"
+msgstr "Bir hata oluştu!"
+
+#: ../src/IconList.cpp:2494 ../src/IconList.cpp:2500 ../src/IconList.cpp:2513
+#: ../src/IconList.cpp:2519 ../src/foxhacks.cpp:199 ../src/foxhacks.cpp:205
+msgid "Name: "
+msgstr "Ad: "
+
+#: ../src/IconList.cpp:2494 ../src/IconList.cpp:2502 ../src/foxhacks.cpp:199
+#: ../src/foxhacks.cpp:205
+msgid "Size in root: "
+msgstr "Kök içindeki boyut: "
+
+#: ../src/IconList.cpp:2494 ../src/IconList.cpp:2502 ../src/IconList.cpp:2513
+#: ../src/IconList.cpp:2521 ../src/foxhacks.cpp:199 ../src/foxhacks.cpp:205
+msgid "Type: "
+msgstr "Tür: "
+
+#: ../src/IconList.cpp:2495 ../src/IconList.cpp:2503 ../src/IconList.cpp:2514
+#: ../src/IconList.cpp:2522 ../src/foxhacks.cpp:200 ../src/foxhacks.cpp:206
+msgid "Modified date: "
+msgstr "Değiştirilme tarihi: "
+
+#: ../src/IconList.cpp:2495 ../src/IconList.cpp:2505 ../src/IconList.cpp:2514
+#: ../src/IconList.cpp:2524 ../src/foxhacks.cpp:200 ../src/foxhacks.cpp:206
+msgid "User: "
+msgstr "Kullanıcı: "
+
+#: ../src/IconList.cpp:2495 ../src/IconList.cpp:2505 ../src/IconList.cpp:2514
+#: ../src/IconList.cpp:2524 ../src/foxhacks.cpp:200 ../src/foxhacks.cpp:206
+msgid "Group: "
+msgstr "Grup: "
+
+#: ../src/IconList.cpp:2496 ../src/IconList.cpp:2505 ../src/IconList.cpp:2515
+#: ../src/IconList.cpp:2524 ../src/foxhacks.cpp:201 ../src/foxhacks.cpp:207
+msgid "Permissions: "
+msgstr "İzinler: "
+
+#: ../src/IconList.cpp:2501 ../src/IconList.cpp:2520
+msgid "Original path: "
+msgstr "Asıl yol: "
+
+#: ../src/IconList.cpp:2504 ../src/IconList.cpp:2523 ../src/foxhacks.cpp:206
+msgid "Deletion date: "
+msgstr "Silinme tarihi: "
+
+#: ../src/IconList.cpp:2513 ../src/IconList.cpp:2521
+msgid "Size: "
+msgstr "Boyut: "
+
+#: ../src/FileList.cpp:151
+msgid "Size"
+msgstr "Boyut"
+
+#: ../src/FileList.cpp:152
+msgid "Type"
+msgstr "Tür"
+
+#: ../src/FileList.cpp:153
+msgid "Extension"
+msgstr "Uzantı"
+
+#: ../src/FileList.cpp:154
+msgid "Modified date"
+msgstr "Değiştirme tarihi"
+
+#: ../src/FileList.cpp:157
+msgid "Permissions"
+msgstr "İzinler"
+
+#: ../src/FileList.cpp:4482 ../src/FileList.cpp:5227 ../src/XFileImage.cpp:1471
+#: ../src/XFileImage.cpp:2099 ../src/XFileImage.cpp:2153
+#: ../src/XFileImage.cpp:2244
+msgid "Unable to load image"
+msgstr "Resim yüklenemiyor"
+
+#: ../src/FileList.cpp:4673 ../src/XFileExplorer.cpp:1018
+#: ../src/XFileExplorer.cpp:1048
+msgid "Original path"
+msgstr "Asıl yol"
+
+#: ../src/FileList.cpp:4674 ../src/FilePanel.cpp:4538 ../src/FilePanel.cpp:4581
+#: ../src/XFileExplorer.cpp:1017 ../src/XFileExplorer.cpp:1047
+msgid "Deletion date"
+msgstr "Silinme tarihi"
+
+#: ../src/FilePanel.cpp:244 ../src/FilePanel.cpp:4401
+msgid "Filter"
+msgstr "Süzgeç"
+
+#: ../src/FilePanel.cpp:248 ../src/SearchPanel.cpp:240
+msgid "Status"
+msgstr "Durum"
+
+#: ../src/FilePanel.cpp:1034 ../src/SearchPanel.cpp:789
+#, c-format
+msgid "File %s is an executable text file, what do you want to do?"
+msgstr "%s dosyası çalıştırılabilir bir metin dosyası, ne yapmak istiyorsunuz?"
+
+#: ../src/FilePanel.cpp:1035 ../src/SearchPanel.cpp:790
+msgid "Confirm Execute"
+msgstr "Çalıştırmayı Onayla"
+
+#. Make and show command window
+#. The CommandWindow object will delete itself when closed!
+#. Make and show command window
+#: ../src/FilePanel.cpp:1074 ../src/SearchPanel.cpp:829
+#: ../src/XFileExplorer.cpp:3738
+msgid "Command log"
+msgstr "Komut günlüğü"
+
+#: ../src/FilePanel.cpp:1832
+msgid ""
+"The / character is not allowed in file or folder names, operation cancelled"
+msgstr ""
+"Dosya veya dizin adlarında / karakterine izin verilmiyor, işlem iptal edildi"
+
+#: ../src/FilePanel.cpp:1876 ../src/SearchPanel.cpp:3779
+msgid "To folder:"
+msgstr "Dizine:"
+
+#: ../src/FilePanel.cpp:2367 ../src/SearchPanel.cpp:2906
+#, c-format
+msgid "Can't write to trash location %s: Permission denied"
+msgstr "%s çöp kutusu konumuna yazılamıyor: İzin reddedildi"
+
+#: ../src/FilePanel.cpp:2408 ../src/SearchPanel.cpp:2936
+#, c-format
+msgid "Move file %s to trash can?"
+msgstr "%s dosyası çöp kutusuna taşınsın mı?"
+
+#: ../src/FilePanel.cpp:2413 ../src/SearchPanel.cpp:2941
+#, c-format
+msgid "Move %s selected items to trash can?"
+msgstr "%s seçili öğe çöp kutusuna taşınsın mı?"
+
+#: ../src/FilePanel.cpp:2471 ../src/SearchPanel.cpp:2994
+#, c-format
+msgid "File %s is write-protected, move it anyway to trash can?"
+msgstr "%s dosyası yazmaya karşı korumalı, yine de çöp kutusuna taşınsın mı?"
+
+#: ../src/FilePanel.cpp:2575 ../src/SearchPanel.cpp:3090
+msgid "Move to trash file operation cancelled!"
+msgstr "Çöpe dosya taşıma işlemi iptal edildi!"
+
+#: ../src/FilePanel.cpp:2716
+#, c-format
+msgid "Restore file %s to its original location %s ?"
+msgstr "%s dosyası %s asıl konumuna geri alınsın mı?"
+
+#: ../src/FilePanel.cpp:2721
+#, c-format
+msgid "Restore %s selected items to their original locations?"
+msgstr "%s seçili öğe asıl konumlarına geri alınsın mı?"
+
+#: ../src/FilePanel.cpp:2764 ../src/FilePanel.cpp:3705
+#: ../src/FilePanel.cpp:5240
+#, c-format
+msgid "Can't create folder %s: %s"
+msgstr "%s dizini oluşturulamıyor: %s"
+
+#: ../src/FilePanel.cpp:2878 ../src/SearchPanel.cpp:3147
+#, c-format
+msgid "Definitively delete file %s ?"
+msgstr "%s dosyası kesinlikle silinsin mi ?"
+
+#: ../src/FilePanel.cpp:2883 ../src/SearchPanel.cpp:3152
+#, c-format
+msgid "Definitively delete %s selected items?"
+msgstr "%s seçili öğe kesinlikle silinsin mi?"
+
+#: ../src/FilePanel.cpp:3004 ../src/SearchPanel.cpp:3252
+#, c-format
+msgid "File %s is write-protected, delete it anyway?"
+msgstr "%s dosyası yazmaya karşı korumalı, yine de silinsin mi?"
+
+#: ../src/FilePanel.cpp:3089 ../src/SearchPanel.cpp:3330
+msgid "Delete file operation cancelled!"
+msgstr "Dosya silme işlemi iptal edildi!"
+
+#: ../src/FilePanel.cpp:3496 ../src/Preferences.cpp:1010
+#: ../src/SearchPanel.cpp:1703
+msgid "Compare"
+msgstr "Karşılaştırma"
+
+#: ../src/FilePanel.cpp:3496 ../src/SearchPanel.cpp:1703
+msgid "With:"
+msgstr "İle:"
+
+#: ../src/FilePanel.cpp:3546 ../src/SearchPanel.cpp:1753
+#, c-format
+msgid ""
+"Program %s not found. Please define a file comparator program in the "
+"Preferences dialog!"
+msgstr ""
+"%s programı bulunamadı. Lütfen Tercihler iletişim kutusunda bir dosya "
+"karşılaştırma programı tanımlayın!"
+
+#: ../src/FilePanel.cpp:3758
+msgid "Create new file:"
+msgstr "Yeni dosya oluştur:"
+
+#: ../src/FilePanel.cpp:3794
+#, c-format
+msgid "Can't create file %s: %s"
+msgstr "%s dosyası oluşturulamıyor: %s"
+
+#: ../src/FilePanel.cpp:3798
+#, c-format
+msgid "Can't create file %s"
+msgstr "%s dosyası oluşturulamıyor"
+
+#: ../src/FilePanel.cpp:3813
+#, c-format
+msgid "Can't set permissions in %s: %s"
+msgstr "%s içinde izinler ayarlanamıyor: %s"
+
+#: ../src/FilePanel.cpp:3817
+#, c-format
+msgid "Can't set permissions in %s"
+msgstr "%s içinde izinler ayarlanamıyor"
+
+#: ../src/FilePanel.cpp:3865
+msgid "Create new symbolic link:"
+msgstr "Yeni sembolik bağ oluştur:"
+
+#: ../src/FilePanel.cpp:3865
+msgid "New Symlink"
+msgstr "Yeni Sembolik Bağ"
+
+#. Select target
+#: ../src/FilePanel.cpp:3889
+msgid "Select the symlink refered file or folder"
+msgstr "Sembolik bağ referanslı dosya veya dizin seçin"
+
+#: ../src/FilePanel.cpp:3899
+#, c-format
+msgid "Symlink source %s does not exist"
+msgstr "%s sembolik bağ kaynağı mevcut değil"
+
+#: ../src/FilePanel.cpp:4227 ../src/SearchPanel.cpp:889
+msgid "Open selected file(s) with:"
+msgstr "Seçili dosyayı(ları) şununla aç:"
+
+#: ../src/FilePanel.cpp:4227 ../src/SearchPanel.cpp:889
+msgid "Open With"
+msgstr "Birlikte Aç"
+
+#: ../src/FilePanel.cpp:4227 ../src/SearchPanel.cpp:889
+msgid "A&ssociate"
+msgstr "İlişkilendi&rme"
+
+#: ../src/FilePanel.cpp:4401
+msgid "Show files:"
+msgstr "Dosyaları göster:"
+
+#. Menu items
+#: ../src/FilePanel.cpp:4512
+msgid "New& file..."
+msgstr "Yeni& dosya..."
+
+#: ../src/FilePanel.cpp:4514 ../src/FilePanel.cpp:4557
+#: ../src/XFileExplorer.cpp:793
+msgid "New s&ymlink..."
+msgstr "Yeni s&embolik bağ..."
+
+#: ../src/FilePanel.cpp:4515 ../src/FilePanel.cpp:4558
+msgid "Fi&lter..."
+msgstr "Sü&zgeç..."
+
+#: ../src/FilePanel.cpp:4524 ../src/FilePanel.cpp:4567
+#: ../src/SearchPanel.cpp:2343
+msgid "&Full file list"
+msgstr "&Tam dosya listesi"
+
+#: ../src/FilePanel.cpp:4537 ../src/FilePanel.cpp:4580
+#: ../src/SearchPanel.cpp:2328 ../src/SearchPanel.cpp:2356
+msgid "Per&missions"
+msgstr "İzi&nler"
+
+#: ../src/FilePanel.cpp:4555
+msgid "Ne&w file..."
+msgstr "&Yeni dosya..."
+
+#: ../src/FilePanel.cpp:4593 ../src/XFileExplorer.cpp:1107
+msgid "&Mount"
+msgstr "&Bağla"
+
+#: ../src/FilePanel.cpp:4602 ../src/SearchPanel.cpp:2368
+msgid "Open &with..."
+msgstr "&Birlikte aç..."
+
+#: ../src/FilePanel.cpp:4603 ../src/SearchPanel.cpp:2369
+#: ../src/XFileExplorer.cpp:813
+msgid "&Open"
+msgstr "&Aç"
+
+#: ../src/FilePanel.cpp:4614 ../src/FilePanel.cpp:4618
+msgid "Extr&act to folder "
+msgstr "Dizine çık&art "
+
+#: ../src/FilePanel.cpp:4625 ../src/FilePanel.cpp:4632
+#: ../src/FilePanel.cpp:4637 ../src/SearchPanel.cpp:2385
+msgid "&Extract here"
+msgstr "B&uraya çıkart"
+
+#: ../src/FilePanel.cpp:4627 ../src/FilePanel.cpp:4639
+#: ../src/SearchPanel.cpp:2380 ../src/SearchPanel.cpp:2390
+msgid "E&xtract to..."
+msgstr "Şu&raya çıkart..."
+
+#: ../src/FilePanel.cpp:4645 ../src/FilePanel.cpp:4653
+#: ../src/SearchPanel.cpp:2396 ../src/SearchPanel.cpp:2402
+#: ../src/XFileExplorer.cpp:959 ../src/XFileImage.cpp:335
+#: ../src/WriteWindow.cpp:598
+msgid "&View"
+msgstr "&Göster"
+
+#: ../src/FilePanel.cpp:4646
+msgid "Install/Up&grade"
+msgstr "Kur/Yü&kselt"
+
+#: ../src/FilePanel.cpp:4647
+msgid "Un&install"
+msgstr "Kal&dır"
+
+#: ../src/FilePanel.cpp:4654 ../src/ExecuteBox.cpp:41
+#: ../src/SearchPanel.cpp:2403 ../src/XFileExplorer.cpp:921
+#: ../src/WriteWindow.cpp:594
+msgid "&Edit"
+msgstr "Düz&enle"
+
+#: ../src/FilePanel.cpp:4657 ../src/SearchPanel.cpp:2406
+msgid "Com&pare..."
+msgstr "Ka&rşılaştır..."
+
+#: ../src/FilePanel.cpp:4661 ../src/SearchPanel.cpp:2410
+msgid "Com&pare"
+msgstr "Ka&rşılaştır"
+
+#: ../src/FilePanel.cpp:4672
+msgid "Packages &query "
+msgstr "Paket &sorgusu "
+
+#: ../src/FilePanel.cpp:4680 ../src/SearchPanel.cpp:2429
+msgid "Scripts"
+msgstr "Betikler"
+
+#: ../src/FilePanel.cpp:4683 ../src/SearchPanel.cpp:2432
+msgid "&Go to script folder"
+msgstr "Betik dizinine &git"
+
+#: ../src/FilePanel.cpp:4691 ../src/SearchPanel.cpp:2440
+msgid "Copy &to..."
+msgstr "Şu&raya kopyala..."
+
+#: ../src/FilePanel.cpp:4694 ../src/SearchPanel.cpp:2443
+msgid "M&ove to trash"
+msgstr "Ç&öpe taşı"
+
+#: ../src/FilePanel.cpp:4695
+msgid "Restore &from trash"
+msgstr "Çö&pten geri al"
+
+#: ../src/FilePanel.cpp:4698 ../src/SearchPanel.cpp:2446
+msgid "Compare &sizes"
+msgstr "&Boyutları karşılaştır"
+
+#: ../src/FilePanel.cpp:4699 ../src/SearchPanel.cpp:2447
+msgid "P&roperties"
+msgstr "Özellikle&r"
+
+#. File selection dialog
+#. File dialog
+#. File selection dialog
+#: ../src/FilePanel.cpp:5060 ../src/HistInputDialog.cpp:142
+#: ../src/BrowseInputDialog.cpp:124 ../src/ArchInputDialog.cpp:117
+#: ../src/SearchPanel.cpp:2691
+msgid "Select a destination folder"
+msgstr "Bir hedef dizin seçin"
+
+#: ../src/FilePanel.cpp:5063 ../src/HistInputDialog.cpp:162
+#: ../src/BrowseInputDialog.cpp:140 ../src/ArchInputDialog.cpp:121
+#: ../src/SearchPanel.cpp:2694 ../src/SearchWindow.cpp:1151
+#: ../src/XFilePackage.cpp:318 ../src/XFileImage.cpp:181
+#: ../src/WriteWindow.cpp:1540
+msgid "All Files"
+msgstr "Tüm Dosyalar"
+
+#. File object
+#: ../src/FilePanel.cpp:5523
+msgid "Package Install/Upgrade"
+msgstr "Paket Kur/Yükselt"
+
+#. File object
+#: ../src/FilePanel.cpp:5572
+msgid "Package Uninstall"
+msgstr "Paket Kaldır"
+
+#: ../src/FilePanel.cpp:5781 ../src/CommandWindow.cpp:184
+#: ../src/SearchWindow.cpp:809 ../src/startupnotification.cpp:164
+#: ../src/xfeutils.cpp:1711
+#, c-format
+msgid "Error: Fork failed: %s\n"
+msgstr "Hata: Çatal başarısız oldu: %s\n"
+
+#: ../src/FilePanel.cpp:5828 ../src/SearchPanel.cpp:4206
+#, c-format
+msgid "Can't create script folder %s: %s"
+msgstr "%s betik dizini oluşturulamıyor: %s"
+
+#: ../src/FilePanel.cpp:5832 ../src/SearchPanel.cpp:4210
+#, c-format
+msgid "Can't create script folder %s"
+msgstr "%s betik dizini oluşturulamıyor"
+
+#: ../src/FilePanel.cpp:6055 ../src/SearchPanel.cpp:4483
+#: ../src/XFilePackage.cpp:923
+msgid "No compatible package manager (rpm or dpkg) found!"
+msgstr "Uyumlu bir paket yöneticisi (rpm veya dpkg) bulunamadı!"
+
+#: ../src/FilePanel.cpp:6120 ../src/SearchPanel.cpp:4548
+#, c-format
+msgid "File %s does not belong to any package."
+msgstr "%s dosyası hiçbir pakete ait değil."
+
+#: ../src/FilePanel.cpp:6121 ../src/FilePanel.cpp:6126
+#: ../src/SearchPanel.cpp:410 ../src/SearchPanel.cpp:605
+#: ../src/SearchPanel.cpp:1812 ../src/SearchPanel.cpp:4549
+#: ../src/SearchPanel.cpp:4554
+msgid "Information"
+msgstr "Bilgi"
+
+#: ../src/FilePanel.cpp:6125 ../src/SearchPanel.cpp:4553
+#, c-format
+msgid "File %s belongs to the package: %s"
+msgstr "%s dosyasının ait olduğu paket: %s"
+
+#. Make and show command window
+#: ../src/FilePanel.cpp:6220 ../src/SearchPanel.cpp:2887
+msgid "Sizes of Selected Items"
+msgstr "Seçili Öğelerin Boyutu"
+
+#: ../src/FilePanel.cpp:6253 ../src/SearchPanel.cpp:4245
+msgid "0 bytes"
+msgstr "0 Bayt"
+
+#: ../src/FilePanel.cpp:6299 ../src/SearchPanel.cpp:4276
+#, c-format
+msgid "%s in %s selected items (%s folder, %s file)"
+msgstr "%s, seçilen %s öğenin içinde (%s dizin, %s dosya)"
+
+#: ../src/FilePanel.cpp:6303 ../src/SearchPanel.cpp:4280
+#, c-format
+msgid "%s in %s selected items (%s folder, %s files)"
+msgstr "%s, seçilen %s öğenin içinde (%s dizin, %s dosya)"
+
+#: ../src/FilePanel.cpp:6307 ../src/SearchPanel.cpp:4284
+#, c-format
+msgid "%s in %s selected items (%s folders, %s file)"
+msgstr "%s, seçilen %s öğenin içinde (%s dizin, %s dosya)"
+
+#: ../src/FilePanel.cpp:6311 ../src/SearchPanel.cpp:4288
+#, c-format
+msgid "%s in %s selected items (%s folders, %s files)"
+msgstr "%s, seçilen %s öğenin içinde (%s dizin, %s dosya)"
+
+#: ../src/FilePanel.cpp:6322
+msgid "1 item (1 folder)"
+msgstr "1 öğe (1 dizin)"
+
+#: ../src/FilePanel.cpp:6336 ../src/FilePanel.cpp:6351
+#: ../src/SearchPanel.cpp:4313 ../src/SearchPanel.cpp:4328
+#, c-format
+msgid "%s items (%s folders, %s files)"
+msgstr "%s öğe (%s dizin, %s dosya)"
+
+#: ../src/FilePanel.cpp:6339 ../src/SearchPanel.cpp:4316
+#, c-format
+msgid "%s items (%s folder, %s file)"
+msgstr "%s öğe (%s dizin, %s dosya)"
+
+#: ../src/FilePanel.cpp:6343 ../src/SearchPanel.cpp:4320
+#, c-format
+msgid "%s items (%s folder, %s files)"
+msgstr "%s öğe (%s dizin, %s dosya)"
+
+#: ../src/FilePanel.cpp:6347 ../src/SearchPanel.cpp:4324
+#, c-format
+msgid "%s items (%s folders, %s file)"
+msgstr "%s öğe (%s dizin, %s dosya)"
+
+#: ../src/FilePanel.cpp:6371 ../src/SearchPanel.cpp:4348
+#: ../src/SearchWindow.cpp:183
+msgid "Link"
+msgstr "Bağlantı"
+
+#: ../src/FilePanel.cpp:6402
+#, c-format
+msgid " - Filter: %s"
+msgstr " - Süzgeç: %s"
+
+#: ../src/Bookmarks.cpp:91
+msgid "Bookmarks limit number reached. The last bookmark will be deleted..."
+msgstr "Yer imlerinin sınırına ulaşıldı. Son yer imi silinecek..."
+
+#: ../src/Bookmarks.cpp:137
+msgid "Confirm Clear Bookmarks"
+msgstr "Yer İmleri Silmeyi Onayla"
+
+#: ../src/Bookmarks.cpp:137
+msgid "Do you really want to clear all your bookmarks?"
+msgstr "Gerçekten tüm yer imlerini silmek istiyor musunuz?"
+
+#: ../src/CommandWindow.cpp:57 ../src/CommandWindow.cpp:86
+msgid "Cl&ose"
+msgstr "&Kapat"
+
+#: ../src/CommandWindow.cpp:66 ../src/CommandWindow.cpp:95
+msgid ""
+"Please wait...\n"
+"\n"
+msgstr ""
+"Lütfen bekleyin...\n"
+"\n"
+
+#: ../src/CommandWindow.cpp:199 ../src/SearchWindow.cpp:829
+#, c-format
+msgid "Can't duplicate pipes: %s"
+msgstr "Borular kopyalanamıyor: %s"
+
+#: ../src/CommandWindow.cpp:203 ../src/SearchWindow.cpp:833
+msgid "Can't duplicate pipes"
+msgstr "Borular kopyalanamıyor"
+
+#: ../src/CommandWindow.cpp:294
+msgid ""
+"\n"
+">>>> COMMAND CANCELLED <<<<"
+msgstr ""
+"\n"
+">>>> KOMUT İPTAL EDİLDİ <<<<"
+
+#: ../src/CommandWindow.cpp:298
+msgid ""
+"\n"
+">>>> END OF COMMAND <<<<"
+msgstr ""
+"\n"
+">>>> KOMUT SONU <<<<"
+
+#: ../src/HistInputDialog.cpp:81 ../src/BrowseInputDialog.cpp:69
+#: ../src/ArchInputDialog.cpp:57
+msgid "\tSelect destination..."
+msgstr "\tHedef seç..."
+
+#: ../src/HistInputDialog.cpp:146 ../src/BrowseInputDialog.cpp:128
+msgid "Select a file"
+msgstr "Bir dosya seç"
+
+#: ../src/HistInputDialog.cpp:154 ../src/BrowseInputDialog.cpp:132
+msgid "Select a file or a destination folder"
+msgstr "Bir dosya veya bir hedef dizin seç"
+
+#: ../src/ArchInputDialog.cpp:30
+msgid "Add To Archive"
+msgstr "Arşive Ekle"
+
+#: ../src/ArchInputDialog.cpp:47
+msgid "New archive name:"
+msgstr "Yeni arşiv adı:"
+
+#: ../src/ArchInputDialog.cpp:61
+msgid "Format:"
+msgstr "Biçim:"
+
+#: ../src/ArchInputDialog.cpp:63
+msgid "tar.gz\tArchive format is tar.gz"
+msgstr "tar.gz\tArşiv biçimi tar.gz"
+
+#: ../src/ArchInputDialog.cpp:64
+msgid "zip\tArchive format is zip"
+msgstr "zip\tArşiv biçimi zip"
+
+#: ../src/ArchInputDialog.cpp:65
+msgid "7z\tArchive format is 7z"
+msgstr "7z\tArşiv biçimi 7z"
+
+#: ../src/ArchInputDialog.cpp:66
+msgid "tar.bz2\tArchive format is tar.bz2"
+msgstr "tar.bz2\tArşiv biçimi tar.bz2"
+
+#: ../src/ArchInputDialog.cpp:67
+msgid "tar.xz\tArchive format is tar.xz"
+msgstr "tar.xz\tArşiv biçimi tar.xz"
+
+#: ../src/ArchInputDialog.cpp:68
+msgid "tar\tArchive format is tar"
+msgstr "tar\tArşiv biçimi tar"
+
+#: ../src/ArchInputDialog.cpp:69
+msgid "tar.Z\tArchive format is tar.Z"
+msgstr "tar.Z\tArşiv biçimi tar.Z"
+
+#: ../src/ArchInputDialog.cpp:70
+msgid "gz\tArchive format is gz"
+msgstr "gz\tArşiv biçimi gz"
+
+#: ../src/ArchInputDialog.cpp:71
+msgid "bz2\tArchive format is bz2"
+msgstr "bz2\tArşiv biçimi bz2"
+
+#: ../src/ArchInputDialog.cpp:72
+msgid "xz\tArchive format is xz"
+msgstr "xz\tArşiv biçimi xz"
+
+#: ../src/ArchInputDialog.cpp:73
+msgid "Z\tArchive format is Z"
+msgstr "Z\tArşiv biçimi Z"
+
+#. Construct window
+#: ../src/Preferences.cpp:135
+msgid "Preferences"
+msgstr "Seçenekler"
+
+#: ../src/Preferences.cpp:137
+msgid "Current Theme"
+msgstr "Geçerli Tema"
+
+#: ../src/Preferences.cpp:182
+msgid "Options"
+msgstr "Seçenekler"
+
+#: ../src/Preferences.cpp:183
+msgid "Use trash can for file deletion (safe delete)"
+msgstr "Dosya silmek için çöp kutusunu kullan (güvenli silme)"
+
+#: ../src/Preferences.cpp:184
+msgid "Include a command to bypass the trash can (permanent delete)"
+msgstr "Çöp kutusunu atlamak için bir komut ekle (kalıcı silme)"
+
+#: ../src/Preferences.cpp:185
+msgid "Auto save layout"
+msgstr "Düzeni otomatik kaydet"
+
+#: ../src/Preferences.cpp:186
+msgid "Save window position"
+msgstr "Pencere konumunu kaydet"
+
+#: ../src/Preferences.cpp:187
+msgid "Single click folder open"
+msgstr "Dizin açmak için tek tıkla"
+
+#: ../src/Preferences.cpp:188
+msgid "Single click file open"
+msgstr "Dosya açmak için tek tıkla"
+
+#: ../src/Preferences.cpp:189
+msgid "Display tooltips in file and folder lists"
+msgstr "Araç ipuçlarını dosya ve dizin listelerinde görüntüleme"
+
+#: ../src/Preferences.cpp:190
+msgid "Relative resizing of file lists"
+msgstr "Dosya listelerinin göreceli yeniden boyutlandırılması"
+
+#: ../src/Preferences.cpp:191
+msgid "Display a path linker above file lists"
+msgstr "Dosya listelerinin üstünde bir yol bağlayıcı görüntüle"
+
+#: ../src/Preferences.cpp:193
+msgid "Notify when applications start up"
+msgstr "Uygulamalar başladığında bildir"
+
+#: ../src/Preferences.cpp:195
+#, fuzzy
+msgid "Don't execute text files"
+msgstr "Metin dosyalarını çalıştırmayı onayla"
+
+#: ../src/Preferences.cpp:198
+msgid ""
+"Date format used in file and folder lists:\n"
+"(Type 'man strftime' in a terminal for help on the format)"
+msgstr ""
+"Dosya ve dizin listelerinde kullanılan tarih biçimi:\n"
+"(Biçim konusunda yardım almak için bir terminalde 'man strftime' yazın)"
+
+#. Second tab - Modes
+#: ../src/Preferences.cpp:204
+msgid "&Modes"
+msgstr "&Modlar"
+
+#: ../src/Preferences.cpp:211
+msgid "Starting mode"
+msgstr "Başlangıç modu"
+
+#: ../src/Preferences.cpp:213
+msgid "Start in home folder"
+msgstr "Ana dizinde başlat"
+
+#: ../src/Preferences.cpp:214
+msgid "Start in current folder"
+msgstr "Geçerli dizinde başlat"
+
+#: ../src/Preferences.cpp:215
+msgid "Start in last visited folder"
+msgstr "Son ziyaret edilen dizinde başlat"
+
+#: ../src/Preferences.cpp:217
+msgid "Scrolling mode"
+msgstr "Kaydırma modu"
+
+#: ../src/Preferences.cpp:220
+msgid "Smooth scrolling in file lists and text windows"
+msgstr "Dosya listelerinde ve metin pencerelerinde düzgün kaydırma"
+
+#: ../src/Preferences.cpp:224
+msgid "Mouse scrolling speed:"
+msgstr "Fare kaydırma hızı:"
+
+#: ../src/Preferences.cpp:227
+msgid "Scrollbar width:"
+msgstr "Kaydırma çubuğu genişliği:"
+
+#: ../src/Preferences.cpp:231
+msgid "Root mode"
+msgstr "Kök modu"
+
+#: ../src/Preferences.cpp:232
+msgid "Allow root mode"
+msgstr "Kök moduna izin ver"
+
+#: ../src/Preferences.cpp:233
+msgid "Authentication using sudo (uses user password)"
+msgstr "Sudo kullanarak kimlik doğrulama (kullanıcı şifresini kullanır)"
+
+#: ../src/Preferences.cpp:234
+msgid "Authentication using su (uses root password)"
+msgstr "Su kullanarak kimlik doğrulama (kök şifresini kullanır)"
+
+#: ../src/Preferences.cpp:238
+#, fuzzy
+msgid "sudo command:"
+msgstr "Başarısız komut: %s"
+
+#: ../src/Preferences.cpp:240
+#, fuzzy
+msgid "su command:"
+msgstr "Komut çalıştır"
+
+#. Third tab - Dialogs
+#: ../src/Preferences.cpp:324
+msgid "&Dialogs"
+msgstr "İletişim &Kutuları"
+
+#: ../src/Preferences.cpp:326
+msgid "Confirmations"
+msgstr "Onaylar"
+
+#: ../src/Preferences.cpp:327
+msgid "Confirm copy/move/rename/symlink"
+msgstr "Kopyalama/taşıma/yeniden adlandırma/sembolik bağlamayı onayla"
+
+#: ../src/Preferences.cpp:328
+msgid "Confirm drag and drop"
+msgstr "Sürükle ve bırak işlemini onayla"
+
+#: ../src/Preferences.cpp:329
+msgid "Confirm move to trash/restore from trash"
+msgstr "Çöp kutusuna taşımayı/çöpten geri almayı onayla"
+
+#: ../src/Preferences.cpp:330
+msgid "Confirm delete"
+msgstr "Silmeyi onayla"
+
+#: ../src/Preferences.cpp:331
+msgid "Confirm delete non empty folders"
+msgstr "Boş olmayan dizinler için silmeyi onayla"
+
+#: ../src/Preferences.cpp:332
+msgid "Confirm overwrite"
+msgstr "Üstüne yazmayı onayla"
+
+#: ../src/Preferences.cpp:333
+msgid "Confirm execute text files"
+msgstr "Metin dosyalarını çalıştırmayı onayla"
+
+#: ../src/Preferences.cpp:334
+msgid "Confirm change properties"
+msgstr "Özellikleri değiştirmeyi onayla"
+
+#. Warning window
+#: ../src/Preferences.cpp:336 ../src/SearchWindow.cpp:482
+msgid "Warnings"
+msgstr "Uyarılar"
+
+#: ../src/Preferences.cpp:337
+msgid "Warn when setting current folder in search window"
+msgstr "Arama penceresindeki geçerli dizini ayarlarken uyar"
+
+#: ../src/Preferences.cpp:339
+msgid "Warn when mount points are not responding"
+msgstr "Bağlama noktaları yanıt vermediğinde uyar"
+
+#: ../src/Preferences.cpp:340
+msgid "Display mount / unmount success messages"
+msgstr "Başarılı bağlama/ayırma iletilerini görüntüle"
+
+#: ../src/Preferences.cpp:342
+msgid "Warn when date preservation failed"
+msgstr "Tarih koruması başarısız olduğunda uyar"
+
+#: ../src/Preferences.cpp:343
+msgid "Warn if running as root"
+msgstr "Kök olarak çalışıyorsa uyar"
+
+#. Fourth tab - Programs
+#: ../src/Preferences.cpp:388
+msgid "&Programs"
+msgstr "&Programlar"
+
+#: ../src/Preferences.cpp:390
+msgid "Default programs"
+msgstr "Varsayılan programlar"
+
+#: ../src/Preferences.cpp:393
+msgid "Text viewer:"
+msgstr "Metin gösterici:"
+
+#: ../src/Preferences.cpp:399
+msgid "Text editor:"
+msgstr "Metin düzenleyici:"
+
+#: ../src/Preferences.cpp:405
+msgid "File comparator:"
+msgstr "Dosya karşılaştırıcı:"
+
+#: ../src/Preferences.cpp:411
+msgid "Image editor:"
+msgstr "Resim düzenleyici:"
+
+#: ../src/Preferences.cpp:417
+msgid "Image viewer:"
+msgstr "Resim gösterici:"
+
+#: ../src/Preferences.cpp:423
+msgid "Archiver:"
+msgstr "Arşiv programı:"
+
+#: ../src/Preferences.cpp:429
+msgid "Pdf viewer:"
+msgstr "Pdf gösterici:"
+
+#: ../src/Preferences.cpp:435
+msgid "Audio player:"
+msgstr "Müzik oynatıcı:"
+
+#: ../src/Preferences.cpp:441
+msgid "Video player:"
+msgstr "Video oynatıcı:"
+
+#: ../src/Preferences.cpp:447
+msgid "Terminal:"
+msgstr "Terminal:"
+
+#: ../src/Preferences.cpp:453
+msgid "Volume management"
+msgstr "Birim yönetimi"
+
+#: ../src/Preferences.cpp:456
+msgid "Mount:"
+msgstr "Bağlama:"
+
+#: ../src/Preferences.cpp:462
+msgid "Unmount:"
+msgstr "Ayırma:"
+
+#. Fifth tab - Appearance
+#: ../src/Preferences.cpp:470
+msgid "&Appearance"
+msgstr ""
+
+#: ../src/Preferences.cpp:472
+msgid "Color theme"
+msgstr "Renk teması"
+
+#: ../src/Preferences.cpp:482
+msgid "Custom colors"
+msgstr "Özel renkler"
+
+#: ../src/Preferences.cpp:487
+msgid "Double click to customize the color"
+msgstr "Rengi özelleştirmek için çift tıkla"
+
+#: ../src/Preferences.cpp:489
+msgid "Base color"
+msgstr "Temel renk"
+
+#: ../src/Preferences.cpp:490
+msgid "Border color"
+msgstr "Kenar rengi"
+
+#: ../src/Preferences.cpp:491
+msgid "Background color"
+msgstr "Arka plan rengi"
+
+#: ../src/Preferences.cpp:492
+msgid "Text color"
+msgstr "Metin rengi"
+
+#: ../src/Preferences.cpp:493
+msgid "Selection background color"
+msgstr "Arkaplan renk seçimi"
+
+#: ../src/Preferences.cpp:494
+msgid "Selection text color"
+msgstr "Metin rengi seçimi"
+
+#: ../src/Preferences.cpp:495
+msgid "File list background color"
+msgstr "Dosya listesi arka plan rengi"
+
+#: ../src/Preferences.cpp:496
+msgid "File list text color"
+msgstr "Dosya listesi metin rengi"
+
+#: ../src/Preferences.cpp:497
+msgid "File list highlight color"
+msgstr "Dosya listesi vurgulama rengi"
+
+#: ../src/Preferences.cpp:498
+msgid "Progress bar color"
+msgstr "İlerleme çubuğu rengi"
+
+#: ../src/Preferences.cpp:499
+msgid "Attention color"
+msgstr "Dikkat rengi"
+
+#: ../src/Preferences.cpp:500
+msgid "Scrollbar color"
+msgstr "Kaydırma çubuğu rengi"
+
+#. Monitor resolution
+#: ../src/Preferences.cpp:504
+msgid "Screen resolution"
+msgstr ""
+
+#: ../src/Preferences.cpp:506
+msgid "DPI:"
+msgstr ""
+
+#. Controls theme
+#: ../src/Preferences.cpp:514
+msgid "Controls"
+msgstr "Kontroller"
+
+#: ../src/Preferences.cpp:516
+msgid "Standard (classic controls)"
+msgstr "Standart (klasik kontroller)"
+
+#: ../src/Preferences.cpp:517
+msgid "Clearlooks (modern looking controls)"
+msgstr "Clearlooks (modern görünümlü kontroller)"
+
+#. Find iconpath from the Xfe registry settings or set it to DEFAULTICONPATH
+#: ../src/Preferences.cpp:520
+msgid "Icon theme path"
+msgstr "Simge teması yolu"
+
+#: ../src/Preferences.cpp:523
+msgid "\tSelect path..."
+msgstr "\tYol seç..."
+
+#. Sixth tab - Fonts
+#: ../src/Preferences.cpp:528
+msgid "&Fonts"
+msgstr "&Yazıtipleri"
+
+#: ../src/Preferences.cpp:530
+msgid "Fonts"
+msgstr "Yazıtipleri"
+
+#: ../src/Preferences.cpp:533
+msgid "Normal font:"
+msgstr "Olağan yazıtipi:"
+
+#: ../src/Preferences.cpp:535 ../src/Preferences.cpp:541
+msgid " Select..."
+msgstr " Seç..."
+
+#: ../src/Preferences.cpp:539
+msgid "Text font:"
+msgstr "Metin yazıtipi:"
+
+#. Seventh tab - Key bindings
+#: ../src/Preferences.cpp:546
+msgid "&Key Bindings"
+msgstr "&Klavye Kısyaolları"
+
+#: ../src/Preferences.cpp:548 ../src/Keybindings.cpp:63
+msgid "Key Bindings"
+msgstr "Klavye Kısayolları"
+
+#: ../src/Preferences.cpp:551
+msgid "Modify key bindings..."
+msgstr "Klavye kısayollarını düzenle..."
+
+#. ,0,0,0,0,20,20);
+#: ../src/Preferences.cpp:552
+msgid "Restore default key bindings..."
+msgstr "Varsayılan klavye kısayollarını geri yükle..."
+
+#: ../src/Preferences.cpp:634
+msgid "Select an icon theme folder or an icon file"
+msgstr "Bir simge teması dizini veya bir simge dosyası seçin"
+
+#: ../src/Preferences.cpp:723
+msgid "Change Normal Font"
+msgstr "Olağan Yazıtipini Değiştir"
+
+#: ../src/Preferences.cpp:747
+msgid "Change Text Font"
+msgstr "Metin Yazıtipini Değiştir"
+
+#: ../src/Preferences.cpp:795 ../src/XFileExplorer.cpp:626
+msgid "Create new file"
+msgstr "Yeni dosya oluştur"
+
+#: ../src/Preferences.cpp:799 ../src/XFileExplorer.cpp:629
+msgid "Create new folder"
+msgstr "Yeni dizin oluştur"
+
+#: ../src/Preferences.cpp:803
+msgid "Copy to clipboard"
+msgstr "Panoya kopyala"
+
+#: ../src/Preferences.cpp:807
+msgid "Cut to clipboard"
+msgstr "Panoya kes"
+
+#: ../src/Preferences.cpp:811 ../src/XFileExplorer.cpp:661
+msgid "Paste from clipboard"
+msgstr "Panodan yapıştır"
+
+#: ../src/Preferences.cpp:827
+msgid "Open file"
+msgstr "Dosya aç"
+
+#: ../src/Preferences.cpp:831
+msgid "Quit application"
+msgstr "Uygulamadan çık"
+
+#: ../src/Preferences.cpp:835
+msgid "Select all"
+msgstr "Tümünü seç"
+
+#: ../src/Preferences.cpp:839
+msgid "Deselect all"
+msgstr "Tüm seçimi kaldır"
+
+#: ../src/Preferences.cpp:843
+msgid "Invert selection"
+msgstr "Seçimi ters yap"
+
+#: ../src/Preferences.cpp:847
+msgid "Display help"
+msgstr "Yardım görüntüle"
+
+#: ../src/Preferences.cpp:851
+msgid "Toggle display hidden files"
+msgstr "Gizli dosyaları görüntülemeyi aç/kapat"
+
+#: ../src/Preferences.cpp:855
+msgid "Toggle display thumbnails"
+msgstr "Küçük resimleri görüntülemeyi aç/kapat"
+
+#: ../src/Preferences.cpp:863
+msgid "Close window"
+msgstr "Pencereyi kapat"
+
+#: ../src/Preferences.cpp:867
+msgid "Print file"
+msgstr "Dosyayı yazdır"
+
+#: ../src/Preferences.cpp:871 ../src/XFileExplorer.cpp:690
+#: ../src/WriteWindow.cpp:717 ../src/WriteWindow.cpp:2090
+msgid "Search"
+msgstr "Ara"
+
+#: ../src/Preferences.cpp:875
+msgid "Search previous"
+msgstr "Öncekini ara"
+
+#: ../src/Preferences.cpp:879
+msgid "Search next"
+msgstr "Sonrakini ara"
+
+#: ../src/Preferences.cpp:883 ../src/XFileExplorer.cpp:737
+#: ../src/XFileImage.cpp:461
+msgid "Vertical panels"
+msgstr "Dikey paneller"
+
+#: ../src/Preferences.cpp:887 ../src/XFileExplorer.cpp:743
+#: ../src/XFileImage.cpp:467
+msgid "Horizontal panels"
+msgstr "Yatay paneller"
+
+#: ../src/Preferences.cpp:897 ../src/XFileExplorer.cpp:621
+msgid "Refresh panels"
+msgstr "Panelleri yenile"
+
+#: ../src/Preferences.cpp:901
+msgid "Create new symbolic link"
+msgstr "Yeni sembolik bağ oluştur"
+
+#: ../src/Preferences.cpp:905
+msgid "File properties"
+msgstr "Dosya özellikleri"
+
+#: ../src/Preferences.cpp:909
+msgid "Move files to trash"
+msgstr "Dosyaları çöpe taşı"
+
+#: ../src/Preferences.cpp:913
+msgid "Restore files from trash"
+msgstr "Dosyaları çöpten geri al"
+
+#: ../src/Preferences.cpp:917
+msgid "Delete files"
+msgstr "Dosyaları sil"
+
+#: ../src/Preferences.cpp:921
+msgid "Create new window"
+msgstr "Yeni pencere oluştur"
+
+#: ../src/Preferences.cpp:925
+msgid "Create new root window"
+msgstr "Yeni kök penceresi oluştur"
+
+#: ../src/Preferences.cpp:929 ../src/XFileExplorer.cpp:684
+#: ../src/XFileExplorer.cpp:3718
+msgid "Execute command"
+msgstr "Komut çalıştır"
+
+#: ../src/Preferences.cpp:933 ../src/XFileExplorer.cpp:687
+msgid "Launch terminal"
+msgstr "Terminali başlat"
+
+#: ../src/Preferences.cpp:938
+msgid "Mount file system (Linux only)"
+msgstr "Dosya sistemi bağla (sadece Linux)"
+
+#: ../src/Preferences.cpp:942
+msgid "Unmount file system (Linux only)"
+msgstr "Dosya sistemini ayır (sadece Linux)"
+
+#: ../src/Preferences.cpp:946
+msgid "One panel mode"
+msgstr "Bir panel modu"
+
+#: ../src/Preferences.cpp:950
+msgid "Tree and panel mode"
+msgstr "Ağaç ve panel modu"
+
+#: ../src/Preferences.cpp:954
+msgid "Two panels mode"
+msgstr "İki panel modu"
+
+#: ../src/Preferences.cpp:958
+msgid "Tree and two panels mode"
+msgstr "Ağaç ve iki panel modu"
+
+#: ../src/Preferences.cpp:962
+msgid "Clear location bar"
+msgstr "Konum çubuğunu temizle"
+
+#: ../src/Preferences.cpp:966
+msgid "Rename file"
+msgstr "Dosyayı yeniden adlandır"
+
+#: ../src/Preferences.cpp:970
+msgid "Copy files to location"
+msgstr "Dosyaları konuma kopyala"
+
+#: ../src/Preferences.cpp:974
+msgid "Move files to location"
+msgstr "Dosyaları konuma taşı"
+
+#: ../src/Preferences.cpp:978
+msgid "Symlink files to location"
+msgstr "Dosyaları konuma sembolik bağla"
+
+#: ../src/Preferences.cpp:982
+msgid "Add bookmark"
+msgstr "Yer imi ekle"
+
+#: ../src/Preferences.cpp:986
+msgid "Synchronize panels"
+msgstr "Panelleri eşitle"
+
+#: ../src/Preferences.cpp:990
+msgid "Switch panels"
+msgstr "Panelleri değiştir"
+
+#: ../src/Preferences.cpp:994
+msgid "Go to trash can"
+msgstr "Çöp kutusuna git"
+
+#: ../src/Preferences.cpp:998 ../src/XFileExplorer.cpp:3961
+msgid "Empty trash can"
+msgstr "Boş çöp kutusu"
+
+#: ../src/Preferences.cpp:1002
+msgid "View"
+msgstr "Göster"
+
+#: ../src/Preferences.cpp:1006
+msgid "Edit"
+msgstr "Düzenle"
+
+#: ../src/Preferences.cpp:1014
+msgid "Toggle display hidden folders"
+msgstr "Gizli dosyaları görüntülemeyi aç/kapat"
+
+#: ../src/Preferences.cpp:1018
+msgid "Filter files"
+msgstr "Dosyaları süz"
+
+#: ../src/Preferences.cpp:1029
+msgid "Zoom image to 100%"
+msgstr "Resmi 100% yakınlaştır"
+
+#: ../src/Preferences.cpp:1033
+msgid "Zoom to fit window"
+msgstr "Pencereye sığdır"
+
+#: ../src/Preferences.cpp:1037
+msgid "Rotate image to left"
+msgstr "Resmi sola döndür"
+
+#: ../src/Preferences.cpp:1041
+msgid "Rotate image to right"
+msgstr "Resmi sağa döndür"
+
+#: ../src/Preferences.cpp:1045
+msgid "Mirror image horizontally"
+msgstr "Resmi yatay olarak yansıt"
+
+#: ../src/Preferences.cpp:1049
+msgid "Mirror image vertically"
+msgstr "Resmi dikey olarak yansıt"
+
+#: ../src/Preferences.cpp:1059
+msgid "Create new document"
+msgstr "Yeni belge oluştur"
+
+#: ../src/Preferences.cpp:1063
+msgid "Save changes to file"
+msgstr "Değişiklikleri dosyaya yaz"
+
+#: ../src/Preferences.cpp:1067 ../src/WriteWindow.cpp:700
+msgid "Goto line"
+msgstr "Satıra git"
+
+#: ../src/Preferences.cpp:1071
+msgid "Undo last change"
+msgstr "Son değişikliği geri al"
+
+#: ../src/Preferences.cpp:1075
+msgid "Redo last change"
+msgstr "Son değişikliği yinele"
+
+#: ../src/Preferences.cpp:1079
+msgid "Replace string"
+msgstr "Dizeyi değiştir"
+
+#: ../src/Preferences.cpp:1083
+msgid "Toggle word wrap mode"
+msgstr "Sözcük kaydırma modunu aç/kapat"
+
+#: ../src/Preferences.cpp:1087
+msgid "Toggle line numbers mode"
+msgstr "Satır numaraları modunu aç/kapat"
+
+#: ../src/Preferences.cpp:1091
+msgid "Toggle lower case mode"
+msgstr "Küçük harf modunu aç/kapat"
+
+#: ../src/Preferences.cpp:1095
+msgid "Toggle upper case mode"
+msgstr "Büyük harf modunu aç/kapat"
+
+#. Confirmation message
+#: ../src/Preferences.cpp:1114
+msgid ""
+"Do you really want to restore the default key bindings?\n"
+"\n"
+"All your customizations will be lost!"
+msgstr ""
+"Varsayılan klavye kısayollarını gerçekten geri yüklemek istiyor musunuz?\n"
+"\n"
+"Tüm özelleştirmeleriniz kaybolacak!"
+
+#: ../src/Preferences.cpp:1115
+msgid "Restore default key bindings"
+msgstr "Varsayılan klavye kısayollarını geri yükle"
+
+#. Ask the user if he wants to restart Xfe
+#: ../src/Preferences.cpp:1213 ../src/Preferences.cpp:1869
+#: ../src/XFileImage.cpp:1504 ../src/Keybindings.cpp:266
+msgid "Restart"
+msgstr "Yeniden başlat"
+
+#: ../src/Preferences.cpp:1213 ../src/Keybindings.cpp:266
+msgid ""
+"Key bindings will be changed after restart.\n"
+"Restart X File Explorer now?"
+msgstr ""
+"Klavye kısayolları yeniden başlattıktan sonra değiştirilecektir.\n"
+"X File Explorer şimdi yeniden başlatılsın mı?"
+
+#: ../src/Preferences.cpp:1869
+msgid ""
+"Preferences will be changed after restart.\n"
+"Restart X File Explorer now?"
+msgstr ""
+"Tercihler yeniden başlattıktan sonra değiştirilecektir.\n"
+"X File Explorer şimdi yeniden başlatılsın mı?"
+
+#: ../src/OverwriteBox.cpp:49 ../src/OverwriteBox.cpp:99
+msgid "&Skip"
+msgstr "&Atla"
+
+#: ../src/OverwriteBox.cpp:50 ../src/OverwriteBox.cpp:100
+msgid "Skip A&ll"
+msgstr "Tümünü At&la"
+
+#: ../src/OverwriteBox.cpp:82
+msgid "Source size:"
+msgstr "Kaynak boyutu:"
+
+#: ../src/OverwriteBox.cpp:84 ../src/OverwriteBox.cpp:90
+msgid "- Modified date:"
+msgstr "- Değiştirme tarihi:"
+
+#: ../src/OverwriteBox.cpp:88
+msgid "Target size:"
+msgstr "Hedef boyutu:"
+
+#: ../src/ExecuteBox.cpp:39
+msgid "E&xecute"
+msgstr "&Çalıştır"
+
+#: ../src/ExecuteBox.cpp:40
+msgid "Execute in Console &Mode"
+msgstr "Konsol &Modunda Çalıştır"
+
+#. Close
+#: ../src/TextWindow.cpp:28 ../src/TextWindow.cpp:47
+#: ../src/XFilePackage.cpp:254 ../src/WriteWindow.cpp:761
+msgid "&Close"
+msgstr "&Kapat"
+
+#: ../src/SearchPanel.cpp:165
+msgid "Refresh panel"
+msgstr "Paneli yenile"
+
+#: ../src/SearchPanel.cpp:177 ../src/XFileExplorer.cpp:637
+msgid "Copy selected files to clipboard"
+msgstr "Seçilen dosyaları panoya kopyala"
+
+#: ../src/SearchPanel.cpp:182 ../src/XFileExplorer.cpp:651
+msgid "Cut selected files to clipboard"
+msgstr "Seçilen dosyaları panoya kes"
+
+#: ../src/SearchPanel.cpp:187 ../src/XFileExplorer.cpp:664
+msgid "Show properties of selected files"
+msgstr "Seçili dosyaların özelliklerini göster"
+
+#: ../src/SearchPanel.cpp:198 ../src/XFileExplorer.cpp:669
+msgid "Move selected files to trash can"
+msgstr "Seçilen dosyaları çöp kutusuna taşı"
+
+#: ../src/SearchPanel.cpp:203 ../src/XFileExplorer.cpp:675
+msgid "Delete selected files"
+msgstr "Seçilen dosyaları sil"
+
+#: ../src/SearchPanel.cpp:410 ../src/SearchPanel.cpp:605
+#: ../src/SearchPanel.cpp:1812
+#, c-format
+msgid "Current folder has been set to '%s'"
+msgstr "Geçerli dizin '%s' olarak ayarlandı"
+
+#: ../src/SearchPanel.cpp:2315 ../src/XFileExplorer.cpp:1003
+#: ../src/XFileExplorer.cpp:1033
+msgid "F&ull file list"
+msgstr "T&am dosya listesi"
+
+#: ../src/SearchPanel.cpp:2330 ../src/XFileExplorer.cpp:1020
+#: ../src/XFileExplorer.cpp:1050
+msgid "I&gnore case"
+msgstr "&Durumu yoksay"
+
+#: ../src/SearchPanel.cpp:2347 ../src/XFileImage.cpp:819
+msgid "&Autosize"
+msgstr "&Otomatik boyut"
+
+#: ../src/SearchPanel.cpp:2421
+msgid "&Packages query "
+msgstr "&Paket sorgusu "
+
+#: ../src/SearchPanel.cpp:2435
+msgid "&Go to parent folder"
+msgstr "Üst dizine &git"
+
+#: ../src/SearchPanel.cpp:3658
+#, c-format
+msgid "Copy %s items"
+msgstr "%s öğeyi kopyala"
+
+#: ../src/SearchPanel.cpp:3674
+#, c-format
+msgid "Move %s items"
+msgstr "%s öğeyi taşı"
+
+#: ../src/SearchPanel.cpp:3690
+#, c-format
+msgid "Symlink %s items"
+msgstr "%s öğeyi sembolik bağla"
+
+#: ../src/SearchPanel.cpp:3734
+msgid ""
+"Character '/' is not allowed in file or folder names, operation cancelled"
+msgstr ""
+"Dosya veya dizin adlarında / karakterine izin verilmiyor, işlem iptal edildi"
+
+#: ../src/SearchPanel.cpp:3807
+msgid "You must enter an absolute path!"
+msgstr "Mutlak bir yol girmelisiniz!"
+
+#: ../src/SearchPanel.cpp:4231
+msgid "0 item"
+msgstr "0 öğe"
+
+#: ../src/SearchPanel.cpp:4299
+msgid "1 item"
+msgstr "1 öğe"
+
+#: ../src/SearchWindow.cpp:71
+msgid "Find files:"
+msgstr "Dosyaları bul:"
+
+#: ../src/SearchWindow.cpp:74
+msgid "Ignore case\tIgnore file name case"
+msgstr "Durumu yoksay\tDosya adı durumunu yoksay"
+
+#. Hidden files
+#: ../src/SearchWindow.cpp:79
+msgid "Hidden files\tShow hidden files and folders"
+msgstr "Gizli Dosyalar\tGizli dosya ve dizinleri göster"
+
+#: ../src/SearchWindow.cpp:84
+msgid "In folder:"
+msgstr "Dizinde:"
+
+#: ../src/SearchWindow.cpp:86
+msgid "\tIn folder..."
+msgstr "\tDizinde..."
+
+#: ../src/SearchWindow.cpp:89
+msgid "Text contains:"
+msgstr "Metin içeriyor:"
+
+#: ../src/SearchWindow.cpp:92
+msgid "Ignore case\tIgnore text case"
+msgstr "Durumu yoksay\tMetin durumunu yoksay"
+
+#. Search options
+#: ../src/SearchWindow.cpp:97
+msgid "More options"
+msgstr "Daha fazla seçenek"
+
+#: ../src/SearchWindow.cpp:98
+msgid "Search options"
+msgstr "Arama seçenekleri"
+
+#: ../src/SearchWindow.cpp:99
+msgid "Reset\tReset search options"
+msgstr "Sıfırla\tArama seçeneklerini sıfırla"
+
+#: ../src/SearchWindow.cpp:115
+msgid "Min size:"
+msgstr "En az boyut:"
+
+#: ../src/SearchWindow.cpp:117
+msgid "Filter by minimum file size (kBytes)"
+msgstr "En az dosya boyutuna göre süz (kBayt)"
+
+#: ../src/SearchWindow.cpp:118 ../src/SearchWindow.cpp:123
+#: ../src/xfeutils.cpp:952
+msgid "kB"
+msgstr "kB"
+
+#: ../src/SearchWindow.cpp:120
+msgid "Max size:"
+msgstr "En fazla boyut:"
+
+#: ../src/SearchWindow.cpp:122
+msgid "Filter by maximum file size (kBytes)"
+msgstr "En fazla dosya boyutuna göre süz (kBayt)"
+
+#. Modification date
+#: ../src/SearchWindow.cpp:126
+msgid "Last modified before:"
+msgstr "Son değişiklik öncesi:"
+
+#: ../src/SearchWindow.cpp:128
+msgid "Filter by maximum modification date (days)"
+msgstr "En uzak değiştirme tarihine göre süz (gün)"
+
+#: ../src/SearchWindow.cpp:129 ../src/SearchWindow.cpp:134
+msgid "Days"
+msgstr "Gün"
+
+#: ../src/SearchWindow.cpp:131
+msgid "Last modified after:"
+msgstr "Son değişiklik sonrası:"
+
+#: ../src/SearchWindow.cpp:133
+msgid "Filter by minimum modification date (days)"
+msgstr "En yakın değiştirme tarihine göre süz (gün)"
+
+#. User and group
+#: ../src/SearchWindow.cpp:137
+msgid "User:"
+msgstr "Kullanıcı:"
+
+#: ../src/SearchWindow.cpp:140
+msgid "\tFilter by user name"
+msgstr "\tKullanıcı adına göre süz"
+
+#: ../src/SearchWindow.cpp:142
+msgid "Group:"
+msgstr "Grup:"
+
+#: ../src/SearchWindow.cpp:145
+msgid "\tFilter by group name"
+msgstr "\tGrup adına göre süz"
+
+#. File type
+#: ../src/SearchWindow.cpp:178
+msgid "File type:"
+msgstr "Dosya türü:"
+
+#: ../src/SearchWindow.cpp:181
+msgid "File"
+msgstr "Dosya"
+
+#: ../src/SearchWindow.cpp:185
+msgid "Pipe"
+msgstr "Boru"
+
+#: ../src/SearchWindow.cpp:187
+msgid "\tFilter by file type"
+msgstr "\tDosya türüne göre süz"
+
+#. Permissions (in octal)
+#: ../src/SearchWindow.cpp:190
+msgid "Permissions:"
+msgstr "İzinler:"
+
+#: ../src/SearchWindow.cpp:194
+msgid "\tFilter by permissions (octal)"
+msgstr "\tİzinlere göre süz (sekizlik)"
+
+#. Empty files
+#: ../src/SearchWindow.cpp:197
+msgid "Empty files:"
+msgstr "Boş dosyalar:"
+
+#: ../src/SearchWindow.cpp:198
+msgid "\tEmpty files only"
+msgstr "\tSadece boş dosyalar"
+
+#: ../src/SearchWindow.cpp:202
+msgid "Follow symbolic links:"
+msgstr "Sembolik bağları takip et:"
+
+#: ../src/SearchWindow.cpp:203
+msgid "\tSearch while following symbolic links"
+msgstr "\tSembolik bağları takip ederken ara"
+
+#: ../src/SearchWindow.cpp:207
+msgid "Non recursive:"
+msgstr "Özyinelemeli olmayan:"
+
+#: ../src/SearchWindow.cpp:208
+msgid "\tDon't search folders recursively"
+msgstr "\tDizinleri özyinelemeli olarak arama"
+
+#: ../src/SearchWindow.cpp:212
+msgid "Ignore other file systems:"
+msgstr "Diğer dosya sistemlerini yoksay:"
+
+#: ../src/SearchWindow.cpp:213
+msgid "\tDon't search in other file systems"
+msgstr "\tDiğer dosya sistemlerinde arama"
+
+#. Start
+#: ../src/SearchWindow.cpp:223
+msgid "&Start\tStart the search (F3)"
+msgstr "&Başlat\tAramayı başlat (F3)"
+
+#. Stop
+#: ../src/SearchWindow.cpp:226
+msgid "&Stop\tStop the search (Esc)"
+msgstr "&Dur\tAramayı durdur (Esc)"
+
+#: ../src/SearchWindow.cpp:782
+msgid ">>>> Search started - Please wait... <<<<"
+msgstr ">>>> Arama başladı - Lütfen bekleyin... <<<<"
+
+#. Update item count
+#: ../src/SearchWindow.cpp:912 ../src/SearchWindow.cpp:945
+msgid " items"
+msgstr " öğe"
+
+#: ../src/SearchWindow.cpp:938
+msgid ">>>> Search results <<<<"
+msgstr ">>>> Arama sonuçları <<<<"
+
+#: ../src/SearchWindow.cpp:956
+msgid "Input / Output error"
+msgstr "Giriş / Çıkış hatası"
+
+#: ../src/SearchWindow.cpp:973
+msgid ">>>> Search stopped... <<<<"
+msgstr ">>>> Arama durdu... <<<<"
+
+#: ../src/SearchWindow.cpp:1147
+msgid "Select path"
+msgstr "Yol seç"
+
+#: ../src/XFileExplorer.cpp:632
+msgid "Create new symlink"
+msgstr "Yeni sembolik bağ oluştur"
+
+#: ../src/XFileExplorer.cpp:672
+msgid "Restore selected files from trash can"
+msgstr "Seçilen dosyaları çöp kutusundan geri al"
+
+#: ../src/XFileExplorer.cpp:678
+msgid "Launch Xfe"
+msgstr "Xfe'yi başlat"
+
+#: ../src/XFileExplorer.cpp:690
+msgid "Search files and folders..."
+msgstr "Dosya ve dizinleri ara..."
+
+#: ../src/XFileExplorer.cpp:697
+msgid "Mount (Linux only)"
+msgstr "Bağla (sadece Linux)"
+
+#: ../src/XFileExplorer.cpp:702
+msgid "Unmount (Linux only)"
+msgstr "Ayır (sadece Linux)"
+
+#: ../src/XFileExplorer.cpp:711
+msgid "Show one panel"
+msgstr "Bir panel göster"
+
+#: ../src/XFileExplorer.cpp:717
+msgid "Show tree and panel"
+msgstr "Ağaç ve panel göster"
+
+#: ../src/XFileExplorer.cpp:723
+msgid "Show two panels"
+msgstr "İki panel göster"
+
+#: ../src/XFileExplorer.cpp:729
+msgid "Show tree and two panels"
+msgstr "Ağaç ve iki panel göster"
+
+#: ../src/XFileExplorer.cpp:768
+msgid "Clear location"
+msgstr "Konumu temizle"
+
+#: ../src/XFileExplorer.cpp:773
+msgid "Go to location"
+msgstr "Konuma git"
+
+#: ../src/XFileExplorer.cpp:787
+msgid "New fo&lder..."
+msgstr "Yeni di&zin..."
+
+#: ../src/XFileExplorer.cpp:799
+msgid "Go &home"
+msgstr "&Ev dizinine git"
+
+#: ../src/XFileExplorer.cpp:805
+msgid "&Refresh"
+msgstr "&Yenile"
+
+#: ../src/XFileExplorer.cpp:825
+msgid "&Copy to..."
+msgstr "Şuraya &kopyala..."
+
+#: ../src/XFileExplorer.cpp:837
+msgid "&Symlink to..."
+msgstr "Şuraya &sembolik bağla..."
+
+#: ../src/XFileExplorer.cpp:861
+msgid "&Properties"
+msgstr "Ö&zellikler"
+
+#: ../src/XFileExplorer.cpp:875 ../src/XFilePackage.cpp:201
+#: ../src/XFileImage.cpp:327 ../src/WriteWindow.cpp:590
+msgid "&File"
+msgstr "&Dosya"
+
+#: ../src/XFileExplorer.cpp:900
+msgid "&Select all"
+msgstr "Tümünü &seç"
+
+#: ../src/XFileExplorer.cpp:906
+msgid "&Deselect all"
+msgstr "Tüm seçimi &kaldır"
+
+#: ../src/XFileExplorer.cpp:912
+msgid "&Invert selection"
+msgstr "Ters seç&im"
+
+#: ../src/XFileExplorer.cpp:919
+msgid "P&references"
+msgstr "Te&rcihler"
+
+#: ../src/XFileExplorer.cpp:925
+msgid "&General toolbar"
+msgstr "&Genel araç çubuğu"
+
+#: ../src/XFileExplorer.cpp:926
+msgid "&Tools toolbar"
+msgstr "&Araçlar araç çubuğu"
+
+#: ../src/XFileExplorer.cpp:927
+msgid "&Panel toolbar"
+msgstr "&Panel araç çubuğu"
+
+#: ../src/XFileExplorer.cpp:928
+msgid "&Location bar"
+msgstr "&Konum çubuğu"
+
+#: ../src/XFileExplorer.cpp:929
+msgid "&Status bar"
+msgstr "&Durum çubuğu"
+
+#: ../src/XFileExplorer.cpp:933
+msgid "&One panel"
+msgstr "&Bir panel"
+
+#: ../src/XFileExplorer.cpp:937
+msgid "T&ree and panel"
+msgstr "&Ağaç ve panel"
+
+#: ../src/XFileExplorer.cpp:941
+msgid "Two &panels"
+msgstr "İki &panel"
+
+#: ../src/XFileExplorer.cpp:945
+msgid "Tr&ee and two panels"
+msgstr "A&ğaç ve iki panel"
+
+#: ../src/XFileExplorer.cpp:951 ../src/XFileImage.cpp:808
+msgid "&Vertical panels"
+msgstr "&Dikey paneller"
+
+#: ../src/XFileExplorer.cpp:955 ../src/XFileImage.cpp:812
+msgid "&Horizontal panels"
+msgstr "&Yatay paneller"
+
+#: ../src/XFileExplorer.cpp:963
+msgid "&Add bookmark"
+msgstr "Yer imi &ekle"
+
+#: ../src/XFileExplorer.cpp:991
+msgid "&Clear bookmarks"
+msgstr "Yer imlerini &temizle"
+
+#: ../src/XFileExplorer.cpp:993
+msgid "&Bookmarks"
+msgstr "&Yer imleri"
+
+#: ../src/XFileExplorer.cpp:997
+msgid "&Filter..."
+msgstr "&Süzgeç..."
+
+#: ../src/XFileExplorer.cpp:999 ../src/XFileExplorer.cpp:1029
+#: ../src/XFileImage.cpp:781
+msgid "&Thumbnails"
+msgstr "&Küçük resimler"
+
+#: ../src/XFileExplorer.cpp:1001 ../src/XFileExplorer.cpp:1031
+#: ../src/XFileImage.cpp:789
+msgid "&Big icons"
+msgstr "&Büyük simgeler"
+
+#: ../src/XFileExplorer.cpp:1011 ../src/XFileExplorer.cpp:1041
+msgid "T&ype"
+msgstr "Tü&r"
+
+#: ../src/XFileExplorer.cpp:1013 ../src/XFileExplorer.cpp:1043
+msgid "D&ate"
+msgstr "T&arih"
+
+#: ../src/XFileExplorer.cpp:1014 ../src/XFileExplorer.cpp:1044
+msgid "Us&er"
+msgstr "K&ullanıcı"
+
+#: ../src/XFileExplorer.cpp:1015 ../src/XFileExplorer.cpp:1045
+msgid "Gr&oup"
+msgstr "Gr&up"
+
+#: ../src/XFileExplorer.cpp:1021
+msgid "Fol&ders first"
+msgstr "Önce &dizinler"
+
+#: ../src/XFileExplorer.cpp:1023 ../src/XFileExplorer.cpp:3538
+#: ../src/XFileExplorer.cpp:3589
+msgid "&Left panel"
+msgstr "So&l panel"
+
+#: ../src/XFileExplorer.cpp:1027
+msgid "&Filter"
+msgstr "&Süzgeç"
+
+#: ../src/XFileExplorer.cpp:1051
+msgid "&Folders first"
+msgstr "Önce dizinl&er"
+
+#: ../src/XFileExplorer.cpp:1053 ../src/XFileExplorer.cpp:3537
+#: ../src/XFileExplorer.cpp:3588
+msgid "&Right panel"
+msgstr "&Sağ panel"
+
+#: ../src/XFileExplorer.cpp:1058
+msgid "New &window"
+msgstr "Yeni &pencere"
+
+#: ../src/XFileExplorer.cpp:1064
+msgid "New &root window"
+msgstr "Yeni kök pence&resi"
+
+#: ../src/XFileExplorer.cpp:1072
+msgid "E&xecute command..."
+msgstr "Komut &çalıştır..."
+
+#: ../src/XFileExplorer.cpp:1078
+msgid "&Terminal"
+msgstr "&Terminal"
+
+#: ../src/XFileExplorer.cpp:1084
+msgid "&Synchronize panels"
+msgstr "Panelleri &eşitle"
+
+#: ../src/XFileExplorer.cpp:1090
+msgid "Sw&itch panels"
+msgstr "Panelleri değişt&ir"
+
+#: ../src/XFileExplorer.cpp:1096
+msgid "Go to script folder"
+msgstr "Betik dizinine git"
+
+#: ../src/XFileExplorer.cpp:1098
+msgid "&Search files..."
+msgstr "Do&syaları ara..."
+
+#: ../src/XFileExplorer.cpp:1111
+msgid "&Unmount"
+msgstr "&Ayır"
+
+#: ../src/XFileExplorer.cpp:1115
+msgid "&Tools"
+msgstr "&Araçlar"
+
+#: ../src/XFileExplorer.cpp:1120
+msgid "&Go to trash"
+msgstr "Çöpe &git"
+
+#: ../src/XFileExplorer.cpp:1126
+msgid "&Trash size"
+msgstr "Çöp boyu&tu"
+
+#: ../src/XFileExplorer.cpp:1128
+msgid "&Empty trash can"
+msgstr "&Boş çöp kutusu"
+
+#: ../src/XFileExplorer.cpp:1135 ../src/XFileExplorer.cpp:4240
+msgid "T&rash"
+msgstr "Çö&p"
+
+#: ../src/XFileExplorer.cpp:1140 ../src/XFileExplorer.cpp:1147
+#: ../src/XFileExplorer.cpp:4243 ../src/XFileExplorer.cpp:4254
+#: ../src/XFilePackage.cpp:209 ../src/XFileImage.cpp:343
+#: ../src/WriteWindow.cpp:614
+msgid "&Help"
+msgstr "&Yardım"
+
+#: ../src/XFileExplorer.cpp:1146
+msgid "&About X File Explorer"
+msgstr "X File Explorer H&akkında"
+
+#: ../src/XFileExplorer.cpp:2218
+msgid "Running Xfe as root!"
+msgstr "Xfe'yi kök olarak çalıştır!"
+
+#: ../src/XFileExplorer.cpp:2253
+#, c-format
+msgid ""
+"Starting from Xfe 1.32, the location of the configuration files has changed "
+"to '%s'.\n"
+"Note you can manually edit the new configuration files to import your old "
+"customizations..."
+msgstr ""
+"Xfe 1.32'den başlayarak, yapılandırma dosyalarının konumu '%s' olarak "
+"değiştirildi.\n"
+"Eski özelleştirmelerinizi içe aktarmak için yeni yapılandırma dosyalarını el "
+"ile düzenleyebileceğinizi unutmayın..."
+
+#: ../src/XFileExplorer.cpp:2270
+#, c-format
+msgid "Can't create Xfe config folder %s: %s"
+msgstr "Xfe yapılandırma dizini %s oluşturulamıyor: %s"
+
+#: ../src/XFileExplorer.cpp:2274
+#, c-format
+msgid "Can't create Xfe config folder %s"
+msgstr "Xfe yapılandırma dizini %s oluşturulamıyor"
+
+#: ../src/XFileExplorer.cpp:2296
+msgid "No global xferc file found! Please select a configuration file..."
+msgstr ""
+"Küresell xferc dosyası bulunamadı! Lütfen bir yapılandırma dosyası seçin..."
+
+#: ../src/XFileExplorer.cpp:2300
+msgid "XFE configuration file"
+msgstr "Xfe yapılandırma dosyası"
+
+#: ../src/XFileExplorer.cpp:2312
+msgid "Xfe cannot run without a global xferc configuration file"
+msgstr ""
+
+#: ../src/XFileExplorer.cpp:2335 ../src/XFileExplorer.cpp:3990
+#, c-format
+msgid "Can't create trash can 'files' folder %s: %s"
+msgstr "Çöp kutusu 'dosyalar' dizini %s oluşturulamıyor: %s"
+
+#: ../src/XFileExplorer.cpp:2339 ../src/XFileExplorer.cpp:3992
+#, c-format
+msgid "Can't create trash can 'files' folder %s"
+msgstr "Çöp kutusu 'dosyalar' dizini %s oluşturulamıyor"
+
+#: ../src/XFileExplorer.cpp:2357 ../src/XFileExplorer.cpp:4005
+#, c-format
+msgid "Can't create trash can 'info' folder %s: %s"
+msgstr "Çöp kutusu 'bilgi' dizini %s oluşturulamıyor: %s"
+
+#: ../src/XFileExplorer.cpp:2361 ../src/XFileExplorer.cpp:4007
+#, c-format
+msgid "Can't create trash can 'info' folder %s"
+msgstr "Çöp kutusu 'bilgi' dizini %s oluşturulamıyor"
+
+#: ../src/XFileExplorer.cpp:3181
+msgid "Help"
+msgstr "Yardım"
+
+#: ../src/XFileExplorer.cpp:3211
+#, c-format
+msgid "X File Explorer Version %s"
+msgstr "X File Explorer %s Sürümü"
+
+#: ../src/XFileExplorer.cpp:3212
+msgid "Based on X WinCommander by Maxim Baranov\n"
+msgstr "Maxim Baranov tarafından yazılan X WinCommander tabanlı\n"
+
+#: ../src/XFileExplorer.cpp:3214
+msgid ""
+"\n"
+"Translators\n"
+"-------------\n"
+"Argentinian Spanish: Bruno Gilberto Luciani\n"
+"Brazilian Portuguese: Eduardo R.B.S., Jose Carlos Medeiros,\n"
+"Phantom X, Tomas Acauan Schertel\n"
+"Bosnian: Samir Ribi, Bajrami Emran, Balagija Jasmina,\n"
+"Bilalovi, Omar Cogo Emir\n"
+"Catalan: muzzol\n"
+"Chinese: Xin Li\n"
+"Chinese (Taïwan): Wei-Lun Chao\n"
+"Colombian Spanish: Vladimir Támara (Pasos de Jesús)\n"
+"Czech: David Vachulka\n"
+"Danish: Jonas Bardino, Vidar Jon Bauge\n"
+"Dutch: Hans Strijards\n"
+"Finnish: Kimmo Siira\n"
+"French: Claude Leo Mercier, Roland Baudin\n"
+"German: Bastian Kleineidam, Joachim Wiedorn, Tim Benke, Jens Körner\n"
+"Greek: Nikos Papadopoulos\n"
+"Hungarian: Attila Szervac, Sandor Sipos\n"
+"Italian: Claudio Fontana, Giorgio Moscardi\n"
+"Japanese: Karl Skewes\n"
+"Norwegian: Vidar Jon Bauge\n"
+"Polish: Jacek Dziura, Franciszek Janowski\n"
+"Portuguese: Miguel Santinho\n"
+"Russian: Dimitri Sertolov, Vad Vad\n"
+"Spanish: Felix Medrano Sanz, Lucas 'Basurero' Vieites,\n"
+"Martin Carr\n"
+"Swedish: Anders F. Bjorklund\n"
+"Turkish: erkaN\n"
+msgstr ""
+"\n"
+"Çevirmenler\n"
+"-------------\n"
+"Arjantin İspanyolcası: Bruno Gilberto Luciani\n"
+"Brezilya Portekizcesi: Eduardo R.B.S., Jose Carlos Medeiros,\n"
+"Phantom X, Tomas Acauan Schertel\n"
+"Boşnakça: Samir Ribi, Bajrami Emran, Balagija Jasmina,\n"
+"Bilalovi, Omar Cogo Emir\n"
+"Katalan: muzzol\n"
+"Çince: Xin Li\n"
+"Çince (Taïwan): Wei-Lun Chao\n"
+"Kolombiya İspanyolcası: Vladimir Támara (Pasos de Jesús)\n"
+"Çek: David Vachulka\n"
+"Danimarka dili: Jonas Bardino, Vidar Jon Bauge\n"
+"Flemenkçe: Hans Strijards\n"
+"Fince: Kimmo Siira\n"
+"Fransızca: Claude Leo Mercier, Roland Baudin\n"
+"Almanca: Bastian Kleineidam, Joachim Wiedorn, Tim Benke, Jens Körner\n"
+"Yunanca: Nikos Papadopoulos\n"
+"Macarca: Attila Szervac, Sandor Sipos\n"
+"Italyanca: Claudio Fontana, Giorgio Moscardi\n"
+"Japonca: Karl Skewes\n"
+"Norveççe: Vidar Jon Bauge\n"
+"Polonyaca: Jacek Dziura, Franciszek Janowski\n"
+"Portegizce: Miguel Santinho\n"
+"Rusça: Dimitri Sertolov, Vad Vad\n"
+"İspanyolca: Felix Medrano Sanz, Lucas 'Basurero' Vieites,\n"
+"Martin Carr\n"
+"İsveçce: Anders F. Bjorklund\n"
+"Türkçe: erkaN, Yaşar Çiv\n"
+
+#: ../src/XFileExplorer.cpp:3246
+msgid "About X File Explorer"
+msgstr "X File Explorer Hakkında"
+
+#: ../src/XFileExplorer.cpp:3509 ../src/XFileExplorer.cpp:3557
+msgid "&Panel"
+msgstr "&Panel"
+
+#: ../src/XFileExplorer.cpp:3718
+msgid "Execute the command:"
+msgstr "Komutu çalıştır:"
+
+#: ../src/XFileExplorer.cpp:3718
+msgid "Console mode"
+msgstr "Konsol modu"
+
+#: ../src/XFileExplorer.cpp:3896
+msgid "Search files and folders"
+msgstr "Dosya ve dizinleri ara"
+
+#. Confirmation message
+#: ../src/XFileExplorer.cpp:3958
+msgid "Do you really want to empty the trash can?"
+msgstr "Gerçekten çöp kutusunu boşaltmak istiyor musunuz?"
+
+#: ../src/XFileExplorer.cpp:3958
+msgid " in "
+msgstr " içinde "
+
+#: ../src/XFileExplorer.cpp:3959
+msgid ""
+"\n"
+"\n"
+"All items will be definitively lost!"
+msgstr ""
+"\n"
+"\n"
+"Tüm öğeler kesinlikle kaybedilecek!"
+
+#: ../src/XFileExplorer.cpp:4049
+#, c-format
+msgid ""
+"Trash size: %s (%s files, %s subfolders)\n"
+"\n"
+"Modified date: %s"
+msgstr ""
+"Çöp boyutu: %s (%s dosya, %s altdizin)\n"
+"\n"
+"Değiştirilme tarihi: %s"
+
+#: ../src/XFileExplorer.cpp:4051
+msgid "Trash size"
+msgstr "Çöp boyutu"
+
+#: ../src/XFileExplorer.cpp:4058
+#, c-format
+msgid "Trash can 'files' folder %s is not readable!"
+msgstr "Çöp kutusu 'dosyalar' dizini %s okunabilir değil!"
+
+#: ../src/XFileExplorer.cpp:4512 ../src/XFileExplorer.cpp:4586
+#, c-format
+msgid "Command not found: %s"
+msgstr "Komut bulunamadı: %s"
+
+#: ../src/XFileExplorer.cpp:4591
+#, c-format
+msgid "Invalid file association: %s"
+msgstr "Geçersiz dosya ilişkisi: %s"
+
+#: ../src/XFileExplorer.cpp:4596
+#, c-format
+msgid "File association not found: %s"
+msgstr "Dosya ilişkisi bulunamadı: %"
+
+#: ../src/XFilePackage.cpp:205 ../src/XFileImage.cpp:339
+#: ../src/WriteWindow.cpp:606
+msgid "&Preferences"
+msgstr "&Tercihler"
+
+#: ../src/XFilePackage.cpp:213
+msgid "Open package file"
+msgstr "Paket dosyası aç"
+
+#: ../src/XFilePackage.cpp:218 ../src/XFileImage.cpp:701
+#: ../src/WriteWindow.cpp:747
+msgid "&Open..."
+msgstr "&Aç..."
+
+#. Preferences menu
+#. View Menu entries
+#: ../src/XFilePackage.cpp:232 ../src/XFileImage.cpp:822
+#: ../src/WriteWindow.cpp:858
+msgid "&Toolbar"
+msgstr "&Araç çubuğu"
+
+#. Help Menu entries
+#: ../src/XFilePackage.cpp:235
+msgid "&About X File Package"
+msgstr "X File Paketi H&akkında"
+
+#. Uninstall
+#: ../src/XFilePackage.cpp:257
+msgid "&Uninstall"
+msgstr "&Kaldır"
+
+#. Install/Upgrade
+#: ../src/XFilePackage.cpp:260
+msgid "&Install/Upgrade"
+msgstr "&Kur/Güncelle"
+
+#. First item is Description
+#: ../src/XFilePackage.cpp:266
+msgid "&Description"
+msgstr "&Tanımlama"
+
+#. Second item is File List
+#: ../src/XFilePackage.cpp:272
+msgid "File &List"
+msgstr "Dosya &Listesi"
+
+#: ../src/XFilePackage.cpp:304
+#, c-format
+msgid ""
+"X File Package Version %s is a simple rpm or deb package manager.\n"
+"\n"
+msgstr ""
+"X Dosya Paketi Sürümü %s basit bir rpm veya deb paket yöneticisidir.\n"
+"\n"
+
+#: ../src/XFilePackage.cpp:306
+msgid "About X File Package"
+msgstr "X File Paketi Hakkında"
+
+#: ../src/XFilePackage.cpp:319
+msgid "RPM source packages"
+msgstr "RPM kaynak paketleri"
+
+#: ../src/XFilePackage.cpp:320
+msgid "RPM packages"
+msgstr "RPM paketleri"
+
+#: ../src/XFilePackage.cpp:321
+msgid "DEB packages"
+msgstr "DEB paketleri"
+
+#: ../src/XFilePackage.cpp:325 ../src/WriteWindow.cpp:1552
+msgid "Open Document"
+msgstr "Belge Aç"
+
+#: ../src/XFilePackage.cpp:350 ../src/XFilePackage.cpp:396
+msgid "No package loaded"
+msgstr "Paket yüklenmedi"
+
+#: ../src/XFilePackage.cpp:369 ../src/XFilePackage.cpp:419
+#: ../src/XFilePackage.cpp:521 ../src/XFilePackage.cpp:585
+msgid "Unknown package format"
+msgstr "Bilinmeyen paket biçimi"
+
+#. Make and show command window
+#: ../src/XFilePackage.cpp:374
+msgid "Install/Upgrade Package"
+msgstr "Paket Kur/Yükselt"
+
+#. Make and show command window
+#: ../src/XFilePackage.cpp:424
+msgid "Uninstall Package"
+msgstr "Paket Kaldır"
+
+#: ../src/XFilePackage.cpp:573
+msgid "[RPM package]\n"
+msgstr "[RPM Paketi]\n"
+
+#: ../src/XFilePackage.cpp:578
+msgid "[DEB package]\n"
+msgstr "[DEB paketi]\n"
+
+#: ../src/XFilePackage.cpp:617
+#, c-format
+msgid "Query of %s failed!"
+msgstr "%s sorgusu başarısız oldu!"
+
+#: ../src/XFilePackage.cpp:641 ../src/XFileImage.cpp:1354
+#: ../src/WriteWindow.cpp:1072 ../src/WriteWindow.cpp:1082
+#: ../src/WriteWindow.cpp:1094
+msgid "Error Loading File"
+msgstr "Dosya Yükleme Hatası"
+
+#: ../src/XFilePackage.cpp:641 ../src/XFileImage.cpp:1354
+#: ../src/WriteWindow.cpp:1072 ../src/WriteWindow.cpp:1177
+#, c-format
+msgid "Unable to open file: %s"
+msgstr "Dosya açılamıyor: %s"
+
+#. Usage message
+#: ../src/XFilePackage.cpp:719
+msgid ""
+"\n"
+"Usage: xfp [options] [package] \n"
+"\n"
+"    [options] can be any of the following:\n"
+"\n"
+"        -h, --help         Print (this) help screen and exit.\n"
+"        -v, --version      Print version information and exit.\n"
+"\n"
+"    [package] is the path to the rpm or deb package you want to open on "
+"start up.\n"
+"\n"
+msgstr ""
+"\n"
+"Kullanım: xfp [seçenekler] [paket] \n"
+"\n"
+"    [seçenekler] aşağıdakilerden herhangi biri olabilir:\n"
+"\n"
+"        -h, --help         (Bu) yardım ekranını yazdır ve çık.\n"
+"        -v, --version      Sürüm bilgisini yazdır ve çık.\n"
+"\n"
+"    [paket] açılışta açmak istediğiniz rpm veya deb paketinin yolu.\n"
+"\n"
+
+#: ../src/XFileImage.cpp:182
+msgid "GIF Image"
+msgstr "GIF Resmi"
+
+#: ../src/XFileImage.cpp:183
+msgid "BMP Image"
+msgstr "BMP Resmi"
+
+#: ../src/XFileImage.cpp:184
+msgid "XPM Image"
+msgstr "XPM Resmi"
+
+#: ../src/XFileImage.cpp:185
+msgid "PCX Image"
+msgstr "PCX Resmi"
+
+#: ../src/XFileImage.cpp:186
+msgid "ICO Image"
+msgstr "ICO Resmi"
+
+#: ../src/XFileImage.cpp:187
+msgid "RGB Image"
+msgstr "RGB Resmi"
+
+#: ../src/XFileImage.cpp:188
+msgid "XBM Image"
+msgstr "XBM Resmi"
+
+#: ../src/XFileImage.cpp:189
+msgid "TARGA Image"
+msgstr "TARGA Resmi"
+
+#: ../src/XFileImage.cpp:190
+msgid "PPM Image"
+msgstr "PPM Resmi"
+
+#: ../src/XFileImage.cpp:191
+msgid "PNG Image"
+msgstr "PNG Resmi"
+
+#: ../src/XFileImage.cpp:192 ../src/XFileImage.cpp:193
+msgid "JPEG Image"
+msgstr "JPEG Resmi"
+
+#: ../src/XFileImage.cpp:194 ../src/XFileImage.cpp:195
+msgid "TIFF Image"
+msgstr "TIFF Resmi"
+
+#: ../src/XFileImage.cpp:331
+msgid "&Image"
+msgstr "Res&im"
+
+#: ../src/XFileImage.cpp:648 ../src/WriteWindow.cpp:664
+msgid "Open"
+msgstr "Aç"
+
+#: ../src/XFileImage.cpp:648 ../src/XFileImage.cpp:701
+msgid "Open image file."
+msgstr "Resim dosyası aç."
+
+#: ../src/XFileImage.cpp:652 ../src/XFileImage.cpp:1648
+#: ../src/WriteWindow.cpp:677 ../src/WriteWindow.cpp:1871
+msgid "Print"
+msgstr "Yazdır"
+
+#: ../src/XFileImage.cpp:652 ../src/XFileImage.cpp:707
+msgid "Print image file."
+msgstr "Resim dosyası yazdır."
+
+#. Note : Ctrl+ and Ctrl- cannot be changed from the registry!
+#. Toolbar button: Zoom in
+#: ../src/XFileImage.cpp:660
+msgid "Zoom in"
+msgstr "Yakınlaştır"
+
+#: ../src/XFileImage.cpp:660 ../src/XFileImage.cpp:734
+msgid "Zoom in image."
+msgstr "Resmi yakınlaştır."
+
+#. Toolbar button: Zoom out
+#: ../src/XFileImage.cpp:665
+msgid "Zoom out"
+msgstr "Uzaklaştır"
+
+#: ../src/XFileImage.cpp:665 ../src/XFileImage.cpp:735
+msgid "Zoom out image."
+msgstr "Resmi uzaklaştır."
+
+#: ../src/XFileImage.cpp:671
+msgid "Zoom 100%"
+msgstr "100% Yakınlaştır"
+
+#: ../src/XFileImage.cpp:671 ../src/XFileImage.cpp:738
+msgid "Zoom image to 100%."
+msgstr "Resmi 100% yakınlaştır."
+
+#: ../src/XFileImage.cpp:675
+msgid "Zoom to fit"
+msgstr "Sığdırmak için yakınlaştır"
+
+#: ../src/XFileImage.cpp:675 ../src/XFileImage.cpp:744
+msgid "Zoom to fit window."
+msgstr "Pencereye sığdırmak için yakınlaştır."
+
+#: ../src/XFileImage.cpp:682
+msgid "Rotate left"
+msgstr "Sola döndür"
+
+#: ../src/XFileImage.cpp:682
+msgid "Rotate left image."
+msgstr "Resmi sola döndür."
+
+#: ../src/XFileImage.cpp:686
+msgid "Rotate right"
+msgstr "Sağa döndür"
+
+#: ../src/XFileImage.cpp:686
+msgid "Rotate right image."
+msgstr "Resmi sağa döndür."
+
+#: ../src/XFileImage.cpp:690
+msgid "Mirror horizontally"
+msgstr "Yatay yansıma"
+
+#: ../src/XFileImage.cpp:690
+msgid "Mirror image horizontally."
+msgstr "Resmi yatay olarak yansıt."
+
+#: ../src/XFileImage.cpp:694
+msgid "Mirror vertically"
+msgstr "Dikey yansıma"
+
+#: ../src/XFileImage.cpp:694
+msgid "Mirror image vertically."
+msgstr "Resmi dikey olarak yansıt."
+
+#: ../src/XFileImage.cpp:707 ../src/WriteWindow.cpp:768
+msgid "&Print..."
+msgstr "&Yazdır..."
+
+#: ../src/XFileImage.cpp:721
+msgid "&Clear recent files"
+msgstr "Son dosyaları &temizle"
+
+#: ../src/XFileImage.cpp:721
+msgid "Clear recent file menu."
+msgstr "Son dosya menüsünü temizle."
+
+#: ../src/XFileImage.cpp:727
+msgid "Quit Xfi."
+msgstr "Xfi'den Çık."
+
+#. Image Menu entries
+#: ../src/XFileImage.cpp:734
+msgid "Zoom &in"
+msgstr "&Yakınlaştır"
+
+#: ../src/XFileImage.cpp:735
+msgid "Zoom &out"
+msgstr "&Uzaklaştır"
+
+#: ../src/XFileImage.cpp:738
+msgid "Zoo&m 100%"
+msgstr "100% Yakı&nlaştır"
+
+#: ../src/XFileImage.cpp:744
+msgid "Zoom to fit &window"
+msgstr "Pencereye &sığdır"
+
+#: ../src/XFileImage.cpp:750
+msgid "Rotate &right"
+msgstr "Sağa döndü&r"
+
+#: ../src/XFileImage.cpp:750
+msgid "Rotate right."
+msgstr "Sağa döndür."
+
+#: ../src/XFileImage.cpp:756
+msgid "Rotate &left"
+msgstr "So&la döndür"
+
+#: ../src/XFileImage.cpp:756
+msgid "Rotate left."
+msgstr "Sola döndür."
+
+#: ../src/XFileImage.cpp:762
+msgid "Mirror &horizontally"
+msgstr "&Yatay yansıma"
+
+#: ../src/XFileImage.cpp:762
+msgid "Mirror horizontally."
+msgstr "Yatay yansıma."
+
+#: ../src/XFileImage.cpp:768
+msgid "Mirror &vertically"
+msgstr "&Dikey yansıma"
+
+#: ../src/XFileImage.cpp:768
+msgid "Mirror vertically."
+msgstr "Dikey yansıma."
+
+#: ../src/XFileImage.cpp:775
+msgid "Show hidden files and folders."
+msgstr "Gizli dosya ve dizinleri göster."
+
+#: ../src/XFileImage.cpp:781
+msgid "Show image thumbnails."
+msgstr "Resmin küçük resimlerini göster."
+
+#: ../src/XFileImage.cpp:789
+msgid "Display folders with big icons."
+msgstr "Dizinleri büyük simgelerle göster."
+
+#: ../src/XFileImage.cpp:795
+msgid "Display folders with small icons."
+msgstr "Dizinleri küçüük simgelerle göster."
+
+#: ../src/XFileImage.cpp:801
+msgid "&Detailed file list"
+msgstr "Ayrıntılı &dosya listesi"
+
+#: ../src/XFileImage.cpp:801
+msgid "Display detailed folder listing."
+msgstr "Ayrıntılı dizin listesini görüntüle."
+
+#: ../src/XFileImage.cpp:817
+msgid "View icons row-wise."
+msgstr "Simgeleri satır şeklinde görüntüle."
+
+#: ../src/XFileImage.cpp:818
+msgid "View icons column-wise."
+msgstr "Simgeleri sütun şeklinde görüntüleyin."
+
+#: ../src/XFileImage.cpp:819
+msgid "Autosize icon names."
+msgstr "Simge adlarını otomatik boyutlandır."
+
+#: ../src/XFileImage.cpp:822 ../src/WriteWindow.cpp:858
+msgid "Display toolbar."
+msgstr "Araç çubuğunu görüntüle."
+
+#: ../src/XFileImage.cpp:823
+msgid "&File list"
+msgstr "&Dosya listesi"
+
+#: ../src/XFileImage.cpp:823
+msgid "Display file list."
+msgstr "Dosya listesini göster."
+
+#: ../src/XFileImage.cpp:824
+msgid "File list &before"
+msgstr "Daha &önce dosya listesi"
+
+#: ../src/XFileImage.cpp:824
+msgid "Display file list before image window."
+msgstr "Görüntü penceresinden önce dosya listesini görüntüle."
+
+#: ../src/XFileImage.cpp:825
+msgid "&Filter images"
+msgstr "Resim &süzgeci"
+
+#: ../src/XFileImage.cpp:825
+msgid "List only image files."
+msgstr "Sadece resim dosyalarını listele."
+
+#: ../src/XFileImage.cpp:826
+msgid "Fit &window when opening"
+msgstr "Açarken &pencereye sığdır"
+
+#: ../src/XFileImage.cpp:826
+msgid "Zoom to fit window when opening an image."
+msgstr "Bir görüntüyü açarken pencereye sığdırmak için yakınlaştır."
+
+#: ../src/XFileImage.cpp:831
+msgid "&About X File Image"
+msgstr "X File Image H&akkında"
+
+#: ../src/XFileImage.cpp:831
+msgid "About X File Image."
+msgstr "X File Image Hakkında."
+
+#: ../src/XFileImage.cpp:1333
+#, c-format
+msgid ""
+"X File Image Version %s is a simple image viewer.\n"
+"\n"
+msgstr ""
+"X File Image Sürüm %s basit bir resim görüntüleyicidir.\n"
+"\n"
+
+#: ../src/XFileImage.cpp:1335
+msgid "About X File Image"
+msgstr "X File Image Hakkında"
+
+#: ../src/XFileImage.cpp:1442 ../src/XFileImage.cpp:1448
+#: ../src/XFileImage.cpp:1464
+msgid "Error Loading Image"
+msgstr "Resim Yükleme Hatası"
+
+#: ../src/XFileImage.cpp:1442 ../src/XFileImage.cpp:1448
+#, c-format
+msgid "Unsupported type: %s"
+msgstr "Desteklenmeyen tür: %s"
+
+#: ../src/XFileImage.cpp:1464
+msgid "Unable to load image, the file may be corrupted"
+msgstr "Resim yüklenemiyor, dosya bozuk olabilir"
+
+#: ../src/XFileImage.cpp:1504
+msgid ""
+"Change will be taken into account after restart.\n"
+"Restart X File Image now?"
+msgstr ""
+"Değişiklik yeniden başlattıktan sonra dikkate alınacaktır.\n"
+"X File Image şimdi yeniden başlatılsın mı?"
+
+#: ../src/XFileImage.cpp:1619
+msgid "Open Image"
+msgstr "Resim Aç"
+
+#: ../src/XFileImage.cpp:1648 ../src/WriteWindow.cpp:1871
+msgid ""
+"Print command: \n"
+"(ex: lpr -P <printer>)"
+msgstr ""
+"Yazdırma komutu: \n"
+"(ör: lpr -P <printer>)"
+
+#. Usage message
+#: ../src/XFileImage.cpp:2685
+msgid ""
+"\n"
+"Usage: xfi [options] [image] \n"
+"\n"
+"    [options] can be any of the following:\n"
+"\n"
+"        -h, --help         Print (this) help screen and exit.\n"
+"        -v, --version      Print version information and exit.\n"
+"\n"
+"    [image] is the path to the image file you want to open on start up.\n"
+"\n"
+msgstr ""
+"\n"
+"Kullanım: xfi [seçenekler] [resim] \n"
+"\n"
+"    [seçenekler] aşağıdakilerden herhangi biri olabilir:\n"
+"\n"
+"        -h, --help         (Bu) yardım ekranını yazdır ve çık.\n"
+"        -v, --version      Sürüm bilgisini yazdır ve çık.\n"
+"\n"
+"    [resim] başlangıçta açmak istediğiniz resim dosyasının yolu.\n"
+"\n"
+
+#. Construct
+#. Set title
+#: ../src/WriteWindow.cpp:171 ../src/WriteWindow.cpp:178
+msgid "XFileWrite Preferences"
+msgstr "XFileWrite Tercihleri"
+
+#. First tab - Editor
+#: ../src/WriteWindow.cpp:197
+msgid "&Editor"
+msgstr "Düzenl&eyici"
+
+#: ../src/WriteWindow.cpp:199 ../src/WriteWindow.cpp:220
+msgid "Text"
+msgstr "Metin"
+
+#: ../src/WriteWindow.cpp:202
+msgid "Wrap margin:"
+msgstr "Kenar kaydırma:"
+
+#: ../src/WriteWindow.cpp:207
+msgid "Tabulation size:"
+msgstr "Tablolama boyutu:"
+
+#: ../src/WriteWindow.cpp:212
+msgid "Strip carriage returns:"
+msgstr ""
+
+#. Second tab - Colors
+#: ../src/WriteWindow.cpp:218
+msgid "&Colors"
+msgstr "&Renkler"
+
+#: ../src/WriteWindow.cpp:222
+msgid "Lines"
+msgstr "Satırlar"
+
+#: ../src/WriteWindow.cpp:225
+msgid "Background:"
+msgstr "Arka plan:"
+
+#: ../src/WriteWindow.cpp:228
+msgid "Text:"
+msgstr "Metin:"
+
+#: ../src/WriteWindow.cpp:231
+msgid "Selected text background:"
+msgstr "Metin arka planı seçimi:"
+
+#: ../src/WriteWindow.cpp:234
+msgid "Selected text:"
+msgstr "Metin seçimi:"
+
+#: ../src/WriteWindow.cpp:237
+msgid "Highlighted text background:"
+msgstr "Vurgulanan metin arka planı:"
+
+#: ../src/WriteWindow.cpp:240
+msgid "Highlighted text:"
+msgstr "Vurgulanan metin:"
+
+#: ../src/WriteWindow.cpp:243
+msgid "Cursor:"
+msgstr "İmleç:"
+
+#: ../src/WriteWindow.cpp:246
+msgid "Line numbers background:"
+msgstr "Satır numaraları arka planı:"
+
+#: ../src/WriteWindow.cpp:249
+msgid "Line numbers foreground:"
+msgstr "Satır numaraları ön planı:"
+
+#: ../src/WriteWindow.cpp:602 ../src/foxhacks.cpp:862
+msgid "&Search"
+msgstr "&Ara"
+
+#: ../src/WriteWindow.cpp:610
+msgid "&Window"
+msgstr "&Pencere"
+
+#. Caption before number
+#: ../src/WriteWindow.cpp:643
+msgid "  Lines:"
+msgstr "  Satırlar:"
+
+#. Caption before number
+#: ../src/WriteWindow.cpp:650
+msgid "  Col:"
+msgstr "  Sütun:"
+
+#. Caption before number
+#: ../src/WriteWindow.cpp:657
+msgid "  Line:"
+msgstr "  Satır:"
+
+#: ../src/WriteWindow.cpp:661
+msgid "New"
+msgstr "Yeni"
+
+#: ../src/WriteWindow.cpp:661 ../src/WriteWindow.cpp:741
+msgid "Create new document."
+msgstr "Yeni belge oluştur."
+
+#: ../src/WriteWindow.cpp:664 ../src/WriteWindow.cpp:747
+msgid "Open document file."
+msgstr "Belge dosyası aç."
+
+#: ../src/WriteWindow.cpp:667
+msgid "Save"
+msgstr "Kaydet"
+
+#: ../src/WriteWindow.cpp:667
+msgid "Save document."
+msgstr "Belgeyi kaydet."
+
+#: ../src/WriteWindow.cpp:670
+msgid "Close"
+msgstr "Kapat"
+
+#: ../src/WriteWindow.cpp:670
+msgid "Close document file."
+msgstr "Belge dosyasını kapat."
+
+#: ../src/WriteWindow.cpp:677 ../src/WriteWindow.cpp:768
+msgid "Print document."
+msgstr "Belgeyi yazdır."
+
+#: ../src/WriteWindow.cpp:680
+msgid "Quit"
+msgstr "Çık"
+
+#: ../src/WriteWindow.cpp:680 ../src/WriteWindow.cpp:788
+msgid "Quit X File Write."
+msgstr "X File Write'tan çık."
+
+#: ../src/WriteWindow.cpp:687 ../src/WriteWindow.cpp:810
+msgid "Copy selection to clipboard."
+msgstr "Seçimi panoya kopyala."
+
+#: ../src/WriteWindow.cpp:690
+msgid "Cut"
+msgstr "Kes"
+
+#: ../src/WriteWindow.cpp:690 ../src/WriteWindow.cpp:816
+msgid "Cut selection to clipboard."
+msgstr "Seçimi panoya kes."
+
+#: ../src/WriteWindow.cpp:693
+msgid "Paste"
+msgstr "Yapıştır"
+
+#: ../src/WriteWindow.cpp:693
+msgid "Paste clipboard."
+msgstr "Panoyu yapıştır."
+
+#: ../src/WriteWindow.cpp:700 ../src/WriteWindow.cpp:841
+msgid "Goto line number."
+msgstr "Satır numarasına git."
+
+#: ../src/WriteWindow.cpp:707
+msgid "Undo"
+msgstr "Geri"
+
+#: ../src/WriteWindow.cpp:707 ../src/WriteWindow.cpp:795
+msgid "Undo last change."
+msgstr "Son değişikliği geri al."
+
+#: ../src/WriteWindow.cpp:710
+msgid "Redo"
+msgstr "Yinele"
+
+#: ../src/WriteWindow.cpp:710 ../src/WriteWindow.cpp:801
+msgid "Redo last undo."
+msgstr "En son geri almayı yinele."
+
+#: ../src/WriteWindow.cpp:717
+msgid "Search text."
+msgstr "Metin ara."
+
+#: ../src/WriteWindow.cpp:720
+msgid "Search selection backward"
+msgstr "Seçimi geriye doğru ara"
+
+#: ../src/WriteWindow.cpp:720 ../src/WriteWindow.cpp:875
+msgid "Search backward for selected text."
+msgstr "Seçili metni geriye doğru ara."
+
+#: ../src/WriteWindow.cpp:723
+msgid "Search selection forward"
+msgstr "Seçimi ileri doğru ara"
+
+#: ../src/WriteWindow.cpp:723 ../src/WriteWindow.cpp:881
+msgid "Search forward for selected text."
+msgstr "Seçili metni ileriye doğru ara."
+
+#: ../src/WriteWindow.cpp:730
+msgid "Word wrap on"
+msgstr "Sözcük kaydırma"
+
+#: ../src/WriteWindow.cpp:730
+msgid "Set word wrap on."
+msgstr "Sözcük kaydırma özelliğini ayarla."
+
+#: ../src/WriteWindow.cpp:730
+msgid "Word wrap off"
+msgstr "Sözcük kaydırmayı kapat"
+
+#: ../src/WriteWindow.cpp:730
+msgid "Set word wrap off."
+msgstr "Sözcük kaydırma kapatmayı ayarla."
+
+#: ../src/WriteWindow.cpp:733
+msgid "Show line numbers"
+msgstr "Satır numaralarını göster"
+
+#: ../src/WriteWindow.cpp:733
+msgid "Show line numbers."
+msgstr "Satır numaralarını göster."
+
+#: ../src/WriteWindow.cpp:733
+msgid "Hide line numbers"
+msgstr "Satır numaralarını gizle"
+
+#: ../src/WriteWindow.cpp:733
+msgid "Hide line numbers."
+msgstr "Satır numaralarını gizle."
+
+#: ../src/WriteWindow.cpp:741
+msgid "&New"
+msgstr "Ye&ni"
+
+#: ../src/WriteWindow.cpp:753
+msgid "Save changes to file."
+msgstr "Değişiklikleri dosyaya kaydet."
+
+#: ../src/WriteWindow.cpp:758
+msgid "Save &As..."
+msgstr "F&arklı Kaydet..."
+
+#: ../src/WriteWindow.cpp:758
+msgid "Save document to another file."
+msgstr "Belgeyi farklı bir dosyaya kaydet."
+
+#: ../src/WriteWindow.cpp:761
+msgid "Close document."
+msgstr "Belgeyi kapat."
+
+#: ../src/WriteWindow.cpp:782
+msgid "&Clear Recent Files"
+msgstr "Son dosyaları &temizle"
+
+#: ../src/WriteWindow.cpp:795 ../src/WriteWindow.cpp:848
+msgid "&Undo"
+msgstr "&Geri al"
+
+#: ../src/WriteWindow.cpp:801 ../src/WriteWindow.cpp:849
+msgid "&Redo"
+msgstr "&Yinele"
+
+#: ../src/WriteWindow.cpp:806
+msgid "Revert to &saved"
+msgstr "&Kaydedilene geri dön"
+
+#: ../src/WriteWindow.cpp:806
+msgid "Revert to saved document."
+msgstr "Kaydedilen belgeye geri dön."
+
+#: ../src/WriteWindow.cpp:816 ../src/WriteWindow.cpp:852
+msgid "Cu&t"
+msgstr "Ke&s"
+
+#: ../src/WriteWindow.cpp:822
+msgid "Paste from clipboard."
+msgstr "Panodan yapıştır."
+
+#: ../src/WriteWindow.cpp:829
+msgid "Lo&wer-case"
+msgstr "Kü&çük harf"
+
+#: ../src/WriteWindow.cpp:829
+msgid "Change to lower case."
+msgstr "Küçük harfle değiştir."
+
+#: ../src/WriteWindow.cpp:835
+msgid "Upp&er-case"
+msgstr "Büy&ük harf"
+
+#: ../src/WriteWindow.cpp:835
+msgid "Change to upper case."
+msgstr "Büyük harfle değiştir."
+
+#: ../src/WriteWindow.cpp:841
+msgid "&Goto line..."
+msgstr "Satıra &git..."
+
+#: ../src/WriteWindow.cpp:854
+msgid "Select &All"
+msgstr "&Tümünü Seç"
+
+#: ../src/WriteWindow.cpp:859
+msgid "&Status line"
+msgstr "Durum &satırı"
+
+#: ../src/WriteWindow.cpp:859
+msgid "Display status line."
+msgstr "Durum stırını görüntüle."
+
+#: ../src/WriteWindow.cpp:863
+msgid "&Search..."
+msgstr "&Ara..."
+
+#: ../src/WriteWindow.cpp:863
+msgid "Search for a string."
+msgstr "Bir dize ara."
+
+#: ../src/WriteWindow.cpp:869
+msgid "&Replace..."
+msgstr "Ye&rine koy..."
+
+#: ../src/WriteWindow.cpp:869
+msgid "Search for a string and replace with another."
+msgstr "Bir dize arayın ve başka bir tane ile değiştirin."
+
+#: ../src/WriteWindow.cpp:875
+msgid "Search sel. &backward"
+msgstr "Seçimi &geriye doğru ara"
+
+#: ../src/WriteWindow.cpp:881
+msgid "Search sel. &forward"
+msgstr "Seçimi &ileriye doğru ara"
+
+#: ../src/WriteWindow.cpp:889
+msgid "&Word wrap"
+msgstr "&Sözcük kaydırma"
+
+#: ../src/WriteWindow.cpp:889
+msgid "Toggle word wrap mode."
+msgstr "Sözcük kaydırma modunu aç/kapat."
+
+#: ../src/WriteWindow.cpp:895
+msgid "&Line numbers"
+msgstr "Satır numara&ları"
+
+#: ../src/WriteWindow.cpp:895
+msgid "Toggle line numbers mode."
+msgstr "Satır numaraları modunu aç/kapat."
+
+#: ../src/WriteWindow.cpp:900
+msgid "&Overstrike"
+msgstr ""
+
+#: ../src/WriteWindow.cpp:900
+msgid "Toggle overstrike mode."
+msgstr ""
+
+#: ../src/WriteWindow.cpp:902
+msgid "&Font..."
+msgstr "&Yazıtipi..."
+
+#: ../src/WriteWindow.cpp:902
+msgid "Change text font."
+msgstr "Metin yazıtipini değiştir."
+
+#: ../src/WriteWindow.cpp:903
+msgid "&More preferences..."
+msgstr "&Daha fazla seçenek..."
+
+#: ../src/WriteWindow.cpp:903
+msgid "Change other options."
+msgstr "Diğer seçenekleri değiştir."
+
+#: ../src/WriteWindow.cpp:959
+msgid "&About X File Write"
+msgstr "X File Write H&akkında"
+
+#: ../src/WriteWindow.cpp:959
+msgid "About X File Write."
+msgstr "X File Write Hakkında."
+
+#: ../src/WriteWindow.cpp:1082
+#, c-format
+msgid "File is too big: %s (%d bytes)"
+msgstr "Dosya çok büyük: %s (%d bayt)"
+
+#: ../src/WriteWindow.cpp:1094
+#, c-format
+msgid "Unable to read file: %s"
+msgstr "Dosya okunamıyor: %s"
+
+#: ../src/WriteWindow.cpp:1159 ../src/WriteWindow.cpp:1166
+#: ../src/WriteWindow.cpp:1177 ../src/WriteWindow.cpp:1184
+#: ../src/WriteWindow.cpp:1206
+msgid "Error Saving File"
+msgstr "Dosya Kaydetme Hatası"
+
+#: ../src/WriteWindow.cpp:1159
+#, fuzzy, c-format
+msgid "Unable to save file: %s"
+msgstr "Dosya açılamıyor: %s"
+
+#: ../src/WriteWindow.cpp:1166
+#, c-format
+msgid ""
+"Not enough space left on device, unable to save file: %s\n"
+"\n"
+"=> To prevent losing data, you should save this file to another device "
+"before exiting!"
+msgstr ""
+
+#: ../src/WriteWindow.cpp:1184
+#, c-format
+msgid "File is too big: %s"
+msgstr "Dosya çok büyük: %s"
+
+#: ../src/WriteWindow.cpp:1206
+#, c-format
+msgid "File: %s truncated."
+msgstr "Dosya: %s kesildi."
+
+#: ../src/WriteWindow.cpp:1222 ../src/XFileWrite.cpp:392
+#: ../src/XFileWrite.cpp:406
+msgid "untitled"
+msgstr "başlıksız"
+
+#: ../src/WriteWindow.cpp:1230
+#, c-format
+msgid "untitled%d"
+msgstr "başlıksız%d"
+
+#: ../src/WriteWindow.cpp:1477
+#, c-format
+msgid ""
+"X File Write Version %s is a simple text editor.\n"
+"\n"
+msgstr ""
+"X File Write Sürüm %s basit bir metin düzenleyicidir.\n"
+"\n"
+
+#: ../src/WriteWindow.cpp:1479
+msgid "About X File Write"
+msgstr "X File Write Hakkında"
+
+#: ../src/WriteWindow.cpp:1501
+msgid "Change Font"
+msgstr "Yazıtipini Değiştir"
+
+#: ../src/WriteWindow.cpp:1541
+msgid "Text Files"
+msgstr "Metin Dosyaları"
+
+#: ../src/WriteWindow.cpp:1542
+msgid "C Source Files"
+msgstr "C Kaynak Dosyaları"
+
+#: ../src/WriteWindow.cpp:1543 ../src/WriteWindow.cpp:1544
+#: ../src/WriteWindow.cpp:1545
+msgid "C++ Source Files"
+msgstr "C++ Kaynak Dosyaları"
+
+#: ../src/WriteWindow.cpp:1546
+msgid "C/C++ Header Files"
+msgstr "C/C++ Başlık Dosyaları"
+
+#: ../src/WriteWindow.cpp:1547 ../src/WriteWindow.cpp:1548
+msgid "HTML Files"
+msgstr "HTML Dosyaları"
+
+#: ../src/WriteWindow.cpp:1549
+msgid "PHP Files"
+msgstr "PHP Dosyaları"
+
+#: ../src/WriteWindow.cpp:1670
+msgid "Unsaved Document"
+msgstr "Kaydedilmemiş Belge"
+
+#: ../src/WriteWindow.cpp:1670
+#, c-format
+msgid "Save %s to file?"
+msgstr "%s dosyaya kaydedilsin mi?"
+
+#: ../src/WriteWindow.cpp:1680 ../src/WriteWindow.cpp:1742
+msgid "Save Document"
+msgstr "Belge Kaydet"
+
+#: ../src/WriteWindow.cpp:1690 ../src/WriteWindow.cpp:1752
+msgid "Overwrite Document"
+msgstr "Belgenin Üzerine Yaz"
+
+#: ../src/WriteWindow.cpp:1690 ../src/WriteWindow.cpp:1752
+#, c-format
+msgid "Overwrite existing document: %s?"
+msgstr "Mevcut belgenin üzerine yaz: %s?"
+
+#: ../src/WriteWindow.cpp:1841
+msgid " (changed)"
+msgstr " (değiştirildi)"
+
+#: ../src/WriteWindow.cpp:1851
+msgid " (read only)"
+msgstr " (salt okunur)"
+
+#: ../src/WriteWindow.cpp:1962
+msgid "READ ONLY"
+msgstr "SALT OKUNUR"
+
+#: ../src/WriteWindow.cpp:1967
+msgid "OVR"
+msgstr "OVR"
+
+#: ../src/WriteWindow.cpp:1967
+msgid "INS"
+msgstr "INS"
+
+#: ../src/WriteWindow.cpp:2071
+msgid "File Was Changed"
+msgstr "Dosya Değiştirildi"
+
+#: ../src/WriteWindow.cpp:2071
+#, c-format
+msgid ""
+"%s\n"
+"was changed by another program. Reload this file from disk?"
+msgstr ""
+"%s\n"
+"başka bir program tarafından değiştirildi. Bu dosya diskten yeniden "
+"yüklensin mi?"
+
+#: ../src/WriteWindow.cpp:2132
+msgid "Replace"
+msgstr "Yerine koy"
+
+#: ../src/WriteWindow.cpp:2293
+msgid "Goto Line"
+msgstr "Satıra Git"
+
+#: ../src/WriteWindow.cpp:2293
+msgid "&Goto line number:"
+msgstr "Satır numarasına &git:"
+
+#. Usage message
+#: ../src/XFileWrite.cpp:217
+msgid ""
+"\n"
+"Usage: xfw [options] [file1] [file2] [file3]...\n"
+"\n"
+"    [options] can be any of the following:\n"
+"\n"
+"        -r, --read-only    Open files in read-only mode.\n"
+"        -h, --help         Print (this) help screen and exit.\n"
+"        -v, --version      Print version information and exit.\n"
+"\n"
+"    [file1] [file2] [file3]... are the path(s) to the file(s) you want to "
+"open on start up.\n"
+"\n"
+msgstr ""
+"\n"
+"Kullanım: xfw [seçenekler] [dosya1] [dosya2] [dosya3]...\n"
+"\n"
+"    [seçenekler] aşağıdakilerden herhangi biri olabilir:\n"
+"\n"
+"        -r, --read-only    Dosyaları salt okunur modda aç.\n"
+"        -h, --help         (Bu) yardım ekranını yazdır ve çık.\n"
+"        -v, --version      Sürüm bilgisini yazdır ve çık.\n"
+"\n"
+"    [dosya1] [dosya2] [dosya3]... Açılışta açmak istediğiniz dosya (ların) "
+"yolu(ları)dur..\n"
+"\n"
+
+#: ../src/foxhacks.cpp:164
+msgid "Root folder"
+msgstr "Kök dizini"
+
+#: ../src/foxhacks.cpp:779
+msgid "Ready."
+msgstr "Hazır."
+
+#: ../src/foxhacks.cpp:807
+msgid "&Replace"
+msgstr "Değişti&r"
+
+#: ../src/foxhacks.cpp:808
+msgid "Re&place All"
+msgstr "Tümünü &Değiştir"
+
+#: ../src/foxhacks.cpp:816
+msgid "Search for:"
+msgstr "Şunun için ara:"
+
+#: ../src/foxhacks.cpp:828
+msgid "Replace with:"
+msgstr "İle dğiştir:"
+
+#: ../src/foxhacks.cpp:841
+msgid "Ex&act"
+msgstr "Çık&ar"
+
+#: ../src/foxhacks.cpp:842
+msgid "&Ignore Case"
+msgstr "Durumu &Yoksay"
+
+#: ../src/foxhacks.cpp:843
+msgid "E&xpression"
+msgstr "&İfade"
+
+#: ../src/foxhacks.cpp:844
+msgid "&Backward"
+msgstr "&Geri al"
+
+#: ../src/help.h:7
+#, fuzzy, c-format
+msgid ""
+"\n"
+" \n"
+" \n"
+"                                   XFE, X File Explorer File Manager\n"
+" \n"
+"                                     <http://roland65.free.fr/xfe>\n"
+"                                 <http://sourceforge.net/projects/xfe>\n"
+" \n"
+" \n"
+" \n"
+"  This program is free software; you can redistribute it and/or modify it "
+"under the terms of the GNU\n"
+"  General Public License as published by the Free Software Foundation; "
+"either version 2, or (at your option)\n"
+"  any later version.\n"
+" \n"
+"  This program is distributed in the hope that it will be useful, but "
+"WITHOUT ANY WARRANTY; \n"
+"  without even the implied warranty of MERCHANTABILITY or FITNESS FOR A "
+"PARTICULAR PURPOSE. \n"
+"  See the GNU General Public License for more details.\n"
+" \n"
+" \n"
+" \n"
+"   Description\n"
+"   =-=-=-=-=-=\n"
+" \n"
+"  X File Explorer (Xfe) is a lightweight file manager for X11, written using "
+"the FOX toolkit.\n"
+"  It is desktop independent and can easily be customized.\n"
+"  It has Commander or Explorer styles and it is very fast and small.\n"
+"  Xfe is based on the popular, but discontinued X Win Commander, originally "
+"written by Maxim Baranov.\n"
+" \n"
+" \n"
+" \n"
+"   Features\n"
+"   =-=-=-=-=\n"
+" \n"
+"     - Very fast graphic user interface\n"
+"     - UTF-8 support\n"
+"     - HiDPI monitor support\n"
+"     - Commander/Explorer interface with four file manager modes : a) one "
+"panel, b) a folder tree\n"
+"       and one panel, c) two panels and d) a folder tree and two panels\n"
+"     - Horizontal or vertical file panels stacking\n"
+"     - Panels synchronization and switching\n"
+"     - Integrated text editor and viewer (X File Write, Xfw)\n"
+"     - Integrated image viewer (X File Image, Xfi)\n"
+"     - Integrated package (rpm or deb) viewer / installer / uninstaller (X "
+"File Package, Xfp)\n"
+"     - Custom shell scripts (like Nautilus scripts)\n"
+"     - Search files and directories\n"
+"     - Natural sort order (foo10.txt comes after foo2.txt...)\n"
+"     - Copy/Cut/Paste files from and to your favorite desktop (GNOME/KDE/"
+"XFCE/ROX)\n"
+"     - Drag and Drop files from and to your favorite desktop (GNOME/KDE/XFCE/"
+"ROX)\n"
+"     - Disk usage command \n"
+"     - Root mode with authentication by su or sudo\n"
+"     - Status line\n"
+"     - File associations\n"
+"     - Optional trash can for file delete operations (compliant with "
+"freedesktop.org standards)\n"
+"     - Auto save registry\n"
+"     - Double click or single click file and folder navigation\n"
+"     - Mouse right click pop-up menu in tree list and file list\n"
+"     - Change file attributes\n"
+"     - Mount/Unmount devices (Linux only)\n"
+"     - Warn when mount point are not responding (Linux only)\n"
+"     - Toolbars\n"
+"     - Bookmarks\n"
+"     - Back and forward history lists for folder navigation\n"
+"     - Color themes (GNOME, KDE, Windows...)\n"
+"     - Icon themes (Xfe, GNOME, KDE, Tango, Windows...)\n"
+"     - Control themes (Standard or Clearlooks like)\n"
+"     - Create archives (tar, compress, zip, gzip, bzip2, xz and 7zip formats "
+"are supported)\n"
+"     - File comparison (through external tool)\n"
+"     - Extract archives (tar, compress, zip, gzip, bzip2, xz, lzh, rar, ace, "
+"arj and 7zip formats are supported)\n"
+"     - Tooltips with file properties\n"
+"     - Progress bars or dialogs for lengthy file operations\n"
+"     - Thumbnails image previews\n"
+"     - Configurable key bindings\n"
+"     - Startup notification (optional)\n"
+"     - and much more...\n"
+" \n"
+" \n"
+" \n"
+"   Default Key bindings\n"
+"   =-=-=-=-=-=-=-=-=-=-=\n"
+" \n"
+"  Below are the global default key bindings. These key bindings are common "
+"to all X File applications.\n"
+" \n"
+"     * Select all                         - Ctrl-A\n"
+"     * Copy to clipboard                  - Ctrl-C\n"
+"     * Search                             - Ctrl-F\n"
+"     * Search previous                    - Ctrl-Shift-G\n"
+"     * Search next                        - Ctrl-G\n"
+"     * Go to home folder                  - Ctrl-H\n"
+"     * Invert selection                   - Ctrl-I\n"
+"     * Open file                          - Ctrl-O\n"
+"     * Print file                         - Ctrl-P\n"
+"     * Quit application                   - Ctrl-Q\n"
+"     * Paste from clipboard               - Ctrl-V\n"
+"     * Close window                       - Ctrl-W\n"
+"     * Cut to clipboard                   - Ctrl-X\n"
+"     * Deselect all                       - Ctrl-Z\n"
+"     * Display help                       - F1\n"
+"     * Create new file                    - Ctrl-N\n"
+"     * Create new folder                  - F7\n"
+"     * Big icon list                      - F10\n"
+"     * Small icon list                    - F11\n"
+"     * Detailed file list                 - F12\n"
+"     * Toggle display hidden files        - Ctrl-F6\n"
+"     * Toggle display thumbnails          - Ctrl-F7\n"
+"     * Vertical panels                    - Ctrl-Shift-F1\n"
+"     * Horizontal panels                  - Ctrl-Shift-F2\n"
+"     * Go to working folder               - Shift-F2\n"
+"     * Go to parent folder                - Backspace\n"
+"     * Go to previous folder              - Ctrl-Backspace\n"
+"     * Go to next folder                  - Shift-Backspace\n"
+" \n"
+" \n"
+"  Below are the default X File Explorer key bindings. These key bindings are "
+"specific to the Xfe application.\n"
+" \n"
+"     * Add bookmark                      - Ctrl-B\n"
+"     * Filter files                      - Ctrl-D\n"
+"     * Execute command                   - Ctrl-E\n"
+"     * Create new symbolic link          - Ctrl-J\n"
+"     * Switch panels                     - Ctrl-K\n"
+"     * Clear location bar                - Ctrl-L\n"
+"     * Mount file system (Linux only)    - Ctrl-M\n"
+"     * Rename file                       - F2\n"
+"     * Refresh panels                    - Ctrl-R\n"
+"     * Symlink files to location         - Ctrl-S\n"
+"     * Launch terminal                   - Ctrl-T\n"
+"     * Unmount file system (Linux only)  - Ctrl-U\n"
+"     * Synchronize panels                - Ctrl-Y\n"
+"     * Create new window                 - F3\n"
+"     * Edit                              - F4\n"
+"     * Copy files to location            - F5\n"
+"     * Move files to location            - F6\n"
+"     * File properties                   - F9\n"
+"     * One panel mode                    - Ctrl-F1\n"
+"     * Tree and panel mode               - Ctrl-F2\n"
+"     * Two panels mode                   - Ctrl-F3\n"
+"     * Tree and two panels mode          - Ctrl-F4\n"
+"     * Toggle display hidden folders     - Ctrl-F5\n"
+"     * Go to trash can                   - Ctrl-F8\n"
+"     * Create new root window            - Shift-F3\n"
+"     * View                              - Shift-F4\n"
+"     * Move files to trash can           - Del\n"
+"     * Restore files from trash can      - Alt-Del\n"
+"     * Delete files                      - Shift-Del\n"
+"     * Empty trash can                   - Ctrl-Del\n"
+" \n"
+" \n"
+"  Below are the default X File Image key bindings. These key bindings are "
+"specific to the Xfi application.\n"
+" \n"
+"     * Zoom to fit window                - Ctrl-F\n"
+"     * Mirror image horizontally         - Ctrl-H\n"
+"     * Zoom image to 100%                - Ctrl-I\n"
+"     * Rotate image to left              - Ctrl-L\n"
+"     * Rotate image to right             - Ctrl-R\n"
+"     * Mirror image vertically           - Ctrl-V\n"
+" \n"
+" \n"
+"  Below are the default X File Write key bindings. These key bindings are "
+"specific to the Xfw application.\n"
+" \n"
+"     * Toggle word wrap mode             - Ctrl-K\n"
+"     * Goto line                         - Ctrl-L\n"
+"     * Create new document               - Ctrl-N\n"
+"     * Replace string                    - Ctrl-R\n"
+"     * Save changes to file              - Ctrl-S\n"
+"     * Toggle line numbers mode          - Ctrl-T\n"
+"     * Toggle upper case mode            - Ctrl-Shift-U\n"
+"     * Toggle lower case mode            - Ctrl-U\n"
+"     * Redo last change                  - Ctrl-Y\n"
+"     * Undo last change                  - Ctrl-Z\n"
+" \n"
+" \n"
+"  X File Package (Xfp) only use some of the global key bindings.\n"
+" \n"
+"  Note that all the default key bindings listed above can be customized in "
+"the Xfe Preferences dialog. However,\n"
+"  some key actions are hardcoded an cannot be changed. These include:\n"
+" \n"
+"     * Ctrl-+ and Ctrl--                 - zoom in and zoom out image in "
+"Xfi\n"
+"     * Shift-F10                         - display context menus in Xfe\n"
+"     * Space                             - select an item in file list\n"
+"     * Return                            - enter folders in file lists, open "
+"files, select button actions, etc.\n"
+"     * Esc                               - close current dialog, unselect "
+"files, etc.\n"
+" \n"
+" \n"
+" \n"
+"   Drag and Drop operations\n"
+"   =-=-=-=-=-=-=-=-=-=-=-=-=\n"
+" \n"
+"  Dragging a file or group or files (by moving the mouse while maintaining "
+"the left button pressed)\n"
+"  to a folder or a file panel optionally opens a dialog that allows one to "
+"select the file operation: copy,\n"
+"  move, link or cancel.\n"
+" \n"
+" \n"
+" \n"
+"   Trash system\n"
+"   =-=-=-=-=-=-=\n"
+" \n"
+"  Starting with version 1.32, Xfe implements a trash system that is fully "
+"compliant with the freedesktop.org\n"
+"  standards.\n"
+"  This allows the user to move files to the trash can and to restore files "
+"from within Xfe or your favorite\n"
+"  desktop.\n"
+"  Note that the trash files location is now: ~/.local/share/Trash/files\n"
+" \n"
+" \n"
+" \n"
+"   Configuration\n"
+"   =-=-=-=-=-=-=\n"
+" \n"
+"  You can perform any Xfe customization (layout, file associations, key "
+"bindings, etc.) without editing any file\n"
+"  by hand. However, you may want to understand the configuration principles, "
+"because some customizations can also\n"
+"  easily be done by manually editing the configurations files.\n"
+"  Be careful to quit Xfe before manually editing any configuration file, "
+"otherwise changes could not be taken\n"
+"  into account.\n"
+" \n"
+"  The system-wide configuration file xferc is located in /usr/share/xfe, /"
+"usr/local/share/xfe\n"
+"  or /opt/local/share/xfe, in the given order of precedence.\n"
+" \n"
+"  Starting with version 1.32, the location of the local configuration files "
+"has changed. This is to be compliant\n"
+"  with the freedesktop.org standards.\n"
+"  \n"
+"  The local configuration files for Xfe, Xfw, Xfi, Xfp are now located in "
+"the ~/.config/xfe folder.\n"
+"  They are named xferc, xfwrc, xfirc and xfprc.\n"
+"  \n"
+"  At the very first Xfe run, the system-wide configuration file is copied "
+"into the local configuration file\n"
+"  ~/.config/xfe/xferc which does not exists yet. If the system-wide "
+"configuration file is not found\n"
+"  (in case of an unusal install place), a dialog asks the user to select the "
+"right place. It is thus easier to\n"
+"  customize Xfe (this is particularly true for the file associations) by "
+"hand editing because all the local options\n"
+"  are located in the same file.\n"
+" \n"
+"  Default PNG icons are located in /usr/share/xfe/icons/xfe-theme or /usr/"
+"local/share/xfe/icons/xfe-theme, depending\n"
+"  on your installation. You can easily change the icon theme path in "
+"Preferences dialog.\n"
+" \n"
+" \n"
+" \n"
+"   HiDPI support\n"
+"   =-=-=-=-=-=-=\n"
+" \n"
+"  Starting with version 1.44, Xfe supports HiDPI monitors. All users have to "
+"do is to manually adjust the screen\n"
+"  resolution using the Edit / Preferences / Appearance / DPI option. A value "
+"of 200 - 240 dpi should be fine for Ultra\n"
+"  HD (4K) monitors.\n"
+" \n"
+" \n"
+" \n"
+"   Scripts\n"
+"   =-=-=-=\n"
+" \n"
+"  Custom shell scripts can be executed from within Xfe on the files that are "
+"selected in a panel. You have to first\n"
+"  select the files you want to proceed, then right click on the file list "
+"and go to the Scripts sub menu. Last, choose\n"
+"  the script you want to apply on the selected files.\n"
+" \n"
+"  The script files must be located in the ~/.config/xfe/scripts folder and "
+"have to be executable. You can organize\n"
+"  this folder as you like by using sub-folders. You can use the Tools / Go "
+"to script folder menu item to directly go\n"
+"  to the script folder and manage it.\n"
+" \n"
+"  Here is an example of a simple shell script that list each selected file "
+"on the terminal from where Xfe was\n"
+"  launched:\n"
+" \n"
+"  #!/bin/sh\n"
+"  for arg\n"
+"  do\n"
+"  /bin/ls -la \"$arg\"\n"
+"  done\n"
+" \n"
+"  You can of course use programs like xmessage, zenity or kdialog to display "
+"a window with buttons that allows you to\n"
+"  interact with the script. Here is a modification of the above example that "
+"uses xmessage:\n"
+" \n"
+"  #!/bin/sh\n"
+"  (\n"
+"  echo  \"ls -la\"\n"
+"  for arg\n"
+"  do\n"
+"  /bin/ls -la \"$arg\"\n"
+"  done\n"
+"  ) | xmessage -file -\n"
+" \n"
+"  Most often, it is possible to directly use Nautilus scripts found on the "
+"Internet without modifications.\n"
+" \n"
+" \n"
+" \n"
+"  Search files and directories\n"
+"  =-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n"
+" \n"
+" \n"
+"  Xfe can quickly search files and directories by using find and grep "
+"command backends. This is done through the\n"
+"  Tools / Search files menu item (or by using the Ctrl-F shortcut).\n"
+" \n"
+"  In the search window, users can then specify usual search patterns like "
+"name and text, but more sophisticated search\n"
+"  options are also available (size, date, permissions, users, groups, follow "
+"symlinks and empty files). Results appear\n"
+"  in a file list and users can use the right click menu to manage their "
+"files, the same way as they do in the file\n"
+"  panels.\n"
+" \n"
+"  The search can be interrupted by clicking on the Stop button or pressing "
+"the Escape key.\n"
+" \n"
+" \n"
+" \n"
+"   Non Latin based languages\n"
+"   =-=-=-=-=-=-=-=-=-=-=-=-=\n"
+" \n"
+"  Xfe can display its user interface and also the file names in non latin "
+"character based languages, provided that you\n"
+"  have selected a Unicode font that supports your character set. To select a "
+"suitable font, use the\n"
+"  Edit / Preferences / Font menu item.\n"
+" \n"
+"  Multilingual Unicode TrueType fonts can be found at this address: http://"
+"www.slovo.info/unifonts.htm\n"
+" \n"
+" \n"
+" \n"
+"   Tips\n"
+"   =-=-=\n"
+" \n"
+"  File list\n"
+"     - Select files and right click to open a context menu on the selected "
+"files\n"
+"     - Press Ctrl + right click to open a context menu on the file panel\n"
+"     - When dragging a file/folder to a folder, hold on the mouse on the "
+"folder to open it\n"
+" \n"
+"  Tree list\n"
+"     - Select a folder and right click to open a context menu on the "
+"selected folder\n"
+"     - Press Ctrl + right click to open a context menu on the tree panel\n"
+"     - When dragging a file/folder to a folder, hold on the mouse on the "
+"folder to expand it\n"
+" \n"
+"  Copy/paste file names\n"
+"     - Select a file and press Ctrl-C to copy its name into the clipboard. "
+"Then in a dialog,press Ctrl-V to paste\n"
+"       the file name.\n"
+"     - In a file operation dialog, select a filename in the line containing "
+"the source name and paste it directly\n"
+"       to the destination using the middle button of your mouse. Then modify "
+"it to suit your needs.\n"
+" \n"
+"  Add files to the clipboard\n"
+"     - You can select files from a directory, copy them to the clipboard by "
+"pressing Ctrl-C. This erases the previous\n"
+"       clipboard content. Then, you can move to another directory, select "
+"other files and add them to the clipboard\n"
+"       content by pressing Shift-Ctrl-C. This does not erase the previous "
+"clipboard content. At last, you can move\n"
+"       to the destination and press Ctrl-V to copy all the files you have in "
+"the clipboard. Of course, this also works\n"
+"       with Ctrl-X and Shift-Ctrl-X to cut and paste the files.\n"
+" \n"
+"  Startup notification\n"
+"     - Startup notification is the process that displays a feedback (a "
+"sandbox cursor or whatever) to the user when\n"
+"       he has started an action (file copying, application launching, etc.). "
+"Depending on the system, there can be\n"
+"       some issues with startup notification. If Xfe was compiled with "
+"startup notification support, the user can\n"
+"       disable it for all applications at the global Preferences level. He "
+"can also disable it for individual\n"
+"       applications, by using the dedicated option in the first tab of the "
+"Properties dialog. This latter way is\n"
+"       only available when the file is an executable. Disabling startup "
+"notification can be useful when starting\n"
+"       an old application that doesn't support the startup notification "
+"protocol (e.g. Xterm).\n"
+" \n"
+"   Root mode\n"
+"     - If you use the sudo root mode, it can be useful to add password "
+"feedback to the sudo command. For this purpose,\n"
+"       edit your sudoers file like this:\n"
+"           sudo visudo -f /etc/suoders\n"
+"       and then add 'pwfeedback' to the default options, as shown below:\n"
+"           Defaults         env_reset,pwfeedback\n"
+"       After that, you should see stars (like *****) when you type your "
+"password in the small authentication window.\n"
+" \n"
+" \n"
+" \n"
+"   Bugs\n"
+"   =-=-=\n"
+" \n"
+"  Please report any found bug to Roland Baudin <roland65@free.fr>. Don't "
+"forget to mention the Xfe version you use,\n"
+"  the FOX library version and your system name and version.\n"
+" \n"
+" \n"
+" \n"
+"   Translations\n"
+"   =-=-=-=-=-=-=\n"
+"  \n"
+"  Xfe is now available in 24 languages but some translations are only "
+"partial. To translate Xfe to your language,\n"
+"  open the Xfe.pot file located in the po folder of the source tree with a "
+"software like poedit, kbabel\n"
+"  or gtranslator and fill it with your translated strings (be careful to the "
+"hotkeys and c-format characters),\n"
+"  and then send it back to me. I'll be pleased to integrate your work in the "
+"next Xfe release.\n"
+" \n"
+" \n"
+" \n"
+"   Patches\n"
+"   =-=-=-=\n"
+" \n"
+"  If you have coded some interesting patch, please send it to me, I will try "
+"to include it in the next release...\n"
+" \n"
+" \n"
+"  Many thanks to Maxim Baranov for his excellent X Win Commander and to all "
+"people that have provided useful\n"
+"  patches, translations, tests and advices.\n"
+" \n"
+"  [Last revision: 19/06/2019]\n"
+" \n"
+"  "
+msgstr ""
+"\n"
+" \n"
+" \n"
+"                                   XFE, X File Explorer Dosya Yöneticisi\n"
+" \n"
+"                                     <http://roland65.free.fr/xfe>\n"
+"                                 <http://sourceforge.net/projects/xfe>\n"
+" \n"
+" \n"
+" \n"
+"  [Bu yardım dosyası en iyi şekilde sabit bir yazı tipi kullanılarak "
+"görüntülenebilir. Tercihler iletişim kutusunun yazı tipi sekmesini "
+"kullanarak ayarlayabilirsiniz.]\n"
+" \n"
+" \n"
+" \n"
+"  Bu program ücretsiz bir yazılımdır; GNU şartlarına göre yeniden "
+"dağıtabilir ve/veya değiştirebilirsiniz\n"
+"  Özgür Yazılım Vakfı tarafından yayınlanan Genel Kamu Lisansı; ya sürüm 2, "
+"ya da (isteğe bağlı)\n"
+"  sonraki herhangi bir sürümde.\n"
+" \n"
+"  Bu program faydalı olacağı umuduyla dağıtılmıştır, ancak HİÇBİR GARANTİ "
+"YOKTUR; \n"
+"  belirli bir AMACA UYGUNLUK veya TİCARİ SATILABİLİRLİK GARANTİSİ "
+"VERİLMEKSİZİN. \n"
+"  Daha fazla bilgi için GNU Genel Kamu Lisansına bakınız..\n"
+" \n"
+" \n"
+" \n"
+"   Tanım\n"
+"   =-=-=-=-=-=\n"
+" \n"
+"  X File Explorer (Xfe) FOX araç seti kullanılarak yazılmış X11 için hafif "
+"bir dosya yöneticisidir.\n"
+"  Masaüstü bağımsız ve kolayca özelleştirilebilir.\n"
+"  Komutan veya Gezgin tarzları vardır ve çok hızlı ve küçüktür.\n"
+"  Xfe, aslen Maxim Baranov tarafından yazılmış popüler fakat üretime son "
+"verilen X Win Commander'ı temel alıyor.\n"
+" \n"
+" \n"
+" \n"
+"   Özellikler\n"
+"   =-=-=-=-=\n"
+" \n"
+"     - Çok hızlı grafik kullanıcı arayüzü\n"
+"     - UTF-8 desteği\n"
+"     - Dört dosya yöneticisi modlu Komutan/Gezgin arayüzü: a) bir panel, b) "
+"bir dizin ağacı ve bir panel, c) iki panel ve\n"
+"     - d) bir dizin ağacı ve iki panel\n"
+"     - İstiflenen yatay veya dikey dosya panelleri\n"
+"     - Panel eşitleme ve değiştirme\n"
+"     - Entegre metin düzenleyici ve görüntüleyici (X File Write, Xfw)\n"
+"     - Entegre resim görüntüleyici (X File Image, Xfi)\n"
+"     - Entegre paket (rpm veya deb) görüntüleyici / yükleyici / kaldırıcı (X "
+"File Package, Xfp)\n"
+"     - Özel kabuk betikleri (Nautilus betikleri gibi)\n"
+"     - Dosya ve dizinleri arama\n"
+"     - Doğal sıralama düzeni (foo10.txt foo2.txt'den sonra gelir...)\n"
+"     - En sevdiğiniz masaüstünden ve masaüstünüze Kopyala/Kes/Yapıştır "
+"(GNOME/KDE/XFCE/ROX)\n"
+"     - En sevdiğiniz masaüstünden veya masaüstüne Sürükle Bırak (GNOME/KDE/"
+"XFCE/ROX)\n"
+"     - Disk kullanım komutu \n"
+"     - Su veya sudo kimlik doğrulama yöntemiyile kök modu\n"
+"     - Durum satırı\n"
+"     - Dosya ilişkilendirmeleri\n"
+"     - İsteğe bağlı çöp kutusu, dosya silme işlemleri için olabilir "
+"(freedesktop.org standartlarıyla uyumlu)\n"
+"     - Kayıt defterini otomatik kaydet\n"
+"     - Çift tıklama veya tek tıklama ile dosya ve dizin gezintisi\n"
+"     - Ağaç listesinde ve dosya listesinde farenin sağ tıklayıp açılan "
+"menüsü\n"
+"     - Dosya niteliklerini değiştirme\n"
+"     - Aygıtları bağlama/ayırma (sadece Linux)\n"
+"     - Bağlantı noktası yanıt vermediğinde uyarma (yalnızca Linux)\n"
+"     - Araç çubukları\n"
+"     - Yer imleri\n"
+"     - Dizin gezintisi için geri ve ileri geçmiş listeleri\n"
+"     - Renk temaları (GNOME, KDE, Windows...)\n"
+"     - Simge temaları (Xfe, GNOME, KDE, Tango, Windows...)\n"
+"     - Kontrol temaları (Standard or Clearlooks like)\n"
+"     - Arşiv oluşturma (tar, compress, zip, gzip, bzip2, xz ve 7zip "
+"biçimleri desteklenmektedir)\n"
+"     - Dosya karşılaştırması (harici araç üzerinden)\n"
+"     - Arşiv çıkarma (tar, compress, zip, gzip, bzip2, xz, lzh, rar, ace, "
+"arj ve 7zip biçimleri desteklenmektedir)\n"
+"     - Dosya özellikli araç ipuçları\n"
+"     - Uzun dosya işlemleri için ilerleme çubukları veya iletişim kutuları\n"
+"     - Resim önizlemeleri için küçük resimler\n"
+"     - Yapılandırılabilir klavye kısayolları\n"
+"     - Başlangıç bildirimi (isteğe bağlı)\n"
+"     - ve daha fazlası...\n"
+" \n"
+" \n"
+" \n"
+"   Varsayılan tuş kısayolları\n"
+"   =-=-=-=-=-=-=-=-=-=-=\n"
+" \n"
+"  Aşağıda genel varsayılan klavye kısayolları bulunmaktadır. Bu kısayollar, "
+"tüm X Dosyası uygulamaları için ortaktır.\n"
+" \n"
+"     * Tümünü seç                         - Ctrl-A\n"
+"     * Panoya kopyala                  - Ctrl-C\n"
+"     * Ara                             - Ctrl-F\n"
+"     * Öncekini ara                    - Ctrl-Shift-G\n"
+"     * Sonrakini ara                        - Ctrl-G\n"
+"     * Ev dizinine git                  - Ctrl-H\n"
+"     * Ters seçim                   - Ctrl-I\n"
+"     * Dosya aç                          - Ctrl-O\n"
+"     * Dosya yazdır                         - Ctrl-P\n"
+"     * Uygulamadan çık                   - Ctrl-Q\n"
+"     * Panodan yapıştır               - Ctrl-V\n"
+"     * Pencereyi kapat                       - Ctrl-W\n"
+"     * Panoya kes                   - Ctrl-X\n"
+"     * Tüm seçimi kaldır                       - Ctrl-Z\n"
+"     * Yardım görüntüle                       - F1\n"
+"     * Yeni dosya oluştur                    - Ctrl-N\n"
+"     * Yeni dizin oluştur                  - F7\n"
+"     * Büyük simge listesi                      - F10\n"
+"     * Küçük simge listesi                    - F11\n"
+"     * Ayrıntılı dosya listesi                 - F12\n"
+"     * Gizli dosya görüntülemeyi aç/kapat        - Ctrl-F6\n"
+"     * Küçük resim görüntülemeyi aç/kapat          - Ctrl-F7\n"
+"     * Dikey paneller                    - Ctrl-Shift-F1\n"
+"     * Yatay paneller                  - Ctrl-Shift-F2\n"
+"     * Çalışma dizinine git               - Shift-F2\n"
+"     * Üst dizine git                - Backspace\n"
+"     * Önceki dizine git              - Ctrl-Backspace\n"
+"     * Sonraki dizine git                  - Shift-Backspace\n"
+" \n"
+" \n"
+"  Aşağıda varsayılan X File Ekplorer klavye kısayollarıı bulunmaktadır. Bu "
+"kısayollar, Xfe uygulamasına özeldir.\n"
+" \n"
+"     * Yer imi ekle                      - Ctrl-B\n"
+"     * Dosyaları süz                      - Ctrl-D\n"
+"     * Komut çalıştır                   - Ctrl-E\n"
+"     * Yeni sembolik bağ oluştur          - Ctrl-J\n"
+"     * Panelleri değiştir                     - Ctrl-K\n"
+"     * Konum çubuğunu değiştir                - Ctrl-L\n"
+"     * Dosya sistemini bağla (sadece Linux)    - Ctrl-M\n"
+"     * Dosyayı yeniden adlandır                       - F2\n"
+"     * Panelleri yenile                    - Ctrl-R\n"
+"     * Dosyaları konuma sembolik bağla         - Ctrl-S\n"
+"     * Terminal başlat                   - Ctrl-T\n"
+"     * Dosya sistemini ayır (sadece Linux)  - Ctrl-U\n"
+"     * Panelleri eşitle                - Ctrl-Y\n"
+"     * Yeni pencere oluştur                 - F3\n"
+"     * Düzenle                              - F4\n"
+"     * Dosyaları konuma kopyala            - F5\n"
+"     * Dosyaları konuma taşı            - F6\n"
+"     * Dosya özellikleri                   - F9\n"
+"     * Bir panel modu                    - Ctrl-F1\n"
+"     * Ağaç ve panel modu               - Ctrl-F2\n"
+"     * İki panel modu                   - Ctrl-F3\n"
+"     * Ağaç ve iki panel modu          - Ctrl-F4\n"
+"     * Gizli dosyaları göstermeyi aç/kapat     - Ctrl-F5\n"
+"     * Çöp kutusuna git                   - Ctrl-F8\n"
+"     * Yeni kök penceresi oluştur            - Shift-F3\n"
+"     * Görünüm                              - Shift-F4\n"
+"     * Dosyaları çöp kutusuna taşı           - Del\n"
+"     * Dosyaları çöp kutusundan geri al      - Alt-Del\n"
+"     * Dosyaları sil                      - Shift-Del\n"
+"     * Çöp kutusunu boşalt                   - Ctrl-Del\n"
+" \n"
+" \n"
+"  Aşağıda varsayılan X File Image klavye kısayolları bulunmaktadır. Bu "
+"kısayollar, Xfi uygulamasına özeldir.\n"
+" \n"
+"     * Pencere sığdırmak için yakınlaştır                - Ctrl-F\n"
+"     * Resmi yatay yansıt         - Ctrl-H\n"
+"     * Resmi100% yakınlaştır                - Ctrl-I\n"
+"     * Resmi sola döndür              - Ctrl-L\n"
+"     * Resmi sağa döndür             - Ctrl-R\n"
+"     * Resmi dikey yansıt           - Ctrl-V\n"
+" \n"
+" \n"
+"  Aşağıda varsayılan X File Write klavye kısayolları bulunmaktadır. Bu "
+"kısayollar, Xfw uygulamasına özeldir.\n"
+" \n"
+"     * Sözcük kaydırma modunu aç/kapat             - Ctrl-K\n"
+"     * Satıra git                         - Ctrl-L\n"
+"     * Yeni belge oluştur               - Ctrl-N\n"
+"     * Dizeyi değiştir                    - Ctrl-R\n"
+"     * Dosyadaki değişiklikleri kaydet              - Ctrl-S\n"
+"     * Satır numaraları modunu aç/kapat          - Ctrl-T\n"
+"     * Büyük harf modunu aç/kapat            - Ctrl-Shift-U\n"
+"     * Küçük harf modunu aç/kapat            - Ctrl-U\n"
+"     * Son değişiklikleri yinele                  - Ctrl-Y\n"
+"     * Son değişiklikleri geri al                  - Ctrl-Z\n"
+" \n"
+" \n"
+"  X File Package (Xfp) yalnızca genel klavye kısayollarının bazılarını "
+"kullanır.\n"
+" \n"
+"  Yukarıda listelenen tüm varsayılan klavye kısayollarının, Xfe Tercihleri "
+"iletişim kutusunda özelleştirilebileceğini unutmayın. Ancak,\n"
+"  bazı klavye eylemleri kodlanmıştır ve değiştirilemez. Bunlar şunları "
+"içerir:\n"
+" \n"
+"     * Ctrl-+ and Ctrl--                 - Xfi içinde resmi yakınlaştır ve "
+"uzaklaştır\n"
+"     * Shift-F10                         - Xfe'de bağlam menülerini "
+"görüntüleme\n"
+"     * Space                             - dosya listesinde bir öğeyi seç\n"
+"     * Return                            - dosya listelerine dizinleri gir, "
+"dosyaları aç, düğme eylemlerini seç, vb.\n"
+"     * Esc                               - geçerli iletişim penceresini "
+"kapat, dosya seçimlerini kaldır, vb.\n"
+" \n"
+" \n"
+" \n"
+"   Sürükle ve Bırak işlemleri\n"
+"   =-=-=-=-=-=-=-=-=-=-=-=-=\n"
+" \n"
+"  Bir dosyayı veya dosya grubunu bir dizine veya dosya paneline sürüklemek "
+"(farenin sol düğmesini basılı tutarken\n"
+"  hareket ettirerek) isteğe göre dosya işlemi için birini seçmesini sağlayan "
+"bir iletişim kutusu açar:\n"
+"  kopyala, taşı, bağ koy veya iptal et.\n"
+" \n"
+" \n"
+" \n"
+"   Çöp sistemi\n"
+"   =-=-=-=-=-=-=\n"
+" \n"
+"  Sürüm 1.32 ile başlayan Xfe, freedesktop.org standartlarına tam olarak "
+"uyan bir çöp sistemi uygular.\n"
+"  Bu, kullanıcının dosyaları çöp kutusuna taşımasına ve dosyaları Xfe'den "
+"veya sık kullandığınız masaüstünden geri yüklemesine\n"
+"  olanak sağlar.\n"
+"  Çöp kutusu konumunun böyle olduğuna dikkat edin: ~/.local/share/Trash/"
+"files\n"
+" \n"
+" \n"
+" \n"
+"   Yapılandırma\n"
+"   =-=-=-=-=-=-=\n"
+" \n"
+"  Herhangi bir dosyayı el ile düzenlemeden herhangi bir Xfe özelleştirmesini "
+"(düzen, dosya ilişkilendirmeleri, anahtar bağlantıları vb.)\n"
+"  gerçekleştirebilirsiniz. Ancak, yapılandırma ilkelerini anlamak "
+"isteyebilirsiniz, çünkü bazı özelleştirmeler yapılandırma dosyalarını elle\n"
+"  düzenleyerek de kolayca yapılabilir.\n"
+"  Herhangi bir yapılandırma dosyasını elle düzenlemeden önce Xfe'den "
+"ayrıldığınızdan emin olun, aksi takdirde değişiklikler\n"
+"  hesaba katılmaz.\n"
+" \n"
+"  Sistem genelinde xferc yapılandırma dosyası, verilen öncelik sırasına "
+"göre /usr/share/xfe, /usr/local/ share/xfe\n"
+"  veya /opt/local/share/xfe dizininde bulunur.\n"
+" \n"
+"  Sürüm 1.32 ile başlayarak, yerel yapılandırma dosyalarının konumu değişti. "
+"Bu, freedesktop.org\n"
+"  standartlarıyla uyumlu olmaktır.\n"
+"  Xfe, Xfw, Xfi, Xfp için yerel yapılandırma dosyaları şimdi ~/.config/xfe "
+"dizininde bulunur.\n"
+"  Bunlara xferc, xfwrc, xfirc ve xfprc denir.\n"
+"  \n"
+"  İlk Xfe çalışmasında, sistem genelinde konfigürasyon dosyası, henüz mevcut "
+"olmayan yerel\n"
+"  ~/.config/xfe/xferc yapılandırma dosyasına kopyalanır. Sistem genelinde "
+"bir yapılandırma dosyası bulunamazsa\n"
+"  (olağandışı bir kurulum yeri olması durumunda), bir iletişim kutusu "
+"kullanıcıdan doğru yeri seçmesini ister. Bu nedenle,\n"
+"  tüm yerel seçenekler aynı dosyada bulunduğundan, Xfe'yi özelleştirmek (bu "
+"özellikle dosya ilişkilendirmeleri için geçerlidir),\n"
+"  elle düzenlenerek daha kolaydır.\n"
+" \n"
+"  Varsayılan PNG simgeleri, kurulumunuza bağlı olarak /usr/share/xfe/icons/"
+"xfe-theme veya /usr/local/share/xfe/icons/xfe-theme\n"
+"  yolunda bulunur. Simge tema yolunu Tercihler iletişim kutusundan kolayca "
+"değiştirebilirsiniz.\n"
+" \n"
+" \n"
+" \n"
+"   Betikler\n"
+"   =-=-=-=\n"
+" \n"
+"  Özel kabuk betikleri, panelde seçilen dosyalar üzerinde Xfe içinden "
+"çalıştırılabilir. Önce devam etmek\n"
+"  istediğiniz dosyaları seçmeli, ardından dosya listesine sağ tıklayıp "
+"Betikler alt menüsüne gitmelisiniz. Son olarak,\n"
+"  seçilen dosyalara uygulamak istediğiniz betiği seçin.\n"
+" \n"
+"  Betik dosyaları ~/.config/xfe/scripts dizininde bulunmalı ve "
+"çalıştırılabilir olmalıdır. Alt dizinleri kullanarak\n"
+"  bu dizini istediğiniz gibi düzenleyebilirsiniz. Doğrudan betiğe gitmek ve "
+"onu yönetmek için Araçlar/Betik dizinine git\n"
+"  menü öğesini kullanabilirsiniz.\n"
+" \n"
+"  İşte Xfe'nin başlatıldığı uçbirimde seçilen her dosyayı listeleyen basit "
+"bir kabuk betiğine bir örnek:\n"
+" \n"
+"  #!/bin/sh\n"
+"  for arg\n"
+"  do\n"
+"  /bin/ls -la \"$arg\"\n"
+"  done\n"
+" \n"
+"  Elbette xmessage, zenity veya kdialog gibi programları betikle etkileşime "
+"girmenize izin veren düğmeler içeren\n"
+"  bir pencere görüntülemek için kullanabilirsiniz. İşte xmessage kullanan "
+"yukarıdaki örnekte yapılan bir değişiklik:\n"
+" \n"
+"  #!/bin/sh\n"
+"  (\n"
+"  echo  \"ls -la\"\n"
+"  for arg\n"
+"  do\n"
+"  /bin/ls -la \"$arg\"\n"
+"  done\n"
+"  ) | xmessage -file -\n"
+" \n"
+"  Çoğu zaman, Internet'te bulunan Nautilus betiklerini değişiklik "
+"yapmaksızın doğrudan kullanmak mümkündür.\n"
+" \n"
+" \n"
+" \n"
+"  Dosya ve dizinleri ara\n"
+"  =-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n"
+" \n"
+" \n"
+"  Xfe, find ve grep komutunun arka uçlarını kullanarak dosyaları ve "
+"dizinleri hızla arayabilir. Bu,\n"
+"  Araçlar/Dosyaları Ara menü öğesiyle (veya Ctrl-F kısayolunu kullanarak) "
+"yapılır.\n"
+" \n"
+"  Arama penceresinde, kullanıcılar daha sonra ad ve metin gibi normal arama "
+"kalıplarını belirleyebilir, ancak daha karmaşık\n"
+"  arama seçenekleri de kullanılabilir (boyut, tarih, izinler, kullanıcılar, "
+"gruplar, sembolik bağlar ve boş dosyalar). Sonuçlar bir\n"
+"  dosya listesinde belirir ve kullanıcılar, dosya panellerinde olduğu gibi "
+"dosyalarını yönetmek için sağ tıklama\n"
+"  menüsünü kullanabilir.\n"
+" \n"
+"  Durdur düğmesine basılarak veya Escape tuşuna basılarak arama "
+"kesilebilir.\n"
+" \n"
+" \n"
+" \n"
+"   Latince temelli olmayan diller\n"
+"   =-=-=-=-=-=-=-=-=-=-=-=-=\n"
+" \n"
+"  Xfe, karakter kümenizi destekleyen bir Unicode yazı tipi seçmişseniz, "
+"kullanıcı arabirimini ve ayrıca dosya adlarını\n"
+"  latince olmayan karakter tabanlı dillerde görüntüleyebilir. Uygun bir yazı "
+"tipi seçmek için,\n"
+"  Düzenle / Tercihler / Yazıtipi menü öğesini kullanın.\n"
+" \n"
+"  Çok dilli Unicode TrueType yazı tipleri şu adreste bulunabilir: http://www."
+"slovo.info/unifonts.htm\n"
+" \n"
+" \n"
+" \n"
+"   İpuçları\n"
+"   =-=-=\n"
+" \n"
+"  Dosya listesi\n"
+"     - Seçili dosyalar üzerinde bir içerik menüsü açmak için dosyaları seçin "
+"ve sağ tıklayın\n"
+"     - Dosya panelinde bir içerik menüsü açmak için Ctrl + sağ tuşa basın\n"
+"     - Bir dosyayı/dizini bir dizine sürüklerken, açmak için fareyi dizinin "
+"üzerinde tutun.\n"
+" \n"
+"  Ağaç listesi\n"
+"     - Bir dizin seçin ve seçilen dizindeki bağlam menüsünü açmak için sağ "
+"tıklayın\n"
+"     - Ağaç panelinde bir içerik menüsü açmak için Ctrl + sağ tuşa basın\n"
+"     - Bir dosyayı/dizini bir dizine sürüklerken, genişletmek için fareyi "
+"dizinin üzerinde tutun.\n"
+" \n"
+"  Dosya adlarını kopyala/yapıştır\n"
+"     - Bir dosya seçin ve adını panoya kopyalamak için Ctrl-C tuşlarına "
+"basın. Ardından bir iletişim kutusunda, dosya adını\n"
+"       yapıştırmak için Ctrl-V tuşlarına basın.\n"
+"     - Bir dosya işlemi iletişim kutusunda, kaynak adını içeren satırda bir "
+"dosya adı seçin ve farenizin orta düğmesini\n"
+"       kullanarak doğrudan hedefe yapıştırın. Sonra ihtiyaçlarınıza göre "
+"değiştirin.\n"
+" \n"
+"  Panoya dosya ekle\n"
+"     - Dosyaları bir dizinden seçebilir, Ctrl-C tuşlarına basarak panoya "
+"kopyalayabilirsiniz. Bu, önceki pano içeriğini siler.\n"
+"       Daha sonra başka bir dizine geçebilir, başka dosyalar seçebilir ve "
+"Shift-Ctrl-C tuşlarına basarak bunları pano içeriğine\n"
+"       ekleyebilirsiniz. Bu, önceki pano içeriğini silmez. Sonunda, hedefe "
+"gidebilir ve panodaki tüm dosyaları kopyalamak için\n"
+"       Ctrl-V tuşlarına basabilirsiniz. Elbette bu, dosyaları kesmek ve "
+"yapıştırmak için Ctrl-X ve Shift-Ctrl-X ile de çalışır.\n"
+" \n"
+"  Başlangıç bildirimi\n"
+"     - Başlangıç bildirimi, kullanıcıya bir işlem başlattığında (dosya "
+"kopyalama, uygulama başlatma vb.) bir geri bildirim\n"
+"       (bir sanal alan imleci veya her neyse) görüntüleyen işlemdir. Sisteme "
+"bağlı olarak, başlangıç bildirimi ile ilgili bazı sorunlar\n"
+"       olabilir. Xfe başlangıç bildirim desteğiyle derlendiyse, kullanıcı "
+"bunu genel Tercihler düzeyindeki tüm uygulamalar için\n"
+"       devre dışı bırakabilir. Ayrıca, Özellikler iletişim kutusunun ilk "
+"sekmesindeki özel seçeneği kullanarak, bireysel uygulamalar\n"
+"       için devre dışı bırakabilir. Bu son yol yalnızca dosya "
+"çalıştırılabilir olduğunda kullanılabilir. Başlangıç bildirimini devre dışı "
+"bırakmak,\n"
+"       başlangıç bildirim protokolünü desteklemeyen eski bir uygulamayı "
+"başlatırken yararlı olabilir (ör. Xterm).\n"
+" \n"
+"   Kök modu\n"
+"     - Sudo root modunu kullanıyorsanız, sudo komutuna şifre geribildirimi "
+"eklemek faydalı olabilir. Bunun için sudoers dosyanızı\n"
+"       şu şekilde düzenleyin:\n"
+"           sudo visudo -f /etc/suoders\n"
+"       ve sonra, aşağıda gösterildiği gibi varsayılan seçeneklere "
+"'pwfeedback' ekleyin:\n"
+"           Defaults         env_reset,pwfeedback\n"
+"       Ondan sonra, küçük doğrulama penceresine şifrenizi yazarken "
+"yıldızları (***** gibi) görmelisiniz.\n"
+" \n"
+" \n"
+" \n"
+"   Hatalar\n"
+"   =-=-=\n"
+" \n"
+"  Lütfen bulunan herhangi bir hatayı Roland Baudin <roland65@free.fr> "
+"adresine bildirin. Kullandığınız Xfe sürümünü,\n"
+"  FOX kitaplığı sürümünü ve sisteminizin adını ve sürümünü belirtmeyi "
+"unutmayın.\n"
+" \n"
+" \n"
+" \n"
+"   Çeviriler\n"
+"   =-=-=-=-=-=-=\n"
+"  \n"
+"  Xfe artık 24 dilde sunuluyor ancak bazı çeviriler sadece kısmi. Xfe'yi "
+"kendi dilinize çevirmek için, kaynak ağacın\n"
+"  po dizininde bulunan Xfe.pot dosyasını poedit, kbabel veya gtranslator "
+"gibi bir yazılımla açın ve tercüme edilmiş\n"
+"  dizgilerinizle doldurun (kısayol tuşlarına ve c-format karakterlerine "
+"dikkat edin) , ve sonra bana geri gönderin.\n"
+"  Çalışmalarınızı bir sonraki Xfe sürümüne dahil etmekten memnuniyet "
+"duyarım.\n"
+" \n"
+" \n"
+" \n"
+"   Yamalar\n"
+"   =-=-=-=\n"
+" \n"
+"  Bazı ilginç yamaları kodladıysanız, lütfen bana gönderin, bir sonraki "
+"sürümde eklemeye çalışacağım...\n"
+" \n"
+" \n"
+"  Mükemmel X Win Commander'ı için Maxim Baranov'a ve faydalı yamalar, "
+"çeviriler, testler ve tavsiyeler sunan\n"
+"  herkese çok teşekkürler.\n"
+" \n"
+"  [Son sürüm: 7/11/2016]\n"
+" \n"
+"  "
+
+#. First tab is global key bindings
+#: ../src/Keybindings.cpp:87
+msgid "&Global Key Bindings"
+msgstr "&Küresel Klavye Kısayolları"
+
+#: ../src/Keybindings.cpp:89
+msgid ""
+"These key bindings are common to all Xfe applications.\n"
+"Double click on an item to modify the selected key binding..."
+msgstr ""
+"Bu klavye kısayolları tüm Xfe uygulamalarında ortaktır.\n"
+"Seçilen klavye kısayolunu değiştirmek için bir öğeye çift tıklayın..."
+
+#. Second tab is Xfe key bindings
+#: ../src/Keybindings.cpp:93
+msgid "Xf&e Key Bindings"
+msgstr "Xf&e Klavye Kısayolları"
+
+#: ../src/Keybindings.cpp:95
+msgid ""
+"These key bindings are specific to the X File Explorer application.\n"
+"Double click on an item to modify the selected key binding..."
+msgstr ""
+"Bu klavye kısayolları X File Explorer uygulamasına özeldir.\n"
+"Seçilen klavye kısayolunu değiştirmek için bir öğeye çift tıklayın..."
+
+#. Third tab is Xfi key bindings
+#: ../src/Keybindings.cpp:99
+msgid "Xf&i Key Bindings"
+msgstr "Xf&i Klavye Kısayolları"
+
+#: ../src/Keybindings.cpp:101
+msgid ""
+"These key bindings are specific to the X File Image application.\n"
+"Double click on an item to modify the selected key binding..."
+msgstr ""
+"Bu klavye kısayolları X File Image uygulamasına özeldir.\n"
+"Seçilen klavye kısayolunu değiştirmek için bir öğeye çift tıklayın..."
+
+#. Fourth tab is Xfw key bindings
+#: ../src/Keybindings.cpp:105
+msgid "Xf&w Key Bindings"
+msgstr "Xf&w Klavye Kısayolları"
+
+#: ../src/Keybindings.cpp:107
+msgid ""
+"These key bindings are specific to the X File Write application.\n"
+"Double click on an item to modify the selected key binding..."
+msgstr ""
+"Bu klavye kısayolları X File Write uygulamasına özeldir.\n"
+"Seçilen klavye kısayolunu değiştirmek için bir öğeye çift tıklayın..."
+
+#: ../src/Keybindings.cpp:114 ../src/Keybindings.cpp:118
+#: ../src/Keybindings.cpp:122 ../src/Keybindings.cpp:126
+msgid "Action Name"
+msgstr "Eylem Adı"
+
+#: ../src/Keybindings.cpp:115 ../src/Keybindings.cpp:119
+#: ../src/Keybindings.cpp:123 ../src/Keybindings.cpp:127
+msgid "Registry Key"
+msgstr "Kayıtlı Tuş"
+
+#: ../src/Keybindings.cpp:116 ../src/Keybindings.cpp:120
+#: ../src/Keybindings.cpp:124 ../src/Keybindings.cpp:128
+msgid "Key Binding"
+msgstr "Klavye Kısayolu"
+
+#: ../src/Keybindings.cpp:856 ../src/Keybindings.cpp:1000
+#: ../src/Keybindings.cpp:1108 ../src/Keybindings.cpp:1216
+#, c-format
+msgid "Press the combination of keys you want to use for the action: %s"
+msgstr "İşlem için kullanmak istediğiniz tuşların birleşimine basın: %s"
+
+#: ../src/Keybindings.cpp:857 ../src/Keybindings.cpp:1001
+#: ../src/Keybindings.cpp:1109 ../src/Keybindings.cpp:1217
+msgid "[Press space to disable the key binding for this action]"
+msgstr ""
+"[Bu işlem için klavye kısayolunu devre dışı bırakmak için boşluk tuşuna "
+"basın]"
+
+#: ../src/Keybindings.cpp:858 ../src/Keybindings.cpp:1002
+#: ../src/Keybindings.cpp:1110 ../src/Keybindings.cpp:1218
+msgid "Modify Key Binding"
+msgstr "Klavye Kısayolunu Düzenle"
+
+#: ../src/Keybindings.cpp:887 ../src/Keybindings.cpp:1031
+#: ../src/Keybindings.cpp:1139 ../src/Keybindings.cpp:1247
+#, c-format
+msgid ""
+"The key binding %s is already used in the global section.\n"
+"You should erase the existing key binding before assigning it again."
+msgstr ""
+"%s klavye kısayolu genel bölümde zaten kullanılıyor.\n"
+"Yeniden ayarlamadan önce mevcut kısayolu silmelisiniz."
+
+#: ../src/Keybindings.cpp:905 ../src/Keybindings.cpp:1049
+#, c-format
+msgid ""
+"The key binding %s is already used in the Xfe section.\n"
+"You should erase the existing key binding before assigning it again."
+msgstr ""
+"%s klavye kısayolu Xfe bölümünde zaten kullanılıyor.\n"
+"Yeniden ayarlamadan önce mevcut kısayolu silmelisiniz."
+
+#: ../src/Keybindings.cpp:923 ../src/Keybindings.cpp:1157
+#, c-format
+msgid ""
+"The key binding %s is already used in the Xfi section.\n"
+"You should erase the existing key binding before assigning it again."
+msgstr ""
+"%s klavye kısayolu Xfi bölümünde zaten kullanılıyor.\n"
+"Yeniden ayarlamadan önce mevcut kısayolu silmelisiniz."
+
+#: ../src/Keybindings.cpp:941 ../src/Keybindings.cpp:1265
+#, c-format
+msgid ""
+"The key binding %s is already used in the Xfw section.\n"
+"You should erase the existing key binding before assigning it again."
+msgstr ""
+"%s klavye kısayolu Xfw bölümünde zaten kullanılıyor.\n"
+"Yeniden ayarlamadan önce mevcut kısayolu silmelisiniz."
+
+#: ../src/startupnotification.cpp:81 ../src/startupnotification.cpp:133
+#: ../src/startupnotification.cpp:200 ../src/startupnotification.cpp:228
+#: ../src/startupnotification.cpp:257
+#, c-format
+msgid "Error: Can't enter folder %s: %s"
+msgstr "Hata: %s dizinine girilemiyor: %s"
+
+#: ../src/startupnotification.cpp:85 ../src/startupnotification.cpp:137
+#: ../src/startupnotification.cpp:204 ../src/startupnotification.cpp:232
+#: ../src/startupnotification.cpp:261
+#, c-format
+msgid "Error: Can't enter folder %s"
+msgstr "Hata: %s dizinine girilemiyor"
+
+#: ../src/startupnotification.cpp:126
+#, c-format
+msgid "Error: Can't open display\n"
+msgstr "Hata: Görüntü açılamıyor\n"
+
+#: ../src/startupnotification.cpp:145
+#, c-format
+msgid "Start of %s"
+msgstr "%s başlangıcı"
+
+#: ../src/startupnotification.cpp:185 ../src/startupnotification.cpp:243
+#, c-format
+msgid "Error: Can't execute command %s"
+msgstr "Hata: %s komutu çalıştırılamıyor"
+
+#: ../src/xfeutils.cpp:829 ../src/xfeutils.cpp:917
+#, c-format
+msgid "Error: Can't close folder %s\n"
+msgstr "Hata: %s dizini kapatılamıyor\n"
+
+#: ../src/xfeutils.cpp:936
+msgid "bytes"
+msgstr "bayt"
+
+#: ../src/xfeutils.cpp:940
+msgid "GB"
+msgstr "GB"
+
+#: ../src/xfeutils.cpp:946
+msgid "MB"
+msgstr "MB"
+
+#: ../src/xfeutils.cpp:1100
+msgid "copy"
+msgstr "kopyala"
+
+#: ../src/xfeutils.cpp:1413
+#, c-format
+msgid "Error: Can't read group list: %s"
+msgstr "Hata: Grup listesi okunamıyor: %s"
+
+#: ../src/xfeutils.cpp:1417
+#, c-format
+msgid "Error: Can't read group list"
+msgstr "Hata: Grup listesi okunamıyor"
+
+#: ../xfe.desktop.in.h:1
+msgid "Xfe"
+msgstr "Xfe"
+
+#: ../xfe.desktop.in.h:2
+msgid "File Manager"
+msgstr "Dosya Yöneticisi"
+
+#: ../xfe.desktop.in.h:3
+msgid "A lightweight file manager for X Window"
+msgstr "X Penceresi için hafif bir dosya yöneticisi"
+
+#: ../xfi.desktop.in.h:1
+msgid "Xfi"
+msgstr "Xfi"
+
+#: ../xfi.desktop.in.h:2
+msgid "Image Viewer"
+msgstr "Resim Gösterici"
+
+#: ../xfi.desktop.in.h:3
+msgid "A simple image viewer for Xfe"
+msgstr "Xfe için basit bir resim gösterici"
+
+#: ../xfw.desktop.in.h:1
+msgid "Xfw"
+msgstr "Xfw"
+
+#: ../xfw.desktop.in.h:2
+msgid "Text Editor"
+msgstr "Metin Düzenleyici"
+
+#: ../xfw.desktop.in.h:3
+msgid "A simple text editor for Xfe"
+msgstr "Xfe için basit bir metin düzenleyici"
+
+#: ../xfp.desktop.in.h:1
+msgid "Xfp"
+msgstr "Xfp"
+
+#: ../xfp.desktop.in.h:2
+msgid "Package Manager"
+msgstr "Paket Yöneticisi"
+
+#: ../xfp.desktop.in.h:3
+msgid "A simple package manager for Xfe"
+msgstr "Xfe için basit bir paket yöneticisi"
+
+#~ msgid "&Themes"
+#~ msgstr "&Temalar"
