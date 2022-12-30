@@ -21,13 +21,13 @@ protected:
     FXStringDict* xfeBindingsDict_prev;
     FXStringDict* xfiBindingsDict_prev;
     FXStringDict* xfwBindingsDict_prev;
-    FXbool        changed;
+    FXbool changed;
 
 private:
     KeybindingsBox() : glbBindingsList(NULL), xfeBindingsList(NULL), xfiBindingsList(NULL), xfwBindingsList(NULL),
-                       glbBindingsDict(NULL), xfeBindingsDict(NULL), xfiBindingsDict(NULL), xfwBindingsDict(NULL),
-                       glbBindingsDict_prev(NULL), xfeBindingsDict_prev(NULL), xfiBindingsDict_prev(NULL),
-                       xfwBindingsDict_prev(NULL), changed(false)
+        glbBindingsDict(NULL), xfeBindingsDict(NULL), xfiBindingsDict(NULL), xfwBindingsDict(NULL),
+        glbBindingsDict_prev(NULL), xfeBindingsDict_prev(NULL), xfiBindingsDict_prev(NULL),
+        xfwBindingsDict_prev(NULL), changed(false)
     {}
 public:
     enum

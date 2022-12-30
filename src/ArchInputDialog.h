@@ -26,8 +26,8 @@ protected:
 
 private:
     ArchInputDialog() : input(NULL), popup(NULL), optionmenu(NULL), option_tgz(NULL),
-                        option_zip(NULL), option_7zip(NULL), option_tbz2(NULL), option_txz(NULL), option_tar(NULL),
-                        option_taz(NULL), option_gz(NULL), option_bz2(NULL), option_xz(NULL), option_z(NULL)
+        option_zip(NULL), option_7zip(NULL), option_tbz2(NULL), option_txz(NULL), option_tar(NULL),
+        option_taz(NULL), option_gz(NULL), option_bz2(NULL), option_xz(NULL), option_z(NULL)
     {}
 public:
     enum

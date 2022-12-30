@@ -6,21 +6,21 @@ class FXAPI TextLabel : public FXFrame
 {
     FXDECLARE(TextLabel)
 protected:
-    FXString    contents;       // Edited text
+    FXString contents;          // Edited text
     const char* delimiters;     // Set of delimiters
     FXFont*     font;           // Text font
-    FXColor     textColor;      // Text color
-    FXColor     selbackColor;   // Selected background color
-    FXColor     seltextColor;   // Selected text color
-    FXColor     cursorColor;    // Color of the Cursor
-    int         cursor;         // Cursor position
-    int         anchor;         // Anchor position
-    int         columns;        // Number of columns visible
-    int         shift;          // Shift amount
-    FXString    clipped;        // Clipped text
+    FXColor textColor;          // Text color
+    FXColor selbackColor;       // Selected background color
+    FXColor seltextColor;       // Selected text color
+    FXColor cursorColor;        // Color of the Cursor
+    int cursor;                 // Cursor position
+    int anchor;                 // Anchor position
+    int columns;                // Number of columns visible
+    int shift;                  // Shift amount
+    FXString clipped;           // Clipped text
 protected:
     TextLabel() : delimiters(NULL), font(NULL), textColor(FXRGB(0, 0, 0)), selbackColor(FXRGB(0, 0, 0)), seltextColor(FXRGB(0, 0, 0)),
-                  cursorColor(FXRGB(0, 0, 0)), cursor(0), anchor(0), columns(0), shift(0)
+        cursorColor(FXRGB(0, 0, 0)), cursor(0), anchor(0), columns(0), shift(0)
     {}
     int index(int x) const;
     int coord(int i) const;

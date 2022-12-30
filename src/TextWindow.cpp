@@ -24,13 +24,13 @@ TextWindow::TextWindow(FXWindow* owner, const FXString& name, int nblines, int n
     DialogBox(owner, name, DECOR_ALL, 0, 0, 0, 0, 6, 6, 6, 6, 4, 4)
 {
     // Bottom part
-    FXHorizontalFrame* closebox = new FXHorizontalFrame(this, LAYOUT_SIDE_BOTTOM|LAYOUT_FILL_X|PACK_UNIFORM_WIDTH);
-    FXButton*          button = new FXButton(closebox, _("&Close"), NULL, this, DialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|LAYOUT_RIGHT|FRAME_RAISED|FRAME_THICK, 0, 0, 0, 0, 20, 20, 5, 5);
+    FXHorizontalFrame* closebox = new FXHorizontalFrame(this, LAYOUT_SIDE_BOTTOM | LAYOUT_FILL_X | PACK_UNIFORM_WIDTH);
+    FXButton*          button = new FXButton(closebox, _("&Close"), NULL, this, DialogBox::ID_ACCEPT, BUTTON_INITIAL | BUTTON_DEFAULT | LAYOUT_RIGHT | FRAME_RAISED | FRAME_THICK, 0, 0, 0, 0, 20, 20, 5, 5);
 
     // Text part
-    FXHorizontalFrame* textbox = new FXHorizontalFrame(this, LAYOUT_SIDE_TOP|LAYOUT_FILL_X|LAYOUT_FILL_Y|FRAME_SUNKEN, 0, 0, 0, 0, 0, 0, 0, 0);
+    FXHorizontalFrame* textbox = new FXHorizontalFrame(this, LAYOUT_SIDE_TOP | LAYOUT_FILL_X | LAYOUT_FILL_Y | FRAME_SUNKEN, 0, 0, 0, 0, 0, 0, 0, 0);
 
-    text = new FXText(textbox, NULL, 0, TEXT_READONLY|TEXT_WORDWRAP|LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    text = new FXText(textbox, NULL, 0, TEXT_READONLY | TEXT_WORDWRAP | LAYOUT_FILL_X | LAYOUT_FILL_Y);
     text->setVisibleRows(nblines);
     text->setVisibleColumns(nbcols);
 
@@ -43,13 +43,13 @@ TextWindow::TextWindow(FXApp* app, const FXString& name, int nblines, int nbcols
     DialogBox(app, name, DECOR_ALL, 0, 0, 0, 0, 6, 6, 6, 6, 4, 4)
 {
     // Bottom part
-    FXHorizontalFrame* closebox = new FXHorizontalFrame(this, LAYOUT_SIDE_BOTTOM|LAYOUT_FILL_X|PACK_UNIFORM_WIDTH);
-    FXButton*          button = new FXButton(closebox, _("&Close"), NULL, this, DialogBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|LAYOUT_RIGHT|FRAME_RAISED|FRAME_THICK, 0, 0, 0, 0, 20, 20, 5, 5);
+    FXHorizontalFrame* closebox = new FXHorizontalFrame(this, LAYOUT_SIDE_BOTTOM | LAYOUT_FILL_X | PACK_UNIFORM_WIDTH);
+    FXButton*          button = new FXButton(closebox, _("&Close"), NULL, this, DialogBox::ID_ACCEPT, BUTTON_INITIAL | BUTTON_DEFAULT | LAYOUT_RIGHT | FRAME_RAISED | FRAME_THICK, 0, 0, 0, 0, 20, 20, 5, 5);
 
     // Text part
-    FXHorizontalFrame* textbox = new FXHorizontalFrame(this, LAYOUT_SIDE_TOP|LAYOUT_FILL_X|LAYOUT_FILL_Y|FRAME_SUNKEN, 0, 0, 0, 0, 0, 0, 0, 0);
+    FXHorizontalFrame* textbox = new FXHorizontalFrame(this, LAYOUT_SIDE_TOP | LAYOUT_FILL_X | LAYOUT_FILL_Y | FRAME_SUNKEN, 0, 0, 0, 0, 0, 0, 0, 0);
 
-    text = new FXText(textbox, NULL, 0, TEXT_READONLY|TEXT_WORDWRAP|LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    text = new FXText(textbox, NULL, 0, TEXT_READONLY | TEXT_WORDWRAP | LAYOUT_FILL_X | LAYOUT_FILL_Y);
     text->setVisibleRows(nblines);
     text->setVisibleColumns(nbcols);
 

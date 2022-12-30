@@ -9,7 +9,7 @@ class StringItem
 {
     friend class StringList;
 protected:
-    FXString    str;           // FXString stored in the item
+    FXString str;              // FXString stored in the item
     StringItem* next;          // Pointer to next item
     StringItem* prev;          // Pointer to previous item
 };

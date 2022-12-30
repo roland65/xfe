@@ -14,9 +14,9 @@ class FXAPI PathLinker : public FXHorizontalFrame
 protected:
     typedef std::vector<FXButton*>   vector_FXButton;
     vector_FXButton linkButtons;
-    FXuint          nbActiveButtons;
-    FXuint          currentButton;
-    FXString        visitedPath;
+    FXuint nbActiveButtons;
+    FXuint currentButton;
+    FXString visitedPath;
     TextLabel*      focusButton;
     FXFont*         normalFont;
     FXFont*         highlightFont;

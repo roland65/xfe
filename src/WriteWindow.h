@@ -14,9 +14,9 @@ class FXTextCommand : public FXCommand
 protected:
     FXText* text;   // Text widget
     char*   buffer; // Character buffer
-    int     pos;    // Character position
-    int     ndel;   // Deleted characters
-    int     nins;   // Inserted characters
+    int pos;        // Character position
+    int ndel;       // Deleted characters
+    int nins;       // Inserted characters
 public:
     FXTextCommand(FXText* txt, int p, int nd, int ni) : text(txt), buffer(NULL), pos(p), ndel(nd), nins(ni)
     {}
@@ -97,27 +97,27 @@ class Preferences : public DialogBox
     FXDECLARE(Preferences)
 protected:
     FXTextField*   wrapmargin;
-    FXString       wrapmargin_prev;
+    FXString wrapmargin_prev;
     FXTextField*   tabsize;
-    FXString       tabsize_prev;
+    FXString tabsize_prev;
     FXCheckButton* stripcr;
-    FXbool         stripcr_prev;
+    FXbool stripcr_prev;
     FXText*        editor;
     WriteWindow*   editwin;
-    FXColor        textcolor_prev;
-    FXColor        backcolor_prev;
-    FXColor        seltextcolor_prev;
-    FXColor        selbackcolor_prev;
-    FXColor        hilitetextcolor_prev;
-    FXColor        hilitebackcolor_prev;
-    FXColor        cursorcolor_prev;
-    FXColor        barcolor_prev;
-    FXColor        numbercolor_prev;
+    FXColor textcolor_prev;
+    FXColor backcolor_prev;
+    FXColor seltextcolor_prev;
+    FXColor selbackcolor_prev;
+    FXColor hilitetextcolor_prev;
+    FXColor hilitebackcolor_prev;
+    FXColor cursorcolor_prev;
+    FXColor barcolor_prev;
+    FXColor numbercolor_prev;
 private:
     Preferences() : wrapmargin(NULL), tabsize(NULL), stripcr(NULL), stripcr_prev(false), editor(NULL), editwin(NULL),
-                    textcolor_prev(FXRGB(0, 0, 0)), backcolor_prev(FXRGB(0, 0, 0)), seltextcolor_prev(FXRGB(0, 0, 0)), selbackcolor_prev(FXRGB(0, 0, 0)),
-                    hilitetextcolor_prev(FXRGB(0, 0, 0)), hilitebackcolor_prev(FXRGB(0, 0, 0)), cursorcolor_prev(FXRGB(0, 0, 0)), barcolor_prev(FXRGB(0, 0, 0)),
-                    numbercolor_prev(FXRGB(0, 0, 0))
+        textcolor_prev(FXRGB(0, 0, 0)), backcolor_prev(FXRGB(0, 0, 0)), seltextcolor_prev(FXRGB(0, 0, 0)), selbackcolor_prev(FXRGB(0, 0, 0)),
+        hilitetextcolor_prev(FXRGB(0, 0, 0)), hilitebackcolor_prev(FXRGB(0, 0, 0)), cursorcolor_prev(FXRGB(0, 0, 0)), barcolor_prev(FXRGB(0, 0, 0)),
+        numbercolor_prev(FXRGB(0, 0, 0))
     {}
     Preferences(const Preferences&);
     Preferences& operator=(const Preferences&);
@@ -192,25 +192,25 @@ protected:
     FXToolBar*         toolbar;                   // Tool bar
     FXStatusBar*       statusbar;                 // Status bar
     FXFont*            font;                      // Text window font
-    FXUndoList         undolist;                  // Undo list
-    FXRecentFiles      mrufiles;                  // Recent files list
-    FXString           filename;                  // File being edited
-    FXTime             filetime;                  // Original modtime of file
-    FXbool             filenameset;               // Filename is set
-    FXString           searchpath;                // To search for files
-    FXbool             stripcr;                   // Strip carriage returns
-    FXbool             linesnum;                  // Lines numbering
-    FXbool             readonly;                  // Text is read only
+    FXUndoList undolist;                          // Undo list
+    FXRecentFiles mrufiles;                       // Recent files list
+    FXString filename;                            // File being edited
+    FXTime filetime;                              // Original modtime of file
+    FXbool filenameset;                           // Filename is set
+    FXString searchpath;                          // To search for files
+    FXbool stripcr;                               // Strip carriage returns
+    FXbool linesnum;                              // Lines numbering
+    FXbool readonly;                              // Text is read only
     InputDialog*       printdialog;
     Preferences*       prefsdialog;
     FXSearchDialog*    searchdialog;
     FXReplaceDialog*   replacedialog;
-    FXbool             smoothscroll;
-    FXbool             fromreg;             // Read window size and position from the regsitry
-    FXuint             ww;                  // Window width
-    FXuint             hh;                  // Window height
-    FXuint             xx;                  // Window x position
-    FXuint             yy;                  // Window y position
+    FXbool smoothscroll;
+    FXbool fromreg;                         // Read window size and position from the regsitry
+    FXuint ww;                              // Window width
+    FXuint hh;                              // Window height
+    FXuint xx;                              // Window x position
+    FXuint yy;                              // Window y position
     FXButton*          cut;                 // Cut button
     FXButton*          paste;               // Paste button
     FXMenuCommand*     cutmc;               // Cut menu item
@@ -233,10 +233,10 @@ protected:
     };
 private:
     WriteWindow() : dragshell(NULL), filemenu(NULL), editmenu(NULL), searchmenu(NULL), prefsmenu(NULL), viewmenu(NULL), windowmenu(NULL), helpmenu(NULL),
-                    popupmenu(NULL), undoredoblock(NULL), editor(NULL), menubar(NULL), toolbar(NULL), statusbar(NULL), font(NULL),
-                    filetime(0), filenameset(false), stripcr(false), linesnum(false), readonly(false), printdialog(NULL),
-                    prefsdialog(NULL), searchdialog(NULL), replacedialog(NULL), smoothscroll(false), fromreg(false),
-                    ww(0), hh(0), xx(0), yy(0), cut(NULL), paste(NULL), cutmc(NULL), pastemc(NULL)
+        popupmenu(NULL), undoredoblock(NULL), editor(NULL), menubar(NULL), toolbar(NULL), statusbar(NULL), font(NULL),
+        filetime(0), filenameset(false), stripcr(false), linesnum(false), readonly(false), printdialog(NULL),
+        prefsdialog(NULL), searchdialog(NULL), replacedialog(NULL), smoothscroll(false), fromreg(false),
+        ww(0), hh(0), xx(0), yy(0), cut(NULL), paste(NULL), cutmc(NULL), pastemc(NULL)
     {}
     WriteWindow(const WriteWindow&);
     WriteWindow& operator=(const WriteWindow&);

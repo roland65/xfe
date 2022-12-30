@@ -60,7 +60,7 @@ FXIMPLEMENT(KeybindingsBox, DialogBox, KeybindingsBoxMap, ARRAYNUMBER(Keybinding
 
 
 KeybindingsBox::KeybindingsBox(FXWindow* win, FXStringDict* glbbindings, FXStringDict* xfebindings, FXStringDict* xfibindings, FXStringDict* xfwbindings) :
-    DialogBox(win, _("Key Bindings"), DECOR_TITLE|DECOR_BORDER|DECOR_RESIZE|DECOR_MAXIMIZE|DECOR_CLOSE, 0, 0, 800, 600)
+    DialogBox(win, _("Key Bindings"), DECOR_TITLE | DECOR_BORDER | DECOR_RESIZE | DECOR_MAXIMIZE | DECOR_CLOSE, 0, 0, 800, 600)
 {
     glbBindingsDict = glbbindings;
     xfeBindingsDict = xfebindings;
@@ -68,48 +68,48 @@ KeybindingsBox::KeybindingsBox(FXWindow* win, FXStringDict* glbbindings, FXStrin
     xfwBindingsDict = xfwbindings;
 
     // Buttons
-    FXHorizontalFrame* buttons = new FXHorizontalFrame(this, LAYOUT_SIDE_BOTTOM|LAYOUT_FILL_X, 0, 0, 0, 0, 10, 10, 5, 5);
+    FXHorizontalFrame* buttons = new FXHorizontalFrame(this, LAYOUT_SIDE_BOTTOM | LAYOUT_FILL_X, 0, 0, 0, 0, 10, 10, 5, 5);
 
     // Contents
-    FXHorizontalFrame* contents = new FXHorizontalFrame(this, LAYOUT_SIDE_TOP|FRAME_NONE|LAYOUT_FILL_X|LAYOUT_FILL_Y|PACK_UNIFORM_WIDTH);
+    FXHorizontalFrame* contents = new FXHorizontalFrame(this, LAYOUT_SIDE_TOP | FRAME_NONE | LAYOUT_FILL_X | LAYOUT_FILL_Y | PACK_UNIFORM_WIDTH);
 
     // Accept button
-    FXButton* ok = new FXButton(buttons, _("&Accept"), NULL, this, KeybindingsBox::ID_ACCEPT, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT|LAYOUT_CENTER_Y, 0, 0, 0, 0, 20, 20);
+    FXButton* ok = new FXButton(buttons, _("&Accept"), NULL, this, KeybindingsBox::ID_ACCEPT, FRAME_RAISED | FRAME_THICK | LAYOUT_RIGHT | LAYOUT_CENTER_Y, 0, 0, 0, 0, 20, 20);
     ok->addHotKey(KEY_Return);
 
     // Cancel button
-    new FXButton(buttons, _("&Cancel"), NULL, this, KeybindingsBox::ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT|LAYOUT_CENTER_Y, 0, 0, 0, 0, 20, 20);
+    new FXButton(buttons, _("&Cancel"), NULL, this, KeybindingsBox::ID_CANCEL, FRAME_RAISED | FRAME_THICK | LAYOUT_RIGHT | LAYOUT_CENTER_Y, 0, 0, 0, 0, 20, 20);
 
     // Tab book
-    FXTabBook* tabbook = new FXTabBook(contents, NULL, 0, LAYOUT_FILL_X|LAYOUT_FILL_Y|LAYOUT_RIGHT);
+    FXTabBook* tabbook = new FXTabBook(contents, NULL, 0, LAYOUT_FILL_X | LAYOUT_FILL_Y | LAYOUT_RIGHT);
 
     // First tab is global key bindings
     new FXTabItem(tabbook, _("&Global Key Bindings"), NULL);
-    FXVerticalFrame* frame1 = new FXVerticalFrame(tabbook, LAYOUT_SIDE_TOP|FRAME_RAISED|LAYOUT_FILL_X|LAYOUT_FILL_Y);
-    new FXLabel(frame1, _("These key bindings are common to all Xfe applications.\nDouble click on an item to modify the selected key binding..."), NULL, LAYOUT_LEFT|JUSTIFY_LEFT, 0, 0, 0, 0, 0, 0, 20, 20);
-    glbBindingsList = new IconList(frame1, this, ID_GLB_BINDINGS_LIST, _ICONLIST_STANDARD|HSCROLLER_NEVER|ICONLIST_BROWSESELECT|LAYOUT_SIDE_TOP|LAYOUT_LEFT|LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    FXVerticalFrame* frame1 = new FXVerticalFrame(tabbook, LAYOUT_SIDE_TOP | FRAME_RAISED | LAYOUT_FILL_X | LAYOUT_FILL_Y);
+    new FXLabel(frame1, _("These key bindings are common to all Xfe applications.\nDouble click on an item to modify the selected key binding..."), NULL, LAYOUT_LEFT | JUSTIFY_LEFT, 0, 0, 0, 0, 0, 0, 20, 20);
+    glbBindingsList = new IconList(frame1, this, ID_GLB_BINDINGS_LIST, _ICONLIST_STANDARD | HSCROLLER_NEVER | ICONLIST_BROWSESELECT | LAYOUT_SIDE_TOP | LAYOUT_LEFT | LAYOUT_FILL_X | LAYOUT_FILL_Y);
 
     // Second tab is Xfe key bindings
     new FXTabItem(tabbook, _("Xf&e Key Bindings"), NULL);
-    FXVerticalFrame* frame2 = new FXVerticalFrame(tabbook, LAYOUT_SIDE_TOP|FRAME_RAISED|LAYOUT_FILL_X|LAYOUT_FILL_Y);
-    new FXLabel(frame2, _("These key bindings are specific to the X File Explorer application.\nDouble click on an item to modify the selected key binding..."), NULL, LAYOUT_LEFT|JUSTIFY_LEFT, 0, 0, 0, 0, 0, 0, 20, 20);
-    xfeBindingsList = new IconList(frame2, this, ID_XFE_BINDINGS_LIST, _ICONLIST_STANDARD|HSCROLLER_NEVER|ICONLIST_BROWSESELECT|LAYOUT_SIDE_TOP|LAYOUT_LEFT|LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    FXVerticalFrame* frame2 = new FXVerticalFrame(tabbook, LAYOUT_SIDE_TOP | FRAME_RAISED | LAYOUT_FILL_X | LAYOUT_FILL_Y);
+    new FXLabel(frame2, _("These key bindings are specific to the X File Explorer application.\nDouble click on an item to modify the selected key binding..."), NULL, LAYOUT_LEFT | JUSTIFY_LEFT, 0, 0, 0, 0, 0, 0, 20, 20);
+    xfeBindingsList = new IconList(frame2, this, ID_XFE_BINDINGS_LIST, _ICONLIST_STANDARD | HSCROLLER_NEVER | ICONLIST_BROWSESELECT | LAYOUT_SIDE_TOP | LAYOUT_LEFT | LAYOUT_FILL_X | LAYOUT_FILL_Y);
 
     // Third tab is Xfi key bindings
     new FXTabItem(tabbook, _("Xf&i Key Bindings"), NULL);
-    FXVerticalFrame* frame3 = new FXVerticalFrame(tabbook, LAYOUT_SIDE_TOP|FRAME_RAISED|LAYOUT_FILL_X|LAYOUT_FILL_Y);
-    new FXLabel(frame3, _("These key bindings are specific to the X File Image application.\nDouble click on an item to modify the selected key binding..."), NULL, LAYOUT_LEFT|JUSTIFY_LEFT, 0, 0, 0, 0, 0, 0, 20, 20);
-    xfiBindingsList = new IconList(frame3, this, ID_XFI_BINDINGS_LIST, _ICONLIST_STANDARD|HSCROLLER_NEVER|ICONLIST_BROWSESELECT|LAYOUT_SIDE_TOP|LAYOUT_LEFT|LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    FXVerticalFrame* frame3 = new FXVerticalFrame(tabbook, LAYOUT_SIDE_TOP | FRAME_RAISED | LAYOUT_FILL_X | LAYOUT_FILL_Y);
+    new FXLabel(frame3, _("These key bindings are specific to the X File Image application.\nDouble click on an item to modify the selected key binding..."), NULL, LAYOUT_LEFT | JUSTIFY_LEFT, 0, 0, 0, 0, 0, 0, 20, 20);
+    xfiBindingsList = new IconList(frame3, this, ID_XFI_BINDINGS_LIST, _ICONLIST_STANDARD | HSCROLLER_NEVER | ICONLIST_BROWSESELECT | LAYOUT_SIDE_TOP | LAYOUT_LEFT | LAYOUT_FILL_X | LAYOUT_FILL_Y);
 
     // Fourth tab is Xfw key bindings
     new FXTabItem(tabbook, _("Xf&w Key Bindings"), NULL);
-    FXVerticalFrame* frame4 = new FXVerticalFrame(tabbook, LAYOUT_SIDE_TOP|FRAME_RAISED|LAYOUT_FILL_X|LAYOUT_FILL_Y);
-    new FXLabel(frame4, _("These key bindings are specific to the X File Write application.\nDouble click on an item to modify the selected key binding..."), NULL, LAYOUT_LEFT|JUSTIFY_LEFT, 0, 0, 0, 0, 0, 0, 20, 20);
-    xfwBindingsList = new IconList(frame4, this, ID_XFW_BINDINGS_LIST, _ICONLIST_STANDARD|HSCROLLER_NEVER|ICONLIST_BROWSESELECT|LAYOUT_SIDE_TOP|LAYOUT_LEFT|LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    FXVerticalFrame* frame4 = new FXVerticalFrame(tabbook, LAYOUT_SIDE_TOP | FRAME_RAISED | LAYOUT_FILL_X | LAYOUT_FILL_Y);
+    new FXLabel(frame4, _("These key bindings are specific to the X File Write application.\nDouble click on an item to modify the selected key binding..."), NULL, LAYOUT_LEFT | JUSTIFY_LEFT, 0, 0, 0, 0, 0, 0, 20, 20);
+    xfwBindingsList = new IconList(frame4, this, ID_XFW_BINDINGS_LIST, _ICONLIST_STANDARD | HSCROLLER_NEVER | ICONLIST_BROWSESELECT | LAYOUT_SIDE_TOP | LAYOUT_LEFT | LAYOUT_FILL_X | LAYOUT_FILL_Y);
 
     // Set list headers name and size
-    FXuint hsize1 = getWidth()/2-50;
-    FXuint hsize2 = getWidth()/4;
+    FXuint hsize1 = getWidth() / 2 - 50;
+    FXuint hsize2 = getWidth() / 4;
 
     glbBindingsList->appendHeader(_("Action Name"), NULL, hsize1);
     glbBindingsList->appendHeader(_("Registry Key"), NULL, hsize2);
@@ -149,7 +149,7 @@ void KeybindingsBox::create()
 {
     DialogBox::create();
 
-    int      i;
+    int i;
     FXString str, data, action, keybinding;
 
     // Fullfill the four lists
@@ -159,7 +159,7 @@ void KeybindingsBox::create()
         data = glbBindingsDict->data(i);
         action = data.before('\t');
         keybinding = data.after('\t');
-        str = action+TAB+glbBindingsDict->key(i)+TAB+keybinding;
+        str = action + TAB + glbBindingsDict->key(i) + TAB + keybinding;
         glbBindingsList->appendItem(str);
     }
     glbBindingsList->sortItems();
@@ -170,7 +170,7 @@ void KeybindingsBox::create()
         data = xfeBindingsDict->data(i);
         action = data.before('\t');
         keybinding = data.after('\t');
-        str = action+TAB+xfeBindingsDict->key(i)+TAB+keybinding;
+        str = action + TAB + xfeBindingsDict->key(i) + TAB + keybinding;
         xfeBindingsList->appendItem(str);
     }
     xfeBindingsList->sortItems();
@@ -181,7 +181,7 @@ void KeybindingsBox::create()
         data = xfiBindingsDict->data(i);
         action = data.before('\t');
         keybinding = data.after('\t');
-        str = action+TAB+xfiBindingsDict->key(i)+TAB+keybinding;
+        str = action + TAB + xfiBindingsDict->key(i) + TAB + keybinding;
         xfiBindingsList->appendItem(str);
     }
     xfiBindingsList->sortItems();
@@ -192,7 +192,7 @@ void KeybindingsBox::create()
         data = xfwBindingsDict->data(i);
         action = data.before('\t');
         keybinding = data.after('\t');
-        str = action+TAB+xfwBindingsDict->key(i)+TAB+keybinding;
+        str = action + TAB + xfwBindingsDict->key(i) + TAB + keybinding;
         xfwBindingsList->appendItem(str);
     }
     xfwBindingsList->sortItems();
@@ -315,20 +315,18 @@ long KeybindingsBox::onCmdCancel(FXObject* o, FXSelector s, void* p)
 // Compare sectioned strings
 int KeybindingsBox::compareSection(const char* p, const char* q, int s)
 {
-    register int c1, c2, x;
+    int c1, c2, x;
 
     for (x = s; x && *p; x -= (*p++ == '\t'))
-    {
-    }
+    {}
     for (x = s; x && *q; x -= (*q++ == '\t'))
-    {
-    }
+    {}
     do
     {
         c1 = (FXuchar)(*p++);
         c2 = (FXuchar)(*q++);
     } while ('\t' < c1 && (c1 == c2));
-    return(c1-c2);
+    return(c1 - c2);
 }
 
 
@@ -381,7 +379,7 @@ long KeybindingsBox::onCmdGlbSortByActionName(FXObject*, FXSelector, void*)
         data = glbBindingsDict->data(i);
         action = data.before('\t');
         keybinding = data.after('\t');
-        str = action+TAB+glbBindingsDict->key(i)+TAB+keybinding;
+        str = action + TAB + glbBindingsDict->key(i) + TAB + keybinding;
         glbBindingsList->appendItem(str);
     }
     glbBindingsList->sortItems();
@@ -402,7 +400,7 @@ long KeybindingsBox::onCmdGlbSortByRegistryKey(FXObject*, FXSelector, void*)
         data = glbBindingsDict->data(i);
         action = data.before('\t');
         keybinding = data.after('\t');
-        str = action+TAB+glbBindingsDict->key(i)+TAB+keybinding;
+        str = action + TAB + glbBindingsDict->key(i) + TAB + keybinding;
         glbBindingsList->appendItem(str);
     }
     glbBindingsList->sortItems();
@@ -423,7 +421,7 @@ long KeybindingsBox::onCmdGlbSortByKeyBinding(FXObject*, FXSelector, void*)
         data = glbBindingsDict->data(i);
         action = data.before('\t');
         keybinding = data.after('\t');
-        str = action+TAB+glbBindingsDict->key(i)+TAB+keybinding;
+        str = action + TAB + glbBindingsDict->key(i) + TAB + keybinding;
         glbBindingsList->appendItem(str);
     }
     glbBindingsList->sortItems();
@@ -444,7 +442,7 @@ long KeybindingsBox::onCmdXfeSortByActionName(FXObject*, FXSelector, void*)
         data = xfeBindingsDict->data(i);
         action = data.before('\t');
         keybinding = data.after('\t');
-        str = action+TAB+xfeBindingsDict->key(i)+TAB+keybinding;
+        str = action + TAB + xfeBindingsDict->key(i) + TAB + keybinding;
         xfeBindingsList->appendItem(str);
     }
     xfeBindingsList->sortItems();
@@ -465,7 +463,7 @@ long KeybindingsBox::onCmdXfeSortByRegistryKey(FXObject*, FXSelector, void*)
         data = xfeBindingsDict->data(i);
         action = data.before('\t');
         keybinding = data.after('\t');
-        str = action+TAB+xfeBindingsDict->key(i)+TAB+keybinding;
+        str = action + TAB + xfeBindingsDict->key(i) + TAB + keybinding;
         xfeBindingsList->appendItem(str);
     }
     xfeBindingsList->sortItems();
@@ -486,7 +484,7 @@ long KeybindingsBox::onCmdXfeSortByKeyBinding(FXObject*, FXSelector, void*)
         data = xfeBindingsDict->data(i);
         action = data.before('\t');
         keybinding = data.after('\t');
-        str = action+TAB+xfeBindingsDict->key(i)+TAB+keybinding;
+        str = action + TAB + xfeBindingsDict->key(i) + TAB + keybinding;
         xfeBindingsList->appendItem(str);
     }
     xfeBindingsList->sortItems();
@@ -507,7 +505,7 @@ long KeybindingsBox::onCmdXfiSortByActionName(FXObject*, FXSelector, void*)
         data = xfiBindingsDict->data(i);
         action = data.before('\t');
         keybinding = data.after('\t');
-        str = action+TAB+xfiBindingsDict->key(i)+TAB+keybinding;
+        str = action + TAB + xfiBindingsDict->key(i) + TAB + keybinding;
         xfiBindingsList->appendItem(str);
     }
     xfiBindingsList->sortItems();
@@ -528,7 +526,7 @@ long KeybindingsBox::onCmdXfiSortByRegistryKey(FXObject*, FXSelector, void*)
         data = xfiBindingsDict->data(i);
         action = data.before('\t');
         keybinding = data.after('\t');
-        str = action+TAB+xfiBindingsDict->key(i)+TAB+keybinding;
+        str = action + TAB + xfiBindingsDict->key(i) + TAB + keybinding;
         xfiBindingsList->appendItem(str);
     }
     xfiBindingsList->sortItems();
@@ -549,7 +547,7 @@ long KeybindingsBox::onCmdXfiSortByKeyBinding(FXObject*, FXSelector, void*)
         data = xfiBindingsDict->data(i);
         action = data.before('\t');
         keybinding = data.after('\t');
-        str = action+TAB+xfiBindingsDict->key(i)+TAB+keybinding;
+        str = action + TAB + xfiBindingsDict->key(i) + TAB + keybinding;
         xfiBindingsList->appendItem(str);
     }
     xfiBindingsList->sortItems();
@@ -570,7 +568,7 @@ long KeybindingsBox::onCmdXfwSortByActionName(FXObject*, FXSelector, void*)
         data = xfwBindingsDict->data(i);
         action = data.before('\t');
         keybinding = data.after('\t');
-        str = action+TAB+xfwBindingsDict->key(i)+TAB+keybinding;
+        str = action + TAB + xfwBindingsDict->key(i) + TAB + keybinding;
         xfwBindingsList->appendItem(str);
     }
     xfwBindingsList->sortItems();
@@ -591,7 +589,7 @@ long KeybindingsBox::onCmdXfwSortByRegistryKey(FXObject*, FXSelector, void*)
         data = xfwBindingsDict->data(i);
         action = data.before('\t');
         keybinding = data.after('\t');
-        str = action+TAB+xfwBindingsDict->key(i)+TAB+keybinding;
+        str = action + TAB + xfwBindingsDict->key(i) + TAB + keybinding;
         xfwBindingsList->appendItem(str);
     }
     xfwBindingsList->sortItems();
@@ -612,7 +610,7 @@ long KeybindingsBox::onCmdXfwSortByKeyBinding(FXObject*, FXSelector, void*)
         data = xfwBindingsDict->data(i);
         action = data.before('\t');
         keybinding = data.after('\t');
-        str = action+TAB+xfwBindingsDict->key(i)+TAB+keybinding;
+        str = action + TAB + xfwBindingsDict->key(i) + TAB + keybinding;
         xfwBindingsList->appendItem(str);
     }
     xfwBindingsList->sortItems();
@@ -830,7 +828,7 @@ long KeybindingsBox::onCmdDefineGlbKeybindings(FXObject*, FXSelector, void*)
 {
     // Get selected item string
     FXString itemtext = "";
-    int      index = -1;
+    int index = -1;
 
     for (int u = 0; u < glbBindingsList->getNumItems(); u++)
     {
@@ -854,7 +852,7 @@ long KeybindingsBox::onCmdDefineGlbKeybindings(FXObject*, FXSelector, void*)
     // Input dialog
     FXString message;
     message.format(_("Press the combination of keys you want to use for the action: %s"), action.text());
-    message = message+ "\n" + _("[Press space to disable the key binding for this action]");
+    message = message + "\n" + _("[Press space to disable the key binding for this action]");
     KeybindingsDialog* kbdialog = new KeybindingsDialog(this, key, message, _("Modify Key Binding"), keybindingsicon);
 
     // Accept was pressed
@@ -871,7 +869,7 @@ long KeybindingsBox::onCmdDefineGlbKeybindings(FXObject*, FXSelector, void*)
         if (newkey != "")
         {
             FXString dictdata, dictkey;
-            FXbool   exist_in_glb = false, exist_in_xfe = false, exist_in_xfi = false, exist_in_xfw = false;
+            FXbool exist_in_glb = false, exist_in_xfe = false, exist_in_xfi = false, exist_in_xfw = false;
             for (int i = glbBindingsDict->first(); i < glbBindingsDict->size(); i = glbBindingsDict->next(i))
             {
                 dictdata = glbBindingsDict->data(i);
@@ -947,11 +945,11 @@ You should erase the existing key binding before assigning it again."), newkey.t
         }
 
         // Modify the item text
-        itemtext = data+TAB+newkey;
+        itemtext = data + TAB + newkey;
         glbBindingsList->setItemText(index, itemtext);
 
         // Update dictionary
-        FXString str = action+TAB+newkey;
+        FXString str = action + TAB + newkey;
         glbBindingsDict->replace(regkey.text(), str.text());
 
         changed = true;
@@ -974,7 +972,7 @@ long KeybindingsBox::onCmdDefineXfeKeybindings(FXObject*, FXSelector, void*)
 {
     // Get selected item string
     FXString itemtext = "";
-    int      index = -1;
+    int index = -1;
 
     for (int u = 0; u < xfeBindingsList->getNumItems(); u++)
     {
@@ -998,7 +996,7 @@ long KeybindingsBox::onCmdDefineXfeKeybindings(FXObject*, FXSelector, void*)
     // Input dialog
     FXString message;
     message.format(_("Press the combination of keys you want to use for the action: %s"), action.text());
-    message = message+ "\n" + _("[Press space to disable the key binding for this action]");
+    message = message + "\n" + _("[Press space to disable the key binding for this action]");
     KeybindingsDialog* kbdialog = new KeybindingsDialog(this, key, message, _("Modify Key Binding"), keybindingsicon);
 
     // Accept was pressed
@@ -1015,7 +1013,7 @@ long KeybindingsBox::onCmdDefineXfeKeybindings(FXObject*, FXSelector, void*)
         if (newkey != "")
         {
             FXString dictdata, dictkey;
-            FXbool   exist_in_glb = false, exist_in_xfe = false;
+            FXbool exist_in_glb = false, exist_in_xfe = false;
             for (int i = glbBindingsDict->first(); i < glbBindingsDict->size(); i = glbBindingsDict->next(i))
             {
                 dictdata = glbBindingsDict->data(i);
@@ -1055,11 +1053,11 @@ You should erase the existing key binding before assigning it again."), newkey.t
         }
 
         // Modify the item text
-        itemtext = data+TAB+newkey;
+        itemtext = data + TAB + newkey;
         xfeBindingsList->setItemText(index, itemtext);
 
         // Update dictionary
-        FXString str = action+TAB+newkey;
+        FXString str = action + TAB + newkey;
         xfeBindingsDict->replace(regkey.text(), str.text());
 
         changed = true;
@@ -1082,7 +1080,7 @@ long KeybindingsBox::onCmdDefineXfiKeybindings(FXObject*, FXSelector, void*)
 {
     // Get selected item string
     FXString itemtext = "";
-    int      index = -1;
+    int index = -1;
 
     for (int u = 0; u < xfiBindingsList->getNumItems(); u++)
     {
@@ -1106,7 +1104,7 @@ long KeybindingsBox::onCmdDefineXfiKeybindings(FXObject*, FXSelector, void*)
     // Input dialog
     FXString message;
     message.format(_("Press the combination of keys you want to use for the action: %s"), action.text());
-    message = message+ "\n" + _("[Press space to disable the key binding for this action]");
+    message = message + "\n" + _("[Press space to disable the key binding for this action]");
     KeybindingsDialog* kbdialog = new KeybindingsDialog(this, key, message, _("Modify Key Binding"), keybindingsicon);
 
     // Accept was pressed
@@ -1123,7 +1121,7 @@ long KeybindingsBox::onCmdDefineXfiKeybindings(FXObject*, FXSelector, void*)
         if (newkey != "")
         {
             FXString dictdata, dictkey;
-            FXbool   exist_in_glb = false, exist_in_xfi = false;
+            FXbool exist_in_glb = false, exist_in_xfi = false;
             for (int i = glbBindingsDict->first(); i < glbBindingsDict->size(); i = glbBindingsDict->next(i))
             {
                 dictdata = glbBindingsDict->data(i);
@@ -1163,11 +1161,11 @@ You should erase the existing key binding before assigning it again."), newkey.t
         }
 
         // Modify the item text
-        itemtext = data+TAB+newkey;
+        itemtext = data + TAB + newkey;
         xfiBindingsList->setItemText(index, itemtext);
 
         // Update dictionary
-        FXString str = action+TAB+newkey;
+        FXString str = action + TAB + newkey;
         xfiBindingsDict->replace(regkey.text(), str.text());
 
         changed = true;
@@ -1190,7 +1188,7 @@ long KeybindingsBox::onCmdDefineXfwKeybindings(FXObject*, FXSelector, void*)
 {
     // Get selected item string
     FXString itemtext = "";
-    int      index = -1;
+    int index = -1;
 
     for (int u = 0; u < xfwBindingsList->getNumItems(); u++)
     {
@@ -1214,7 +1212,7 @@ long KeybindingsBox::onCmdDefineXfwKeybindings(FXObject*, FXSelector, void*)
     // Input dialog
     FXString message;
     message.format(_("Press the combination of keys you want to use for the action: %s"), action.text());
-    message = message+ "\n" + _("[Press space to disable the key binding for this action]");
+    message = message + "\n" + _("[Press space to disable the key binding for this action]");
     KeybindingsDialog* kbdialog = new KeybindingsDialog(this, key, message, _("Modify Key Binding"), keybindingsicon);
 
     // Accept was pressed
@@ -1231,7 +1229,7 @@ long KeybindingsBox::onCmdDefineXfwKeybindings(FXObject*, FXSelector, void*)
         if (newkey != "")
         {
             FXString dictdata, dictkey;
-            FXbool   exist_in_glb = false, exist_in_xfw = false;
+            FXbool exist_in_glb = false, exist_in_xfw = false;
             for (int i = glbBindingsDict->first(); i < glbBindingsDict->size(); i = glbBindingsDict->next(i))
             {
                 dictdata = glbBindingsDict->data(i);
@@ -1271,11 +1269,11 @@ You should erase the existing key binding before assigning it again."), newkey.t
         }
 
         // Modify the item text
-        itemtext = data+TAB+newkey;
+        itemtext = data + TAB + newkey;
         xfwBindingsList->setItemText(index, itemtext);
 
         // Update dictionary
-        FXString str = action+TAB+newkey;
+        FXString str = action + TAB + newkey;
         xfwBindingsDict->replace(regkey.text(), str.text());
 
         changed = true;

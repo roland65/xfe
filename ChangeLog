@@ -1,3 +1,31 @@
+Version 1.45
+- shows a rotating cursor in search dialog
+- update build scripts to autoconf 2.71 and automake 1.16.5 (for Ubuntu 22.04)
+- removed the intl directory and allow to build Xfe with external gettext 
+- fixed problem of wrong panel sizes when switching from vertical to horizontal panels
+- beautified code using uncrustify
+- added a new root authentication mode using pkexec (to use it, the pkexec package must be installed on the system)
+  and also added the associated policy file org.xfe.root.policy
+- fixed the problem of opening too many windows when selected items have different associations (bug #254)
+- added a timeout parameter for mount point not responding mechanism
+- fixed the mechanism that detects mount points that are not responding
+- added cifs to file system mounts that are checked for up / down state
+- fixed the problem that links to executable text file are executed when the "Don't execute text files" option
+  is enabled (bug #264)
+- select image in XFileImage (xfi) file list when opening an image file (bug #262)
+- fixed the failing 'make check' (bug #257) 
+- updated xferc.in with .json and .policy file types
+- fixed imprecise error message when attempting to create a folder and a file/folder with the same name already exists 
+- added Dark color theme
+- added new menu item "Copy name(s)" (shortcut Ctrl-Shift-N) to allow copying file names (without path) to clipboard
+- removed deprecated register directive
+- updated brazilian portuguese translation (thanks to Vinicius <megaphantomx@hotmail.com>>
+- updated russian translation (thanks to Bogdan V. Kilin <bkilin@ya.ru>)
+- updated czech translation (thanks to David Vachulka <arch_dvx@users.sourceforge.net>
+- fixed a regression that broke the "Save as" operation in Xfw  
+- try to show Xfe window later to avoid black transient window 
+- disabled the hassubdir() function because it is too slow on network drives
+
 Version 1.44 (released 14/03/2021)
 - fixed segmentation fault when Xfe can't find the default xferc (bug #255)
 - removed CDE color theme and renamed GNOME2 and KDE3 color themes to GNOME and KDE
@@ -120,7 +148,7 @@ Version 1.41 (released 28/11/2015)
 - fixed OpenBSD build (bug #206)
 - updated czsech translation (thanks to David Vachulka <arch_dvx@users.sourceforge.net>)
 - fixed incorrect selection mode in XFileImage
-- the menu key now has the same function as the Shift-F10 key, i.e. it opens the popup menu on a file list
+- the menu key now has the same function as the Ctrl-Shift-N0 key, i.e. it opens the popup menu on a file list
 - code source cleanup
 - fixed the placement of file error messages
 - fixed key navigation in the icon list. Now pressing a letter key only selects an item, whatever the mouse cursor
@@ -840,7 +868,7 @@ Version 1.13
  <sander@knology.net> for the related code)
 
 Version 1.12
-- improved the way the FilePanel popup dialog is displayed when using the Shift-F10 keyboard shorcut
+- improved the way the FilePanel popup dialog is displayed when using the Ctrl-Shift-N0 keyboard shorcut
 - added an option to display or hide the FilePanel path linker
 - we now use the .cpp extension for the source files, instead of .cc . This is to be consistent with the FOX library.
 - xterm is no more required for the root mode. Now, if xterm is not present on the system, we use the terminal program 
@@ -1537,7 +1565,7 @@ Version 0.70 (Released 07-29-2004)
 - Tab key now allows to cycle through the DirPanel and FilePanels
 - improved the refresh in DirList that was consuming too much resources
 - fixed a bug with the file dates in FileList that were no more in local format 
-- added a shortcut to Shift-F10 for the right popup menu in FilePanel
+- added a shortcut to Ctrl-Shift-N0 for the right popup menu in FilePanel
 
 Version 0.69
 - fixed a crash bug with Xfq, when the file to open doesn't exist

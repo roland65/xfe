@@ -15,6 +15,7 @@
 enum
 {
     COPY_CLIPBOARD,
+    COPYNAME_CLIPBOARD,
     CUT_CLIPBOARD,
 };
 
@@ -38,19 +39,19 @@ protected:
     FXLabel*               filterlabel;
     FXHorizontalSeparator* panelsep;
     FXButton*               activeicon;
-    FXString               name;
-    FXbool                 ctrlkey;
-    FXbool                 selmult;
-    FXString               trashlocation;
-    FXString               trashfileslocation;
-    FXString               trashinfolocation;
-    FXString               startlocation;
+    FXString name;
+    FXbool ctrlkey;
+    FXbool selmult;
+    FXString trashlocation;
+    FXString trashfileslocation;
+    FXString trashinfolocation;
+    FXString startlocation;
     FXDragCorner*          corner;
-    FXDragType             urilistType;      // Standard uri-list type
-    FXDragType             xfelistType;      // Xfe, Gnome and XFCE list type
-    FXDragType             kdelistType;      // KDE list type
-    FXDragType             utf8Type;         // UTF-8 text type
-    FXbool                 clipboard_locked; // Clipboard locked to prevent changes when viewing it
+    FXDragType urilistType;                  // Standard uri-list type
+    FXDragType xfelistType;                  // Xfe, Gnome and XFCE list type
+    FXDragType kdelistType;                  // KDE list type
+    FXDragType utf8Type;                     // UTF-8 text type
+    FXbool clipboard_locked;                 // Clipboard locked to prevent changes when viewing it
     InputDialog*           newfiledialog;
     InputDialog*           newdirdialog;
     InputDialog*           newlinkdialog;
@@ -61,14 +62,14 @@ protected:
     InputDialog*           operationdialogrename;
     BrowseInputDialog*     operationdialogmultiple;
     BrowseInputDialog*     comparedialog;
-    FXbool                 fromPaste;
-    FXbool                 ctrl;        // Flag to select the right click control menu
-    FXbool                 shiftf10;    // Flag indicating that Shift-F10 was pressed
+    FXbool fromPaste;
+    FXbool ctrl;                        // Flag to select the right click control menu
+    FXbool shiftf10;                    // Flag indicating that Shift-F10 was pressed
     TextLabel*             pathtext;
-    FXbool                 isactive;
-    FXbool                 stopListRefresh;
-    FXColor                attenclr;
-    progsmap               progs;       // Map between program string identifiers and integer indexes
+    FXbool isactive;
+    FXbool stopListRefresh;
+    FXColor attenclr;
+    progsmap progs;                     // Map between program string identifiers and integer indexes
 
 public:
 
@@ -78,11 +79,11 @@ public:
               FXuint opts = 0, int x = 0, int y = 0, int w = 0, int h = 0);
 
     FilePanel() : current(NULL), list(NULL), next(NULL), dirpanel(NULL), pathlink(NULL), statusbar(NULL), statuslabel(NULL), filterlabel(NULL),
-                  panelsep(NULL), activeicon(NULL), ctrlkey(false), selmult(false), corner(NULL), urilistType(0), xfelistType(0),
-                  kdelistType(0), utf8Type(0), clipboard_locked(false), newfiledialog(NULL), newdirdialog(NULL), newlinkdialog(NULL),
-                  opendialog(NULL), archdialog(NULL), filterdialog(NULL), operationdialogsingle(NULL), operationdialogrename(NULL),
-                  operationdialogmultiple(NULL), comparedialog(NULL), fromPaste(false), ctrl(false), shiftf10(false), pathtext(NULL),
-                  isactive(false), stopListRefresh(false), attenclr(FXRGB(0, 0, 0))
+        panelsep(NULL), activeicon(NULL), ctrlkey(false), selmult(false), corner(NULL), urilistType(0), xfelistType(0),
+        kdelistType(0), utf8Type(0), clipboard_locked(false), newfiledialog(NULL), newdirdialog(NULL), newlinkdialog(NULL),
+        opendialog(NULL), archdialog(NULL), filterdialog(NULL), operationdialogsingle(NULL), operationdialogrename(NULL),
+        operationdialogmultiple(NULL), comparedialog(NULL), fromPaste(false), ctrl(false), shiftf10(false), pathtext(NULL),
+        isactive(false), stopListRefresh(false), attenclr(FXRGB(0, 0, 0))
     {}
     virtual void create();
 
@@ -133,6 +134,7 @@ public:
         ID_GO_HOME,
         ID_GO_TRASH,
         ID_COPY_CLIPBOARD,
+        ID_COPYNAME_CLIPBOARD,
         ID_CUT_CLIPBOARD,
         ID_ADDCOPY_CLIPBOARD,
         ID_ADDCUT_CLIPBOARD,
@@ -171,6 +173,7 @@ public:
     long onCmdFocus(FXObject*, FXSelector, void*);
     long onCmdItemFilter(FXObject*, FXSelector, void*);
     long onCmdCopyCut(FXObject*, FXSelector, void*);
+    long onCmdCopyName(FXObject*, FXSelector sel, void*);
     long onCmdPaste(FXObject*, FXSelector, void*);
     long onCmdDirectoryUp(FXObject*, FXSelector, void*);
     long onCmdGoHome(FXObject*, FXSelector, void*);
@@ -203,7 +206,7 @@ public:
     long onUpdToggleHidden(FXObject*, FXSelector, void*);
     long onCmdToggleThumbnails(FXObject*, FXSelector, void*);
     long onCmdRunScript(FXObject*, FXSelector, void*);
-	long onCmdDirUsage(FXObject*, FXSelector, void*);
+    long onCmdDirUsage(FXObject*, FXSelector, void*);
 
     long onUpdDirUsage(FXObject*, FXSelector, void*);
     long onUpdToggleThumbnails(FXObject*, FXSelector, void*);
@@ -232,6 +235,7 @@ public:
     long onCmdPkgInstall(FXObject*, FXSelector, void*);
     long onCmdPkgUninstall(FXObject*, FXSelector, void*);
 #endif
+
 public:
 
     // Change path text
@@ -264,11 +268,11 @@ public:
         list->setDefaultCursor(cur);
     }
 
-	// Deselect all items
-	void deselectAll(void)
-	{
-		list->onCmdDeselectAll(0,0,0);
-	}
+    // Deselect all items
+    void deselectAll(void)
+    {
+        list->onCmdDeselectAll(0, 0, 0);
+    }
 
     // Redraw file list
     void redraw(void)

@@ -1,6 +1,6 @@
 #
 # Xfe default settings
-# Version : 05/01/2015
+# Version : 28/12/2022
 #
 # These settings are overridden in ~/.config/xfe/xferc
 #
@@ -79,6 +79,7 @@ move_to_trash=Del
 restore_from_trash=Alt-Del
 delete=Shift-Del
 empty_trash_can=Ctrl-Del
+copy_names=Ctrl-Shift-N
 
 
 # Key bindings specific to X File Image (Xfi)
@@ -149,7 +150,6 @@ a = ",,;Static Library;a_32x32.png;shared_16x16.png;;"
 la = ",,;Libtool library file;a_32x32.png;shared_16x16.png;;"
 
 # Edition / compilation / scripting
-rules = "<txteditor>,<txtviewer>,<txteditor>;Rules Makefile;make_32x32.png;make_16x16.png;;"
 makefile = "<txteditor>,<txtviewer>,<txteditor>;Makefile;make_32x32.png;make_16x16.png;;"
 makefile.am = "<txteditor>,<txtviewer>,<txteditor>;Automake Makefile;make_32x32.png;make_16x16.png;;"
 mk = "<txteditor>,<txtviewer>,<txteditor>;Makefile;make_32x32.png;make_16x16.png;;"
@@ -199,6 +199,9 @@ spec = "<txteditor>,<txtviewer>,<txteditor>;RPM Spec;rpm_32x32.png;rpm_16x16.png
 xml = "<txteditor>,<txtviewer>,<txteditor>;XML File;text_32x32.png;text_16x16.png;;"
 frm = "<txteditor>,<txtviewer>,<txteditor>;VisualBasic Source;text_32x32.png;text_16x16.png;;"
 asc = "<txteditor>,<txtviewer>,<txteditor>;ASCII File;text_32x32.png;text_16x16.png;;"
+json = "<txteditor>,<txtviewer>,<txteditor>;JSON;text_32x32.png;text_16x16.png;;"
+policy = "<txteditor>,<txtviewer>,<txteditor>;Policy;text_32x32.png;text_16x16.png;;"
+rules = "<txteditor>,<txtviewer>,<txteditor>;Rules;text_32x32.png;text_16x16.png;;"
 
 # Web
 html = "firefox,firefox,<txteditor>;Hyper Text;html_32x32.png;html_16x16.png;;"

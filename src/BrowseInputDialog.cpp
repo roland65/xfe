@@ -28,22 +28,22 @@ FXIMPLEMENT(BrowseInputDialog, DialogBox, BrowseInputDialogMap, ARRAYNUMBER(Brow
 
 // Construct a dialog box
 BrowseInputDialog::BrowseInputDialog(FXWindow* win, FXString inp, FXString message, FXString title, FXString label, FXIcon* ic, FXuint browse, FXbool option, FXString optiontext) :
-    DialogBox(win, title, DECOR_TITLE|DECOR_BORDER|DECOR_STRETCHABLE|DECOR_MAXIMIZE|DECOR_CLOSE)
+    DialogBox(win, title, DECOR_TITLE | DECOR_BORDER | DECOR_STRETCHABLE | DECOR_MAXIMIZE | DECOR_CLOSE)
 {
     // Browse type flag
     browsetype = browse;
 
     // Buttons
-    FXHorizontalFrame* buttons = new FXHorizontalFrame(this, PACK_UNIFORM_WIDTH|LAYOUT_SIDE_BOTTOM|LAYOUT_FILL_X, 0, 0, 0, 0, 10, 10, 5, 5);
+    FXHorizontalFrame* buttons = new FXHorizontalFrame(this, PACK_UNIFORM_WIDTH | LAYOUT_SIDE_BOTTOM | LAYOUT_FILL_X, 0, 0, 0, 0, 10, 10, 5, 5);
 
     // Accept
-    new FXButton(buttons, _("&Accept"), NULL, this, ID_ACCEPT, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0, 0, 0, 0, 20, 20);
+    new FXButton(buttons, _("&Accept"), NULL, this, ID_ACCEPT, FRAME_RAISED | FRAME_THICK | LAYOUT_RIGHT, 0, 0, 0, 0, 20, 20);
 
     // Cancel
-    new FXButton(buttons, _("&Cancel"), NULL, this, ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0, 0, 0, 0, 20, 20);
+    new FXButton(buttons, _("&Cancel"), NULL, this, ID_CANCEL, FRAME_RAISED | FRAME_THICK | LAYOUT_RIGHT, 0, 0, 0, 0, 20, 20);
 
     // Optional check box
-    checkbutton = new FXHorizontalFrame(this, JUSTIFY_RIGHT|LAYOUT_SIDE_BOTTOM|LAYOUT_FILL_X, 0, 0, 0, 0, 10, 10, 0, 0);
+    checkbutton = new FXHorizontalFrame(this, JUSTIFY_RIGHT | LAYOUT_SIDE_BOTTOM | LAYOUT_FILL_X, 0, 0, 0, 0, 10, 10, 0, 0);
 
     if (option)
     {
@@ -51,25 +51,25 @@ BrowseInputDialog::BrowseInputDialog(FXWindow* win, FXString inp, FXString messa
     }
 
     // Vertical frame
-    FXVerticalFrame* contents = new FXVerticalFrame(this, LAYOUT_SIDE_TOP|FRAME_NONE|LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    FXVerticalFrame* contents = new FXVerticalFrame(this, LAYOUT_SIDE_TOP | FRAME_NONE | LAYOUT_FILL_X | LAYOUT_FILL_Y);
 
     // Icon and text label
     // Note : we display the message in a TextLabel. This allows to copy/paste the file name to the input text field
-    FXMatrix* matrix1 = new FXMatrix(contents, 2, MATRIX_BY_COLUMNS|LAYOUT_SIDE_TOP|LAYOUT_FILL_X|LAYOUT_FILL_Y);
-    iconlabel = new FXLabel(matrix1, "", ic, LAYOUT_LEFT|LAYOUT_CENTER_Y|LAYOUT_FILL_ROW);
-    msg = new TextLabel(matrix1, 30, 0, 0, LAYOUT_LEFT|LAYOUT_CENTER_Y|LAYOUT_FILL_ROW|FRAME_NONE);
+    FXMatrix* matrix1 = new FXMatrix(contents, 2, MATRIX_BY_COLUMNS | LAYOUT_SIDE_TOP | LAYOUT_FILL_X | LAYOUT_FILL_Y);
+    iconlabel = new FXLabel(matrix1, "", ic, LAYOUT_LEFT | LAYOUT_CENTER_Y | LAYOUT_FILL_ROW);
+    msg = new TextLabel(matrix1, 30, 0, 0, LAYOUT_LEFT | LAYOUT_CENTER_Y | LAYOUT_FILL_ROW | FRAME_NONE);
     msg->setText(message);
     msg->setBackColor(getApp()->getBaseColor());
 
     // Label and input field
-    FXMatrix* matrix2 = new FXMatrix(contents, 3, MATRIX_BY_COLUMNS|LAYOUT_SIDE_TOP|LAYOUT_FILL_X|LAYOUT_FILL_Y);
-    new FXLabel(matrix2, label, NULL, LAYOUT_LEFT|LAYOUT_CENTER_Y|LAYOUT_FILL_ROW);
-    input = new FXTextField(matrix2, 40, 0, 0, LAYOUT_CENTER_Y|LAYOUT_CENTER_X|FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW|LAYOUT_FILL_X);
+    FXMatrix* matrix2 = new FXMatrix(contents, 3, MATRIX_BY_COLUMNS | LAYOUT_SIDE_TOP | LAYOUT_FILL_X | LAYOUT_FILL_Y);
+    new FXLabel(matrix2, label, NULL, LAYOUT_LEFT | LAYOUT_CENTER_Y | LAYOUT_FILL_ROW);
+    input = new FXTextField(matrix2, 40, 0, 0, LAYOUT_CENTER_Y | LAYOUT_CENTER_X | FRAME_SUNKEN | FRAME_THICK | LAYOUT_FILL_COLUMN | LAYOUT_FILL_ROW | LAYOUT_FILL_X);
     input->setText(inp);
-    new FXButton(matrix2, _("\tSelect destination..."), filedialogicon, this, ID_BROWSE_PATH, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT|LAYOUT_CENTER_Y, 0, 0, 0, 0, 20, 20);
+    new FXButton(matrix2, _("\tSelect destination..."), filedialogicon, this, ID_BROWSE_PATH, FRAME_RAISED | FRAME_THICK | LAYOUT_RIGHT | LAYOUT_CENTER_Y, 0, 0, 0, 0, 20, 20);
     if (!isUtf8(message.text(), message.length()))
     {
-        new FXLabel(contents, _("=> Warning: file name is not UTF-8 encoded!"), NULL, LAYOUT_LEFT|LAYOUT_CENTER_Y|LAYOUT_FILL_ROW);
+        new FXLabel(contents, _("=> Warning: file name is not UTF-8 encoded!"), NULL, LAYOUT_LEFT | LAYOUT_CENTER_Y | LAYOUT_FILL_ROW);
     }
 
     // Initial directory for browsing
@@ -173,7 +173,7 @@ void BrowseInputDialog::setMessage(FXString message)
     // Compute the equivalent size in number of columns of '8' of the message string,
     // taking into account the real size of the font characters
     FXFont* font = getApp()->getNormalFont();
-    int     nbcols = (int)ceil((double)font->getTextWidth(message) / (double)font->getCharWidth('8'));
+    int nbcols = (int)ceil((double)font->getTextWidth(message) / (double)font->getCharWidth('8'));
 
     // Tricks to adjust the dialog width to the real text size
     this->setWidth(1);

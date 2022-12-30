@@ -28,9 +28,9 @@ protected:
     FileAssoc* assoc;               // File association
     DirItem*   link;                // Link to next item
     DirItem*   list;                // List of child items
-    FXulong    size;                // File size (if a file)
-    FXTime     date;                // Time of item
-    FXString   tdata;               // Tooltip data
+    FXulong size;                   // File size (if a file)
+    FXTime date;                    // Time of item
+    FXString tdata;                 // Tooltip data
 protected:
     DirItem() : assoc(NULL), link(NULL), list(NULL), size(0L), date(0)
     {}
@@ -55,37 +55,37 @@ public:
 
     FXbool isDirectory() const
     {
-        return((state&FOLDER) != 0);
+        return((state & FOLDER) != 0);
     }
 
     FXbool isExecutable() const
     {
-        return((state&EXECUTABLE) != 0);
+        return((state & EXECUTABLE) != 0);
     }
 
     FXbool isSymlink() const
     {
-        return((state&SYMLINK) != 0);
+        return((state & SYMLINK) != 0);
     }
 
     FXbool isChardev() const
     {
-        return((state&CHARDEV) != 0);
+        return((state & CHARDEV) != 0);
     }
 
     FXbool isBlockdev() const
     {
-        return((state&BLOCKDEV) != 0);
+        return((state & BLOCKDEV) != 0);
     }
 
     FXbool isFifo() const
     {
-        return((state&FIFO) != 0);
+        return((state & FIFO) != 0);
     }
 
     FXbool isSocket() const
     {
-        return((state&SOCK) != 0);
+        return((state & SOCK) != 0);
     }
 
     FileAssoc* getAssoc() const
@@ -125,14 +125,14 @@ protected:
     TreeItem*    prevSelItem;
     DirItem*     list;                      // Root item list
     FileDict*    associations;              // Association table
-    FXString     dropdirectory;             // Drop directory
+    FXString dropdirectory;                 // Drop directory
     FXDragAction dropaction;                // Drop action
-    FXString     dragfiles;                 // Dragged files
-    FXString     pattern;                   // Pattern of file names
-    FXuint       matchmode;                 // File wildcard match mode
-    FXuint       counter;                   // Refresh counter
-    FXString     trashfileslocation;        // Location of the trash files directory
-    FXString     trashinfolocation;         // Location of the trash info directory
+    FXString dragfiles;                     // Dragged files
+    FXString pattern;                       // Pattern of file names
+    FXuint matchmode;                       // File wildcard match mode
+    FXuint counter;                         // Refresh counter
+    FXString trashfileslocation;            // Location of the trash files directory
+    FXString trashinfolocation;             // Location of the trash info directory
     FXWindow*    focuswindow;               // Window used to test focus
 protected:
     DirList() : prevSelItem(NULL), list(NULL), associations(NULL), dropaction(DRAG_MOVE), matchmode(0), counter(0), focuswindow(NULL)

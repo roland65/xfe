@@ -20,9 +20,10 @@ public:
         ID_SIZE,
         ID_PERM,
         ID_RESET_OPTIONS,
+        ID_TIMEOUT,
         ID_LAST
     };
-    SearchWindow(FXApp* app, const FXString& name, FXuint opts = DECOR_TITLE|DECOR_BORDER,
+    SearchWindow(FXApp* app, const FXString& name, FXuint opts = DECOR_TITLE | DECOR_BORDER,
                  int x = 0, int y = 0, int w = 0, int h = 0, int pl = 10, int pr = 10, int pt = 10, int pb = 10, int hs = 4, int vs = 4);
     virtual void show(FXuint placement = PLACEMENT_CURSOR);
     virtual void create();
@@ -39,15 +40,15 @@ protected:
     FXButton*        stopbutton;
     SearchPanel*     searchpanel;
     TextWindow*      warnwindow;
-    int              in[2];              // Input and output pipes
-    int              out[2];
-    int              pid;                // Proccess ID of child (valid if busy).
-    FXuint           count;
-    FXbool           running;
-    FXString         strprev;
-    FXString         searchcommand;
-    FXString         uid;
-    FXString         gid;
+    int in[2] = {0, 0};                  // Input and output pipes
+    int out[2] = {0, 0};
+    int pid;                             // Proccess ID of child (valid if busy).
+    FXuint count;
+    FXbool running;
+    FXString strprev;
+    FXString searchcommand;
+    FXString uid;
+    FXString gid;
     FXGroupBox*      moregroup;
     FXVerticalFrame* searchframe;
     FXCheckButton*   grepigncase;
@@ -71,13 +72,14 @@ protected:
     FXCheckButton*   norecbtn;
     FXCheckButton*   nofsbtn;
     FXButton*        resetoptions;
+    FXString         rotcur = "—";  // Em dash
 
     SearchWindow() : application(NULL), searchresults(NULL), findfile(NULL), wheredir(NULL), greptext(NULL), dirbutton(NULL),
-                     startbutton(NULL), stopbutton(NULL), searchpanel(NULL), warnwindow(NULL),
-                     pid(0), count(0), running(false), moregroup(NULL), searchframe(NULL), grepigncase(NULL), findigncase(NULL),
-                     findhidden(NULL), moreoptions(NULL), minsize(NULL), maxsize(NULL), mindays(NULL), maxdays(NULL), user(NULL),
-                     grp(NULL), type(NULL), perm(NULL), userbtn(NULL), grpbtn(NULL), typebtn(NULL), permbtn(NULL), emptybtn(NULL),
-                     linkbtn(NULL), norecbtn(NULL), nofsbtn(NULL), resetoptions(NULL)
+        startbutton(NULL), stopbutton(NULL), searchpanel(NULL), warnwindow(NULL),
+        pid(0), count(0), running(false), moregroup(NULL), searchframe(NULL), grepigncase(NULL), findigncase(NULL),
+        findhidden(NULL), moreoptions(NULL), minsize(NULL), maxsize(NULL), mindays(NULL), maxdays(NULL), user(NULL),
+        grp(NULL), type(NULL), perm(NULL), userbtn(NULL), grpbtn(NULL), typebtn(NULL), permbtn(NULL), emptybtn(NULL),
+        linkbtn(NULL), norecbtn(NULL), nofsbtn(NULL), resetoptions(NULL)
     {}
 
     SearchWindow(const SearchWindow&)
@@ -101,6 +103,7 @@ public:
     long onUpdStop(FXObject*, FXSelector, void*);
     long onUpdPerm(FXObject*, FXSelector, void*);
     long onUpdSize(FXObject*, FXSelector, void*);
+    long onTimeout(FXObject*, FXSelector, void*);
 public:
     // Change sort function
     void setSortFunc(IconListSortFunc func)
@@ -215,12 +218,12 @@ public:
     {
         wheredir->setText(dir);
     }
-	
-	// Deselect all items
-	void deselectAll(void)
-	{
-		searchpanel->deselectAll();
-	}
+
+    // Deselect all items
+    void deselectAll(void)
+    {
+        searchpanel->deselectAll();
+    }
 };
 
 #endif

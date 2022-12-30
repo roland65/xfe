@@ -41,10 +41,10 @@
 
 // Global variables
 FXString clipboard = "";
-char     OpenHistory[OPEN_HIST_SIZE][MAX_COMMAND_SIZE];
-int      OpenNum;
-char     FilterHistory[FILTER_HIST_SIZE][MAX_PATTERN_SIZE];
-int      FilterNum;
+char OpenHistory[OPEN_HIST_SIZE][MAX_COMMAND_SIZE];
+int OpenNum;
+char FilterHistory[FILTER_HIST_SIZE][MAX_PATTERN_SIZE];
+int FilterNum;
 
 FXbool allowPopupScroll = false;
 FXuint single_click;
@@ -53,7 +53,7 @@ FXbool relative_resize;
 
 // External global variables
 extern char**   args;
-extern int      panel_mode;
+extern int panel_mode;
 extern FXString homedir;
 extern FXString xdgdatahome;
 extern FXString xdgconfighome;
@@ -69,9 +69,9 @@ extern FXStringDict* updevices;
 static void toolbarSeparator(FXToolBar* tb)
 {
 #define SEP_SPACE    1
-    new FXFrame(tb, LAYOUT_CENTER_Y|LAYOUT_LEFT|LAYOUT_FIX_WIDTH|LAYOUT_FIX_HEIGHT, 0, 0, SEP_SPACE);
-    new FXVerticalSeparator(tb, LAYOUT_SIDE_TOP|LAYOUT_CENTER_Y|SEPARATOR_GROOVE|LAYOUT_FILL_Y);
-    new FXFrame(tb, LAYOUT_CENTER_Y|LAYOUT_LEFT|LAYOUT_FIX_WIDTH|LAYOUT_FIX_HEIGHT, 0, 0, SEP_SPACE);
+    new FXFrame(tb, LAYOUT_CENTER_Y | LAYOUT_LEFT | LAYOUT_FIX_WIDTH | LAYOUT_FIX_HEIGHT, 0, 0, SEP_SPACE);
+    new FXVerticalSeparator(tb, LAYOUT_SIDE_TOP | LAYOUT_CENTER_Y | SEPARATOR_GROOVE | LAYOUT_FILL_Y);
+    new FXFrame(tb, LAYOUT_CENTER_Y | LAYOUT_LEFT | LAYOUT_FIX_WIDTH | LAYOUT_FIX_HEIGHT, 0, 0, SEP_SPACE);
 }
 
 
@@ -82,6 +82,7 @@ FXDEFMAP(XFileExplorer) XFileExplorerMap[] =
     FXMAPFUNC(SEL_COMMAND, XFileExplorer::ID_RUN, XFileExplorer::onCmdRun),
     FXMAPFUNC(SEL_COMMAND, XFileExplorer::ID_SU, XFileExplorer::onCmdSu),
     FXMAPFUNC(SEL_COMMAND, XFileExplorer::ID_FILE_COPY, XFileExplorer::onCmdFileCopyClp),
+    FXMAPFUNC(SEL_COMMAND, XFileExplorer::ID_FILE_COPYNAME, XFileExplorer::onCmdFileCopyName),
     FXMAPFUNC(SEL_COMMAND, XFileExplorer::ID_FILE_CUT, XFileExplorer::onCmdFileCutClp),
     FXMAPFUNC(SEL_COMMAND, XFileExplorer::ID_FILE_ADDCOPY, XFileExplorer::onCmdFileAddCopyClp),
     FXMAPFUNC(SEL_COMMAND, XFileExplorer::ID_FILE_ADDCUT, XFileExplorer::onCmdFileAddCutClp),
@@ -151,6 +152,7 @@ FXDEFMAP(XFileExplorer) XFileExplorerMap[] =
     FXMAPFUNC(SEL_UPDATE, XFileExplorer::ID_FILE_MOVETO, XFileExplorer::onUpdFileMan),
     FXMAPFUNC(SEL_UPDATE, XFileExplorer::ID_FILE_SYMLINK, XFileExplorer::onUpdFileMan),
     FXMAPFUNC(SEL_UPDATE, XFileExplorer::ID_FILE_COPY, XFileExplorer::onUpdFileMan),
+    FXMAPFUNC(SEL_UPDATE, XFileExplorer::ID_FILE_COPYNAME, XFileExplorer::onUpdFileMan),
     FXMAPFUNC(SEL_UPDATE, XFileExplorer::ID_FILE_CUT, XFileExplorer::onUpdFileMan),
     FXMAPFUNC(SEL_UPDATE, XFileExplorer::ID_FILE_PASTE, XFileExplorer::onUpdFilePaste),
     FXMAPFUNC(SEL_UPDATE, XFileExplorer::ID_SYNCHRONIZE_PANELS, XFileExplorer::onUpdSynchronizePanels),
@@ -173,34 +175,34 @@ XFileExplorer::XFileExplorer(FXApp* app, vector_FXString URIs, const FXbool icon
     bookmarks = new Bookmarks("bookmarks", this, ID_BOOKMARK);
 
     // Menu bar
-    menubar = new FXMenuBar(this, LAYOUT_SIDE_TOP|LAYOUT_FILL_X|FRAME_RAISED);
+    menubar = new FXMenuBar(this, LAYOUT_SIDE_TOP | LAYOUT_FILL_X | FRAME_RAISED);
 
     // Site where to dock (for toolbars)
-    FXDockSite* topdock = new FXDockSite(this, LAYOUT_SIDE_TOP|LAYOUT_FILL_X);
+    FXDockSite* topdock = new FXDockSite(this, LAYOUT_SIDE_TOP | LAYOUT_FILL_X);
 
     // General toolbar
     FXToolBarShell* dragshell1 = new FXToolBarShell(this, FRAME_RAISED);
-    generaltoolbar = new FXToolBar(topdock, dragshell1, LAYOUT_DOCK_NEXT|LAYOUT_SIDE_TOP|FRAME_RAISED|LAYOUT_FILL_Y);
+    generaltoolbar = new FXToolBar(topdock, dragshell1, LAYOUT_DOCK_NEXT | LAYOUT_SIDE_TOP | FRAME_RAISED | LAYOUT_FILL_Y);
     new FXToolBarGrip(generaltoolbar, generaltoolbar, FXToolBar::ID_TOOLBARGRIP, TOOLBARGRIP_DOUBLE);
 
     // Tools toolbar
     FXToolBarShell* dragshell2 = new FXToolBarShell(this, FRAME_RAISED);
-    toolstoolbar = new FXToolBar(topdock, dragshell2, LAYOUT_DOCK_SAME|LAYOUT_SIDE_TOP|FRAME_RAISED|LAYOUT_FILL_Y);
+    toolstoolbar = new FXToolBar(topdock, dragshell2, LAYOUT_DOCK_SAME | LAYOUT_SIDE_TOP | FRAME_RAISED | LAYOUT_FILL_Y);
     new FXToolBarGrip(toolstoolbar, toolstoolbar, FXToolBar::ID_TOOLBARGRIP, TOOLBARGRIP_DOUBLE);
 
     // Panel toolbar
     FXToolBarShell* dragshell3 = new FXToolBarShell(this, FRAME_RAISED);
-    paneltoolbar = new FXToolBar(topdock, dragshell3, LAYOUT_DOCK_SAME|LAYOUT_SIDE_TOP|FRAME_RAISED|LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    paneltoolbar = new FXToolBar(topdock, dragshell3, LAYOUT_DOCK_SAME | LAYOUT_SIDE_TOP | FRAME_RAISED | LAYOUT_FILL_X | LAYOUT_FILL_Y);
     new FXToolBarGrip(paneltoolbar, paneltoolbar, FXToolBar::ID_TOOLBARGRIP, TOOLBARGRIP_DOUBLE);
 
     // Location bar
     FXToolBarShell* dragshell4 = new FXToolBarShell(this, FRAME_RAISED);
-    locationbar = new FXToolBar(topdock, dragshell4, LAYOUT_DOCK_NEXT|LAYOUT_SIDE_TOP|FRAME_RAISED|LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    locationbar = new FXToolBar(topdock, dragshell4, LAYOUT_DOCK_NEXT | LAYOUT_SIDE_TOP | FRAME_RAISED | LAYOUT_FILL_X | LAYOUT_FILL_Y);
     new FXToolBarGrip(locationbar, locationbar, FXToolBar::ID_TOOLBARGRIP, TOOLBARGRIP_DOUBLE);
 
     // Main splitter
-    FXHorizontalFrame* hframe = new FXHorizontalFrame(this, LAYOUT_FILL_X|LAYOUT_FILL_Y|FRAME_RAISED, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-    FXSplitter*        mainsplit = new FXSplitter(hframe, LAYOUT_SIDE_LEFT|LAYOUT_FILL_X|LAYOUT_FILL_Y|SPLITTER_TRACKING|FRAME_NONE);
+    FXHorizontalFrame* hframe = new FXHorizontalFrame(this, LAYOUT_FILL_X | LAYOUT_FILL_Y | FRAME_RAISED, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+    FXSplitter*        mainsplit = new FXSplitter(hframe, LAYOUT_SIDE_LEFT | LAYOUT_FILL_X | LAYOUT_FILL_Y | SPLITTER_TRACKING | FRAME_NONE);
 
     // File list background, foreground, highlight, progress bar and attention colors
     listbackcolor = getApp()->reg().readColorEntry("SETTINGS", "listbackcolor", FXRGB(255, 255, 255));
@@ -214,20 +216,20 @@ XFileExplorer::XFileExplorer(FXApp* app, vector_FXString URIs, const FXbool icon
     smoothscroll = getApp()->reg().readUnsignedEntry("SETTINGS", "smooth_scroll", true);
 
     // Directory panel on the left (with minimum size)
-    dirpanel = new DirPanel(this, mainsplit, listbackcolor, listforecolor, smoothscroll, LAYOUT_SIDE_TOP|LAYOUT_FILL_X|LAYOUT_FILL_Y|FRAME_NONE, 0, 0, 0, 0);
+    dirpanel = new DirPanel(this, mainsplit, listbackcolor, listforecolor, smoothscroll, LAYOUT_SIDE_TOP | LAYOUT_FILL_X | LAYOUT_FILL_Y | FRAME_NONE, 0, 0, 0, 0);
 
     // Splitter containing the two panels
-    panelsplit = new FXSplitter(mainsplit, LAYOUT_SIDE_LEFT|LAYOUT_FILL_X|LAYOUT_FILL_Y|SPLITTER_TRACKING|FRAME_NONE);
+    panelsplit = new FXSplitter(mainsplit, LAYOUT_SIDE_LEFT | LAYOUT_FILL_X | LAYOUT_FILL_Y | SPLITTER_TRACKING | FRAME_NONE);
 
     // Stack file panels horizontally or vertically	(directory panel is always vertical)
     vertpanels = getApp()->reg().readUnsignedEntry("OPTIONS", "vert_panels", true);
     if (vertpanels)
     {
-        panelsplit->setSplitterStyle(panelsplit->getSplitterStyle()&~SPLITTER_VERTICAL);
+        panelsplit->setSplitterStyle(panelsplit->getSplitterStyle() & ~SPLITTER_VERTICAL);
     }
     else
     {
-        panelsplit->setSplitterStyle(panelsplit->getSplitterStyle()|SPLITTER_VERTICAL);
+        panelsplit->setSplitterStyle(panelsplit->getSplitterStyle() | SPLITTER_VERTICAL);
     }
 
     // File panels on the right : remembers size of each field
@@ -244,7 +246,7 @@ XFileExplorer::XFileExplorer(FXApp* app, vector_FXString URIs, const FXbool icon
                            getApp()->reg().readUnsignedEntry("LEFT PANEL", "origpath_size", 200),
                            getApp()->reg().readUnsignedEntry("LEFT PANEL", "showthumbnails", 0),
                            listbackcolor, listforecolor, attentioncolor, smoothscroll,
-                           LAYOUT_SIDE_TOP|LAYOUT_FILL_X|LAYOUT_FILL_Y|FRAME_NONE, 0, 0, 0, 0);
+                           LAYOUT_SIDE_TOP | LAYOUT_FILL_X | LAYOUT_FILL_Y | FRAME_NONE, 0, 0, 0, 0);
 
     rpanel = new FilePanel(this, "RIGHT PANEL", panelsplit, dirpanel,
                            getApp()->reg().readUnsignedEntry("RIGHT PANEL", "name_size", 200),
@@ -259,7 +261,7 @@ XFileExplorer::XFileExplorer(FXApp* app, vector_FXString URIs, const FXbool icon
                            getApp()->reg().readUnsignedEntry("RIGHT PANEL", "origpath_size", 200),
                            getApp()->reg().readUnsignedEntry("RIGHT PANEL", "showthumbnails", 0),
                            listbackcolor, listforecolor, attentioncolor, smoothscroll,
-                           LAYOUT_SIDE_TOP|LAYOUT_FILL_X|LAYOUT_FILL_Y|FRAME_NONE, 0, 0, 0, 0);
+                           LAYOUT_SIDE_TOP | LAYOUT_FILL_X | LAYOUT_FILL_Y | FRAME_NONE, 0, 0, 0, 0);
 
     lpanel->Next(rpanel);
     rpanel->Next(lpanel);
@@ -589,52 +591,52 @@ XFileExplorer::XFileExplorer(FXApp* app, vector_FXString URIs, const FXbool icon
     rpanel->setDirsFirst(dirs_first);
 
     FXButton* btn = NULL;
-    FXHotKey  hotkey;
-    FXString  key;
+    FXHotKey hotkey;
+    FXString key;
 
     // General toolbar
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "go_back", "Ctrl-Backspace");
-    btn = new FXButton(generaltoolbar, TAB+_("Go to previous folder")+PARS(key), dirbackicon, this, XFileExplorer::ID_DIR_BACK, BUTTON_TOOLBAR|FRAME_RAISED|LAYOUT_CENTER_Y|LAYOUT_LEFT);
+    btn = new FXButton(generaltoolbar, TAB + _("Go to previous folder") + PARS(key), dirbackicon, this, XFileExplorer::ID_DIR_BACK, BUTTON_TOOLBAR | FRAME_RAISED | LAYOUT_CENTER_Y | LAYOUT_LEFT);
     hotkey = _parseAccel(key);
     btn->addHotKey(hotkey);
 
-    btnbackhist = new FXArrowButton(generaltoolbar, this, XFileExplorer::ID_DIR_BACK_HIST, LAYOUT_FILL_Y|FRAME_RAISED|FRAME_THICK|ARROW_DOWN|ARROW_TOOLBAR);
+    btnbackhist = new FXArrowButton(generaltoolbar, this, XFileExplorer::ID_DIR_BACK_HIST, LAYOUT_FILL_Y | FRAME_RAISED | FRAME_THICK | ARROW_DOWN | ARROW_TOOLBAR);
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "go_forward", "Shift-Backspace");
-    btn = new FXButton(generaltoolbar, TAB+_("Go to next folder")+PARS(key), dirforwardicon, this, XFileExplorer::ID_DIR_FORWARD, BUTTON_TOOLBAR|FRAME_RAISED|LAYOUT_CENTER_Y|LAYOUT_LEFT);
+    btn = new FXButton(generaltoolbar, TAB + _("Go to next folder") + PARS(key), dirforwardicon, this, XFileExplorer::ID_DIR_FORWARD, BUTTON_TOOLBAR | FRAME_RAISED | LAYOUT_CENTER_Y | LAYOUT_LEFT);
     hotkey = _parseAccel(key);
     btn->addHotKey(hotkey);
 
-    btnforwardhist = new FXArrowButton(generaltoolbar, this, XFileExplorer::ID_DIR_FORWARD_HIST, LAYOUT_FILL_Y|FRAME_RAISED|FRAME_THICK|ARROW_DOWN|ARROW_TOOLBAR);
+    btnforwardhist = new FXArrowButton(generaltoolbar, this, XFileExplorer::ID_DIR_FORWARD_HIST, LAYOUT_FILL_Y | FRAME_RAISED | FRAME_THICK | ARROW_DOWN | ARROW_TOOLBAR);
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "go_up", "Backspace");
-    btn = new FXButton(generaltoolbar, TAB+_("Go to parent folder")+PARS(key), dirupicon, this, XFileExplorer::ID_DIR_UP, BUTTON_TOOLBAR|FRAME_RAISED|LAYOUT_CENTER_Y|LAYOUT_LEFT);
+    btn = new FXButton(generaltoolbar, TAB + _("Go to parent folder") + PARS(key), dirupicon, this, XFileExplorer::ID_DIR_UP, BUTTON_TOOLBAR | FRAME_RAISED | LAYOUT_CENTER_Y | LAYOUT_LEFT);
     hotkey = _parseAccel(key);
     btn->addHotKey(hotkey);
 
     toolbarSeparator(generaltoolbar);
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "go_home", "Ctrl-H");
-    new FXButton(generaltoolbar, TAB+_("Go to home folder")+PARS(key), homeicon, lpanel, FilePanel::ID_GO_HOME, BUTTON_TOOLBAR|FRAME_RAISED|LAYOUT_CENTER_Y|LAYOUT_LEFT);
+    new FXButton(generaltoolbar, TAB + _("Go to home folder") + PARS(key), homeicon, lpanel, FilePanel::ID_GO_HOME, BUTTON_TOOLBAR | FRAME_RAISED | LAYOUT_CENTER_Y | LAYOUT_LEFT);
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "refresh", "Ctrl-R");
-    new FXButton(generaltoolbar, TAB+_("Refresh panels")+PARS(key), reloadicon, this, XFileExplorer::ID_REFRESH, BUTTON_TOOLBAR|FRAME_RAISED|LAYOUT_CENTER_Y|LAYOUT_LEFT);
+    new FXButton(generaltoolbar, TAB + _("Refresh panels") + PARS(key), reloadicon, this, XFileExplorer::ID_REFRESH, BUTTON_TOOLBAR | FRAME_RAISED | LAYOUT_CENTER_Y | LAYOUT_LEFT);
 
     toolbarSeparator(generaltoolbar);
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "new_file", "Ctrl-N");
-    new FXButton(generaltoolbar, TAB+_("Create new file")+PARS(key), newfileicon, lpanel, FilePanel::ID_NEW_FILE, BUTTON_TOOLBAR|FRAME_RAISED|LAYOUT_CENTER_Y|LAYOUT_LEFT);
+    new FXButton(generaltoolbar, TAB + _("Create new file") + PARS(key), newfileicon, lpanel, FilePanel::ID_NEW_FILE, BUTTON_TOOLBAR | FRAME_RAISED | LAYOUT_CENTER_Y | LAYOUT_LEFT);
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "new_folder", "F7");
-    new FXButton(generaltoolbar, TAB+_("Create new folder")+PARS(key), newfoldericon, lpanel, FilePanel::ID_NEW_DIR, BUTTON_TOOLBAR|FRAME_RAISED|LAYOUT_CENTER_Y|LAYOUT_LEFT);
+    new FXButton(generaltoolbar, TAB + _("Create new folder") + PARS(key), newfoldericon, lpanel, FilePanel::ID_NEW_DIR, BUTTON_TOOLBAR | FRAME_RAISED | LAYOUT_CENTER_Y | LAYOUT_LEFT);
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "new_symlink", "Ctrl-J");
-    new FXButton(generaltoolbar, TAB+_("Create new symlink")+PARS(key), newlinkicon, lpanel, FilePanel::ID_NEW_SYMLINK, BUTTON_TOOLBAR|FRAME_RAISED|LAYOUT_CENTER_Y|LAYOUT_LEFT);
+    new FXButton(generaltoolbar, TAB + _("Create new symlink") + PARS(key), newlinkicon, lpanel, FilePanel::ID_NEW_SYMLINK, BUTTON_TOOLBAR | FRAME_RAISED | LAYOUT_CENTER_Y | LAYOUT_LEFT);
 
     toolbarSeparator(generaltoolbar);
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "copy", "Ctrl-C");
-    new FXButton(generaltoolbar, TAB+_("Copy selected files to clipboard")+PARS(key), copy_clpicon, this, XFileExplorer::ID_FILE_COPY, BUTTON_TOOLBAR|FRAME_RAISED|LAYOUT_CENTER_Y|LAYOUT_LEFT|ICON_BEFORE_TEXT);
+    new FXButton(generaltoolbar, TAB + _("Copy selected files to clipboard") + PARS(key), copy_clpicon, this, XFileExplorer::ID_FILE_COPY, BUTTON_TOOLBAR | FRAME_RAISED | LAYOUT_CENTER_Y | LAYOUT_LEFT | ICON_BEFORE_TEXT);
 
     // Shift + copy key binding can be used to add files to the copy clipboard
     // but this feature is disabled if the key binding already uses the Shift key
@@ -648,7 +650,7 @@ XFileExplorer::XFileExplorer(FXApp* app, vector_FXString URIs, const FXbool icon
     // Shift + cut key binding can be used to add files to the cut clipboard
     // but this feature is disabled if the key binding already uses the Shift key
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "cut", "Ctrl-X");
-    new FXButton(generaltoolbar, TAB+_("Cut selected files to clipboard")+PARS(key), cut_clpicon, this, XFileExplorer::ID_FILE_CUT, BUTTON_TOOLBAR|FRAME_RAISED|LAYOUT_CENTER_Y|LAYOUT_LEFT|ICON_BEFORE_TEXT);
+    new FXButton(generaltoolbar, TAB + _("Cut selected files to clipboard") + PARS(key), cut_clpicon, this, XFileExplorer::ID_FILE_CUT, BUTTON_TOOLBAR | FRAME_RAISED | LAYOUT_CENTER_Y | LAYOUT_LEFT | ICON_BEFORE_TEXT);
 
     if (key.lower().find("shift") < 0)
     {
@@ -658,48 +660,48 @@ XFileExplorer::XFileExplorer(FXApp* app, vector_FXString URIs, const FXbool icon
     }
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "paste", "Ctrl-V");
-    new FXButton(generaltoolbar, TAB+_("Paste from clipboard")+PARS(key), paste_clpicon, this, XFileExplorer::ID_FILE_PASTE, BUTTON_TOOLBAR|FRAME_RAISED|LAYOUT_CENTER_Y|LAYOUT_LEFT|ICON_BEFORE_TEXT);
+    new FXButton(generaltoolbar, TAB + _("Paste from clipboard") + PARS(key), paste_clpicon, this, XFileExplorer::ID_FILE_PASTE, BUTTON_TOOLBAR | FRAME_RAISED | LAYOUT_CENTER_Y | LAYOUT_LEFT | ICON_BEFORE_TEXT);
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "properties", "F9");
-    new FXButton(generaltoolbar, TAB+_("Show properties of selected files")+PARS(key), attribicon, this, XFileExplorer::ID_FILE_PROPERTIES, BUTTON_TOOLBAR|FRAME_RAISED|LAYOUT_CENTER_Y|LAYOUT_LEFT|ICON_BEFORE_TEXT);
+    new FXButton(generaltoolbar, TAB + _("Show properties of selected files") + PARS(key), attribicon, this, XFileExplorer::ID_FILE_PROPERTIES, BUTTON_TOOLBAR | FRAME_RAISED | LAYOUT_CENTER_Y | LAYOUT_LEFT | ICON_BEFORE_TEXT);
 
     toolbarSeparator(generaltoolbar);
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "move_to_trash", "Del");
-    new FXButton(generaltoolbar, TAB+_("Move selected files to trash can")+PARS(key), filedeleteicon, this, XFileExplorer::ID_FILE_TRASH, BUTTON_TOOLBAR|FRAME_RAISED|LAYOUT_CENTER_Y|LAYOUT_LEFT|ICON_BEFORE_TEXT);
+    new FXButton(generaltoolbar, TAB + _("Move selected files to trash can") + PARS(key), filedeleteicon, this, XFileExplorer::ID_FILE_TRASH, BUTTON_TOOLBAR | FRAME_RAISED | LAYOUT_CENTER_Y | LAYOUT_LEFT | ICON_BEFORE_TEXT);
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "restore_from_trash", "Alt-Del");
-    new FXButton(generaltoolbar, TAB+_("Restore selected files from trash can")+PARS(key), filerestoreicon, this, XFileExplorer::ID_FILE_RESTORE, BUTTON_TOOLBAR|FRAME_RAISED|LAYOUT_CENTER_Y|LAYOUT_LEFT|ICON_BEFORE_TEXT);
+    new FXButton(generaltoolbar, TAB + _("Restore selected files from trash can") + PARS(key), filerestoreicon, this, XFileExplorer::ID_FILE_RESTORE, BUTTON_TOOLBAR | FRAME_RAISED | LAYOUT_CENTER_Y | LAYOUT_LEFT | ICON_BEFORE_TEXT);
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "delete", "Shift-Del");
-    new FXButton(generaltoolbar, TAB+_("Delete selected files")+PARS(key), filedelete_permicon, this, XFileExplorer::ID_FILE_DELETE, BUTTON_TOOLBAR|FRAME_RAISED|LAYOUT_CENTER_Y|LAYOUT_LEFT|ICON_BEFORE_TEXT);
+    new FXButton(generaltoolbar, TAB + _("Delete selected files") + PARS(key), filedelete_permicon, this, XFileExplorer::ID_FILE_DELETE, BUTTON_TOOLBAR | FRAME_RAISED | LAYOUT_CENTER_Y | LAYOUT_LEFT | ICON_BEFORE_TEXT);
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "new_window", "F3");
-    new FXButton(toolstoolbar, TAB+_("Launch Xfe")+PARS(key), minixfeicon, this, XFileExplorer::ID_NEW_WIN, BUTTON_TOOLBAR|FRAME_RAISED|LAYOUT_CENTER_Y|LAYOUT_LEFT);
+    new FXButton(toolstoolbar, TAB + _("Launch Xfe") + PARS(key), minixfeicon, this, XFileExplorer::ID_NEW_WIN, BUTTON_TOOLBAR | FRAME_RAISED | LAYOUT_CENTER_Y | LAYOUT_LEFT);
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "new_root_window", "Shift-F3");
-    new FXButton(toolstoolbar, TAB+_("Launch Xfe as root")+PARS(key), minixferooticon, this, XFileExplorer::ID_SU, BUTTON_TOOLBAR|FRAME_RAISED|LAYOUT_CENTER_Y|LAYOUT_LEFT);
+    new FXButton(toolstoolbar, TAB + _("Launch Xfe as root") + PARS(key), minixferooticon, this, XFileExplorer::ID_SU, BUTTON_TOOLBAR | FRAME_RAISED | LAYOUT_CENTER_Y | LAYOUT_LEFT);
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "execute_command", "Ctrl-E");
-    new FXButton(toolstoolbar, TAB+_("Execute command")+PARS(key), runicon, this, XFileExplorer::ID_RUN, BUTTON_TOOLBAR|FRAME_RAISED|LAYOUT_CENTER_Y|LAYOUT_LEFT);
+    new FXButton(toolstoolbar, TAB + _("Execute command") + PARS(key), runicon, this, XFileExplorer::ID_RUN, BUTTON_TOOLBAR | FRAME_RAISED | LAYOUT_CENTER_Y | LAYOUT_LEFT);
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "terminal", "Ctrl-T");
-    new FXButton(toolstoolbar, TAB+_("Launch terminal")+PARS(key), shellicon, this, XFileExplorer::ID_XTERM, BUTTON_TOOLBAR|FRAME_RAISED|LAYOUT_CENTER_Y|LAYOUT_LEFT);
+    new FXButton(toolstoolbar, TAB + _("Launch terminal") + PARS(key), shellicon, this, XFileExplorer::ID_XTERM, BUTTON_TOOLBAR | FRAME_RAISED | LAYOUT_CENTER_Y | LAYOUT_LEFT);
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "search", "Ctrl-F");
-    new FXButton(toolstoolbar, _("Search")+TAB+_("Search files and folders...")+PARS(key), searchicon, this, XFileExplorer::ID_FILE_SEARCH, BUTTON_TOOLBAR|ICON_BEFORE_TEXT|FRAME_RAISED|LAYOUT_CENTER_Y|LAYOUT_LEFT);
+    new FXButton(toolstoolbar, _("Search") + TAB + _("Search files and folders...") + PARS(key), searchicon, this, XFileExplorer::ID_FILE_SEARCH, BUTTON_TOOLBAR | ICON_BEFORE_TEXT | FRAME_RAISED | LAYOUT_CENTER_Y | LAYOUT_LEFT);
 
 #if defined(linux)
     toolbarSeparator(toolstoolbar);
 
     // Mount and unmount buttons
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "mount", "Ctrl-M");
-    btn = new FXButton(toolstoolbar, TAB+_("Mount (Linux only)")+PARS(key), maphosticon, lpanel, FilePanel::ID_MOUNT, BUTTON_TOOLBAR|FRAME_RAISED|LAYOUT_CENTER_Y|LAYOUT_LEFT);
+    btn = new FXButton(toolstoolbar, TAB + _("Mount (Linux only)") + PARS(key), maphosticon, lpanel, FilePanel::ID_MOUNT, BUTTON_TOOLBAR | FRAME_RAISED | LAYOUT_CENTER_Y | LAYOUT_LEFT);
     hotkey = _parseAccel(key);
     btn->addHotKey(hotkey);
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "unmount", "Ctrl-U");
-    btn = new FXButton(toolstoolbar, TAB+_("Unmount (Linux only)")+PARS(key), unmaphosticon, lpanel, FilePanel::ID_UMOUNT, BUTTON_TOOLBAR|FRAME_RAISED|LAYOUT_CENTER_Y|LAYOUT_LEFT);
+    btn = new FXButton(toolstoolbar, TAB + _("Unmount (Linux only)") + PARS(key), unmaphosticon, lpanel, FilePanel::ID_UMOUNT, BUTTON_TOOLBAR | FRAME_RAISED | LAYOUT_CENTER_Y | LAYOUT_LEFT);
     hotkey = _parseAccel(key);
     btn->addHotKey(hotkey);
 #endif
@@ -708,39 +710,39 @@ XFileExplorer::XFileExplorer(FXApp* app, vector_FXString URIs, const FXbool icon
 
     // Show one panel
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "one_panel", "Ctrl-F1");
-    btn = new FXButton(paneltoolbar, TAB+_("Show one panel")+PARS(key), onepanelicon, this, XFileExplorer::ID_SHOW_ONE_PANEL, BUTTON_TOOLBAR|FRAME_RAISED|LAYOUT_CENTER_Y|LAYOUT_LEFT|ICON_BEFORE_TEXT);
+    btn = new FXButton(paneltoolbar, TAB + _("Show one panel") + PARS(key), onepanelicon, this, XFileExplorer::ID_SHOW_ONE_PANEL, BUTTON_TOOLBAR | FRAME_RAISED | LAYOUT_CENTER_Y | LAYOUT_LEFT | ICON_BEFORE_TEXT);
     hotkey = _parseAccel(key);
     btn->addHotKey(hotkey);
 
     // Show tree and panel
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "tree_panel", "Ctrl-F2");
-    btn = new FXButton(paneltoolbar, TAB+_("Show tree and panel")+PARS(key), treeonepanelicon, this, XFileExplorer::ID_SHOW_TREE_PANEL, BUTTON_TOOLBAR|FRAME_RAISED|LAYOUT_CENTER_Y|LAYOUT_LEFT|ICON_BEFORE_TEXT);
+    btn = new FXButton(paneltoolbar, TAB + _("Show tree and panel") + PARS(key), treeonepanelicon, this, XFileExplorer::ID_SHOW_TREE_PANEL, BUTTON_TOOLBAR | FRAME_RAISED | LAYOUT_CENTER_Y | LAYOUT_LEFT | ICON_BEFORE_TEXT);
     hotkey = _parseAccel(key);
     btn->addHotKey(hotkey);
 
     // Show two panels
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "two_panels", "Ctrl-F3");
-    btn = new FXButton(paneltoolbar, TAB+_("Show two panels")+PARS(key), twopanelsicon, this, XFileExplorer::ID_SHOW_TWO_PANELS, BUTTON_TOOLBAR|FRAME_RAISED|LAYOUT_CENTER_Y|LAYOUT_LEFT|ICON_BEFORE_TEXT);
+    btn = new FXButton(paneltoolbar, TAB + _("Show two panels") + PARS(key), twopanelsicon, this, XFileExplorer::ID_SHOW_TWO_PANELS, BUTTON_TOOLBAR | FRAME_RAISED | LAYOUT_CENTER_Y | LAYOUT_LEFT | ICON_BEFORE_TEXT);
     hotkey = _parseAccel(key);
     btn->addHotKey(hotkey);
 
     // Show tree and two panels
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "tree_two_panels", "Ctrl-F4");
-    btn = new FXButton(paneltoolbar, TAB+_("Show tree and two panels")+PARS(key), treetwopanelsicon, this, XFileExplorer::ID_SHOW_TREE_TWO_PANELS, BUTTON_TOOLBAR|FRAME_RAISED|LAYOUT_CENTER_Y|LAYOUT_LEFT|ICON_BEFORE_TEXT);
+    btn = new FXButton(paneltoolbar, TAB + _("Show tree and two panels") + PARS(key), treetwopanelsicon, this, XFileExplorer::ID_SHOW_TREE_TWO_PANELS, BUTTON_TOOLBAR | FRAME_RAISED | LAYOUT_CENTER_Y | LAYOUT_LEFT | ICON_BEFORE_TEXT);
     hotkey = _parseAccel(key);
     btn->addHotKey(hotkey);
 
     toolbarSeparator(paneltoolbar);
 
     // Vertical panels
-    key = getApp()->reg().readStringEntry("KEYBINDINGS", "vert_panels", "Ctrl-Shift-F1");
-    btn = new FXButton(paneltoolbar, TAB+_("Vertical panels")+PARS(key), vertpanelsicon, this, XFileExplorer::ID_VERT_PANELS, BUTTON_TOOLBAR|FRAME_RAISED|LAYOUT_CENTER_Y|LAYOUT_LEFT|ICON_BEFORE_TEXT);
+    key = getApp()->reg().readStringEntry("KEYBINDINGS", "vert_panels", "Ctrl-Ctrl-Shift-N");
+    btn = new FXButton(paneltoolbar, TAB + _("Vertical panels") + PARS(key), vertpanelsicon, this, XFileExplorer::ID_VERT_PANELS, BUTTON_TOOLBAR | FRAME_RAISED | LAYOUT_CENTER_Y | LAYOUT_LEFT | ICON_BEFORE_TEXT);
     hotkey = _parseAccel(key);
     btn->addHotKey(hotkey);
 
     // Horizontal panels
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "horz_panels", "Ctrl-Shift-F2");
-    btn = new FXButton(paneltoolbar, TAB+_("Horizontal panels")+PARS(key), horzpanelsicon, this, XFileExplorer::ID_HORZ_PANELS, BUTTON_TOOLBAR|FRAME_RAISED|LAYOUT_CENTER_Y|LAYOUT_LEFT|ICON_BEFORE_TEXT);
+    btn = new FXButton(paneltoolbar, TAB + _("Horizontal panels") + PARS(key), horzpanelsicon, this, XFileExplorer::ID_HORZ_PANELS, BUTTON_TOOLBAR | FRAME_RAISED | LAYOUT_CENTER_Y | LAYOUT_LEFT | ICON_BEFORE_TEXT);
     hotkey = _parseAccel(key);
     btn->addHotKey(hotkey);
 
@@ -748,29 +750,29 @@ XFileExplorer::XFileExplorer(FXApp* app, vector_FXString URIs, const FXbool icon
 
     // Switch display modes
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "big_icons", "F10");
-    btn = new FXButton(paneltoolbar, TAB+_("Big icon list")+PARS(key), bigiconsicon, lpanel, FilePanel::ID_SHOW_BIG_ICONS, BUTTON_TOOLBAR|LAYOUT_CENTER_Y|LAYOUT_LEFT|ICON_BEFORE_TEXT|FRAME_RAISED);
+    btn = new FXButton(paneltoolbar, TAB + _("Big icon list") + PARS(key), bigiconsicon, lpanel, FilePanel::ID_SHOW_BIG_ICONS, BUTTON_TOOLBAR | LAYOUT_CENTER_Y | LAYOUT_LEFT | ICON_BEFORE_TEXT | FRAME_RAISED);
     hotkey = _parseAccel(key);
     btn->addHotKey(hotkey);
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "small_icons", "F11");
-    btn = new FXButton(paneltoolbar, TAB+_("Small icon list")+PARS(key), smalliconsicon, lpanel, FilePanel::ID_SHOW_MINI_ICONS, BUTTON_TOOLBAR|LAYOUT_CENTER_Y|LAYOUT_LEFT|ICON_BEFORE_TEXT|FRAME_RAISED);
+    btn = new FXButton(paneltoolbar, TAB + _("Small icon list") + PARS(key), smalliconsicon, lpanel, FilePanel::ID_SHOW_MINI_ICONS, BUTTON_TOOLBAR | LAYOUT_CENTER_Y | LAYOUT_LEFT | ICON_BEFORE_TEXT | FRAME_RAISED);
     hotkey = _parseAccel(key);
     btn->addHotKey(hotkey);
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "detailed_file_list", "F12");
-    btn = new FXButton(paneltoolbar, TAB+_("Detailed file list")+PARS(key), detailsicon, lpanel, FilePanel::ID_SHOW_DETAILS, BUTTON_TOOLBAR|LAYOUT_CENTER_Y|LAYOUT_LEFT|ICON_BEFORE_TEXT|FRAME_RAISED);
+    btn = new FXButton(paneltoolbar, TAB + _("Detailed file list") + PARS(key), detailsicon, lpanel, FilePanel::ID_SHOW_DETAILS, BUTTON_TOOLBAR | LAYOUT_CENTER_Y | LAYOUT_LEFT | ICON_BEFORE_TEXT | FRAME_RAISED);
     hotkey = _parseAccel(key);
     btn->addHotKey(hotkey);
 
     // Location bar
     new FXLabel(locationbar, _("Location:"));
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "clear_location", "Ctrl-L");
-    btn = new FXButton(locationbar, TAB+_("Clear location")+PARS(key), locationicon, this, ID_CLEAR_LOCATION, BUTTON_TOOLBAR|LAYOUT_CENTER_Y|LAYOUT_LEFT|ICON_BEFORE_TEXT|FRAME_RAISED);
+    btn = new FXButton(locationbar, TAB + _("Clear location") + PARS(key), locationicon, this, ID_CLEAR_LOCATION, BUTTON_TOOLBAR | LAYOUT_CENTER_Y | LAYOUT_LEFT | ICON_BEFORE_TEXT | FRAME_RAISED);
     hotkey = _parseAccel(key);
     btn->addHotKey(hotkey);
-    address = new ComboBox(locationbar, LOCATION_BAR_LENGTH, this, ID_GOTO_LOCATION, COMBOBOX_INSERT_LAST|JUSTIFY_LEFT|LAYOUT_CENTER_Y);
+    address = new ComboBox(locationbar, LOCATION_BAR_LENGTH, this, ID_GOTO_LOCATION, COMBOBOX_INSERT_LAST | JUSTIFY_LEFT | LAYOUT_CENTER_Y);
     address->setNumVisible(5);
-    new FXButton(locationbar, TAB+_("Go to location"), entericon, this, ID_GOTO_LOCATION, BUTTON_TOOLBAR|LAYOUT_CENTER_Y|LAYOUT_LEFT|ICON_BEFORE_TEXT|FRAME_RAISED);
+    new FXButton(locationbar, TAB + _("Go to location"), entericon, this, ID_GOTO_LOCATION, BUTTON_TOOLBAR | LAYOUT_CENTER_Y | LAYOUT_LEFT | ICON_BEFORE_TEXT | FRAME_RAISED);
 
     // Menus
 
@@ -857,6 +859,12 @@ XFileExplorer::XFileExplorer(FXApp* app, vector_FXString URIs, const FXbool icon
     mc->setAccelText(key);
     hotkey = _parseAccel(key);
     getAccelTable()->addAccel(hotkey, mc, FXSEL(SEL_COMMAND, FXMenuCommand::ID_ACCEL));
+
+    cpnmenu = new FXMenuCommand(filemenu, _("Cop&y names"), copy_clpicon, this, XFileExplorer::ID_FILE_COPYNAME);
+    key = getApp()->reg().readStringEntry("KEYBINDINGS", "copy_names", "Ctrl-Shift-N");
+    cpnmenu->setAccelText(key);
+    hotkey = _parseAccel(key);
+    getAccelTable()->addAccel(hotkey, cpnmenu, FXSEL(SEL_COMMAND, FXMenuCommand::ID_ACCEL));
 
     mc = new FXMenuCommand(filemenu, _("&Properties"), attribicon, this, XFileExplorer::ID_FILE_PROPERTIES);
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "properties", "F9");
@@ -949,7 +957,7 @@ XFileExplorer::XFileExplorer(FXApp* app, vector_FXString URIs, const FXbool icon
     new FXMenuSeparator(viewmenu);
 
     mc = new FXMenuRadio(viewmenu, _("&Vertical panels"), this, XFileExplorer::ID_VERT_PANELS);
-    key = getApp()->reg().readStringEntry("KEYBINDINGS", "vert_panels", "Ctrl-Shift-F1");
+    key = getApp()->reg().readStringEntry("KEYBINDINGS", "vert_panels", "Ctrl-Ctrl-Shift-N");
     mc->setAccelText(key);
 
     mc = new FXMenuRadio(viewmenu, _("&Horizontal panels"), this, XFileExplorer::ID_HORZ_PANELS);
@@ -1251,6 +1259,8 @@ XFileExplorer::XFileExplorer(FXApp* app, vector_FXString URIs, const FXbool icon
 
     prevdir = FXString::null;
     prev_width = getWidth();
+
+	delete btn;
 }
 
 
@@ -1846,8 +1856,8 @@ void XFileExplorer::saveConfig()
             XWindowAttributes xwattr;
             if (XGetWindowAttributes((Display*)getApp()->getDisplay(), this->id(), &xwattr))
             {
-                getApp()->reg().writeIntEntry("OPTIONS", "xpos", getX()-xwattr.x);
-                getApp()->reg().writeIntEntry("OPTIONS", "ypos", getY()-xwattr.y);
+                getApp()->reg().writeIntEntry("OPTIONS", "xpos", getX() - xwattr.x);
+                getApp()->reg().writeIntEntry("OPTIONS", "ypos", getY() - xwattr.y);
             }
             else
             {
@@ -1862,10 +1872,10 @@ void XFileExplorer::saveConfig()
         getApp()->reg().writeUnsignedEntry("OPTIONS", "status", (FXuint)lpanel->statusbarShown());
         getApp()->reg().writeUnsignedEntry("SETTINGS", "file_tooltips", (FXuint)file_tooltips);
         getApp()->reg().writeUnsignedEntry("SETTINGS", "relative_resize", (FXuint)relative_resize);
-        getApp()->reg().writeRealEntry("OPTIONS", "treepanel_tree_pct", (int)(treepanel_tree_pct*1000)/1000.0);
-        getApp()->reg().writeRealEntry("OPTIONS", "twopanels_lpanel_pct", (int)(twopanels_lpanel_pct*1000)/1000.0);
-        getApp()->reg().writeRealEntry("OPTIONS", "treetwopanels_tree_pct", (int)(treetwopanels_tree_pct*1000)/1000.0);
-        getApp()->reg().writeRealEntry("OPTIONS", "treetwopanels_lpanel_pct", (int)(treetwopanels_lpanel_pct*1000)/1000.0);
+        getApp()->reg().writeRealEntry("OPTIONS", "treepanel_tree_pct", (int)(treepanel_tree_pct * 1000) / 1000.0);
+        getApp()->reg().writeRealEntry("OPTIONS", "twopanels_lpanel_pct", (int)(twopanels_lpanel_pct * 1000) / 1000.0);
+        getApp()->reg().writeRealEntry("OPTIONS", "treetwopanels_tree_pct", (int)(treetwopanels_tree_pct * 1000) / 1000.0);
+        getApp()->reg().writeRealEntry("OPTIONS", "treetwopanels_lpanel_pct", (int)(treetwopanels_lpanel_pct * 1000) / 1000.0);
 
         // Panel stacking
         getApp()->reg().writeUnsignedEntry("OPTIONS", "vert_panels", vertpanels);
@@ -1994,18 +2004,18 @@ void XFileExplorer::create()
         lpanel->showCorner(true);
         // Handle active icon
         lpanel->showActiveIcon(false);
-        lpanel->setWidth((int)round(1.0*window_width));
+        lpanel->setWidth((int)round(1.0 * window_width));
         break;
 
     case TWO_PANELS:
         dirpanel->hide();
         if (vertpanels)
         {
-            lpanel->setWidth((int)round(twopanels_lpanel_pct*window_width));
+            lpanel->setWidth((int)round(twopanels_lpanel_pct * window_width));
         }
         else
         {
-            lpanel->setHeight((int)round(twopanels_lpanel_pct*window_height));
+            lpanel->setHeight((int)round(twopanels_lpanel_pct * window_height));
         }
         // Handle drag corner
         rpanel->showCorner(true);
@@ -2016,8 +2026,8 @@ void XFileExplorer::create()
 
     case TREE_PANEL:
         rpanel->hide();
-        dirpanel->setWidth((int)round(treepanel_tree_pct*window_width));
-        lpanel->setWidth((int)round((1.0-treepanel_tree_pct)*window_width));
+        dirpanel->setWidth((int)round(treepanel_tree_pct * window_width));
+        lpanel->setWidth((int)round((1.0 - treepanel_tree_pct) * window_width));
         // Handle drag corner
         rpanel->showCorner(false);
         lpanel->showCorner(true);
@@ -2026,14 +2036,14 @@ void XFileExplorer::create()
         break;
 
     case TREE_TWO_PANELS:
-        dirpanel->setWidth((int)round(treetwopanels_tree_pct*window_width));
+        dirpanel->setWidth((int)round(treetwopanels_tree_pct * window_width));
         if (vertpanels)
         {
-            lpanel->setWidth((int)round(treetwopanels_lpanel_pct*window_width));
+            lpanel->setWidth((int)round(treetwopanels_lpanel_pct * window_width));
         }
         else
         {
-            lpanel->setHeight((int)round(treetwopanels_lpanel_pct*window_height));
+            lpanel->setHeight((int)round(treetwopanels_lpanel_pct * window_height));
         }
         // Handle drag corner
         rpanel->showCorner(true);
@@ -2134,12 +2144,6 @@ void XFileExplorer::create()
         openFiles(startURIs);
     }
 
-    // Show window
-    if (winshow)
-    {
-        show();
-    }
-
     // Set file panels list style
     liststyle = getApp()->reg().readUnsignedEntry("LEFT PANEL", "liststyle", _ICONLIST_DETAILED );
     lpanel->setListStyle(liststyle);
@@ -2158,7 +2162,7 @@ void XFileExplorer::create()
 
     // History
     FXString history = getApp()->reg().readStringEntry("HISTORY", "run", "");
-    int      i;
+    int i;
     FXString histent;
     RunHistSize = 0;
     if (history != "")
@@ -2170,7 +2174,7 @@ void XFileExplorer::create()
             {
                 break;
             }
-            strlcpy(RunHistory[i], histent.text(), histent.length()+1);
+            strlcpy(RunHistory[i], histent.text(), histent.length() + 1);
         }
         RunHistSize = i;
     }
@@ -2187,7 +2191,7 @@ void XFileExplorer::create()
             {
                 break;
             }
-            strlcpy(OpenHistory[i], histent.text(), histent.length()+1);
+            strlcpy(OpenHistory[i], histent.text(), histent.length() + 1);
         }
         OpenNum = i;
     }
@@ -2204,7 +2208,7 @@ void XFileExplorer::create()
             {
                 break;
             }
-            strlcpy(FilterHistory[i], histent.text(), histent.length()+1);
+            strlcpy(FilterHistory[i], histent.text(), histent.length() + 1);
         }
         FilterNum = i;
     }
@@ -2239,7 +2243,7 @@ void XFileExplorer::create()
 
     // If no Xfe local configuration exists (i.e. at first call or after a purge of the configuration files),
     // copy the global xferc file to the local configuration directory, and read / write the registry
-    int      mask;
+    int mask;
     FXString configlocation = xdgconfighome + PATHSEPSTRING XFECONFIGPATH;
     FXString configpath = configlocation + PATHSEPSTRING XFECONFIGNAME;
     if (!existFile(configpath))
@@ -2304,7 +2308,7 @@ void XFileExplorer::create()
 
             if (browse.execute())
             {
-                FXString path = browse.getFilename();              
+                FXString path = browse.getFilename();
                 FXFile::copy(path, configpath, false);
             }
             else
@@ -2392,8 +2396,9 @@ void XFileExplorer::create()
                 assoc->replace(key.text(), value.text());
             }
         }
+        delete assoc;
 
-        // Wrire registry
+        // Write registry
         getApp()->reg().write();
         getApp()->reg().writeUnsignedEntry("OPTIONS", "xfv_replaced", true);
     }
@@ -2411,6 +2416,12 @@ void XFileExplorer::create()
 #ifdef STARTUP_NOTIFICATION
     startup_completed();
 #endif
+
+    // Show window
+    if (winshow)
+    {
+        show();
+    }
 
     // Tell Xfe to stop, if we didn't show its window
     if (!winshow)
@@ -2463,7 +2474,7 @@ XFileExplorer::~XFileExplorer()
 long XFileExplorer::onKeyPress(FXObject* sender, FXSelector sel, void* ptr)
 {
     FXEvent* event = (FXEvent*)ptr;
-    int      current;
+    int current;
 
     // Tab was pressed : cycle through the panels from left to right
     if (event->code == KEY_Tab)
@@ -2532,8 +2543,8 @@ long XFileExplorer::onKeyPress(FXObject* sender, FXSelector sel, void* ptr)
     }
 
     // Shift-Tab was pressed : cycle through the panels from right to left
-    else if (((event->state&SHIFTMASK) && (event->code == KEY_Tab)) ||
-             ((event->state&SHIFTMASK) && (event->code == KEY_ISO_Left_Tab)))
+    else if (((event->state & SHIFTMASK) && (event->code == KEY_Tab)) ||
+             ((event->state & SHIFTMASK) && (event->code == KEY_ISO_Left_Tab)))
     {
         if (rpanel->shown())
         {
@@ -2612,8 +2623,8 @@ long XFileExplorer::onKeyPress(FXObject* sender, FXSelector sel, void* ptr)
         return(1);
     }
 
-    // Shift-F10 or Menu was pressed : open popup menu
-   	else if ((event->state&SHIFTMASK && event->code == KEY_F10) || event->code == KEY_Menu)
+    // Ctrl-Shift-N0 or Menu was pressed : open popup menu
+    else if ((event->state & SHIFTMASK && event->code == KEY_F10) || event->code == KEY_Menu)
     {
         lpanel->getCurrent()->handle(sender, FXSEL(SEL_COMMAND, FilePanel::ID_POPUP_MENU), ptr);
         return(1);
@@ -2647,8 +2658,7 @@ long XFileExplorer::onKeyRelease(FXObject* sender, FXSelector sel, void* ptr)
 long XFileExplorer::onSigHarvest(FXObject*, FXSelector, void*)
 {
     while (waitpid(-1, NULL, WNOHANG) > 0)
-    {
-    }
+    {}
     return(1);
 }
 
@@ -2686,7 +2696,7 @@ long XFileExplorer::onCmdDirUp(FXObject* sender, FXSelector, void*)
 long XFileExplorer::onCmdDirBack(FXObject*, FXSelector, void*)
 {
     StringItem* item;
-    FXString    pathname;
+    FXString pathname;
     FilePanel*  filepanel = lpanel->getCurrent();
 
     // Get the previous directory
@@ -2722,7 +2732,7 @@ long XFileExplorer::onCmdDirBack(FXObject*, FXSelector, void*)
 // Update directory back
 long XFileExplorer::onUpdDirBack(FXObject* sender, FXSelector, void* ptr)
 {
-    FXString   pathname;
+    FXString pathname;
     FilePanel* filepanel = lpanel->getCurrent();
 
     // Gray out the button if no item in history
@@ -2743,7 +2753,7 @@ long XFileExplorer::onUpdDirBack(FXObject* sender, FXSelector, void* ptr)
 long XFileExplorer::onCmdDirForward(FXObject*, FXSelector, void*)
 {
     StringItem* item;
-    FXString    pathname;
+    FXString pathname;
     FilePanel*  filepanel = lpanel->getCurrent();
 
     // Get the next directory
@@ -2779,7 +2789,7 @@ long XFileExplorer::onCmdDirForward(FXObject*, FXSelector, void*)
 // Update directory forward
 long XFileExplorer::onUpdDirForward(FXObject* sender, FXSelector sel, void* ptr)
 {
-    FXString   pathname;
+    FXString pathname;
     FilePanel* filepanel = lpanel->getCurrent();
 
     // Gray out the button if no item in history
@@ -2800,7 +2810,7 @@ long XFileExplorer::onUpdDirForward(FXObject* sender, FXSelector sel, void* ptr)
 long XFileExplorer::onCmdDirBackHist(FXObject* sender, FXSelector sel, void* ptr)
 {
     StringItem* item;
-    FXString    pathname;
+    FXString pathname;
     FilePanel*  filepanel = lpanel->getCurrent();
 
     // Get all string items and display them in a list box
@@ -2809,18 +2819,18 @@ long XFileExplorer::onCmdDirBackHist(FXObject* sender, FXSelector sel, void* ptr
     if (num > 0)
     {
         FXString* dirs = new FXString[num];
-        FXString  strlist = "";
+        FXString strlist = "";
 
         // Get string items
         item = filepanel->backhistGetFirst();
         int nb = 0;
-        for (int i = 0; i <= num-1; i++)
+        for (int i = 0; i <= num - 1; i++)
         {
             if (item)
             {
                 FXString str = filepanel->backhistGetString(item);
-                FXbool   flag = true;
-                for (int j = 0; j <= nb-1; j++)
+                FXbool flag = true;
+                for (int j = 0; j <= nb - 1; j++)
                 {
                     if (str == dirs[j])
                     {
@@ -2831,7 +2841,7 @@ long XFileExplorer::onCmdDirBackHist(FXObject* sender, FXSelector sel, void* ptr
                 if (flag)
                 {
                     dirs[nb] = str;
-                    strlist = strlist+str+"\n";
+                    strlist = strlist + str + "\n";
                     nb++;
                 }
                 item = filepanel->backhistGetNext(item);
@@ -2839,19 +2849,19 @@ long XFileExplorer::onCmdDirBackHist(FXObject* sender, FXSelector sel, void* ptr
         }
 
         // Display list box
-        int pos = DirHistBox::box(btnbackhist, DECOR_NONE, strlist, getX()+40, getY()+60);
+        int pos = DirHistBox::box(btnbackhist, DECOR_NONE, strlist, getX() + 40, getY() + 60);
 
         // If an item was selected
         if (pos != -1)
         {
             // Update back history
-            if (pos == num-1)
+            if (pos == num - 1)
             {
                 filepanel->backhistRemoveAllItems();
             }
             else
             {
-                item = filepanel->backhistGetItemAtPos(pos+1);
+                item = filepanel->backhistGetItemAtPos(pos + 1);
                 filepanel->backhistRemoveAllItemsBefore(item);
             }
 
@@ -2859,7 +2869,7 @@ long XFileExplorer::onCmdDirBackHist(FXObject* sender, FXSelector sel, void* ptr
             filepanel->forwardhistInsertFirstItem(filepanel->getDirectory());
             if (pos > 0)
             {
-                for (int i = 0; i <= pos-1; i++)
+                for (int i = 0; i <= pos - 1; i++)
                 {
                     filepanel->forwardhistInsertFirstItem(dirs[i]);
                 }
@@ -2881,7 +2891,7 @@ long XFileExplorer::onCmdDirBackHist(FXObject* sender, FXSelector sel, void* ptr
 // Update directory back
 long XFileExplorer::onUpdDirBackHist(FXObject* sender, FXSelector sel, void* ptr)
 {
-    FXString   pathname;
+    FXString pathname;
     FilePanel* filepanel = lpanel->getCurrent();
 
     // Gray out the button if no item in history
@@ -2902,7 +2912,7 @@ long XFileExplorer::onUpdDirBackHist(FXObject* sender, FXSelector sel, void* ptr
 long XFileExplorer::onCmdDirForwardHist(FXObject* sender, FXSelector sel, void* ptr)
 {
     StringItem* item;
-    FXString    pathname;
+    FXString pathname;
     FilePanel*  filepanel = lpanel->getCurrent();
 
     // Get all string items and display them in a list box
@@ -2911,18 +2921,18 @@ long XFileExplorer::onCmdDirForwardHist(FXObject* sender, FXSelector sel, void* 
     if (num > 0)
     {
         FXString* dirs = new FXString[num];
-        FXString  strlist = "";
+        FXString strlist = "";
 
         // Get string items
         item = filepanel->forwardhistGetFirst();
         int nb = 0;
-        for (int i = 0; i <= num-1; i++)
+        for (int i = 0; i <= num - 1; i++)
         {
             if (item)
             {
                 FXString str = filepanel->forwardhistGetString(item);
-                FXbool   flag = true;
-                for (int j = 0; j <= nb-1; j++)
+                FXbool flag = true;
+                for (int j = 0; j <= nb - 1; j++)
                 {
                     if (str == dirs[j])
                     {
@@ -2933,7 +2943,7 @@ long XFileExplorer::onCmdDirForwardHist(FXObject* sender, FXSelector sel, void* 
                 if (flag)
                 {
                     dirs[nb] = str;
-                    strlist = strlist+str+"\n";
+                    strlist = strlist + str + "\n";
                     nb++;
                 }
                 item = filepanel->forwardhistGetNext(item);
@@ -2941,19 +2951,19 @@ long XFileExplorer::onCmdDirForwardHist(FXObject* sender, FXSelector sel, void* 
         }
 
         // Display list box
-        int pos = DirHistBox::box(btnforwardhist, DECOR_NONE, strlist, getX()+85, getY()+60);
+        int pos = DirHistBox::box(btnforwardhist, DECOR_NONE, strlist, getX() + 85, getY() + 60);
 
         // If an item was selected
         if (pos != -1)
         {
             // Update forward history
-            if (pos == num-1)
+            if (pos == num - 1)
             {
                 filepanel->forwardhistRemoveAllItems();
             }
             else
             {
-                item = filepanel->forwardhistGetItemAtPos(pos+1);
+                item = filepanel->forwardhistGetItemAtPos(pos + 1);
                 filepanel->forwardhistRemoveAllItemsBefore(item);
             }
 
@@ -2961,7 +2971,7 @@ long XFileExplorer::onCmdDirForwardHist(FXObject* sender, FXSelector sel, void* 
             filepanel->backhistInsertFirstItem(filepanel->getDirectory());
             if (pos > 0)
             {
-                for (int i = 0; i <= pos-1; i++)
+                for (int i = 0; i <= pos - 1; i++)
                 {
                     filepanel->backhistInsertFirstItem(dirs[i]);
                 }
@@ -2983,7 +2993,7 @@ long XFileExplorer::onCmdDirForwardHist(FXObject* sender, FXSelector sel, void* 
 // Update directory forward
 long XFileExplorer::onUpdDirForwardHist(FXObject* sender, FXSelector sel, void* ptr)
 {
-    FXString   pathname;
+    FXString pathname;
     FilePanel* filepanel = lpanel->getCurrent();
 
     // Gray out the button if no item in history
@@ -3016,8 +3026,8 @@ long XFileExplorer::onCmdBookmark(FXObject*, FXSelector s, void* p)
         lpanel->getCurrent()->updatePath();
         dirpanel->setDirectory((char*)p, true);
         FXString item;
-        int      i = 0;
-        int      count = address->getNumItems();
+        int i = 0;
+        int count = address->getNumItems();
         if (!count)
         {
             count++;
@@ -3193,7 +3203,7 @@ long XFileExplorer::onCmdHelp(FXObject*, FXSelector, void*)
     }
 
     // NB: The HELP_TEXT macro is defined in help.h
-    FXString str = (FXString)"                         "+COPYRIGHT+HELP_TEXT;
+    FXString str = (FXString)"                         " + COPYRIGHT + HELP_TEXT;
     helpwindow->setText(str.text());
     // Non modal window
     helpwindow->create();
@@ -3218,7 +3228,7 @@ Brazilian Portuguese: Eduardo R.B.S., Jose Carlos Medeiros,\n\
 Phantom X, Tomas Acauan Schertel\n\
 Bosnian: Samir Ribi, Bajrami Emran, Balagija Jasmina,\n\
 Bilalovi, Omar Cogo Emir\n\
-Catalan: muzzol\n\
+Catalan: Pere Orga\n\
 Chinese: Xin Li\n\
 Chinese (Taïwan): Wei-Lun Chao\n\
 Colombian Spanish: Vladimir Támara (Pasos de Jesús)\n\
@@ -3243,8 +3253,8 @@ Turkish: erkaN\n\
 ");
 
     msg = msg + copyright + translators;
-    MessageBox about(this,_("About X File Explorer"),msg.text(),xfeicon,BOX_OK|DECOR_TITLE|DECOR_BORDER,
-                     JUSTIFY_CENTER_X|ICON_BEFORE_TEXT|LAYOUT_CENTER_Y|LAYOUT_LEFT|LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    MessageBox about(this, _("About X File Explorer"), msg.text(), xfeicon, BOX_OK | DECOR_TITLE | DECOR_BORDER,
+                     JUSTIFY_CENTER_X | ICON_BEFORE_TEXT | LAYOUT_CENTER_Y | LAYOUT_LEFT | LAYOUT_FILL_X | LAYOUT_FILL_Y);
     about.execute(PLACEMENT_OWNER);
     lpanel->getCurrent()->setFocusOnList();
     return 1;
@@ -3252,18 +3262,18 @@ Turkish: erkaN\n\
 
 
 // Handle file association (called by Properties.cpp and FilePanel.cpp)
-long XFileExplorer::onCmdFileAssoc(FXObject*,FXSelector s,void* p)
+long XFileExplorer::onCmdFileAssoc(FXObject*, FXSelector s, void* p)
 {
-    char** str=(char**)p;
-    char* ext=str[0];
-    char* cmd=str[1];
+    char** str = (char**)p;
+    char* ext = str[0];
+    char* cmd = str[1];
 
     // ext=extension, cmd=associated command
     // replace : to allow immediate association in Xfe
-    FileDict* associations=lpanel->getAssociations();
-    associations->replace(ext,cmd);
-    associations=rpanel->getAssociations();
-    associations->replace(ext,cmd);
+    FileDict* associations = lpanel->getAssociations();
+    associations->replace(ext, cmd);
+    associations = rpanel->getAssociations();
+    associations->replace(ext, cmd);
 
     saveConfig();
 
@@ -3272,7 +3282,7 @@ long XFileExplorer::onCmdFileAssoc(FXObject*,FXSelector s,void* p)
 
 
 // FilePanel and DirPanel refresh
-long XFileExplorer::onCmdRefresh(FXObject*,FXSelector,void*)
+long XFileExplorer::onCmdRefresh(FXObject*, FXSelector, void*)
 {
     getApp()->beginWaitCursor();
 
@@ -3280,42 +3290,60 @@ long XFileExplorer::onCmdRefresh(FXObject*,FXSelector,void*)
     dirpanel->forceDevicesRefresh();
 #endif
 
-	lpanel->onCmdRefresh(0,0,0);
-	rpanel->onCmdRefresh(0,0,0);
-	dirpanel->forceRefresh();
+    lpanel->onCmdRefresh(0, 0, 0);
+    rpanel->onCmdRefresh(0, 0, 0);
+    dirpanel->forceRefresh();
     getApp()->endWaitCursor();
-    
+
     return 1;
 }
 
 
 // Update file location
-long XFileExplorer::onUpdFileLocation(FXObject* sender,FXSelector,void*)
+long XFileExplorer::onUpdFileLocation(FXObject* sender, FXSelector, void*)
 {
-    FXString currentdir=lpanel->getCurrent()->getDirectory();
+    FXString currentdir = lpanel->getCurrent()->getDirectory();
     if (currentdir != prevdir)
     {
         address->setText(::cleanPath(currentdir));
-        prevdir=currentdir;
+        prevdir = currentdir;
     }
-    
+
     return 1;
 }
 
 
 // Switch between vertical and horizontal panels
-long XFileExplorer::onCmdHorzVertPanels(FXObject* sender,FXSelector sel,void* ptr)
+long XFileExplorer::onCmdHorzVertPanels(FXObject* sender, FXSelector sel, void* ptr)
 {
+	FXuint width, height;
+	
     switch(FXSELID(sel))
     {
     case ID_VERT_PANELS:
-        panelsplit->setSplitterStyle(panelsplit->getSplitterStyle()&~SPLITTER_VERTICAL);
-        vertpanels=true;
+
+        width = lpanel->getWidth();
+        height = getHeight();
+
+        panelsplit->setSplitterStyle(panelsplit->getSplitterStyle() & ~SPLITTER_VERTICAL);
+
+        lpanel->setWidth(width / 2);
+        lpanel->setHeight(height);
+
+        vertpanels = true;
         break;
 
     case ID_HORZ_PANELS:
-        panelsplit->setSplitterStyle(panelsplit->getSplitterStyle()|SPLITTER_VERTICAL);
-        vertpanels=false;
+
+        width = getWidth();
+        height = lpanel->getHeight();
+
+        panelsplit->setSplitterStyle(panelsplit->getSplitterStyle() | SPLITTER_VERTICAL);
+
+        lpanel->setHeight(height / 2);
+        lpanel->setWidth(width);
+
+        vertpanels = false;
         break;
     }
 
@@ -3324,20 +3352,20 @@ long XFileExplorer::onCmdHorzVertPanels(FXObject* sender,FXSelector sel,void* pt
 
 
 // Switch between the four possible panel views
-long XFileExplorer::onCmdShowPanels(FXObject* sender,FXSelector sel,void* ptr)
+long XFileExplorer::onCmdShowPanels(FXObject* sender, FXSelector sel, void* ptr)
 {
     // Get window width and height
-    int window_width=getWidth();
-    int window_height=getHeight();
+    int window_width = getWidth();
+    int window_height = getHeight();
 
     switch(FXSELID(sel))
     {
     case ID_SHOW_ONE_PANEL:
-        panel_view=ONE_PANEL;
+        panel_view = ONE_PANEL;
         if (dirpanel->shown())
-            dirpanel->handle(sender,FXSEL(SEL_COMMAND,DirPanel::ID_TOGGLE_TREE),ptr);
+            dirpanel->handle(sender, FXSEL(SEL_COMMAND, DirPanel::ID_TOGGLE_TREE), ptr);
         if (rpanel->shown())
-            rpanel->handle(sender,FXSEL(SEL_COMMAND,FXWindow::ID_TOGGLESHOWN),ptr);
+            rpanel->handle(sender, FXSEL(SEL_COMMAND, FXWindow::ID_TOGGLESHOWN), ptr);
         // Handle drag corner
         rpanel->showCorner(false);
         lpanel->showCorner(true);
@@ -3347,15 +3375,15 @@ long XFileExplorer::onCmdShowPanels(FXObject* sender,FXSelector sel,void* ptr)
         break;
 
     case ID_SHOW_TWO_PANELS:
-        panel_view=TWO_PANELS;
+        panel_view = TWO_PANELS;
         if (vertpanels)
-            lpanel->setWidth((int)round(twopanels_lpanel_pct*window_width));
+            lpanel->setWidth((int)round(twopanels_lpanel_pct * window_width));
         else
-            lpanel->setHeight((int)round(twopanels_lpanel_pct*window_height));
+            lpanel->setHeight((int)round(twopanels_lpanel_pct * window_height));
         if (dirpanel->shown())
-            dirpanel->handle(sender,FXSEL(SEL_COMMAND,DirPanel::ID_TOGGLE_TREE),ptr);
+            dirpanel->handle(sender, FXSEL(SEL_COMMAND, DirPanel::ID_TOGGLE_TREE), ptr);
         if (!rpanel->shown())
-            rpanel->handle(sender,FXSEL(SEL_COMMAND,FXWindow::ID_TOGGLESHOWN),ptr);
+            rpanel->handle(sender, FXSEL(SEL_COMMAND, FXWindow::ID_TOGGLESHOWN), ptr);
         // Handle drag corner
         rpanel->showCorner(true);
         lpanel->showCorner(false);
@@ -3364,12 +3392,12 @@ long XFileExplorer::onCmdShowPanels(FXObject* sender,FXSelector sel,void* ptr)
         break;
 
     case ID_SHOW_TREE_PANEL:
-        panel_view=TREE_PANEL;
-        dirpanel->setWidth((int)round(treepanel_tree_pct*window_width) );
+        panel_view = TREE_PANEL;
+        dirpanel->setWidth((int)round(treepanel_tree_pct * window_width) );
         if (!dirpanel->shown())
-            dirpanel->handle(sender,FXSEL(SEL_COMMAND,DirPanel::ID_TOGGLE_TREE),ptr);
+            dirpanel->handle(sender, FXSEL(SEL_COMMAND, DirPanel::ID_TOGGLE_TREE), ptr);
         if (rpanel->shown())
-            rpanel->handle(sender,FXSEL(SEL_COMMAND,FXWindow::ID_TOGGLESHOWN),ptr);
+            rpanel->handle(sender, FXSEL(SEL_COMMAND, FXWindow::ID_TOGGLESHOWN), ptr);
         // Handle drag corner
         rpanel->showCorner(false);
         lpanel->showCorner(true);
@@ -3378,16 +3406,16 @@ long XFileExplorer::onCmdShowPanels(FXObject* sender,FXSelector sel,void* ptr)
         break;
 
     case ID_SHOW_TREE_TWO_PANELS:
-        panel_view=TREE_TWO_PANELS;
-        dirpanel->setWidth((int)round(treetwopanels_tree_pct*window_width) );
+        panel_view = TREE_TWO_PANELS;
+        dirpanel->setWidth((int)round(treetwopanels_tree_pct * window_width) );
         if (vertpanels)
-            lpanel->setWidth((int)round(treetwopanels_lpanel_pct*window_width));
+            lpanel->setWidth((int)round(treetwopanels_lpanel_pct * window_width));
         else
-            lpanel->setHeight((int)round(treetwopanels_lpanel_pct*window_height));
+            lpanel->setHeight((int)round(treetwopanels_lpanel_pct * window_height));
         if (!dirpanel->shown())
-            dirpanel->handle(sender,FXSEL(SEL_COMMAND,DirPanel::ID_TOGGLE_TREE),ptr);
+            dirpanel->handle(sender, FXSEL(SEL_COMMAND, DirPanel::ID_TOGGLE_TREE), ptr);
         if (!rpanel->shown())
-            rpanel->handle(sender,FXSEL(SEL_COMMAND,FXWindow::ID_TOGGLESHOWN),ptr);
+            rpanel->handle(sender, FXSEL(SEL_COMMAND, FXWindow::ID_TOGGLESHOWN), ptr);
         // Handle drag corner
         lpanel->showCorner(false);
         rpanel->showCorner(true);
@@ -3404,11 +3432,11 @@ long XFileExplorer::onCmdShowPanels(FXObject* sender,FXSelector sel,void* ptr)
 
 
 // Update the horizontal / vertical panel radio menus
-long XFileExplorer::onUpdHorzVertPanels(FXObject* sender,FXSelector sel,void* ptr)
+long XFileExplorer::onUpdHorzVertPanels(FXObject* sender, FXSelector sel, void* ptr)
 {
     if (rpanel->shown())
     {
-        sender->handle(this,FXSEL(SEL_COMMAND,FXWindow::ID_ENABLE),ptr);
+        sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_ENABLE), ptr);
 
         if (vertpanels)
         {
@@ -3416,9 +3444,9 @@ long XFileExplorer::onUpdHorzVertPanels(FXObject* sender,FXSelector sel,void* pt
             rpanel->hidePanelSeparator();
 
             if ( FXSELID(sel) == ID_HORZ_PANELS )
-                sender->handle(this,FXSEL(SEL_COMMAND,FXWindow::ID_UNCHECK),ptr);
+                sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_UNCHECK), ptr);
             else
-                sender->handle(this,FXSEL(SEL_COMMAND,FXWindow::ID_CHECK),ptr);
+                sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_CHECK), ptr);
         }
         else
         {
@@ -3426,9 +3454,9 @@ long XFileExplorer::onUpdHorzVertPanels(FXObject* sender,FXSelector sel,void* pt
             rpanel->hidePanelSeparator();
 
             if ( FXSELID(sel) == ID_VERT_PANELS )
-                sender->handle(this,FXSEL(SEL_COMMAND,FXWindow::ID_UNCHECK),ptr);
+                sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_UNCHECK), ptr);
             else
-                sender->handle(this,FXSEL(SEL_COMMAND,FXWindow::ID_CHECK),ptr);
+                sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_CHECK), ptr);
         }
     }
     else
@@ -3436,7 +3464,7 @@ long XFileExplorer::onUpdHorzVertPanels(FXObject* sender,FXSelector sel,void* pt
         lpanel->hidePanelSeparator();
         rpanel->hidePanelSeparator();
 
-        sender->handle(this,FXSEL(SEL_COMMAND,FXWindow::ID_DISABLE),ptr);
+        sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_DISABLE), ptr);
     }
 
     return 1;
@@ -3444,19 +3472,19 @@ long XFileExplorer::onUpdHorzVertPanels(FXObject* sender,FXSelector sel,void* pt
 
 
 // Update the panels
-long XFileExplorer::onUpdShowPanels(FXObject* sender,FXSelector sel,void* ptr)
+long XFileExplorer::onUpdShowPanels(FXObject* sender, FXSelector sel, void* ptr)
 {
     // Keep the panel sizes relative to the window width or height (if option enabled)
 
-    register int width;
-    register int height;
+    int width;
+    int height;
 
     // Get the current window width and height
-    width=getWidth();
-    height=getHeight();
+    width = getWidth();
+    height = getHeight();
 
     // If width has changed and relative resizing option is enabled
-    if (relative_resize && prev_width!=width)
+    if (relative_resize && prev_width != width)
     {
         // One panel mode not relevant
 
@@ -3465,9 +3493,9 @@ long XFileExplorer::onUpdShowPanels(FXObject* sender,FXSelector sel,void* ptr)
         {
             // Set left panel width / height to the new value
             if (vertpanels)
-                lpanel->setWidth((int)round(twopanels_lpanel_pct*width));
+                lpanel->setWidth((int)round(twopanels_lpanel_pct * width));
             else
-                lpanel->setHeight((int)round(twopanels_lpanel_pct*height));
+                lpanel->setHeight((int)round(twopanels_lpanel_pct * height));
         }
 
         // Tree panel mode
@@ -3485,17 +3513,17 @@ long XFileExplorer::onUpdShowPanels(FXObject* sender,FXSelector sel,void* ptr)
 
             // Set left panel width / height to the new value
             if (vertpanels)
-                lpanel->setWidth((int)round(treetwopanels_lpanel_pct*width));
+                lpanel->setWidth((int)round(treetwopanels_lpanel_pct * width));
             else
-                lpanel->setHeight((int)round(treetwopanels_lpanel_pct*height));
+                lpanel->setHeight((int)round(treetwopanels_lpanel_pct * height));
         }
     }
 
     // Update previous window width
-    prev_width=width;
+    prev_width = width;
 
     // Update the panel menus and the panel display
-    FXuint msg=FXWindow::ID_UNCHECK;
+    FXuint msg = FXWindow::ID_UNCHECK;
     switch(FXSELID(sel))
     {
     case ID_SHOW_ONE_PANEL:
@@ -3520,16 +3548,16 @@ long XFileExplorer::onUpdShowPanels(FXObject* sender,FXSelector sel,void* ptr)
             // Update the left panel relative size (only if the window size is sufficient)
             if (vertpanels)
             {
-                if (getWidth()>10)
-                    twopanels_lpanel_pct=(double)(lpanel->getWidth())/(double)(getWidth());
+                if (getWidth() > 10)
+                    twopanels_lpanel_pct = (double)(lpanel->getWidth()) / (double)(getWidth());
             }
             else
             {
-                if (getHeight()>10)
-                    twopanels_lpanel_pct=(double)(lpanel->getHeight())/(double)(getHeight());
+                if (getHeight() > 10)
+                    twopanels_lpanel_pct = (double)(lpanel->getHeight()) / (double)(getHeight());
             }
 
-            msg=FXWindow::ID_CHECK;
+            msg = FXWindow::ID_CHECK;
             if (!rpanelmenutitle->shown())
             {
                 rpanelmenutitle->enable();
@@ -3546,10 +3574,10 @@ long XFileExplorer::onUpdShowPanels(FXObject* sender,FXSelector sel,void* ptr)
         if (dirpanel->shown() && !rpanel->shown())
         {
             // Update the tree panel relative size (only if the window size is sufficient)
-            if (getWidth()>10)
-                treepanel_tree_pct=(double)(dirpanel->getWidth())/(double)(getWidth());
+            if (getWidth() > 10)
+                treepanel_tree_pct = (double)(dirpanel->getWidth()) / (double)(getWidth());
 
-            msg=FXWindow::ID_CHECK;
+            msg = FXWindow::ID_CHECK;
             if (rpanelmenutitle->shown())
             {
                 rpanelmenutitle->hide();
@@ -3565,19 +3593,19 @@ long XFileExplorer::onUpdShowPanels(FXObject* sender,FXSelector sel,void* ptr)
         if (dirpanel->shown() && rpanel->shown())
         {
             // Update the tree panel relative size (only if the window size is sufficient)
-            if (getWidth()>10)
-                treetwopanels_tree_pct=(double)(dirpanel->getWidth())/(double)(getWidth());
+            if (getWidth() > 10)
+                treetwopanels_tree_pct = (double)(dirpanel->getWidth()) / (double)(getWidth());
 
             // Update the left panel relative size (only if the window size is sufficient)
             if (vertpanels)
             {
-                if (getWidth()>10)
-                    treetwopanels_lpanel_pct=(double)(lpanel->getWidth())/(double)(getWidth());
+                if (getWidth() > 10)
+                    treetwopanels_lpanel_pct = (double)(lpanel->getWidth()) / (double)(getWidth());
             }
             else
             {
-                if (getHeight()>10)
-                    treetwopanels_lpanel_pct=(double)(lpanel->getHeight())/(double)(getHeight());
+                if (getHeight() > 10)
+                    treetwopanels_lpanel_pct = (double)(lpanel->getHeight()) / (double)(getHeight());
             }
 
             msg = FXWindow::ID_CHECK;
@@ -3593,21 +3621,21 @@ long XFileExplorer::onUpdShowPanels(FXObject* sender,FXSelector sel,void* ptr)
         }
         break;
     }
-    sender->handle(this,FXSEL(SEL_COMMAND,msg),ptr);
+    sender->handle(this, FXSEL(SEL_COMMAND, msg), ptr);
 
     return 1;
 }
 
 
 // Synchronize the panels to the same directory
-long XFileExplorer::onCmdSynchronizePanels(FXObject* sender,FXSelector sel,void*)
+long XFileExplorer::onCmdSynchronizePanels(FXObject* sender, FXSelector sel, void*)
 {
     FXString dir;
 
     // Left panel is active
     if (lpanel->getCurrent() == lpanel)
     {
-        dir=lpanel->getDirectory();
+        dir = lpanel->getDirectory();
         rpanel->setDirectory(dir);
         rpanel->updatePath();
     }
@@ -3615,7 +3643,7 @@ long XFileExplorer::onCmdSynchronizePanels(FXObject* sender,FXSelector sel,void*
     // Right panel is active
     else
     {
-        dir=rpanel->getDirectory();
+        dir = rpanel->getDirectory();
         lpanel->setDirectory(dir);
         lpanel->updatePath();
 
@@ -3625,24 +3653,24 @@ long XFileExplorer::onCmdSynchronizePanels(FXObject* sender,FXSelector sel,void*
 
 
 // Update the synchronize panels menu item
-long XFileExplorer::onUpdSynchronizePanels(FXObject* o,FXSelector,void*)
+long XFileExplorer::onUpdSynchronizePanels(FXObject* o, FXSelector, void*)
 {
     if (rpanel->shown())
-        o->handle(this,FXSEL(SEL_COMMAND,FXWindow::ID_ENABLE),NULL);
+        o->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_ENABLE), NULL);
     else
-        o->handle(this,FXSEL(SEL_COMMAND,FXWindow::ID_DISABLE),NULL);
+        o->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_DISABLE), NULL);
 
     return 1;
 }
 
 
 // Switch the panels
-long XFileExplorer::onCmdSwitchPanels(FXObject* sender,FXSelector sel,void*)
+long XFileExplorer::onCmdSwitchPanels(FXObject* sender, FXSelector sel, void*)
 {
     FXString leftdir, rightdir;
 
-    leftdir=lpanel->getDirectory();
-    rightdir=rpanel->getDirectory();
+    leftdir = lpanel->getDirectory();
+    rightdir = rpanel->getDirectory();
     lpanel->setDirectory(rightdir);
     lpanel->updatePath();
     rpanel->setDirectory(leftdir);
@@ -3653,22 +3681,22 @@ long XFileExplorer::onCmdSwitchPanels(FXObject* sender,FXSelector sel,void*)
 
 
 // Update the switch panels menu item
-long XFileExplorer::onUpdSwitchPanels(FXObject* o,FXSelector,void*)
+long XFileExplorer::onUpdSwitchPanels(FXObject* o, FXSelector, void*)
 {
     if (rpanel->shown())
-        o->handle(this,FXSEL(SEL_COMMAND,FXWindow::ID_ENABLE),NULL);
+        o->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_ENABLE), NULL);
     else
-        o->handle(this,FXSEL(SEL_COMMAND,FXWindow::ID_DISABLE),NULL);
+        o->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_DISABLE), NULL);
 
     return 1;
 }
 
 
 // Preferences
-long XFileExplorer::onCmdPrefs(FXObject*,FXSelector s,void* p)
+long XFileExplorer::onCmdPrefs(FXObject*, FXSelector s, void* p)
 {
-    if (prefsdialog==NULL)
-        prefsdialog=new PreferencesBox(this,listbackcolor,listforecolor,highlightcolor,pbarcolor,attentioncolor,scrollbarcolor);
+    if (prefsdialog == NULL)
+        prefsdialog = new PreferencesBox(this, listbackcolor, listforecolor, highlightcolor, pbarcolor, attentioncolor, scrollbarcolor);
     prefsdialog->execute(PLACEMENT_OWNER);
     lpanel->getCurrent()->setFocusOnList();
     return 1;
@@ -3676,7 +3704,7 @@ long XFileExplorer::onCmdPrefs(FXObject*,FXSelector s,void* p)
 
 
 // Toggle status bar
-long XFileExplorer::onCmdToggleStatus(FXObject*,FXSelector s,void* p)
+long XFileExplorer::onCmdToggleStatus(FXObject*, FXSelector s, void* p)
 {
     dirpanel->toggleStatusbar();
     lpanel->toggleStatusbar();
@@ -3685,9 +3713,9 @@ long XFileExplorer::onCmdToggleStatus(FXObject*,FXSelector s,void* p)
 }
 
 
-long XFileExplorer::onUpdToggleStatus(FXObject* o,FXSelector s,void* p)
+long XFileExplorer::onUpdToggleStatus(FXObject* o, FXSelector s, void* p)
 {
-    FXMenuCheck* cmd =(FXMenuCheck*)o;
+    FXMenuCheck* cmd = (FXMenuCheck*)o;
     if (lpanel->statusbarShown())
         cmd->setCheck(true);
     else
@@ -3697,45 +3725,45 @@ long XFileExplorer::onUpdToggleStatus(FXObject* o,FXSelector s,void* p)
 
 
 // Run shell command or X program
-long XFileExplorer::onCmdRun(FXObject*,FXSelector,void*)
+long XFileExplorer::onCmdRun(FXObject*, FXSelector, void*)
 {
     int ret;
 
-    ret=chdir(lpanel->getCurrent()->getDirectory().text());
+    ret = chdir(lpanel->getCurrent()->getDirectory().text());
     if (ret < 0)
     {
-        int errcode=errno;
+        int errcode = errno;
         if (errcode)
-            MessageBox::error(this,BOX_OK,_("Error"),_("Can't enter folder %s: %s"),lpanel->getCurrent()->getDirectory().text(),strerror(errcode));
+            MessageBox::error(this, BOX_OK, _("Error"), _("Can't enter folder %s: %s"), lpanel->getCurrent()->getDirectory().text(), strerror(errcode));
         else
-            MessageBox::error(this,BOX_OK,_("Error"),_("Can't enter folder %s"),lpanel->getCurrent()->getDirectory().text());
+            MessageBox::error(this, BOX_OK, _("Error"), _("Can't enter folder %s"), lpanel->getCurrent()->getDirectory().text());
 
         return 0;
     }
 
-    FXString command=" ";
-    if (rundialog==NULL)
-        rundialog=new HistInputDialog(this,"",_("Execute the command:"),_("Execute command"),"", bigexecicon,HIST_INPUT_EXECUTABLE_FILE,true,_("Console mode"));
+    FXString command = " ";
+    if (rundialog == NULL)
+        rundialog = new HistInputDialog(this, "", _("Execute the command:"), _("Execute command"), "", bigexecicon, HIST_INPUT_EXECUTABLE_FILE, true, _("Console mode"));
     rundialog->create();
     rundialog->setText(command);
     rundialog->CursorEnd();
     rundialog->selectAll();
     rundialog->clearItems();
-    for (int i=0; i<RunHistSize; i++)
+    for (int i = 0; i < RunHistSize; i++)
         rundialog->appendItem(RunHistory[i]);
     rundialog->sortItems();
 
     rundialog->setDirectory(ROOTDIR);
     if (rundialog->execute())
     {
-        command=rundialog->getText();
+        command = rundialog->getText();
         if (command != " ")
         {
             // Execute command in command window
             if (rundialog->getOption())
             {
                 // Make and show command window
-                CommandWindow* cmdwin=new CommandWindow(getApp(),_("Command log"),command,30,80);
+                CommandWindow* cmdwin = new CommandWindow(getApp(), _("Command log"), command, 30, 80);
                 cmdwin->create();
                 cmdwin->setIcon(runicon);
 
@@ -3745,32 +3773,32 @@ long XFileExplorer::onCmdRun(FXObject*,FXSelector,void*)
             // Execute silently in background
             else
             {
-                command+=" &";
-                ret=system(command.text());
+                command += " &";
+                ret = system(command.text());
                 if (ret < 0)
                 {
-                    MessageBox::error(this,BOX_OK,_("Error"),_("Can't execute command %s"),command.text());
+                    MessageBox::error(this, BOX_OK, _("Error"), _("Can't execute command %s"), command.text());
                     return 0;
                 }
             }
         }
         // Update history list
-        RunHistSize=rundialog->getHistorySize();
-        command=rundialog->getText();
+        RunHistSize = rundialog->getHistorySize();
+        command = rundialog->getText();
 
         // Check if cmd is a new string, i.e. is not already in history
-        FXbool newstr=true;
-        for (int i=0; i<RunHistSize-1; i++)
+        FXbool newstr = true;
+        for (int i = 0; i < RunHistSize - 1; i++)
         {
-            if (streq(RunHistory[i],command.text()))
+            if (streq(RunHistory[i], command.text()))
             {
-                newstr=false;
+                newstr = false;
                 break;
             }
         }
 
         // No new string or history limit reached
-        if (!newstr || RunHistSize>RUN_HIST_SIZE)
+        if (!newstr || RunHistSize > RUN_HIST_SIZE)
             RunHistSize--;
 
         // Restore original history order
@@ -3778,25 +3806,25 @@ long XFileExplorer::onCmdRun(FXObject*,FXSelector,void*)
         for (int i = 0; i < RunHistSize; i++)
         {
             rundialog->appendItem(RunHistory[i]);
-		}
+        }
 
         // New string
         if (newstr)
         {
             // FIFO
-            strlcpy(RunHistory[0],command.text(),command.length()+1);
-            for (int i=1; i<RunHistSize; i++)
-                strlcpy(RunHistory[i],rundialog->getHistoryItem(i-1).text(),rundialog->getHistoryItem(i-1).length()+1);
+            strlcpy(RunHistory[0], command.text(), command.length() + 1);
+            for (int i = 1; i < RunHistSize; i++)
+                strlcpy(RunHistory[i], rundialog->getHistoryItem(i - 1).text(), rundialog->getHistoryItem(i - 1).length() + 1);
         }
     }
-    ret=chdir(startlocation.text());
+    ret = chdir(startlocation.text());
     if (ret < 0)
     {
-        int errcode=errno;
+        int errcode = errno;
         if (errcode)
-            MessageBox::error(this,BOX_OK,_("Error"),_("Can't enter folder %s: %s"),startlocation.text(),strerror(errcode));
+            MessageBox::error(this, BOX_OK, _("Error"), _("Can't enter folder %s: %s"), startlocation.text(), strerror(errcode));
         else
-            MessageBox::error(this,BOX_OK,_("Error"),_("Can't enter folder %s"),startlocation.text());
+            MessageBox::error(this, BOX_OK, _("Error"), _("Can't enter folder %s"), startlocation.text());
 
         return 0;
     }
@@ -3807,77 +3835,127 @@ long XFileExplorer::onCmdRun(FXObject*,FXSelector,void*)
 
 
 // Run an Xfe as root
-long XFileExplorer::onCmdSu(FXObject*,FXSelector,void*)
+long XFileExplorer::onCmdSu(FXObject*, FXSelector, void*)
 {
-    int ret;
+    int ret, status;
 
     // Wait cursor
     getApp()->beginWaitCursor();
 
-    // Obtain preferred root mode
-    FXbool use_sudo=getApp()->reg().readUnsignedEntry("OPTIONS","use_sudo",false);
+    // Obtain preferred root authentication mode
+    FXuint root_auth = getApp()->reg().readUnsignedEntry("OPTIONS", "root_auth", 0);
 
-    // Select sudo or su to launch xfe as root
-    ret=chdir(lpanel->getCurrent()->getDirectory().text());
-    if (ret < 0)
-    {
-        int errcode=errno;
-        if (errcode)
-            MessageBox::error(this,BOX_OK,_("Error"),_("Can't enter folder %s: %s"),lpanel->getCurrent()->getDirectory().text(),strerror(errcode));
-        else
-            MessageBox::error(this,BOX_OK,_("Error"),_("Can't enter folder %s"),lpanel->getCurrent()->getDirectory().text());
+    // Current directory
+    FXString currdir = lpanel->getCurrent()->getDirectory();
 
-        return 0;
-    }
+    // Select pkexec, sudo or su to launch xfe as root
 
     FXString title, cmd, command;
-    if (use_sudo)
+
+    // Use pkexec
+    if (root_auth == 0)
     {
-        title = _("Enter the user password:");
-	    FXString sudo_cmd = getApp()->reg().readStringEntry("OPTIONS", "sudo_cmd", DEFAULT_SUDO_CMD);
-        cmd = " -g 60x4 -e " + sudo_cmd;
+        // Check if pkexec exists
+        if (!existCommand("pkexec"))
+        {
+            MessageBox::error(this, BOX_OK, _("Error"), _("Command pkexec not found!\n\nPlease check that the pkexec package is installed (else use sudo or su root mode)"));
+            getApp()->endWaitCursor();
+            return 0;
+        }
+
+        // Build command from current directory
+        cmd = getApp()->reg().readStringEntry("OPTIONS", "pkexec_cmd", DEFAULT_PKEXEC_CMD);
+        cmd += " " + currdir;
+
+#ifdef STARTUP_NOTIFICATION
+        status = runcmd(cmd, "pkexec", currdir, startlocation, false, "");
+#else
+        status = runcmd(cmd, currdir, startlocation);
+#endif
+
     }
+
+    // Use sudo or su
     else
     {
-        title = _("Enter the root password:");
-    	FXString su_cmd = getApp()->reg().readStringEntry("OPTIONS", "su_cmd", DEFAULT_SU_CMD);
-        cmd = " -g 60x4 -e " + su_cmd;
-    }
+        // Enter current directory
+        ret = chdir(currdir.text());
+        if (ret < 0)
+        {
+            int errcode = errno;
+            if (errcode)
+            {
+                MessageBox::error(this, BOX_OK, _("Error"), _("Can't enter folder %s: %s"), currdir.text(), strerror(errcode));
+            }
+            else
+            {
+                MessageBox::error(this, BOX_OK, _("Error"), _("Can't enter folder %s"), currdir.text());
+            }
 
-    // Get text font
-    FXString fontspec = getApp()->reg().readStringEntry("SETTINGS", "textfont", DEFAULT_TEXT_FONT);
-    if (fontspec.empty())
-    {
-		command = "st -t " + ::quote(title) + cmd;
-	}
-	else
-	{
-		FXchar fontsize[32];
-        FXFont* font = new FXFont(getApp(), fontspec);
-        font->create();
-		snprintf(fontsize, sizeof(fontsize), "%d",(int)(font->getSize()/10)); // Size is in deci-points, thus divide by 10
-		command = "st -t " + ::quote(title) + " -f '" + (font->getFamily()).text() + ":pixelsize=" + fontsize + "'" + cmd;
-    }
+            return 0;
+        }
 
-    // Execute su or sudo command in an internal st terminal
-    int status = runst(command);
+        // sudo
+        if (root_auth == 1)
+        {
+            title = _("Enter the user password:");
+            FXString sudo_cmd = getApp()->reg().readStringEntry("OPTIONS", "sudo_cmd", DEFAULT_SUDO_CMD);
+            cmd = " -g 60x4 -e " + sudo_cmd;
+        }
+
+        // su
+        else if (root_auth == 2)
+        {
+            title = _("Enter the root password:");
+            FXString su_cmd = getApp()->reg().readStringEntry("OPTIONS", "su_cmd", DEFAULT_SU_CMD);
+            cmd = " -g 60x4 -e " + su_cmd;
+        }
+        else
+        {
+            // Should not happen
+        }
+
+        // Get text font
+        FXString fontspec = getApp()->reg().readStringEntry("SETTINGS", "textfont", DEFAULT_TEXT_FONT);
+        if (fontspec.empty())
+        {
+            command = "st -t " + ::quote(title) + cmd;
+        }
+        else
+        {
+            FXchar fontsize[32];
+            FXFont* font = new FXFont(getApp(), fontspec);
+            font->create();
+            snprintf(fontsize, sizeof(fontsize), "%d", (int)(font->getSize() / 10)); // Size is in deci-points, thus divide by 10
+            command = "st -t " + ::quote(title) + " -f '" + (font->getFamily()).text() + ":pixelsize=" + fontsize + "'" + cmd;
+            delete font;
+        }
+
+        // Execute su or sudo command in an internal st terminal
+        status = runst(command);
+    }
 
     // If error
-    ret=chdir(startlocation.text());
+    ret = chdir(startlocation.text());
     if (ret < 0)
     {
-        int errcode=errno;
+        int errcode = errno;
         if (errcode)
-            MessageBox::error(this,BOX_OK,_("Error"),_("Can't enter folder %s: %s"),startlocation.text(),strerror(errcode));
+        {
+            MessageBox::error(this, BOX_OK, _("Error"), _("Can't enter folder %s: %s"), startlocation.text(), strerror(errcode));
+        }
         else
-            MessageBox::error(this,BOX_OK,_("Error"),_("Can't enter folder %s"),startlocation.text());
+        {
+            MessageBox::error(this, BOX_OK, _("Error"), _("Can't enter folder %s"), startlocation.text());
+        }
 
+        getApp()->beginWaitCursor();
         return 0;
     }
 
-    if (status<0)
+    if (status < 0)
     {
-        MessageBox::error(getApp(),BOX_OK,_("Error"),_("An error has occurred!"));
+        MessageBox::error(getApp(), BOX_OK, _("Error"), _("An error has occurred!"));
         getApp()->endWaitCursor();
         return 0;
     }
@@ -3889,12 +3967,12 @@ long XFileExplorer::onCmdSu(FXObject*,FXSelector,void*)
 
 
 // File search dialog
-long XFileExplorer::onCmdFileSearch(FXObject* o,FXSelector sel,void*)
+long XFileExplorer::onCmdFileSearch(FXObject* o, FXSelector sel, void*)
 {
     // Display search box
-    if (searchwindow==NULL)
-        searchwindow=new SearchWindow(getApp(),_("Search files and folders"),
-                                      DECOR_ALL,search_xpos,search_ypos,search_width,search_height,0,0,0,0,0,0);
+    if (searchwindow == NULL)
+        searchwindow = new SearchWindow(getApp(), _("Search files and folders"),
+                                        DECOR_ALL, search_xpos, search_ypos, search_width, search_height, 0, 0, 0, 0, 0, 0);
 
     // Non modal window
     searchwindow->create();
@@ -3908,57 +3986,57 @@ long XFileExplorer::onCmdFileSearch(FXObject* o,FXSelector sel,void*)
 
 
 // Update file search button
-long XFileExplorer::onUpdFileSearch(FXObject* o,FXSelector,void*)
+long XFileExplorer::onUpdFileSearch(FXObject* o, FXSelector, void*)
 {
 
     if (searchwindow != NULL && searchwindow->shown())
-        o->handle(this,FXSEL(SEL_COMMAND,FXWindow::ID_DISABLE),NULL);
+        o->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_DISABLE), NULL);
     else
-        o->handle(this,FXSEL(SEL_COMMAND,FXWindow::ID_ENABLE),NULL);
+        o->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_ENABLE), NULL);
 
     return 1;
 }
 
 
 // Empty trash can
-long XFileExplorer::onCmdEmptyTrash(FXObject*,FXSelector sel,void* ptr)
+long XFileExplorer::onCmdEmptyTrash(FXObject*, FXSelector sel, void* ptr)
 {
     // Wait cursor
     getApp()->beginWaitCursor();
 
     // Compute trash directory size
-    char buf[MAXPATHLEN+1];
+    char buf[MAXPATHLEN + 1];
     char size[64];
     FXString hsize;
     FXulong dirsize;
-    FXuint nbfiles=0, nbsubfolders=0;
-    FXulong totalsize=0;
+    FXuint nbfiles = 0, nbsubfolders = 0;
+    FXulong totalsize = 0;
 
-    FXString dirpath=trashfileslocation;
-    strlcpy(buf,dirpath.text(),dirpath.length()+1);
-    dirsize=pathsize(buf,&nbfiles,&nbsubfolders,&totalsize);
+    FXString dirpath = trashfileslocation;
+    strlcpy(buf, dirpath.text(), dirpath.length() + 1);
+    dirsize = pathsize(buf, &nbfiles, &nbsubfolders, &totalsize);
 
 #if __WORDSIZE == 64
-    snprintf(size,sizeof(size)-1,"%lu",dirsize);
+    snprintf(size, sizeof(size) - 1, "%lu", dirsize);
 #else
-    snprintf(size,sizeof(size)-1,"%llu",dirsize);
+    snprintf(size, sizeof(size) - 1, "%llu", dirsize);
 #endif
-    hsize=::hSize(size);
+    hsize = ::hSize(size);
 #if __WORDSIZE == 64
-    snprintf(size,sizeof(size)-1,_("%s (%lu bytes)"),hsize.text(),dirsize);
+    snprintf(size, sizeof(size) - 1, _("%s (%lu bytes)"), hsize.text(), dirsize);
 #else
-    snprintf(size,sizeof(size)-1,_("%s (%llu bytes)"),hsize.text(),dirsize);
+    snprintf(size, sizeof(size) - 1, _("%s (%llu bytes)"), hsize.text(), dirsize);
 #endif
-    snprintf(size,sizeof(size)-1,_("%u files, %u subfolders"),nbfiles-nbsubfolders,nbsubfolders-1);
+    snprintf(size, sizeof(size) - 1, _("%u files, %u subfolders"), nbfiles - nbsubfolders, nbsubfolders - 1);
 
     // Wait cursor
     getApp()->endWaitCursor();
 
     // Confirmation message
-    FXString message=_("Do you really want to empty the trash can?") + FXString(" (") + hsize + _(" in ") + FXString(size) + FXString(")")
-                     + _("\n\nAll items will be definitively lost!");
+    FXString message = _("Do you really want to empty the trash can?") + FXString(" (") + hsize + _(" in ") + FXString(size) + FXString(")")
+                       + _("\n\nAll items will be definitively lost!");
 
-    MessageBox box(this,_("Empty trash can"),message,trash_full_bigicon,BOX_OK_CANCEL|DECOR_TITLE|DECOR_BORDER);
+    MessageBox box(this, _("Empty trash can"), message, trash_full_bigicon, BOX_OK_CANCEL | DECOR_TITLE | DECOR_BORDER);
     if (box.execute(PLACEMENT_CURSOR) != BOX_CLICKED_OK)
         return 0;
 
@@ -3967,13 +4045,13 @@ long XFileExplorer::onCmdEmptyTrash(FXObject*,FXSelector sel,void* ptr)
 
     // Delete trash can files folder
     File* f;
-    f=new File(this,_("File delete"),DELETE);
+    f = new File(this, _("File delete"), DELETE);
     f->create();
     f->remove(trashfileslocation);
     delete f;
 
     // Delete trash can info folder
-    f=new File(this,_("File delete"),DELETE);
+    f = new File(this, _("File delete"), DELETE);
     f->create();
     f->remove(trashinfolocation);
     delete f;
@@ -3981,81 +4059,81 @@ long XFileExplorer::onCmdEmptyTrash(FXObject*,FXSelector sel,void* ptr)
     // Re-create the trash can files directory
     if (!existFile(trashfileslocation))
     {
-        errno=0;
-        int ret=mkpath(trashfileslocation.text(),0755);
-        int errcode=errno;
-        if (ret==-1)
+        errno = 0;
+        int ret = mkpath(trashfileslocation.text(), 0755);
+        int errcode = errno;
+        if (ret == -1)
         {
             if (errcode)
-                MessageBox::error(this,BOX_OK,_("Error"),_("Can't create trash can 'files' folder %s: %s"),trashfileslocation.text(),strerror(errcode));
+                MessageBox::error(this, BOX_OK, _("Error"), _("Can't create trash can 'files' folder %s: %s"), trashfileslocation.text(), strerror(errcode));
             else
-                MessageBox::error(this,BOX_OK,_("Error"),_("Can't create trash can 'files' folder %s"),trashfileslocation.text());
+                MessageBox::error(this, BOX_OK, _("Error"), _("Can't create trash can 'files' folder %s"), trashfileslocation.text());
         }
     }
 
     // Re-create the trash can info directory
     if (!existFile(trashinfolocation))
     {
-        errno=0;
-        int ret=mkpath(trashinfolocation.text(),0755);
-        int errcode=errno;
-        if (ret==-1)
+        errno = 0;
+        int ret = mkpath(trashinfolocation.text(), 0755);
+        int errcode = errno;
+        if (ret == -1)
         {
             if (errcode)
-                MessageBox::error(this,BOX_OK,_("Error"),_("Can't create trash can 'info' folder %s: %s"),trashinfolocation.text(),strerror(errcode));
+                MessageBox::error(this, BOX_OK, _("Error"), _("Can't create trash can 'info' folder %s: %s"), trashinfolocation.text(), strerror(errcode));
             else
-                MessageBox::error(this,BOX_OK,_("Error"),_("Can't create trash can 'info' folder %s"),trashinfolocation.text());
+                MessageBox::error(this, BOX_OK, _("Error"), _("Can't create trash can 'info' folder %s"), trashinfolocation.text());
         }
     }
 
     // Wait cursor
     getApp()->endWaitCursor();
 
-    onCmdRefresh(0,0,0);
+    onCmdRefresh(0, 0, 0);
 
     return 1;
 }
 
 
 // Display trash size
-long XFileExplorer::onCmdTrashSize(FXObject*,FXSelector sel,void*)
+long XFileExplorer::onCmdTrashSize(FXObject*, FXSelector sel, void*)
 {
     struct stat linfo;
     FXString trashsize, trashmtime, trashnbfiles, trashnbfolders;
-    if (lstatrep(trashfileslocation.text(),&linfo)==0)
+    if (lstatrep(trashfileslocation.text(), &linfo) == 0)
     {
         // Read time format
-        FXString timeformat=getApp()->reg().readStringEntry("SETTINGS","time_format",DEFAULT_TIME_FORMAT);
+        FXString timeformat = getApp()->reg().readStringEntry("SETTINGS", "time_format", DEFAULT_TIME_FORMAT);
 
         // Trash files size
-        trashmtime=FXSystem::time(timeformat.text(),linfo.st_mtime);
+        trashmtime = FXSystem::time(timeformat.text(), linfo.st_mtime);
         char buf[MAXPATHLEN];
-        FXulong dirsize=0;
-        FXuint nbfiles=0, nbsubfolders=0;
-        FXulong totalsize=0;
-        strlcpy(buf,trashfileslocation.text(),trashfileslocation.length()+1);
-        dirsize=pathsize(buf,&nbfiles,&nbsubfolders,&totalsize);
+        FXulong dirsize = 0;
+        FXuint nbfiles = 0, nbsubfolders = 0;
+        FXulong totalsize = 0;
+        strlcpy(buf, trashfileslocation.text(), trashfileslocation.length() + 1);
+        dirsize = pathsize(buf, &nbfiles, &nbsubfolders, &totalsize);
 #if __WORDSIZE == 64
-        snprintf(buf,sizeof(buf),"%lu",dirsize);
+        snprintf(buf, sizeof(buf), "%lu", dirsize);
 #else
-        snprintf(buf,sizeof(buf),"%llu",dirsize);
+        snprintf(buf, sizeof(buf), "%llu", dirsize);
 #endif
-        trashsize=::hSize(buf);
-        trashnbfiles=FXStringVal(nbfiles-nbsubfolders);
-        trashnbfolders=FXStringVal(nbsubfolders-1);
+        trashsize = ::hSize(buf);
+        trashnbfiles = FXStringVal(nbfiles - nbsubfolders);
+        trashnbfolders = FXStringVal(nbsubfolders - 1);
 
         // Dialog box
         FXString msg;
         msg.format(_("Trash size: %s (%s files, %s subfolders)\n\nModified date: %s"),
-                   trashsize.text(),trashnbfiles.text(),trashnbfolders.text(),trashmtime.text());
-        MessageBox dialog(this,_("Trash size"),msg.text(),delete_bigicon,BOX_OK|DECOR_TITLE|DECOR_BORDER,
-                          JUSTIFY_LEFT|ICON_BEFORE_TEXT|LAYOUT_CENTER_Y|LAYOUT_LEFT|LAYOUT_FILL_X|LAYOUT_FILL_Y);
+                   trashsize.text(), trashnbfiles.text(), trashnbfolders.text(), trashmtime.text());
+        MessageBox dialog(this, _("Trash size"), msg.text(), delete_bigicon, BOX_OK | DECOR_TITLE | DECOR_BORDER,
+                          JUSTIFY_LEFT | ICON_BEFORE_TEXT | LAYOUT_CENTER_Y | LAYOUT_LEFT | LAYOUT_FILL_X | LAYOUT_FILL_Y);
         dialog.execute(PLACEMENT_CURSOR);
     }
     else
     {
         // Error
-        MessageBox::error(this,BOX_OK,_("Error"),_("Trash can 'files' folder %s is not readable!"),trashfileslocation.text());
+        MessageBox::error(this, BOX_OK, _("Error"), _("Trash can 'files' folder %s is not readable!"), trashfileslocation.text());
         return 0;
     }
 
@@ -4067,10 +4145,23 @@ long XFileExplorer::onCmdTrashSize(FXObject*,FXSelector sel,void*)
 long XFileExplorer::onCmdFileCopyClp(FXObject* o, FXSelector sel, void*)
 {
     if (dirpanel->isActive())
-        dirpanel->handle(o,FXSEL(SEL_COMMAND,DirPanel::ID_COPY_CLIPBOARD),NULL);
+        dirpanel->handle(o, FXSEL(SEL_COMMAND, DirPanel::ID_COPY_CLIPBOARD), NULL);
 
     else
-        lpanel->getCurrent()->handle(o,FXSEL(SEL_COMMAND,FilePanel::ID_COPY_CLIPBOARD),NULL);
+        lpanel->getCurrent()->handle(o, FXSEL(SEL_COMMAND, FilePanel::ID_COPY_CLIPBOARD), NULL);
+
+    return 1;
+}
+
+
+// File name copy to clipboard
+long XFileExplorer::onCmdFileCopyName(FXObject* o, FXSelector sel, void*)
+{
+    if (dirpanel->isActive())
+        dirpanel->handle(o, FXSEL(SEL_COMMAND, DirPanel::ID_COPYNAME_CLIPBOARD), NULL);
+
+    else
+        lpanel->getCurrent()->handle(o, FXSEL(SEL_COMMAND, FilePanel::ID_COPYNAME_CLIPBOARD), NULL);
 
     return 1;
 }
@@ -4080,10 +4171,10 @@ long XFileExplorer::onCmdFileCopyClp(FXObject* o, FXSelector sel, void*)
 long XFileExplorer::onCmdFileCutClp(FXObject* o, FXSelector sel, void*)
 {
     if (dirpanel->isActive())
-        dirpanel->handle(o,FXSEL(SEL_COMMAND,DirPanel::ID_CUT_CLIPBOARD),NULL);
+        dirpanel->handle(o, FXSEL(SEL_COMMAND, DirPanel::ID_CUT_CLIPBOARD), NULL);
 
     else
-        lpanel->getCurrent()->handle(o,FXSEL(SEL_COMMAND,FilePanel::ID_CUT_CLIPBOARD),NULL);
+        lpanel->getCurrent()->handle(o, FXSEL(SEL_COMMAND, FilePanel::ID_CUT_CLIPBOARD), NULL);
 
     return 1;
 }
@@ -4093,10 +4184,10 @@ long XFileExplorer::onCmdFileCutClp(FXObject* o, FXSelector sel, void*)
 long XFileExplorer::onCmdFileAddCopyClp(FXObject* o, FXSelector sel, void*)
 {
     if (dirpanel->isActive())
-        dirpanel->handle(o,FXSEL(SEL_COMMAND,DirPanel::ID_ADDCOPY_CLIPBOARD),NULL);
+        dirpanel->handle(o, FXSEL(SEL_COMMAND, DirPanel::ID_ADDCOPY_CLIPBOARD), NULL);
 
     else
-        lpanel->getCurrent()->handle(o,FXSEL(SEL_COMMAND,FilePanel::ID_ADDCOPY_CLIPBOARD),NULL);
+        lpanel->getCurrent()->handle(o, FXSEL(SEL_COMMAND, FilePanel::ID_ADDCOPY_CLIPBOARD), NULL);
 
     return 1;
 }
@@ -4106,10 +4197,10 @@ long XFileExplorer::onCmdFileAddCopyClp(FXObject* o, FXSelector sel, void*)
 long XFileExplorer::onCmdFileAddCutClp(FXObject* o, FXSelector sel, void*)
 {
     if (dirpanel->isActive())
-        dirpanel->handle(o,FXSEL(SEL_COMMAND,DirPanel::ID_ADDCUT_CLIPBOARD),NULL);
+        dirpanel->handle(o, FXSEL(SEL_COMMAND, DirPanel::ID_ADDCUT_CLIPBOARD), NULL);
 
     else
-        lpanel->getCurrent()->handle(o,FXSEL(SEL_COMMAND,FilePanel::ID_ADDCUT_CLIPBOARD),NULL);
+        lpanel->getCurrent()->handle(o, FXSEL(SEL_COMMAND, FilePanel::ID_ADDCUT_CLIPBOARD), NULL);
 
     return 1;
 }
@@ -4119,10 +4210,10 @@ long XFileExplorer::onCmdFileAddCutClp(FXObject* o, FXSelector sel, void*)
 long XFileExplorer::onCmdFilePasteClp(FXObject* o, FXSelector sel, void*)
 {
     if (dirpanel->isActive())
-        dirpanel->handle(o,FXSEL(SEL_COMMAND,DirPanel::ID_PASTE_CLIPBOARD),NULL);
+        dirpanel->handle(o, FXSEL(SEL_COMMAND, DirPanel::ID_PASTE_CLIPBOARD), NULL);
 
     else
-        lpanel->getCurrent()->handle(o,FXSEL(SEL_COMMAND,FilePanel::ID_PASTE_CLIPBOARD),NULL);
+        lpanel->getCurrent()->handle(o, FXSEL(SEL_COMMAND, FilePanel::ID_PASTE_CLIPBOARD), NULL);
     return 1;
 }
 
@@ -4130,7 +4221,7 @@ long XFileExplorer::onCmdFilePasteClp(FXObject* o, FXSelector sel, void*)
 // File rename
 long XFileExplorer::onCmdFileRename(FXObject* o, FXSelector sel, void*)
 {
-    lpanel->getCurrent()->handle(o,FXSEL(SEL_COMMAND,FilePanel::ID_FILE_RENAME),NULL);
+    lpanel->getCurrent()->handle(o, FXSEL(SEL_COMMAND, FilePanel::ID_FILE_RENAME), NULL);
     return 1;
 }
 
@@ -4139,10 +4230,10 @@ long XFileExplorer::onCmdFileRename(FXObject* o, FXSelector sel, void*)
 long XFileExplorer::onCmdFileMoveto(FXObject* o, FXSelector sel, void* ptr)
 {
     if (dirpanel->isActive())
-        dirpanel->handle(o,FXSEL(SEL_COMMAND,DirPanel::ID_DIR_MOVETO),ptr);
+        dirpanel->handle(o, FXSEL(SEL_COMMAND, DirPanel::ID_DIR_MOVETO), ptr);
 
     else
-        lpanel->getCurrent()->handle(o,FXSEL(SEL_COMMAND,FilePanel::ID_FILE_MOVETO),NULL);
+        lpanel->getCurrent()->handle(o, FXSEL(SEL_COMMAND, FilePanel::ID_FILE_MOVETO), NULL);
     return 1;
 }
 
@@ -4151,10 +4242,10 @@ long XFileExplorer::onCmdFileMoveto(FXObject* o, FXSelector sel, void* ptr)
 long XFileExplorer::onCmdFileCopyto(FXObject* o, FXSelector sel, void* ptr)
 {
     if (dirpanel->isActive())
-        dirpanel->handle(o,FXSEL(SEL_COMMAND,DirPanel::ID_DIR_COPYTO),ptr);
+        dirpanel->handle(o, FXSEL(SEL_COMMAND, DirPanel::ID_DIR_COPYTO), ptr);
 
     else
-        lpanel->getCurrent()->handle(o,FXSEL(SEL_COMMAND,FilePanel::ID_FILE_COPYTO),NULL);
+        lpanel->getCurrent()->handle(o, FXSEL(SEL_COMMAND, FilePanel::ID_FILE_COPYTO), NULL);
 
     return 1;
 }
@@ -4164,10 +4255,10 @@ long XFileExplorer::onCmdFileCopyto(FXObject* o, FXSelector sel, void* ptr)
 long XFileExplorer::onCmdFileSymlink(FXObject* o, FXSelector sel, void* ptr)
 {
     if (dirpanel->isActive())
-        dirpanel->handle(o,FXSEL(SEL_COMMAND,DirPanel::ID_DIR_SYMLINK),ptr);
+        dirpanel->handle(o, FXSEL(SEL_COMMAND, DirPanel::ID_DIR_SYMLINK), ptr);
 
     else
-        lpanel->getCurrent()->handle(o,FXSEL(SEL_COMMAND,FilePanel::ID_FILE_SYMLINK),NULL);
+        lpanel->getCurrent()->handle(o, FXSEL(SEL_COMMAND, FilePanel::ID_FILE_SYMLINK), NULL);
 
     return 1;
 }
@@ -4177,63 +4268,63 @@ long XFileExplorer::onCmdFileSymlink(FXObject* o, FXSelector sel, void* ptr)
 long XFileExplorer::onCmdFileTrash(FXObject* o, FXSelector sel, void* ptr)
 {
     if (dirpanel->isActive())
-        dirpanel->handle(o,FXSEL(SEL_COMMAND,DirPanel::ID_DIR_TRASH),ptr);
+        dirpanel->handle(o, FXSEL(SEL_COMMAND, DirPanel::ID_DIR_TRASH), ptr);
 
     else
-        lpanel->getCurrent()->handle(o,FXSEL(SEL_COMMAND,FilePanel::ID_FILE_TRASH),ptr);
+        lpanel->getCurrent()->handle(o, FXSEL(SEL_COMMAND, FilePanel::ID_FILE_TRASH), ptr);
 
     return 1;
 }
 
 
 // File restore
-long XFileExplorer::onCmdFileRestore(FXObject* o,FXSelector sel,void* ptr)
+long XFileExplorer::onCmdFileRestore(FXObject* o, FXSelector sel, void* ptr)
 {
     if (dirpanel->isActive())
-        dirpanel->handle(o,FXSEL(SEL_COMMAND,DirPanel::ID_DIR_RESTORE),ptr);
+        dirpanel->handle(o, FXSEL(SEL_COMMAND, DirPanel::ID_DIR_RESTORE), ptr);
 
     else
-        lpanel->getCurrent()->handle(o,FXSEL(SEL_COMMAND,FilePanel::ID_FILE_RESTORE),ptr);
+        lpanel->getCurrent()->handle(o, FXSEL(SEL_COMMAND, FilePanel::ID_FILE_RESTORE), ptr);
 
     return 1;
 }
 
 
 // File delete
-long XFileExplorer::onCmdFileDelete(FXObject* o,FXSelector sel,void* ptr)
+long XFileExplorer::onCmdFileDelete(FXObject* o, FXSelector sel, void* ptr)
 {
     if (dirpanel->isActive())
-        dirpanel->handle(o,FXSEL(SEL_COMMAND,DirPanel::ID_DIR_DELETE),ptr);
+        dirpanel->handle(o, FXSEL(SEL_COMMAND, DirPanel::ID_DIR_DELETE), ptr);
 
     else
-        lpanel->getCurrent()->handle(o,FXSEL(SEL_COMMAND,FilePanel::ID_FILE_DELETE),ptr);
+        lpanel->getCurrent()->handle(o, FXSEL(SEL_COMMAND, FilePanel::ID_FILE_DELETE), ptr);
 
     return 1;
 }
 
 
 // File properties
-long XFileExplorer::onCmdFileProperties(FXObject* o,FXSelector sel,void*)
+long XFileExplorer::onCmdFileProperties(FXObject* o, FXSelector sel, void*)
 {
     if (dirpanel->isActive())
-        dirpanel->handle(o,FXSEL(SEL_COMMAND,DirPanel::ID_PROPERTIES),NULL);
+        dirpanel->handle(o, FXSEL(SEL_COMMAND, DirPanel::ID_PROPERTIES), NULL);
 
     else
-        lpanel->getCurrent()->handle(o,FXSEL(SEL_COMMAND,FilePanel::ID_PROPERTIES),NULL);
+        lpanel->getCurrent()->handle(o, FXSEL(SEL_COMMAND, FilePanel::ID_PROPERTIES), NULL);
 
     return 1;
 }
 
 
 // Update the empty trash can and trash menus
-long XFileExplorer::onUpdEmptyTrash(FXObject* o,FXSelector,void* ptr)
+long XFileExplorer::onUpdEmptyTrash(FXObject* o, FXSelector, void* ptr)
 {
 
-    FXbool use_trash_can=getApp()->reg().readUnsignedEntry("OPTIONS","use_trash_can",true);
+    FXbool use_trash_can = getApp()->reg().readUnsignedEntry("OPTIONS", "use_trash_can", true);
     if (use_trash_can)
     {
         // Update the empty trash can menu
-        o->handle(this,FXSEL(SEL_COMMAND,FXWindow::ID_ENABLE),NULL);
+        o->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_ENABLE), NULL);
 
         // Update the trash menu title
         helpmenutitle->setText("");
@@ -4245,7 +4336,7 @@ long XFileExplorer::onUpdEmptyTrash(FXObject* o,FXSelector,void* ptr)
     else
     {
         // Update the empty trash can menu
-        o->handle(this,FXSEL(SEL_COMMAND,FXWindow::ID_DISABLE),NULL);
+        o->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_DISABLE), NULL);
 
         // Update the trash menu title
         trashmenutitle->hide();
@@ -4259,80 +4350,102 @@ long XFileExplorer::onUpdEmptyTrash(FXObject* o,FXSelector,void* ptr)
 
 
 // Update the trash size menu
-long XFileExplorer::onUpdTrashSize(FXObject* o,FXSelector,void*)
+long XFileExplorer::onUpdTrashSize(FXObject* o, FXSelector, void*)
 {
-    FXbool use_trash_can=getApp()->reg().readUnsignedEntry("OPTIONS","use_trash_can",true);
+    FXbool use_trash_can = getApp()->reg().readUnsignedEntry("OPTIONS", "use_trash_can", true);
     if (use_trash_can)
-        o->handle(this,FXSEL(SEL_COMMAND,FXWindow::ID_ENABLE),NULL);
+        o->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_ENABLE), NULL);
     else
-        o->handle(this,FXSEL(SEL_COMMAND,FXWindow::ID_DISABLE),NULL);
+        o->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_DISABLE), NULL);
 
     return 1;
 }
 
 
 // Update the file delete menu item
-long XFileExplorer::onUpdFileDelete(FXObject* o,FXSelector,void* ptr)
+long XFileExplorer::onUpdFileDelete(FXObject* o, FXSelector, void* ptr)
 {
     if (dirpanel->isActive())
-        dirpanel->handle(o,FXSEL(SEL_UPDATE,DirPanel::ID_DIR_DELETE),ptr);
+        dirpanel->handle(o, FXSEL(SEL_UPDATE, DirPanel::ID_DIR_DELETE), ptr);
 
     else
-        lpanel->getCurrent()->handle(o,FXSEL(SEL_UPDATE,FilePanel::ID_FILE_DELETE),ptr);
+        lpanel->getCurrent()->handle(o, FXSEL(SEL_UPDATE, FilePanel::ID_FILE_DELETE), ptr);
 
     return 1;
 }
 
 
 // Update the move to trash menu item
-long XFileExplorer::onUpdFileTrash(FXObject* o,FXSelector,void* ptr)
+long XFileExplorer::onUpdFileTrash(FXObject* o, FXSelector, void* ptr)
 {
     if (dirpanel->isActive())
-        dirpanel->handle(o,FXSEL(SEL_UPDATE,DirPanel::ID_DIR_TRASH),ptr);
+        dirpanel->handle(o, FXSEL(SEL_UPDATE, DirPanel::ID_DIR_TRASH), ptr);
 
     else
-        lpanel->getCurrent()->handle(o,FXSEL(SEL_UPDATE,FilePanel::ID_FILE_TRASH),ptr);
+        lpanel->getCurrent()->handle(o, FXSEL(SEL_UPDATE, FilePanel::ID_FILE_TRASH), ptr);
 
     return 1;
 }
 
 
 // Update the restore from trash menu item
-long XFileExplorer::onUpdFileRestore(FXObject* o,FXSelector,void* ptr)
+long XFileExplorer::onUpdFileRestore(FXObject* o, FXSelector, void* ptr)
 {
     if (dirpanel->isActive())
-        dirpanel->handle(o,FXSEL(SEL_UPDATE,DirPanel::ID_DIR_RESTORE),ptr);
+        dirpanel->handle(o, FXSEL(SEL_UPDATE, DirPanel::ID_DIR_RESTORE), ptr);
 
     else
-        lpanel->getCurrent()->handle(o,FXSEL(SEL_UPDATE,FilePanel::ID_FILE_RESTORE),ptr);
+        lpanel->getCurrent()->handle(o, FXSEL(SEL_UPDATE, FilePanel::ID_FILE_RESTORE), ptr);
 
     return 1;
 }
 
 
 // Update the file operation menu items
-long XFileExplorer::onUpdFileMan(FXObject* o,FXSelector,void*)
+long XFileExplorer::onUpdFileMan(FXObject* o, FXSelector, void*)
 {
     // Update the panelfocus variable
     if (lpanel->getCurrent()->isActive())
-        panelfocus=FILEPANEL_FOCUS;
+        panelfocus = FILEPANEL_FOCUS;
     if (dirpanel->isActive())
-        panelfocus=DIRPANEL_FOCUS;
+        panelfocus = DIRPANEL_FOCUS;
 
     // Update the file operation menu items
     if (dirpanel->isActive())
     {
-        o->handle(this,FXSEL(SEL_COMMAND,FXWindow::ID_ENABLE),NULL);
+        o->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_ENABLE), NULL);
+
+        // Update copy names menu label when a directory is selected
+        cpnmenu->setText(_("Cop&y name"));
     }
     else
     {
-        int num=lpanel->getCurrent()->getNumSelectedItems();
-        if (num==0)
-            o->handle(this,FXSEL(SEL_COMMAND,FXWindow::ID_DISABLE),NULL);
-        else if (num==1 && lpanel->getCurrent()->isItemSelected(0))
-            o->handle(this,FXSEL(SEL_COMMAND,FXWindow::ID_DISABLE),NULL);
+        // Set default copy names menu label
+        cpnmenu->setText(_("Cop&y names"));
+
+        int num = lpanel->getCurrent()->getNumSelectedItems();
+        if (num == 0)
+        {
+            o->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_DISABLE), NULL);
+        }
+        else if (num == 1)
+        {
+            if (lpanel->getCurrent()->isItemSelected(0))
+            {
+                o->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_DISABLE), NULL);
+            }
+            else
+            {
+                o->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_ENABLE), NULL);
+                
+                // Update copy names menu label when only one file is selected
+                cpnmenu->setText(_("Cop&y name"));
+            }
+        }
         else
-            o->handle(this,FXSEL(SEL_COMMAND,FXWindow::ID_ENABLE),NULL);
+        {
+            o->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_ENABLE), NULL);
+        }
     }
 
     return 1;
@@ -4340,39 +4453,39 @@ long XFileExplorer::onUpdFileMan(FXObject* o,FXSelector,void*)
 
 
 // Update the file rename menu items
-long XFileExplorer::onUpdFileRename(FXObject* o,FXSelector,void*)
+long XFileExplorer::onUpdFileRename(FXObject* o, FXSelector, void*)
 {
-    int num=lpanel->getCurrent()->getNumSelectedItems();
-    if (num==1)
+    int num = lpanel->getCurrent()->getNumSelectedItems();
+    if (num == 1)
     {
         if (lpanel->getCurrent()->isItemSelected(0))
-            o->handle(this,FXSEL(SEL_COMMAND,FXWindow::ID_DISABLE),NULL);
+            o->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_DISABLE), NULL);
         else
-            o->handle(this,FXSEL(SEL_COMMAND,FXWindow::ID_ENABLE),NULL);
+            o->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_ENABLE), NULL);
     }
     else
-        o->handle(this,FXSEL(SEL_COMMAND,FXWindow::ID_DISABLE),NULL);
+        o->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_DISABLE), NULL);
     return 1;
 }
 
 
 // Update the paste menu and button
-long XFileExplorer::onUpdFilePaste(FXObject* o,FXSelector sel,void*)
+long XFileExplorer::onUpdFilePaste(FXObject* o, FXSelector sel, void*)
 {
-    lpanel->getCurrent()->handle(o,FXSEL(SEL_UPDATE,FilePanel::ID_PASTE_CLIPBOARD),NULL);
+    lpanel->getCurrent()->handle(o, FXSEL(SEL_UPDATE, FilePanel::ID_PASTE_CLIPBOARD), NULL);
     return 1;
 }
 
 
 // Update the root menu items
-long XFileExplorer::onUpdSu(FXObject* o,FXSelector,void*)
+long XFileExplorer::onUpdSu(FXObject* o, FXSelector, void*)
 {
-    FXbool root_mode=getApp()->reg().readUnsignedEntry("OPTIONS","root_mode",true);
+    FXbool root_mode = getApp()->reg().readUnsignedEntry("OPTIONS", "root_mode", true);
 
-    if (!root_mode || getuid()==0)
-        o->handle(this,FXSEL(SEL_COMMAND,FXWindow::ID_DISABLE),NULL);
+    if (!root_mode || getuid() == 0)
+        o->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_DISABLE), NULL);
     else
-        o->handle(this,FXSEL(SEL_COMMAND,FXWindow::ID_ENABLE),NULL);
+        o->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_ENABLE), NULL);
 
     return 1;
 }
@@ -4382,70 +4495,70 @@ long XFileExplorer::onUpdSu(FXObject* o,FXSelector,void*)
 // Open files URIS
 void XFileExplorer::openFiles(vector_FXString startURIs)
 {
-    FXString pathname, samecmd, cmd, cmdname, itemslist=" ";
+    FXString pathname, samecmd, cmd, cmdname, itemslist = " ";
     FileAssoc* association;
-    FXbool same=true;
-    FXbool first=true;
+    FXbool same = true;
+    FXbool first = true;
 
     // Default programs
-    FXString txtviewer=getApp()->reg().readStringEntry("PROGS","txtviewer",DEFAULT_TXTVIEWER);
-    FXString txteditor=getApp()->reg().readStringEntry("PROGS","txteditor",DEFAULT_TXTEDITOR);
-    FXString imgviewer=getApp()->reg().readStringEntry("PROGS","imgviewer",DEFAULT_IMGVIEWER);
-    FXString imgeditor=getApp()->reg().readStringEntry("PROGS","imgeditor",DEFAULT_IMGEDITOR);
-    FXString pdfviewer=getApp()->reg().readStringEntry("PROGS","pdfviewer",DEFAULT_PDFVIEWER);
-    FXString audioplayer=getApp()->reg().readStringEntry("PROGS","audioplayer",DEFAULT_AUDIOPLAYER);
-    FXString videoplayer=getApp()->reg().readStringEntry("PROGS","videoplayer",DEFAULT_VIDEOPLAYER);
-    FXString archiver=getApp()->reg().readStringEntry("PROGS","archiver",DEFAULT_ARCHIVER);
+    FXString txtviewer = getApp()->reg().readStringEntry("PROGS", "txtviewer", DEFAULT_TXTVIEWER);
+    FXString txteditor = getApp()->reg().readStringEntry("PROGS", "txteditor", DEFAULT_TXTEDITOR);
+    FXString imgviewer = getApp()->reg().readStringEntry("PROGS", "imgviewer", DEFAULT_IMGVIEWER);
+    FXString imgeditor = getApp()->reg().readStringEntry("PROGS", "imgeditor", DEFAULT_IMGEDITOR);
+    FXString pdfviewer = getApp()->reg().readStringEntry("PROGS", "pdfviewer", DEFAULT_PDFVIEWER);
+    FXString audioplayer = getApp()->reg().readStringEntry("PROGS", "audioplayer", DEFAULT_AUDIOPLAYER);
+    FXString videoplayer = getApp()->reg().readStringEntry("PROGS", "videoplayer", DEFAULT_VIDEOPLAYER);
+    FXString archiver = getApp()->reg().readStringEntry("PROGS", "archiver", DEFAULT_ARCHIVER);
 
     // Update associations dictionary
-    FileDict* assocdict=new FileDict(getApp());
+    FileDict* assocdict = new FileDict(getApp());
 
     // Check if all files have the same association
-    for (FXuint u=0; u<startURIs.size(); u++)
+    for (FXuint u = 0; u < startURIs.size(); u++)
     {
         if (::isFile(startURIs[u]))
         {
             // Increment number of selected items
-            pathname=startURIs[u];
-            association=assocdict->findFileBinding(pathname.text());
+            pathname = startURIs[u];
+            association = assocdict->findFileBinding(pathname.text());
 
             if (association)
             {
-                cmd = association->command.section(',',0);
+                cmd = association->command.section(',', 0);
 
                 // Use a default program if possible
                 switch (progs[cmd])
                 {
                 case TXTVIEWER:
-                    cmd=txtviewer;
+                    cmd = txtviewer;
                     break;
 
                 case TXTEDITOR:
-                    cmd=txteditor;
+                    cmd = txteditor;
                     break;
 
                 case IMGVIEWER:
-                    cmd=imgviewer;
+                    cmd = imgviewer;
                     break;
 
                 case IMGEDITOR:
-                    cmd=imgeditor;
+                    cmd = imgeditor;
                     break;
 
                 case PDFVIEWER:
-                    cmd=pdfviewer;
+                    cmd = pdfviewer;
                     break;
 
                 case AUDIOPLAYER:
-                    cmd=audioplayer;
+                    cmd = audioplayer;
                     break;
 
                 case VIDEOPLAYER:
-                    cmd=videoplayer;
+                    cmd = videoplayer;
                     break;
 
                 case ARCHIVER:
-                    cmd=archiver;
+                    cmd = archiver;
                     break;
 
                 case NONE: // No program found
@@ -4459,12 +4572,12 @@ void XFileExplorer::openFiles(vector_FXString startURIs)
                     if (first)
                     {
                         samecmd = cmd;
-                        first=false;
+                        first = false;
                     }
 
                     if (samecmd != cmd)
                     {
-                        same=false;
+                        same = false;
                         break;
                     }
 
@@ -4473,13 +4586,13 @@ void XFileExplorer::openFiles(vector_FXString startURIs)
                 }
                 else
                 {
-                    same=false;
+                    same = false;
                     break;
                 }
             }
             else
             {
-                same=false;
+                same = false;
                 break;
             }
         }
@@ -4487,78 +4600,78 @@ void XFileExplorer::openFiles(vector_FXString startURIs)
 
 #ifdef STARTUP_NOTIFICATION
     // Startup notification option and exceptions (if any)
-    FXbool usesn=getApp()->reg().readUnsignedEntry("OPTIONS","use_startup_notification",true);
-    FXString snexcepts=getApp()->reg().readStringEntry("OPTIONS","startup_notification_exceptions","");
+    FXbool usesn = getApp()->reg().readUnsignedEntry("OPTIONS", "use_startup_notification", true);
+    FXString snexcepts = getApp()->reg().readStringEntry("OPTIONS", "startup_notification_exceptions", "");
 #endif
 
     // Same command for all files: open them
     if (same)
     {
-        cmdname=samecmd;
+        cmdname = samecmd;
 
         // If command exists, run it
         if (::existCommand(cmdname))
         {
-            cmd=samecmd+itemslist;
+            cmd = samecmd + itemslist;
 #ifdef STARTUP_NOTIFICATION
-            runcmd(cmd,cmdname,lpanel->getDirectory(),startlocation,usesn,snexcepts);
+            runcmd(cmd, cmdname, lpanel->getDirectory(), startlocation, usesn, snexcepts);
 #else
-            runcmd(cmd,lpanel->getDirectory(),startlocation);
+            runcmd(cmd, lpanel->getDirectory(), startlocation);
 #endif
         }
 
         // Command does not exist
         else
-            MessageBox::error(this,BOX_OK,_("Error"),_("Command not found: %s"),cmd.text());
+            MessageBox::error(this, BOX_OK, _("Error"), _("Command not found: %s"), cmd.text());
     }
 
     // Files have different commands: handle them separately
     else
     {
-        for (FXuint u=0; u<startURIs.size(); u++)
+        for (FXuint u = 0; u < startURIs.size(); u++)
         {
             if (::isFile(startURIs[u]))
             {
-                pathname=startURIs[u];
-                association=assocdict->findFileBinding(pathname.text());
+                pathname = startURIs[u];
+                association = assocdict->findFileBinding(pathname.text());
                 if (association)
                 {
                     // Use it to open the file
-                    cmd = association->command.section(',',0);
+                    cmd = association->command.section(',', 0);
 
                     // Use a default program if possible
                     switch (progs[cmd])
                     {
                     case TXTVIEWER:
-                        cmd=txtviewer;
+                        cmd = txtviewer;
                         break;
 
                     case TXTEDITOR:
-                        cmd=txteditor;
+                        cmd = txteditor;
                         break;
 
                     case IMGVIEWER:
-                        cmd=imgviewer;
+                        cmd = imgviewer;
                         break;
 
                     case IMGEDITOR:
-                        cmd=imgeditor;
+                        cmd = imgeditor;
                         break;
 
                     case PDFVIEWER:
-                        cmd=pdfviewer;
+                        cmd = pdfviewer;
                         break;
 
                     case AUDIOPLAYER:
-                        cmd=audioplayer;
+                        cmd = audioplayer;
                         break;
 
                     case VIDEOPLAYER:
-                        cmd=videoplayer;
+                        cmd = videoplayer;
                         break;
 
                     case ARCHIVER:
-                        cmd=archiver;
+                        cmd = archiver;
                         break;
 
                     case NONE: // No program found
@@ -4568,44 +4681,44 @@ void XFileExplorer::openFiles(vector_FXString startURIs)
 
                     if (cmd != "")
                     {
-                        cmdname=cmd;
+                        cmdname = cmd;
 
                         // If command exists, run it
                         if (::existCommand(cmdname))
                         {
-                            cmd=cmdname+" "+::quote(pathname);
+                            cmd = cmdname + " " + ::quote(pathname);
 #ifdef STARTUP_NOTIFICATION
-                            runcmd(cmd,cmdname,lpanel->getDirectory(),startlocation,usesn,snexcepts);
+                            runcmd(cmd, cmdname, lpanel->getDirectory(), startlocation, usesn, snexcepts);
 #else
-                            runcmd(cmd,lpanel->getDirectory(),startlocation);
+                            runcmd(cmd, lpanel->getDirectory(), startlocation);
 #endif
                         }
 
                         // Command does not exist
                         else
-                            MessageBox::error(this,BOX_OK,_("Error"),_("Command not found: %s"),cmdname.text());
+                            MessageBox::error(this, BOX_OK, _("Error"), _("Command not found: %s"), cmdname.text());
                     }
 
                     // Command string is void
                     else
-                        MessageBox::error(this,BOX_OK,_("Error"),_("Invalid file association: %s"),FXPath::extension(pathname).text());
+                        MessageBox::error(this, BOX_OK, _("Error"), _("Invalid file association: %s"), FXPath::extension(pathname).text());
                 }
 
                 // Other cases
                 else
-                    MessageBox::error(this,BOX_OK,_("Error"),_("File association not found: %s"),FXPath::extension(pathname).text());
+                    MessageBox::error(this, BOX_OK, _("Error"), _("File association not found: %s"), FXPath::extension(pathname).text());
             }
         }
     }
+    delete assocdict;
 }
 
 
 // Quit immediately and properly, if asked
-long XFileExplorer::onUpdQuit(FXObject* o,FXSelector,void*)
+long XFileExplorer::onUpdQuit(FXObject* o, FXSelector, void*)
 {
     if (stop)
-        onQuit(0,0,0);
+        onQuit(0, 0, 0);
 
     return 1;
 }
-

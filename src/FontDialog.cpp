@@ -42,45 +42,45 @@ FontSelector::FontSelector(FXComposite* p, FXObject* tgt, FXSelector sel, FXuint
     message = sel;
 
     // Bottom side
-    FXHorizontalFrame* buttons = new FXHorizontalFrame(this, LAYOUT_SIDE_BOTTOM|LAYOUT_FILL_X);
-    accept = new FXButton(buttons, _("&Accept"), NULL, NULL, 0, BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0, 0, 0, 0, 20, 20);
-    cancel = new FXButton(buttons, _("&Cancel"), NULL, NULL, 0, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0, 0, 0, 0, 20, 20);
+    FXHorizontalFrame* buttons = new FXHorizontalFrame(this, LAYOUT_SIDE_BOTTOM | LAYOUT_FILL_X);
+    accept = new FXButton(buttons, _("&Accept"), NULL, NULL, 0, BUTTON_DEFAULT | FRAME_RAISED | FRAME_THICK | LAYOUT_RIGHT, 0, 0, 0, 0, 20, 20);
+    cancel = new FXButton(buttons, _("&Cancel"), NULL, NULL, 0, BUTTON_INITIAL | BUTTON_DEFAULT | FRAME_RAISED | FRAME_THICK | LAYOUT_RIGHT, 0, 0, 0, 0, 20, 20);
 
     // Left side
-    FXMatrix* controls = new FXMatrix(this, 3, LAYOUT_SIDE_TOP|LAYOUT_FILL_X|LAYOUT_FIX_HEIGHT, 0, 0, 0, 160, DEFAULT_SPACING, DEFAULT_SPACING, DEFAULT_SPACING, DEFAULT_SPACING, DEFAULT_SPACING, 0);
+    FXMatrix* controls = new FXMatrix(this, 3, LAYOUT_SIDE_TOP | LAYOUT_FILL_X | LAYOUT_FIX_HEIGHT, 0, 0, 0, 160, DEFAULT_SPACING, DEFAULT_SPACING, DEFAULT_SPACING, DEFAULT_SPACING, DEFAULT_SPACING, 0);
 
     // Font families, to be filled later
-    new FXLabel(controls, _("&Family:"), NULL, JUSTIFY_LEFT|LAYOUT_FILL_X|LAYOUT_FILL_COLUMN);
-    family = new FXTextField(controls, 10, NULL, 0, TEXTFIELD_READONLY|FRAME_SUNKEN|LAYOUT_FILL_X|LAYOUT_FILL_COLUMN);
-    FXHorizontalFrame* familyframe = new FXHorizontalFrame(controls, FRAME_THICK|LAYOUT_FILL_Y|LAYOUT_FILL_X|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW, 0, 0, 0, 0, 0, 0, 0, 0);
-    familylist = new FXList(familyframe, this, ID_FAMILY, LIST_BROWSESELECT|LAYOUT_FILL_Y|LAYOUT_FILL_X|HSCROLLER_NEVER|VSCROLLER_ALWAYS);
+    new FXLabel(controls, _("&Family:"), NULL, JUSTIFY_LEFT | LAYOUT_FILL_X | LAYOUT_FILL_COLUMN);
+    family = new FXTextField(controls, 10, NULL, 0, TEXTFIELD_READONLY | FRAME_SUNKEN | LAYOUT_FILL_X | LAYOUT_FILL_COLUMN);
+    FXHorizontalFrame* familyframe = new FXHorizontalFrame(controls, FRAME_THICK | LAYOUT_FILL_Y | LAYOUT_FILL_X | LAYOUT_FILL_COLUMN | LAYOUT_FILL_ROW, 0, 0, 0, 0, 0, 0, 0, 0);
+    familylist = new FXList(familyframe, this, ID_FAMILY, LIST_BROWSESELECT | LAYOUT_FILL_Y | LAYOUT_FILL_X | HSCROLLER_NEVER | VSCROLLER_ALWAYS);
 
     // Initial focus on list
     familylist->setFocus();
 
     // Font weights
-    new FXLabel(controls, _("&Weight:"), NULL, JUSTIFY_LEFT|LAYOUT_FILL_X|LAYOUT_FILL_COLUMN);
-    weight = new FXTextField(controls, 4, NULL, 0, TEXTFIELD_READONLY|FRAME_SUNKEN|LAYOUT_FILL_X|LAYOUT_FILL_COLUMN);
-    FXHorizontalFrame* weightframe = new FXHorizontalFrame(controls, FRAME_THICK|LAYOUT_FILL_Y|LAYOUT_FILL_X|LAYOUT_FILL_ROW|LAYOUT_FILL_COLUMN, 0, 0, 0, 0, 0, 0, 0, 0);
-    weightlist = new FXList(weightframe, this, ID_WEIGHT, LIST_BROWSESELECT|LAYOUT_FILL_Y|LAYOUT_FILL_X|HSCROLLER_NEVER|VSCROLLER_ALWAYS);
+    new FXLabel(controls, _("&Weight:"), NULL, JUSTIFY_LEFT | LAYOUT_FILL_X | LAYOUT_FILL_COLUMN);
+    weight = new FXTextField(controls, 4, NULL, 0, TEXTFIELD_READONLY | FRAME_SUNKEN | LAYOUT_FILL_X | LAYOUT_FILL_COLUMN);
+    FXHorizontalFrame* weightframe = new FXHorizontalFrame(controls, FRAME_THICK | LAYOUT_FILL_Y | LAYOUT_FILL_X | LAYOUT_FILL_ROW | LAYOUT_FILL_COLUMN, 0, 0, 0, 0, 0, 0, 0, 0);
+    weightlist = new FXList(weightframe, this, ID_WEIGHT, LIST_BROWSESELECT | LAYOUT_FILL_Y | LAYOUT_FILL_X | HSCROLLER_NEVER | VSCROLLER_ALWAYS);
 
     // Font styles
-    new FXLabel(controls, _("&Style:"), NULL, JUSTIFY_LEFT|LAYOUT_FILL_X|LAYOUT_FILL_COLUMN);
-    style = new FXTextField(controls, 6, NULL, 0, TEXTFIELD_READONLY|FRAME_SUNKEN|LAYOUT_FILL_X|LAYOUT_FILL_COLUMN);
-    FXHorizontalFrame* styleframe = new FXHorizontalFrame(controls, FRAME_THICK|LAYOUT_FILL_Y|LAYOUT_FILL_X|LAYOUT_FILL_ROW|LAYOUT_FILL_COLUMN, 0, 0, 0, 0, 0, 0, 0, 0);
-    stylelist = new FXList(styleframe, this, ID_STYLE, LIST_BROWSESELECT|LAYOUT_FILL_Y|LAYOUT_FILL_X|HSCROLLER_NEVER|VSCROLLER_ALWAYS);
+    new FXLabel(controls, _("&Style:"), NULL, JUSTIFY_LEFT | LAYOUT_FILL_X | LAYOUT_FILL_COLUMN);
+    style = new FXTextField(controls, 6, NULL, 0, TEXTFIELD_READONLY | FRAME_SUNKEN | LAYOUT_FILL_X | LAYOUT_FILL_COLUMN);
+    FXHorizontalFrame* styleframe = new FXHorizontalFrame(controls, FRAME_THICK | LAYOUT_FILL_Y | LAYOUT_FILL_X | LAYOUT_FILL_ROW | LAYOUT_FILL_COLUMN, 0, 0, 0, 0, 0, 0, 0, 0);
+    stylelist = new FXList(styleframe, this, ID_STYLE, LIST_BROWSESELECT | LAYOUT_FILL_Y | LAYOUT_FILL_X | HSCROLLER_NEVER | VSCROLLER_ALWAYS);
 
     // Font sizes, to be filled later
-    new FXLabel(controls, _("Si&ze:"), NULL, JUSTIFY_LEFT|LAYOUT_FILL_X|LAYOUT_FILL_COLUMN);
-    size = new FXTextField(controls, 2, this, ID_SIZE_TEXT, FRAME_SUNKEN|LAYOUT_FILL_X|LAYOUT_FILL_COLUMN);
-    FXHorizontalFrame* sizeframe = new FXHorizontalFrame(controls, FRAME_THICK|LAYOUT_FILL_Y|LAYOUT_FILL_X|LAYOUT_FILL_ROW|LAYOUT_FILL_COLUMN, 0, 0, 0, 0, 0, 0, 0, 0);
-    sizelist = new FXList(sizeframe, this, ID_SIZE, LIST_BROWSESELECT|LAYOUT_FILL_Y|LAYOUT_FILL_X|HSCROLLER_NEVER|VSCROLLER_ALWAYS);
+    new FXLabel(controls, _("Si&ze:"), NULL, JUSTIFY_LEFT | LAYOUT_FILL_X | LAYOUT_FILL_COLUMN);
+    size = new FXTextField(controls, 2, this, ID_SIZE_TEXT, FRAME_SUNKEN | LAYOUT_FILL_X | LAYOUT_FILL_COLUMN);
+    FXHorizontalFrame* sizeframe = new FXHorizontalFrame(controls, FRAME_THICK | LAYOUT_FILL_Y | LAYOUT_FILL_X | LAYOUT_FILL_ROW | LAYOUT_FILL_COLUMN, 0, 0, 0, 0, 0, 0, 0, 0);
+    sizelist = new FXList(sizeframe, this, ID_SIZE, LIST_BROWSESELECT | LAYOUT_FILL_Y | LAYOUT_FILL_X | HSCROLLER_NEVER | VSCROLLER_ALWAYS);
 
-    FXMatrix* attributes = new FXMatrix(this, 2, LAYOUT_SIDE_TOP|LAYOUT_FILL_X, 0, 0, 0, 0, DEFAULT_SPACING, DEFAULT_SPACING, DEFAULT_SPACING, DEFAULT_SPACING, DEFAULT_SPACING, 0);
+    FXMatrix* attributes = new FXMatrix(this, 2, LAYOUT_SIDE_TOP | LAYOUT_FILL_X, 0, 0, 0, 0, DEFAULT_SPACING, DEFAULT_SPACING, DEFAULT_SPACING, DEFAULT_SPACING, DEFAULT_SPACING, 0);
 
     // Character set choice
-    new FXLabel(attributes, _("Character Set:"), NULL, LAYOUT_CENTER_Y|LAYOUT_FILL_COLUMN);
-    charset = new FXComboBox(attributes, 8, this, ID_CHARSET, COMBOBOX_STATIC|LAYOUT_CENTER_Y|LAYOUT_FILL_COLUMN);
+    new FXLabel(attributes, _("Character Set:"), NULL, LAYOUT_CENTER_Y | LAYOUT_FILL_COLUMN);
+    charset = new FXComboBox(attributes, 8, this, ID_CHARSET, COMBOBOX_STATIC | LAYOUT_CENTER_Y | LAYOUT_FILL_COLUMN);
     charset->setNumVisible(10);
     charset->appendItem(_("Any"), (void*)0);
     charset->appendItem(_("West European"), (void*)FONTENCODING_WESTEUROPE);
@@ -111,8 +111,8 @@ FontSelector::FontSelector(FXComposite* p, FXObject* tgt, FXSelector sel, FXuint
     charset->setCurrentItem(0);
 
     // Set width
-    new FXLabel(attributes, _("Set Width:"), NULL, LAYOUT_CENTER_Y|LAYOUT_FILL_COLUMN);
-    setwidth = new FXComboBox(attributes, 9, this, ID_SETWIDTH, COMBOBOX_STATIC|LAYOUT_CENTER_Y|LAYOUT_FILL_COLUMN);
+    new FXLabel(attributes, _("Set Width:"), NULL, LAYOUT_CENTER_Y | LAYOUT_FILL_COLUMN);
+    setwidth = new FXComboBox(attributes, 9, this, ID_SETWIDTH, COMBOBOX_STATIC | LAYOUT_CENTER_Y | LAYOUT_FILL_COLUMN);
     setwidth->setNumVisible(10);
     setwidth->appendItem(_("Any"), (void*)0);
     setwidth->appendItem(_("Ultra condensed"), (void*)FXFont::UltraCondensed);
@@ -127,8 +127,8 @@ FontSelector::FontSelector(FXComposite* p, FXObject* tgt, FXSelector sel, FXuint
     setwidth->setCurrentItem(0);
 
     // Pitch
-    new FXLabel(attributes, _("Pitch:"), NULL, LAYOUT_CENTER_Y|LAYOUT_FILL_COLUMN);
-    pitch = new FXComboBox(attributes, 5, this, ID_PITCH, COMBOBOX_STATIC|LAYOUT_CENTER_Y|LAYOUT_FILL_COLUMN);
+    new FXLabel(attributes, _("Pitch:"), NULL, LAYOUT_CENTER_Y | LAYOUT_FILL_COLUMN);
+    pitch = new FXComboBox(attributes, 5, this, ID_PITCH, COMBOBOX_STATIC | LAYOUT_CENTER_Y | LAYOUT_FILL_COLUMN);
     pitch->setNumVisible(3);
     pitch->appendItem(_("Any"), (void*)0);
     pitch->appendItem(_("Fixed"), (void*)FXFont::Fixed);
@@ -136,23 +136,23 @@ FontSelector::FontSelector(FXComposite* p, FXObject* tgt, FXSelector sel, FXuint
     pitch->setCurrentItem(0);
 
     // Check for scalable
-    new FXFrame(attributes, FRAME_NONE|LAYOUT_FILL_COLUMN);
-    scalable = new FXCheckButton(attributes, _("Scalable:") + FXString(" "), this, ID_SCALABLE, JUSTIFY_NORMAL|TEXT_BEFORE_ICON|LAYOUT_CENTER_Y|LAYOUT_FILL_COLUMN);
+    new FXFrame(attributes, FRAME_NONE | LAYOUT_FILL_COLUMN);
+    scalable = new FXCheckButton(attributes, _("Scalable:") + FXString(" "), this, ID_SCALABLE, JUSTIFY_NORMAL | TEXT_BEFORE_ICON | LAYOUT_CENTER_Y | LAYOUT_FILL_COLUMN);
 
     // Check for all (X11) fonts
-    new FXFrame(attributes, FRAME_NONE|LAYOUT_FILL_COLUMN);
-    allfonts = new FXCheckButton(attributes, _("All Fonts:") + FXString(" "), this, ID_ALLFONTS, JUSTIFY_NORMAL|TEXT_BEFORE_ICON|LAYOUT_CENTER_Y|LAYOUT_FILL_COLUMN);
+    new FXFrame(attributes, FRAME_NONE | LAYOUT_FILL_COLUMN);
+    allfonts = new FXCheckButton(attributes, _("All Fonts:") + FXString(" "), this, ID_ALLFONTS, JUSTIFY_NORMAL | TEXT_BEFORE_ICON | LAYOUT_CENTER_Y | LAYOUT_FILL_COLUMN);
 
     // Preview
-    FXVerticalFrame* bottom = new FXVerticalFrame(this, LAYOUT_SIDE_BOTTOM|LAYOUT_FILL_X|LAYOUT_FILL_Y, 0, 0, 0, 0, DEFAULT_SPACING, DEFAULT_SPACING, DEFAULT_SPACING, DEFAULT_SPACING, 0, 0);
-    new FXLabel(bottom, _("Preview:"), NULL, JUSTIFY_LEFT|LAYOUT_FILL_X);
-    FXHorizontalFrame* box = new FXHorizontalFrame(bottom, LAYOUT_FILL_X|LAYOUT_FILL_Y|FRAME_THICK, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-    FXScrollWindow*    scroll = new FXScrollWindow(box, LAYOUT_FILL_X|LAYOUT_FILL_Y);
-    preview = new FXLabel(scroll, "ABCDEFGHIJKLMNOPQRSTUVWXYZ\nabcdefghijklmnopqrstuvwxyz\n0123456789", NULL, JUSTIFY_CENTER_X|JUSTIFY_CENTER_Y);
+    FXVerticalFrame* bottom = new FXVerticalFrame(this, LAYOUT_SIDE_BOTTOM | LAYOUT_FILL_X | LAYOUT_FILL_Y, 0, 0, 0, 0, DEFAULT_SPACING, DEFAULT_SPACING, DEFAULT_SPACING, DEFAULT_SPACING, 0, 0);
+    new FXLabel(bottom, _("Preview:"), NULL, JUSTIFY_LEFT | LAYOUT_FILL_X);
+    FXHorizontalFrame* box = new FXHorizontalFrame(bottom, LAYOUT_FILL_X | LAYOUT_FILL_Y | FRAME_THICK, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+    FXScrollWindow*    scroll = new FXScrollWindow(box, LAYOUT_FILL_X | LAYOUT_FILL_Y);
+    preview = new FXLabel(scroll, "ABCDEFGHIJKLMNOPQRSTUVWXYZ\nabcdefghijklmnopqrstuvwxyz\n0123456789", NULL, JUSTIFY_CENTER_X | JUSTIFY_CENTER_Y);
     preview->setBackColor(getApp()->getBackColor());
 
-	FXString fontname = FXString(DEFAULT_NORMAL_FONT);
-    strlcpy(selected.face, fontname.before(',').text(), sizeof(selected.face)+1);
+    FXString fontname = FXString(DEFAULT_NORMAL_FONT);
+    strlcpy(selected.face, fontname.before(',').text(), sizeof(selected.face) + 1);
     selected.size = 90;
     selected.weight = FXFont::Bold;
     selected.slant = 0;
@@ -178,8 +178,8 @@ void FontSelector::create()
 void FontSelector::listFontFaces()
 {
     FXFontDesc* fonts;
-    FXuint      numfonts, f;
-    int         selindex = -1;
+    FXuint numfonts, f;
+    int selindex = -1;
 
     familylist->clearItems();
     family->setText("");
@@ -203,7 +203,7 @@ void FontSelector::listFontFaces()
             familylist->setCurrentItem(selindex);
             familylist->makeItemVisible(selindex);
             family->setText(familylist->getItemText(selindex));
-            strlcpy(selected.face, familylist->getItemText(selindex).text(), sizeof(selected.face)+1);
+            strlcpy(selected.face, familylist->getItemText(selindex).text(), sizeof(selected.face) + 1);
         }
         FXFREE(&fonts);
     }
@@ -214,9 +214,9 @@ void FontSelector::listFontFaces()
 void FontSelector::listWeights()
 {
     FXFontDesc* fonts;
-    FXuint      numfonts, f, ww, lastww;
+    FXuint numfonts, f, ww, lastww;
     const char* wgt;
-    int         selindex = -1;
+    int selindex = -1;
 
     weightlist->clearItems();
     weight->setText("");
@@ -279,7 +279,7 @@ void FontSelector::listWeights()
                 // Remember if this was the current selection
                 if (selected.weight == ww)
                 {
-                    selindex = weightlist->getNumItems()-1;
+                    selindex = weightlist->getNumItems() - 1;
                 }
                 lastww = ww;
             }
@@ -304,9 +304,9 @@ void FontSelector::listWeights()
 void FontSelector::listSlants()
 {
     FXFontDesc* fonts;
-    FXuint      numfonts, f, s, lasts;
+    FXuint numfonts, f, s, lasts;
     const char* slt;
-    int         selindex = -1;
+    int selindex = -1;
 
     stylelist->clearItems();
     style->setText("");
@@ -353,7 +353,7 @@ void FontSelector::listSlants()
                 // Remember if this was the current selection
                 if (selected.slant == s)
                 {
-                    selindex = stylelist->getNumItems()-1;
+                    selindex = stylelist->getNumItems() - 1;
                 }
                 lasts = s;
             }
@@ -382,8 +382,8 @@ void FontSelector::listFontSizes()
         60, 80, 90, 100, 110, 120, 140, 160, 200, 240, 300, 360, 420, 480, 640
     };
     FXFontDesc* fonts;
-    FXuint      numfonts, f, s, lasts;
-    int         selindex = -1;
+    FXuint numfonts, f, s, lasts;
+    int selindex = -1;
 
     sizelist->clearItems();
     size->setText("");
@@ -392,16 +392,16 @@ void FontSelector::listFontSizes()
     {
         FXASSERT(0 < numfonts);
         lasts = 0;
-        if (fonts[0].flags&FXFont::Scalable)
+        if (fonts[0].flags & FXFont::Scalable)
         {
             for (f = 0; f < ARRAYNUMBER(sizeint); f++)
             {
                 s = sizeint[f];
-                string.format("%.1f", 0.1*s);
+                string.format("%.1f", 0.1 * s);
                 sizelist->appendItem(string, NULL, (void*)(FXuval)s);
                 if (selected.size == s)
                 {
-                    selindex = sizelist->getNumItems()-1;
+                    selindex = sizelist->getNumItems() - 1;
                 }
                 lasts = s;
             }
@@ -413,11 +413,11 @@ void FontSelector::listFontSizes()
                 s = fonts[f].size;
                 if (s != lasts)
                 {
-                    string.format("%.1f", 0.1*s);
+                    string.format("%.1f", 0.1 * s);
                     sizelist->appendItem(string, NULL, (void*)(FXuval)s);
                     if (selected.size == s)
                     {
-                        selindex = sizelist->getNumItems()-1;
+                        selindex = sizelist->getNumItems() - 1;
                     }
                     lasts = s;
                 }
@@ -464,7 +464,7 @@ void FontSelector::previewFont()
 // Selected font family
 long FontSelector::onCmdFamily(FXObject*, FXSelector, void* ptr)
 {
-    strlcpy(selected.face, familylist->getItemText((int)(FXival)ptr).text(), sizeof(selected.face)+1);
+    strlcpy(selected.face, familylist->getItemText((int)(FXival)ptr).text(), sizeof(selected.face) + 1);
     family->setText(selected.face);
     listWeights();
     listSlants();
@@ -499,7 +499,7 @@ long FontSelector::onCmdSize(FXObject*, FXSelector, void* ptr)
 // User clicked up directory button
 long FontSelector::onCmdSizeText(FXObject*, FXSelector, void*)
 {
-    selected.size = (FXuint)(10.0*FXFloatVal(size->getText()));
+    selected.size = (FXuint)(10.0 * FXFloatVal(size->getText()));
     if (selected.size < 60)
     {
         selected.size = 60;
@@ -534,7 +534,7 @@ long FontSelector::onCmdStyleText(FXObject*, FXSelector, void*)
 // Character set
 long FontSelector::onCmdCharset(FXObject*, FXSelector, void*)
 {
-    int    index = charset->getCurrentItem();
+    int index = charset->getCurrentItem();
     FXuint enc = (FXuint)(FXuval)charset->getItemData(index);
 
     selected.encoding = (FXFontEncoding)enc;
@@ -583,7 +583,7 @@ long FontSelector::onCmdPitch(FXObject*, FXSelector, void*)
 {
     int index = pitch->getCurrentItem();
 
-    selected.flags &= ~(FXFont::Fixed|FXFont::Variable);
+    selected.flags &= ~(FXFont::Fixed | FXFont::Variable);
     selected.flags |= (FXuint)(FXuval)pitch->getItemData(index);
     listFontFaces();
     listWeights();
@@ -597,7 +597,7 @@ long FontSelector::onCmdPitch(FXObject*, FXSelector, void*)
 // Update pitch
 long FontSelector::onUpdPitch(FXObject*, FXSelector, void*)
 {
-    pitch->setCurrentItem((selected.flags&FXFont::Fixed) ? 1 : (selected.flags&FXFont::Variable) ? 2 : 0);
+    pitch->setCurrentItem((selected.flags & FXFont::Fixed) ? 1 : (selected.flags & FXFont::Variable) ? 2 : 0);
     return(1);
 }
 
@@ -625,7 +625,7 @@ long FontSelector::onCmdScalable(FXObject*, FXSelector, void* ptr)
 // Update scalable toggle
 long FontSelector::onUpdScalable(FXObject*, FXSelector, void*)
 {
-    scalable->setCheck((selected.flags&FXFont::Scalable) != 0);
+    scalable->setCheck((selected.flags & FXFont::Scalable) != 0);
     return(1);
 }
 
@@ -653,7 +653,7 @@ long FontSelector::onCmdAllFonts(FXObject*, FXSelector, void* ptr)
 // Update all fonts toggle
 long FontSelector::onUpdAllFonts(FXObject*, FXSelector, void*)
 {
-    allfonts->setCheck((selected.flags&FXFont::X11) != 0);
+    allfonts->setCheck((selected.flags & FXFont::X11) != 0);
     return(1);
 }
 
@@ -784,9 +784,9 @@ FXIMPLEMENT(FontDialog, DialogBox, NULL, 0)
 
 // Separator item
 FontDialog::FontDialog(FXWindow* owner, const FXString& name, FXuint opts, int x, int y, int w, int h) :
-    DialogBox(owner, name, opts|DECOR_TITLE|DECOR_BORDER|DECOR_RESIZE|DECOR_MAXIMIZE|DECOR_CLOSE, x, y, w, h, 0, 0, 0, 0, 4, 4)
+    DialogBox(owner, name, opts | DECOR_TITLE | DECOR_BORDER | DECOR_RESIZE | DECOR_MAXIMIZE | DECOR_CLOSE, x, y, w, h, 0, 0, 0, 0, 4, 4)
 {
-    fontbox = new FontSelector(this, NULL, 0, LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    fontbox = new FontSelector(this, NULL, 0, LAYOUT_FILL_X | LAYOUT_FILL_Y);
     fontbox->acceptButton()->setTarget(this);
     fontbox->acceptButton()->setSelector(DialogBox::ID_ACCEPT);
     fontbox->cancelButton()->setTarget(this);

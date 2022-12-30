@@ -132,7 +132,7 @@ void StringList::removeAfterItem(StringItem* item)
 int StringList::getNumItems(void)
 {
     StringItem* item;
-    int         num = 0;
+    int num = 0;
 
     item = this->first;
 
@@ -230,7 +230,7 @@ StringItem* StringList::getItemAtPos(const int pos)
 {
     int num = getNumItems();
 
-    if ((num == 0) || (pos < 0) || (pos > num-1))
+    if ((num == 0) || (pos < 0) || (pos > num - 1))
     {
         return(NULL);
     }

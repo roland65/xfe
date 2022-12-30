@@ -30,10 +30,10 @@ public:
         input->setText(text);
     }
 
-	void setMessage(const FXString& text)
-	{
-		msg->setText(text);
-	}
+    void setMessage(const FXString& text)
+    {
+        msg->setText(text);
+    }
 
     void selectAll()
     {

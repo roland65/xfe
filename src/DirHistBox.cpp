@@ -33,10 +33,10 @@ FXIMPLEMENT(DirHistBox, DialogBox, DirHistBoxMap, ARRAYNUMBER(DirHistBoxMap))
 DirHistBox::DirHistBox(FXWindow* owner, const char** choices, FXuint opts, int x, int y, int w, int h) :
     DialogBox(owner, "", opts, x, y, w, h, 0, 0, 0, 0, 0, 0)
 {
-    register int       n;
-    FXHorizontalFrame* hor = new FXHorizontalFrame(this, FRAME_RAISED|FRAME_THICK|LAYOUT_SIDE_TOP|LAYOUT_FILL_X|LAYOUT_FILL_Y, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+    int n;
+    FXHorizontalFrame* hor = new FXHorizontalFrame(this, FRAME_RAISED | FRAME_THICK | LAYOUT_SIDE_TOP | LAYOUT_FILL_X | LAYOUT_FILL_Y, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 
-    list = new FXList(hor, this, ID_CLICKED, LIST_BROWSESELECT|LAYOUT_FILL_Y|LAYOUT_FILL_X|HSCROLLING_OFF);
+    list = new FXList(hor, this, ID_CLICKED, LIST_BROWSESELECT | LAYOUT_FILL_Y | LAYOUT_FILL_X | HSCROLLING_OFF);
     list->setBackColor(this->getBackColor());
     n = list->fillItems(choices);
     list->setNumVisible(FXMIN(n, VISIBLE_LINES));
@@ -47,10 +47,10 @@ DirHistBox::DirHistBox(FXWindow* owner, const char** choices, FXuint opts, int x
 DirHistBox::DirHistBox(FXWindow* owner, const FXString& choices, FXuint opts, int x, int y, int w, int h) :
     DialogBox(owner, "", opts, x, y, w, h, 0, 0, 0, 0, 0, 0)
 {
-    register int       n;
-    FXHorizontalFrame* hor = new FXHorizontalFrame(this, FRAME_RAISED|FRAME_THICK|LAYOUT_SIDE_TOP|LAYOUT_FILL_X|LAYOUT_FILL_Y, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+    int n;
+    FXHorizontalFrame* hor = new FXHorizontalFrame(this, FRAME_RAISED | FRAME_THICK | LAYOUT_SIDE_TOP | LAYOUT_FILL_X | LAYOUT_FILL_Y, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 
-    list = new FXList(hor, this, ID_CLICKED, LIST_BROWSESELECT|LAYOUT_FILL_Y|LAYOUT_FILL_X|HSCROLLING_OFF);
+    list = new FXList(hor, this, ID_CLICKED, LIST_BROWSESELECT | LAYOUT_FILL_Y | LAYOUT_FILL_X | HSCROLLING_OFF);
     list->setBackColor(this->getBackColor());
     n = list->fillItems(choices);
     list->setNumVisible(FXMIN(n, VISIBLE_LINES));

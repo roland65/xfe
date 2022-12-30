@@ -37,8 +37,8 @@
 #define ITEM_HEIGHT            1      // Initial item height
 #define ITEM_WIDTH             1      // Initial item width
 
-#define SELECT_MASK            (_ICONLIST_EXTENDEDSELECT|_ICONLIST_SINGLESELECT|_ICONLIST_BROWSESELECT|_ICONLIST_MULTIPLESELECT)
-#define ICONLIST_MASK          (SELECT_MASK|_ICONLIST_MINI_ICONS|_ICONLIST_BIG_ICONS|_ICONLIST_COLUMNS|_ICONLIST_AUTOSIZE)
+#define SELECT_MASK            (_ICONLIST_EXTENDEDSELECT | _ICONLIST_SINGLESELECT | _ICONLIST_BROWSESELECT | _ICONLIST_MULTIPLESELECT)
+#define ICONLIST_MASK          (SELECT_MASK | _ICONLIST_MINI_ICONS | _ICONLIST_BIG_ICONS | _ICONLIST_COLUMNS | _ICONLIST_AUTOSIZE)
 
 extern FXuint single_click;
 extern FXbool file_tooltips;
@@ -68,13 +68,13 @@ inline FXbool IconItem::isOdd(int i) const
 // Draw item
 void IconItem::draw(IconList* list, FXDC& dc, int x, int y, int w, int h) const
 {
-    register FXuint options = list->getListStyle();
+    FXuint options = list->getListStyle();
 
-    if (options&_ICONLIST_BIG_ICONS)
+    if (options & _ICONLIST_BIG_ICONS)
     {
         drawBigIcon(list, dc, x, y, w, h);
     }
-    else if (options&_ICONLIST_MINI_ICONS)
+    else if (options & _ICONLIST_MINI_ICONS)
     {
         drawMiniIcon(list, dc, x, y, w, h);
     }
@@ -88,26 +88,25 @@ void IconItem::draw(IconList* list, FXDC& dc, int x, int y, int w, int h) const
 // Draw big icon
 void IconItem::drawBigIcon(const IconList* list, FXDC& dc, int x, int y, int w, int h) const
 {
-    register int     len, dw, s, space, xt, yt, xi, yi;
-    register FXFont* font = list->getFont();
-    register int     iw = 0, ih = 0, tw = 0, th = 0, ss = 0;
+    int len, dw, s, space, xt, yt, xi, yi;
+    FXFont* font = list->getFont();
+    int iw = 0, ih = 0, tw = 0, th = 0, ss = 0;
 
-    space = w-SIDE_SPACING;
+    space = w - SIDE_SPACING;
 
     if (!label.empty())
     {
         for (len = 0; len < label.length() && label[len] != '\t'; len++)
-        {
-        }
-        tw = 4+font->getTextWidth(label.text(), len);
-        th = 4+font->getFontHeight();
-        yt = y+h-th-BIG_LINE_SPACING/2;
+        {}
+        tw = 4 + font->getTextWidth(label.text(), len);
+        th = 4 + font->getFontHeight();
+        yt = y + h - th - BIG_LINE_SPACING / 2;
         dw = 0;
         if (tw > space)
         {
             dw = font->getTextWidth("...", 3);
-            s = space-dw;
-            while ((tw = 4+font->getTextWidth(label.text(), len)) > s && len > 1)
+            s = space - dw;
+            while ((tw = 4 + font->getTextWidth(label.text(), len)) > s && len > 1)
             {
                 len = label.dec(len);
             }
@@ -118,11 +117,11 @@ void IconItem::drawBigIcon(const IconList* list, FXDC& dc, int x, int y, int w, 
         }
         if (tw <= space)         // FIXME as below in drawDetails
         {
-            xt = x+(w-tw-dw)/2;
+            xt = x + (w - tw - dw) / 2;
             if (isSelected())
             {
                 dc.setForeground(list->getSelBackColor());
-                dc.fillRectangle(xt, yt, tw+dw, th);
+                dc.fillRectangle(xt, yt, tw + dw, th);
             }
             if (!isEnabled())
             {
@@ -136,14 +135,14 @@ void IconItem::drawBigIcon(const IconList* list, FXDC& dc, int x, int y, int w, 
             {
                 dc.setForeground(list->getTextColor());
             }
-            dc.drawText(xt+2, yt+font->getFontAscent()+2, label.text(), len);
+            dc.drawText(xt + 2, yt + font->getFontAscent() + 2, label.text(), len);
             if (dw)
             {
-                dc.drawText(xt+tw-2, yt+font->getFontAscent()+2, "...", 3);
+                dc.drawText(xt + tw - 2, yt + font->getFontAscent() + 2, "...", 3);
             }
             if (hasFocus())
             {
-                dc.drawFocusRectangle(xt+1, yt+1, tw+dw-2, th-2);
+                dc.drawFocusRectangle(xt + 1, yt + 1, tw + dw - 2, th - 2);
             }
         }
         ss = BIG_TEXT_SPACING;    // Space between text and icon only added if we have both icon and text
@@ -152,8 +151,8 @@ void IconItem::drawBigIcon(const IconList* list, FXDC& dc, int x, int y, int w, 
     {
         iw = bigIcon->getWidth();
         ih = bigIcon->getHeight();
-        xi = x+(w-iw)/2;
-        yi = y+BIG_LINE_SPACING/2+(h-th-BIG_LINE_SPACING-ss-ih)/2;
+        xi = x + (w - iw) / 2;
+        yi = y + BIG_LINE_SPACING / 2 + (h - th - BIG_LINE_SPACING - ss - ih) / 2;
         if (isSelected())
         {
             dc.drawIconShaded(bigIcon, xi, yi);
@@ -169,12 +168,12 @@ void IconItem::drawBigIcon(const IconList* list, FXDC& dc, int x, int y, int w, 
 // Draw mini icon
 void IconItem::drawMiniIcon(const IconList* list, FXDC& dc, int x, int y, int w, int h) const
 {
-    register FXFont* font = list->getFont();
-    register int     iw = 0, ih = 0, tw = 0, th = 0;
-    register int     len, dw, s, space;
+    FXFont* font = list->getFont();
+    int iw = 0, ih = 0, tw = 0, th = 0;
+    int len, dw, s, space;
 
-    x += SIDE_SPACING/2;
-    space = w-SIDE_SPACING;
+    x += SIDE_SPACING / 2;
+    space = w - SIDE_SPACING;
 
     if (miniIcon)
     {
@@ -182,30 +181,28 @@ void IconItem::drawMiniIcon(const IconList* list, FXDC& dc, int x, int y, int w,
         ih = miniIcon->getHeight();
         if (isSelected())
         {
-            dc.drawIconShaded(miniIcon, x, y+(h-ih)/2);
+            dc.drawIconShaded(miniIcon, x, y + (h - ih) / 2);
         }
         else
         {
-            dc.drawIcon(miniIcon, x, y+(h-ih)/2);
+            dc.drawIcon(miniIcon, x, y + (h - ih) / 2);
         }
-        x += iw+MINI_TEXT_SPACING;
-        space -= iw+MINI_TEXT_SPACING;
+        x += iw + MINI_TEXT_SPACING;
+        space -= iw + MINI_TEXT_SPACING;
     }
     if (!label.empty())
     {
         for (len = 0; len < label.length() && label[len] != '\t'; len++)
-        {
-        }
-        tw = 4+font->getTextWidth(label.text(), len);
-        th = 4+font->getFontHeight();
-        dw = font->getTextWidth("...", 3);
-        y += (h-th)/2;
+        {}
+        tw = 4 + font->getTextWidth(label.text(), len);
+        th = 4 + font->getFontHeight();
+        y += (h - th) / 2;
         dw = 0;
         if (tw > space)                  // FIXME as below in drawDetails
         {
             dw = font->getTextWidth("...", 3);
-            s = space-dw;
-            while ((tw = 4+font->getTextWidth(label.text(), len)) > s && len > 1)
+            s = space - dw;
+            while ((tw = 4 + font->getTextWidth(label.text(), len)) > s && len > 1)
             {
                 len = label.dec(len);
             }
@@ -219,7 +216,7 @@ void IconItem::drawMiniIcon(const IconList* list, FXDC& dc, int x, int y, int w,
             if (isSelected())
             {
                 dc.setForeground(list->getSelBackColor());
-                dc.fillRectangle(x, y, tw+dw, th);
+                dc.fillRectangle(x, y, tw + dw, th);
             }
             if (!isEnabled())
             {
@@ -233,14 +230,14 @@ void IconItem::drawMiniIcon(const IconList* list, FXDC& dc, int x, int y, int w,
             {
                 dc.setForeground(list->getTextColor());
             }
-            dc.drawText(x+2, y+font->getFontAscent()+2, label.text(), len);
+            dc.drawText(x + 2, y + font->getFontAscent() + 2, label.text(), len);
             if (dw)
             {
-                dc.drawText(x+tw-2, y+font->getFontAscent()+2, "...", 3);
+                dc.drawText(x + tw - 2, y + font->getFontAscent() + 2, "...", 3);
             }
             if (hasFocus())
             {
-                dc.drawFocusRectangle(x+1, y+1, tw+dw-2, th-2);
+                dc.drawFocusRectangle(x + 1, y + 1, tw + dw - 2, th - 2);
             }
         }
     }
@@ -249,11 +246,11 @@ void IconItem::drawMiniIcon(const IconList* list, FXDC& dc, int x, int y, int w,
 
 void IconItem::drawDetails(IconList* list, FXDC& dc, int x, int y, int, int h) const
 {
-    register FXHeader* header = list->getHeader();
-    register FXFont*   font = list->getFont();
-    register int       iw = 0, ih = 0, tw = 0, th = 0, yt, beg, end, hi, drw, space, used, dw, xx, dx = 0;
-    register FXbool    highlight;
-    register FXuint    options = list->getListStyle();
+    FXHeader* header = list->getHeader();
+    FXFont*   font = list->getFont();
+    int iw = 0, ih = 0, tw = 0, th = 0, yt, beg, end, hi, drw, space, used, dw, xx, dx = 0;
+    FXbool highlight;
+    FXuint options = list->getListStyle();
 
     if (header->getNumItems() == 0)
     {
@@ -278,12 +275,12 @@ void IconItem::drawDetails(IconList* list, FXDC& dc, int x, int y, int, int h) c
     if (highlight)
     {
         dc.setForeground(list->getSortColor());
-        dc.fillRectangle(x+dx, y, header->getItemSize(list->getSortHeader()), h);
+        dc.fillRectangle(x + dx, y, header->getItemSize(list->getSortHeader()), h);
     }
     else
     {
         dc.setForeground(list->getHighlightSortColor());
-        dc.fillRectangle(x+dx, y, header->getItemSize(list->getSortHeader()), h);
+        dc.fillRectangle(x + dx, y, header->getItemSize(list->getSortHeader()), h);
     }
 
     // Color the selected items
@@ -294,23 +291,23 @@ void IconItem::drawDetails(IconList* list, FXDC& dc, int x, int y, int, int h) c
     }
     if (hasFocus())
     {
-        dc.drawFocusRectangle(x+1, y+1, header->getTotalSize()-2, h-2);
+        dc.drawFocusRectangle(x + 1, y + 1, header->getTotalSize() - 2, h - 2);
     }
-    xx = x+SIDE_SPACING/2;
+    xx = x + SIDE_SPACING / 2;
     if (miniIcon)
     {
         iw = miniIcon->getWidth();
         ih = miniIcon->getHeight();
         dc.setClipRectangle(x, y, header->getItemSize(0), h);
-        dc.drawIcon(miniIcon, xx, y+(h-ih)/2);
+        dc.drawIcon(miniIcon, xx, y + (h - ih) / 2);
         dc.clearClipRectangle();
-        xx += iw+DETAIL_TEXT_SPACING;
+        xx += iw + DETAIL_TEXT_SPACING;
     }
     if (!label.empty())
     {
         th = font->getFontHeight();
         dw = font->getTextWidth("...", 3);
-        yt = y+(h-th-4)/2;
+        yt = y + (h - th - 4) / 2;
         if (!isEnabled())
         {
             dc.setForeground(makeShadowColor(list->getBackColor()));
@@ -323,54 +320,53 @@ void IconItem::drawDetails(IconList* list, FXDC& dc, int x, int y, int, int h) c
         {
             dc.setForeground(list->getTextColor());
         }
-        used = iw+DETAIL_TEXT_SPACING+SIDE_SPACING/2;
+        used = iw + DETAIL_TEXT_SPACING + SIDE_SPACING / 2;
 
-        for (hi = beg = 0; beg < label.length() && hi < header->getNumItems(); hi++, beg = end+1)
+        for (hi = beg = 0; beg < label.length() && hi < header->getNumItems(); hi++, beg = end + 1)
         {
-            space = header->getItemSize(hi)-used;
+            space = header->getItemSize(hi) - used;
             for (end = beg; end < label.length() && label[end] != '\t'; end++)
-            {
-            }
+            {}
             if (end > beg)
             {
-                drw = end-beg;
+                drw = end - beg;
                 tw = font->getTextWidth(&label[beg], drw);
 
                 // Right justify the file size column (second one in file list mode or third one in search list mode)
-                if (!(options&_ICONLIST_STANDARD) && ((!(options&_ICONLIST_SEARCH) && (hi == 1)) || (options&_ICONLIST_SEARCH && (hi == 2))))
+                if (!(options & _ICONLIST_STANDARD) && ((!(options & _ICONLIST_SEARCH) && (hi == 1)) || (options & _ICONLIST_SEARCH && (hi == 2))))
                 {
-                    if (tw > space-20)
+                    if (tw > space - 20)
                     {
-                        while ((tw = font->getTextWidth(&label[beg], drw))+dw > space-4 && drw > 1)
+                        while ((tw = font->getTextWidth(&label[beg], drw)) + dw > space - 4 && drw > 1)
                         {
                             drw--;
                         }
                         dc.setClipRectangle(xx, y, space, h);
-                        dc.drawText(xx+2, yt+font->getFontAscent()+2, &label[beg], drw);
-                        dc.drawText(xx+tw+2, yt+font->getFontAscent()+2, "...", 3);
+                        dc.drawText(xx + 2, yt + font->getFontAscent() + 2, &label[beg], drw);
+                        dc.drawText(xx + tw + 2, yt + font->getFontAscent() + 2, "...", 3);
                         dc.clearClipRectangle();
                     }
                     else
                     {
-                        dc.drawText(xx+space-tw-20, yt+font->getFontAscent()+2, &label[beg], drw);
+                        dc.drawText(xx + space - tw - 20, yt + font->getFontAscent() + 2, &label[beg], drw);
                     }
                 }
                 else
                 {
-                    if (tw > space-4)
+                    if (tw > space - 4)
                     {
-                        while ((tw = font->getTextWidth(&label[beg], drw))+dw > space-4 && drw > 1)
+                        while ((tw = font->getTextWidth(&label[beg], drw)) + dw > space - 4 && drw > 1)
                         {
                             drw--;
                         }
                         dc.setClipRectangle(xx, y, space, h);
-                        dc.drawText(xx+2, yt+font->getFontAscent()+2, &label[beg], drw);
-                        dc.drawText(xx+tw+2, yt+font->getFontAscent()+2, "...", 3);
+                        dc.drawText(xx + 2, yt + font->getFontAscent() + 2, &label[beg], drw);
+                        dc.drawText(xx + tw + 2, yt + font->getFontAscent() + 2, "...", 3);
                         dc.clearClipRectangle();
                     }
                     else
                     {
-                        dc.drawText(xx+2, yt+font->getFontAscent()+2, &label[beg], drw);
+                        dc.drawText(xx + 2, yt + font->getFontAscent() + 2, &label[beg], drw);
                     }
                 }
             }
@@ -384,22 +380,21 @@ void IconItem::drawDetails(IconList* list, FXDC& dc, int x, int y, int, int h) c
 // See if item got hit and where: 0 is outside, 1 is icon, 2 is text
 int IconItem::hitItem(const IconList* list, int rx, int ry, int rw, int rh) const
 {
-    register int     iw = 0, tw = 0, ih = 0, th = 0, ss = 0, ix, iy, tx, ty, w, h, sp, tlen;
-    register FXuint  options = list->getListStyle();
-    register FXFont* font = list->getFont();
+    int iw = 0, tw = 0, ih = 0, th = 0, ss = 0, ix, iy, tx, ty, w, h, sp, tlen;
+    FXuint options = list->getListStyle();
+    FXFont* font = list->getFont();
 
     for (tlen = 0; tlen < label.length() && label[tlen] != '\t'; tlen++)
-    {
-    }
-    if (options&_ICONLIST_BIG_ICONS)
+    {}
+    if (options & _ICONLIST_BIG_ICONS)
     {
         w = list->getItemSpace();
         h = list->getItemHeight();
-        sp = w-SIDE_SPACING;
+        sp = w - SIDE_SPACING;
         if (!label.empty())
         {
-            tw = 4+font->getTextWidth(label.text(), tlen);
-            th = 4+font->getFontHeight();
+            tw = 4 + font->getTextWidth(label.text(), tlen);
+            th = 4 + font->getFontHeight();
             if (tw > sp)
             {
                 tw = sp;
@@ -414,64 +409,64 @@ int IconItem::hitItem(const IconList* list, int rx, int ry, int rw, int rh) cons
             iw = bigIcon->getWidth();
             ih = bigIcon->getHeight();
         }
-        ty = h-th-BIG_LINE_SPACING/2;
-        iy = BIG_LINE_SPACING/2+(h-th-BIG_LINE_SPACING-ss-ih)/2;
-        ix = (w-iw)/2;
-        tx = (w-tw)/2;
+        ty = h - th - BIG_LINE_SPACING / 2;
+        iy = BIG_LINE_SPACING / 2 + (h - th - BIG_LINE_SPACING - ss - ih) / 2;
+        ix = (w - iw) / 2;
+        tx = (w - tw) / 2;
     }
-    else if (options&_ICONLIST_MINI_ICONS)
+    else if (options & _ICONLIST_MINI_ICONS)
     {
-        sp = list->getItemSpace()-SIDE_SPACING;
-        ix = SIDE_SPACING/2;
-        tx = SIDE_SPACING/2;
+        sp = list->getItemSpace() - SIDE_SPACING;
+        ix = SIDE_SPACING / 2;
+        tx = SIDE_SPACING / 2;
         if (miniIcon)
         {
             iw = miniIcon->getWidth();
             ih = miniIcon->getHeight();
-            tx += iw+MINI_TEXT_SPACING;
-            sp = sp-iw-MINI_TEXT_SPACING;
+            tx += iw + MINI_TEXT_SPACING;
+            sp = sp - iw - MINI_TEXT_SPACING;
         }
         if (!label.empty())
         {
-            tw = 4+font->getTextWidth(label.text(), tlen);
-            th = 4+font->getFontHeight();
+            tw = 4 + font->getTextWidth(label.text(), tlen);
+            th = 4 + font->getFontHeight();
             if (tw > sp)
             {
                 tw = sp;
             }
         }
         h = list->getItemHeight();
-        iy = (h-ih)/2;
-        ty = (h-th)/2;
+        iy = (h - ih) / 2;
+        ty = (h - th) / 2;
     }
     else
     {
-        ix = SIDE_SPACING/2;
-        tx = SIDE_SPACING/2;
+        ix = SIDE_SPACING / 2;
+        tx = SIDE_SPACING / 2;
         if (miniIcon)
         {
             iw = miniIcon->getWidth();
             ih = miniIcon->getHeight();
-            tx += iw+DETAIL_TEXT_SPACING;
+            tx += iw + DETAIL_TEXT_SPACING;
         }
         if (!label.empty())
         {
             tw = 10000000;
-            th = 4+font->getFontHeight();
+            th = 4 + font->getFontHeight();
         }
         h = list->getItemHeight();
-        iy = (h-ih)/2;
-        ty = (h-th)/2;
+        iy = (h - ih) / 2;
+        ty = (h - th) / 2;
     }
 
     // In icon?
-    if ((ix <= rx+rw) && (iy <= ry+rh) && (rx < ix+iw) && (ry < iy+ih))
+    if ((ix <= rx + rw) && (iy <= ry + rh) && (rx < ix + iw) && (ry < iy + ih))
     {
         return(1);
     }
 
     // In text?
-    if ((tx <= rx+rw) && (ty <= ry+rh) && (rx < tx+tw) && (ry < ty+th))
+    if ((tx <= rx + rw) && (ty <= ry + rh) && (rx < tx + tw) && (ry < ty + th))
     {
         return(2);
     }
@@ -547,7 +542,7 @@ void IconItem::setText(const FXString& txt)
 // Change item's big icon
 void IconItem::setBigIcon(FXIcon* icn, FXbool owned)
 {
-    if (bigIcon && (state&BIGICONOWNED))
+    if (bigIcon && (state & BIGICONOWNED))
     {
         if (bigIcon != icn)
         {
@@ -566,7 +561,7 @@ void IconItem::setBigIcon(FXIcon* icn, FXbool owned)
 // Change item's mini icon
 void IconItem::setMiniIcon(FXIcon* icn, FXbool owned)
 {
-    if (miniIcon && (state&MINIICONOWNED))
+    if (miniIcon && (state & MINIICONOWNED))
     {
         if (miniIcon != icn)
         {
@@ -599,11 +594,11 @@ void IconItem::create()
 // Destroy icon
 void IconItem::destroy()
 {
-    if ((state&BIGICONOWNED) && bigIcon)
+    if ((state & BIGICONOWNED) && bigIcon)
     {
         bigIcon->destroy();
     }
-    if ((state&MINIICONOWNED) && miniIcon)
+    if ((state & MINIICONOWNED) && miniIcon)
     {
         miniIcon->destroy();
     }
@@ -627,14 +622,13 @@ void IconItem::detach()
 // Get item width
 int IconItem::getWidth(const IconList* list) const
 {
-    register FXuint  options = list->getListStyle();
-    register FXFont* font = list->getFont();
-    register int     iw = 0, tw = 0, w = 0, tlen;
+    FXuint options = list->getListStyle();
+    FXFont* font = list->getFont();
+    int iw = 0, tw = 0, w = 0, tlen;
 
     for (tlen = 0; tlen < label.length() && label[tlen] != '\t'; tlen++)
-    {
-    }
-    if (options&_ICONLIST_BIG_ICONS)
+    {}
+    if (options & _ICONLIST_BIG_ICONS)
     {
         if (bigIcon)
         {
@@ -642,11 +636,11 @@ int IconItem::getWidth(const IconList* list) const
         }
         if (!label.empty())
         {
-            tw = 4+font->getTextWidth(label.text(), tlen);
+            tw = 4 + font->getTextWidth(label.text(), tlen);
         }
-        w = SIDE_SPACING+FXMAX(tw, iw);
+        w = SIDE_SPACING + FXMAX(tw, iw);
     }
-    else if (options&_ICONLIST_MINI_ICONS)
+    else if (options & _ICONLIST_MINI_ICONS)
     {
         if (miniIcon)
         {
@@ -654,13 +648,13 @@ int IconItem::getWidth(const IconList* list) const
         }
         if (!label.empty())
         {
-            tw = 4+font->getTextWidth(label.text(), tlen);
+            tw = 4 + font->getTextWidth(label.text(), tlen);
         }
         if (iw && tw)
         {
             iw += MINI_TEXT_SPACING;
         }
-        w = SIDE_SPACING+iw+tw;
+        w = SIDE_SPACING + iw + tw;
     }
     else
     {
@@ -673,10 +667,10 @@ int IconItem::getWidth(const IconList* list) const
 // Get item height
 int IconItem::getHeight(const IconList* list) const
 {
-    register FXuint options = list->getListStyle();
-    register int    ih = 0, th = 0, h = 0;
+    FXuint options = list->getListStyle();
+    int ih = 0, th = 0, h = 0;
 
-    if (options&_ICONLIST_BIG_ICONS)
+    if (options & _ICONLIST_BIG_ICONS)
     {
         if (bigIcon)
         {
@@ -684,15 +678,15 @@ int IconItem::getHeight(const IconList* list) const
         }
         if (!label.empty())
         {
-            th = 4+list->getFont()->getFontHeight();
+            th = 4 + list->getFont()->getFontHeight();
         }
         if (ih && th)
         {
             ih += BIG_TEXT_SPACING;
         }
-        h = BIG_LINE_SPACING+ih+th;
+        h = BIG_LINE_SPACING + ih + th;
     }
-    else if (options&_ICONLIST_MINI_ICONS)
+    else if (options & _ICONLIST_MINI_ICONS)
     {
         if (miniIcon)
         {
@@ -700,7 +694,7 @@ int IconItem::getHeight(const IconList* list) const
         }
         if (!label.empty())
         {
-            th = 4+list->getFont()->getFontHeight();
+            th = 4 + list->getFont()->getFontHeight();
         }
         h = FXMAX(ih, th);
     }
@@ -712,7 +706,7 @@ int IconItem::getHeight(const IconList* list) const
         }
         if (!label.empty())
         {
-            th = 4+list->getFont()->getFontHeight();
+            th = 4 + list->getFont()->getFontHeight();
         }
         h = FXMAX(ih, th);
     }
@@ -745,11 +739,11 @@ void IconItem::load(FXStream& store)
 // Delete icons if owned
 IconItem::~IconItem()
 {
-    if (state&BIGICONOWNED)
+    if (state & BIGICONOWNED)
     {
         delete bigIcon;
     }
-    if (state&MINIICONOWNED)
+    if (state & MINIICONOWNED)
     {
         delete miniIcon;
     }
@@ -822,11 +816,11 @@ IconList::IconList(FXComposite* p, FXObject* tgt, FXSelector sel, FXuint opts, i
     FXbool use_clearlooks = getApp()->reg().readUnsignedEntry("SETTINGS", "use_clearlooks", true);
     if (use_clearlooks)
     {
-        header = new FXHeader(this, this, IconList::ID_HEADER_CHANGE, HEADER_TRACKING|HEADER_BUTTON|HEADER_RESIZE|FRAME_RAISED);
+        header = new FXHeader(this, this, IconList::ID_HEADER_CHANGE, HEADER_TRACKING | HEADER_BUTTON | HEADER_RESIZE | FRAME_RAISED);
     }
     else
     {
-        header = new FXHeader(this, this, IconList::ID_HEADER_CHANGE, HEADER_TRACKING|HEADER_BUTTON|HEADER_RESIZE|FRAME_RAISED|FRAME_THICK);
+        header = new FXHeader(this, this, IconList::ID_HEADER_CHANGE, HEADER_TRACKING | HEADER_BUTTON | HEADER_RESIZE | FRAME_RAISED | FRAME_THICK);
     }
 
     target = tgt;
@@ -847,14 +841,14 @@ IconList::IconList(FXComposite* p, FXObject* tgt, FXSelector sel, FXuint opts, i
 
     // Sort colors for detailed mode
     FXColor listbackColor = getApp()->reg().readColorEntry("SETTINGS", "listbackcolor", FXRGB(255, 255, 255));
-    FXuint  R, G, B;
-    R = (FXuint)(DARKEN_SORT*FXREDVAL(listbackColor));
-    G = (FXuint)(DARKEN_SORT*FXGREENVAL(listbackColor));
-    B = (FXuint)(DARKEN_SORT*FXBLUEVAL(listbackColor));
+    FXuint R, G, B;
+    R = (FXuint)(DARKEN_SORT * FXREDVAL(listbackColor));
+    G = (FXuint)(DARKEN_SORT * FXGREENVAL(listbackColor));
+    B = (FXuint)(DARKEN_SORT * FXBLUEVAL(listbackColor));
     sortColor = FXRGB(R, G, B);
-    R = (FXuint)(DARKEN_SORT*FXREDVAL(highlightColor));
-    G = (FXuint)(DARKEN_SORT*FXGREENVAL(highlightColor));
-    B = (FXuint)(DARKEN_SORT*FXBLUEVAL(highlightColor));
+    R = (FXuint)(DARKEN_SORT * FXREDVAL(highlightColor));
+    G = (FXuint)(DARKEN_SORT * FXGREENVAL(highlightColor));
+    B = (FXuint)(DARKEN_SORT * FXBLUEVAL(highlightColor));
     highlightSortColor = FXRGB(R, G, B);
 
     itemSpace = ITEM_SPACE * scalefrac;
@@ -887,7 +881,7 @@ long IconList::onConfigure(FXObject*, FXSelector, void*)
         // Initialize the relative header sizes
         for (int hi = 0; hi < getNumHeaders(); hi++)
         {
-            headerpct[hi] = (double)getHeaderSize(hi)/(double)width;
+            headerpct[hi] = (double)getHeaderSize(hi) / (double)width;
         }
     }
 
@@ -897,19 +891,19 @@ long IconList::onConfigure(FXObject*, FXSelector, void*)
         // Initialize the extra header pcts if necessary
         if (initheaderpct && (getNumHeaders() == 9))  // Search list, is it really necessary???
         {
-            headerpct[8] = (double)getHeaderSize(8)/(double)width;
+            headerpct[8] = (double)getHeaderSize(8) / (double)width;
             initheaderpct = false;
         }
         if (initheaderpct && (getNumHeaders() == 10))
         {
-            headerpct[8] = (double)getHeaderSize(8)/(double)width;
-            headerpct[9] = (double)getHeaderSize(9)/(double)width;
+            headerpct[8] = (double)getHeaderSize(8) / (double)width;
+            headerpct[9] = (double)getHeaderSize(9) / (double)width;
             initheaderpct = false;
         }
         int newhsize;
         for (int hi = 0; hi < getNumHeaders(); hi++)
         {
-            newhsize = (int)round(headerpct[hi]*width);
+            newhsize = (int)round(headerpct[hi] * width);
             setHeaderSize(hi, newhsize);
         }
     }
@@ -927,7 +921,7 @@ long IconList::onConfigure(FXObject*, FXSelector, void*)
 // Create window
 void IconList::create()
 {
-    register int i;
+    int i;
 
     FXScrollArea::create();
     for (i = 0; i < items.no(); i++)
@@ -941,7 +935,7 @@ void IconList::create()
 // Detach window
 void IconList::detach()
 {
-    register int i;
+    int i;
 
     FXScrollArea::detach();
     for (i = 0; i < items.no(); i++)
@@ -978,13 +972,13 @@ void IconList::killFocus()
 // Move content
 void IconList::moveContents(int x, int y)
 {
-    int dx = x-pos_x;
-    int dy = y-pos_y;
+    int dx = x - pos_x;
+    int dy = y - pos_y;
     int top = 0;
 
     pos_x = x;
     pos_y = y;
-    if (!(options&(_ICONLIST_MINI_ICONS|_ICONLIST_BIG_ICONS)))
+    if (!(options & (_ICONLIST_MINI_ICONS | _ICONLIST_BIG_ICONS)))
     {
         top = header->getDefaultHeight();
         header->setPosition(x);
@@ -1005,7 +999,7 @@ void IconList::recalc()
 // Recompute interior
 void IconList::recompute()
 {
-    register int w, h, i;
+    int w, h, i;
 
     itemWidth = ITEM_WIDTH;
     itemHeight = ITEM_HEIGHT;
@@ -1026,7 +1020,7 @@ void IconList::recompute()
     }
 
     // Automatically size item spacing
-    if (options&_ICONLIST_AUTOSIZE)
+    if (options & _ICONLIST_AUTOSIZE)
     {
         itemSpace = FXMAX(itemWidth, 1);
     }
@@ -1036,7 +1030,7 @@ void IconList::recompute()
     }
 
     // Adjust for detail mode
-    if (!(options&(_ICONLIST_MINI_ICONS|_ICONLIST_BIG_ICONS)))
+    if (!(options & (_ICONLIST_MINI_ICONS | _ICONLIST_BIG_ICONS)))
     {
         itemWidth = header->getDefaultWidth();
     }
@@ -1052,24 +1046,24 @@ void IconList::recompute()
 // Determine number of columns and number of rows
 void IconList::getrowscols(int& nr, int& nc, int w, int h) const
 {
-    if (options&(_ICONLIST_BIG_ICONS|_ICONLIST_MINI_ICONS))
+    if (options & (_ICONLIST_BIG_ICONS | _ICONLIST_MINI_ICONS))
     {
-        if (options&_ICONLIST_COLUMNS)
+        if (options & _ICONLIST_COLUMNS)
         {
-            nc = w/itemSpace;
+            nc = w / itemSpace;
             if (nc < 1)
             {
                 nc = 1;
             }
-            nr = (items.no()+nc-1)/nc;
-            if (nr*itemHeight > h)
+            nr = (items.no() + nc - 1) / nc;
+            if (nr * itemHeight > h)
             {
-                nc = (w-vertical->getDefaultWidth())/itemSpace;
+                nc = (w - vertical->getDefaultWidth()) / itemSpace;
                 if (nc < 1)
                 {
                     nc = 1;
                 }
-                nr = (items.no()+nc-1)/nc;
+                nr = (items.no() + nc - 1) / nc;
             }
             if (nr < 1)
             {
@@ -1078,20 +1072,20 @@ void IconList::getrowscols(int& nr, int& nc, int w, int h) const
         }
         else
         {
-            nr = h/itemHeight;
+            nr = h / itemHeight;
             if (nr < 1)
             {
                 nr = 1;
             }
-            nc = (items.no()+nr-1)/nr;
-            if (nc*itemSpace > w)
+            nc = (items.no() + nr - 1) / nr;
+            if (nc * itemSpace > w)
             {
-                nr = (h-horizontal->getDefaultHeight())/itemHeight;
+                nr = (h - horizontal->getDefaultHeight()) / itemHeight;
                 if (nr < 1)
                 {
                     nr = 1;
                 }
-                nc = (items.no()+nr-1)/nr;
+                nc = (items.no() + nr - 1) / nr;
             }
             if (nc < 1)
             {
@@ -1110,20 +1104,20 @@ void IconList::getrowscols(int& nr, int& nc, int w, int h) const
 // Size of a possible column caption
 int IconList::getViewportHeight()
 {
-    return((options&(_ICONLIST_MINI_ICONS|_ICONLIST_BIG_ICONS)) ? height : height-header->getDefaultHeight());
+    return((options & (_ICONLIST_MINI_ICONS | _ICONLIST_BIG_ICONS)) ? height : height - header->getDefaultHeight());
 }
 
 
 // Determine content width of icon list
 int IconList::getContentWidth()
 {
-    if (flags&FLAG_RECALC)
+    if (flags & FLAG_RECALC)
     {
         recompute();
     }
-    if (options&(_ICONLIST_MINI_ICONS|_ICONLIST_BIG_ICONS))
+    if (options & (_ICONLIST_MINI_ICONS | _ICONLIST_BIG_ICONS))
     {
-        return(ncols*itemSpace);
+        return(ncols * itemSpace);
     }
     return(header->getDefaultWidth());
 }
@@ -1132,11 +1126,11 @@ int IconList::getContentWidth()
 // Determine content height of icon list
 int IconList::getContentHeight()
 {
-    if (flags&FLAG_RECALC)
+    if (flags & FLAG_RECALC)
     {
         recompute();
     }
-    return(nrows*itemHeight);
+    return(nrows * itemHeight);
 }
 
 
@@ -1147,7 +1141,7 @@ void IconList::layout()
     FXScrollArea::layout();
 
     // In detail mode
-    if (!(options&(_ICONLIST_MINI_ICONS|_ICONLIST_BIG_ICONS)))
+    if (!(options & (_ICONLIST_MINI_ICONS | _ICONLIST_BIG_ICONS)))
     {
         header->position(0, 0, viewport_w, header->getDefaultHeight());
         header->show();
@@ -1218,8 +1212,7 @@ void IconList::position(int x, int y, int w, int h)
 long IconList::onCmdHeaderClicked(FXObject*, FXSelector, void* ptr)
 {
     if (target && target->tryHandle(this, FXSEL(SEL_COMMAND, message), ptr))
-    {
-    }
+    {}
     return(1);
 }
 
@@ -1234,7 +1227,7 @@ long IconList::onHeaderChanged(FXObject*, FXSelector, void* ptr)
     // Update the header relative sizes
     for (int hi = 0; hi < getNumHeaders(); hi++)
     {
-        headerpct[hi] = (double)getHeaderSize(hi)/(double)width;
+        headerpct[hi] = (double)getHeaderSize(hi) / (double)width;
     }
 
     flags &= ~FLAG_RECALC;
@@ -1247,12 +1240,12 @@ long IconList::onHeaderChanged(FXObject*, FXSelector, void* ptr)
 // to that of the widest item.
 long IconList::onHeaderResize(FXObject*, FXSelector, void* ptr)
 {
-    register int hi = (int)(FXival)ptr;
-    register int i, iw, tw, w, nw = 0;
-    FXString     text;
+    int hi = (int)(FXival)ptr;
+    int i, iw, tw, w, nw = 0;
+    FXString text;
 
     // For detailed icon list
-    if (!(options&(_ICONLIST_MINI_ICONS|_ICONLIST_BIG_ICONS)))
+    if (!(options & (_ICONLIST_MINI_ICONS | _ICONLIST_BIG_ICONS)))
     {
         for (i = 0; i < items.no(); i++)
         {
@@ -1264,7 +1257,7 @@ long IconList::onHeaderResize(FXObject*, FXSelector, void* ptr)
                 if (items[i]->miniIcon)
                 {
                     iw = items[i]->miniIcon->getWidth();
-                    w += iw+DETAIL_TEXT_SPACING+SIDE_SPACING/2;
+                    w += iw + DETAIL_TEXT_SPACING + SIDE_SPACING / 2;
                 }
             }
 
@@ -1273,7 +1266,7 @@ long IconList::onHeaderResize(FXObject*, FXSelector, void* ptr)
             if (!text.empty())
             {
                 tw = font->getTextWidth(text.text(), text.length());
-                w += tw+SIDE_SPACING+2;
+                w += tw + SIDE_SPACING + 2;
             }
 
             // Keep the max
@@ -1543,29 +1536,29 @@ FXbool IconList::isItemEnabled(int index) const
 // True if item (partially) visible
 FXbool IconList::isItemVisible(int index) const
 {
-    register FXbool vis = false;
-    register int    x, y, hh;
+    FXbool vis = false;
+    int x, y, hh;
 
     if ((index < 0) || (items.no() <= index))
     {
         fprintf(stderr, "%s::isItemVisible: index out of range.\n", getClassName());
         exit(EXIT_FAILURE);
     }
-    if (options&(_ICONLIST_BIG_ICONS|_ICONLIST_MINI_ICONS))
+    if (options & (_ICONLIST_BIG_ICONS | _ICONLIST_MINI_ICONS))
     {
-        if (options&_ICONLIST_COLUMNS)
+        if (options & _ICONLIST_COLUMNS)
         {
             FXASSERT(ncols > 0);
-            x = pos_x+itemSpace*(index%ncols);
-            y = pos_y+itemHeight*(index/ncols);
+            x = pos_x + itemSpace * (index % ncols);
+            y = pos_y + itemHeight * (index / ncols);
         }
         else
         {
             FXASSERT(nrows > 0);
-            x = pos_x+itemSpace*(index/nrows);
-            y = pos_y+itemHeight*(index%nrows);
+            x = pos_x + itemSpace * (index / nrows);
+            y = pos_y + itemHeight * (index % nrows);
         }
-        if ((0 < x+itemSpace) && (x < viewport_w) && (0 < y+itemHeight) && (y < viewport_h))
+        if ((0 < x + itemSpace) && (x < viewport_w) && (0 < y + itemHeight) && (y < viewport_h))
         {
             vis = true;
         }
@@ -1573,8 +1566,8 @@ FXbool IconList::isItemVisible(int index) const
     else
     {
         hh = header->getDefaultHeight();
-        y = pos_y+hh+index*itemHeight;
-        if ((hh < y+itemHeight) && (y < viewport_h))
+        y = pos_y + hh + index * itemHeight;
+        if ((hh < y + itemHeight) && (y < viewport_h))
         {
             vis = true;
         }
@@ -1586,7 +1579,7 @@ FXbool IconList::isItemVisible(int index) const
 // Make item fully visible
 void IconList::makeItemVisible(int index)
 {
-    register int x, y, hh, px, py;
+    int x, y, hh, px, py;
 
     if ((0 <= index) && (index < items.no()))
     {
@@ -1597,7 +1590,7 @@ void IconList::makeItemVisible(int index)
         if (xid)
         {
             // Force layout if dirty
-            if (flags&FLAG_RECALC)
+            if (flags & FLAG_RECALC)
             {
                 layout();
             }
@@ -1606,33 +1599,33 @@ void IconList::makeItemVisible(int index)
             py = pos_y;
 
             // Showing icon view
-            if (options&(_ICONLIST_BIG_ICONS|_ICONLIST_MINI_ICONS))
+            if (options & (_ICONLIST_BIG_ICONS | _ICONLIST_MINI_ICONS))
             {
-                if (options&_ICONLIST_COLUMNS)
+                if (options & _ICONLIST_COLUMNS)
                 {
                     FXASSERT(ncols > 0);
-                    x = itemSpace*(index%ncols);
-                    y = itemHeight*(index/ncols);
+                    x = itemSpace * (index % ncols);
+                    y = itemHeight * (index / ncols);
                 }
                 else
                 {
                     FXASSERT(nrows > 0);
-                    x = itemSpace*(index/nrows);
-                    y = itemHeight*(index%nrows);
+                    x = itemSpace * (index / nrows);
+                    y = itemHeight * (index % nrows);
                 }
-                if (px+x+itemSpace >= viewport_w)
+                if (px + x + itemSpace >= viewport_w)
                 {
-                    px = viewport_w-x-itemSpace;
+                    px = viewport_w - x - itemSpace;
                 }
-                if (px+x <= 0)
+                if (px + x <= 0)
                 {
                     px = -x;
                 }
-                if (py+y+itemHeight >= viewport_h)
+                if (py + y + itemHeight >= viewport_h)
                 {
-                    py = viewport_h-y-itemHeight;
+                    py = viewport_h - y - itemHeight;
                 }
-                if (py+y <= 0)
+                if (py + y <= 0)
                 {
                     py = -y;
                 }
@@ -1642,14 +1635,14 @@ void IconList::makeItemVisible(int index)
             else
             {
                 hh = header->getDefaultHeight();
-                y = hh+index*itemHeight;
-                if (py+y+itemHeight >= viewport_h+hh)
+                y = hh + index * itemHeight;
+                if (py + y + itemHeight >= viewport_h + hh)
                 {
-                    py = hh+viewport_h-y-itemHeight;
+                    py = hh + viewport_h - y - itemHeight;
                 }
-                if (py+y <= hh)
+                if (py + y <= hh)
                 {
-                    py = hh-y;
+                    py = hh - y;
                 }
             }
 
@@ -1668,20 +1661,20 @@ void IconList::makeItemVisible(int index)
 //int IconList::getItemAt(int x,int y) const
 int IconList::getItemAt(int x, int y)
 {
-    register int ix, iy;
-    register int r, c, index;
+    int ix, iy;
+    int r, c, index;
 
     y -= pos_y;
     x -= pos_x;
 
     // Update the allowTooltip variable
     allowTooltip = true;
-    if (options&_ICONLIST_STANDARD)
+    if (options & _ICONLIST_STANDARD)
     {
         allowTooltip = false;
     }
 
-    if (!(options&_ICONLIST_STANDARD) && (single_click == SINGLE_CLICK_DIR_FILE))
+    if (!(options & _ICONLIST_STANDARD) && (single_click == SINGLE_CLICK_DIR_FILE))
     {
         // Don't change cursor while the wait cursor is displayed
         if (::setWaitCursor(getApp(), QUERY_CURSOR) == 0)
@@ -1690,27 +1683,27 @@ int IconList::getItemAt(int x, int y)
         }
     }
 
-    if (options&(_ICONLIST_BIG_ICONS|_ICONLIST_MINI_ICONS))
+    if (options & (_ICONLIST_BIG_ICONS | _ICONLIST_MINI_ICONS))
     {
-        c = x/itemSpace;
-        r = y/itemHeight;
+        c = x / itemSpace;
+        r = y / itemHeight;
 
         if ((c < 0) || (c >= ncols) || (r < 0) || (r >= nrows))
         {
             return(-1);
         }
 
-        index = (options&_ICONLIST_COLUMNS) ? ncols*r+c : nrows*c+r;
+        index = (options & _ICONLIST_COLUMNS) ? ncols * r + c : nrows * c + r;
 
         if ((index < 0) || (index >= items.no()))
         {
             return(-1);
         }
 
-        ix = itemSpace*c;
-        iy = itemHeight*r;
+        ix = itemSpace * c;
+        iy = itemHeight * r;
 
-        if (items[index]->hitItem(this, x-ix, y-iy) == 0)
+        if (items[index]->hitItem(this, x - ix, y - iy) == 0)
         {
             return(-1);
         }
@@ -1730,8 +1723,7 @@ int IconList::getItemAt(int x, int y)
         }
 
         y -= header->getDefaultHeight();
-        c = 0;
-        index = y/itemHeight;
+        index = y / itemHeight;
 
 
         if ((index < 0) || (index >= items.no()))
@@ -1746,9 +1738,9 @@ int IconList::getItemAt(int x, int y)
 // Compare strings up to n
 static int comp(const FXString& s1, const FXString& s2, int n)
 {
-    register const FXuchar* p1 = (const FXuchar*)s1.text();
-    register const FXuchar* p2 = (const FXuchar*)s2.text();
-    register int            c1, c2;
+    const FXuchar* p1 = (const FXuchar*)s1.text();
+    const FXuchar* p2 = (const FXuchar*)s2.text();
+    int c1, c2;
 
     if (0 < n)
     {
@@ -1765,7 +1757,7 @@ static int comp(const FXString& s1, const FXString& s2, int n)
                 c2 = 0;
             }
         } while (--n && c1 && (c1 == c2));
-        return(c1-c2);
+        return(c1 - c2);
     }
     return(0);
 }
@@ -1774,9 +1766,9 @@ static int comp(const FXString& s1, const FXString& s2, int n)
 // Compare strings case insensitive up to n
 static int compcase(const FXString& s1, const FXString& s2, int n)
 {
-    register const FXuchar* p1 = (const FXuchar*)s1.text();
-    register const FXuchar* p2 = (const FXuchar*)s2.text();
-    register int            c1, c2;
+    const FXuchar* p1 = (const FXuchar*)s1.text();
+    const FXuchar* p2 = (const FXuchar*)s2.text();
+    int c1, c2;
 
     if (0 < n)
     {
@@ -1793,7 +1785,7 @@ static int compcase(const FXString& s1, const FXString& s2, int n)
                 c2 = 0;
             }
         } while (--n && c1 && (c1 == c2));
-        return(c1-c2);
+        return(c1 - c2);
     }
     return(0);
 }
@@ -1805,18 +1797,18 @@ typedef int (*FXCompareFunc)(const FXString&, const FXString&, int);
 // Get item by name
 int IconList::findItem(const FXString& text, int start, FXuint flgs) const
 {
-    register FXCompareFunc comparefunc;
-    register int           index, len;
+    FXCompareFunc comparefunc;
+    int index, len;
 
     if (0 < items.no())
     {
-        comparefunc = (flgs&SEARCH_IGNORECASE) ? (FXCompareFunc)compcase : (FXCompareFunc)comp;
-        len = (flgs&SEARCH_PREFIX) ? text.length() : 2147483647;
-        if (flgs&SEARCH_BACKWARD)
+        comparefunc = (flgs & SEARCH_IGNORECASE) ? (FXCompareFunc)compcase : (FXCompareFunc)comp;
+        len = (flgs & SEARCH_PREFIX) ? text.length() : 2147483647;
+        if (flgs & SEARCH_BACKWARD)
         {
             if (start < 0)
             {
-                start = items.no()-1;
+                start = items.no() - 1;
             }
             for (index = start; 0 <= index; index--)
             {
@@ -1825,11 +1817,11 @@ int IconList::findItem(const FXString& text, int start, FXuint flgs) const
                     return(index);
                 }
             }
-            if (!(flgs&SEARCH_WRAP))
+            if (!(flgs & SEARCH_WRAP))
             {
                 return(-1);
             }
-            for (index = items.no()-1; start < index; index--)
+            for (index = items.no() - 1; start < index; index--)
             {
                 if ((*comparefunc)(items[index]->getText(), text, len) == 0)
                 {
@@ -1850,7 +1842,7 @@ int IconList::findItem(const FXString& text, int start, FXuint flgs) const
                     return(index);
                 }
             }
-            if (!(flgs&SEARCH_WRAP))
+            if (!(flgs & SEARCH_WRAP))
             {
                 return(-1);
             }
@@ -1870,15 +1862,15 @@ int IconList::findItem(const FXString& text, int start, FXuint flgs) const
 // Get item by data
 int IconList::findItemByData(const void* ptr, int start, FXuint flgs) const
 {
-    register int index;
+    int index;
 
     if (0 < items.no())
     {
-        if (flgs&SEARCH_BACKWARD)
+        if (flgs & SEARCH_BACKWARD)
         {
             if (start < 0)
             {
-                start = items.no()-1;
+                start = items.no() - 1;
             }
             for (index = start; 0 <= index; index--)
             {
@@ -1887,11 +1879,11 @@ int IconList::findItemByData(const void* ptr, int start, FXuint flgs) const
                     return(index);
                 }
             }
-            if (!(flgs&SEARCH_WRAP))
+            if (!(flgs & SEARCH_WRAP))
             {
                 return(-1);
             }
-            for (index = items.no()-1; start < index; index--)
+            for (index = items.no() - 1; start < index; index--)
             {
                 if (items[index]->getData() == ptr)
                 {
@@ -1912,7 +1904,7 @@ int IconList::findItemByData(const void* ptr, int start, FXuint flgs) const
                     return(index);
                 }
             }
-            if (!(flgs&SEARCH_WRAP))
+            if (!(flgs & SEARCH_WRAP))
             {
                 return(-1);
             }
@@ -1938,21 +1930,21 @@ int IconList::hitItem(int index, int x, int y, int ww, int hh) const
     {
         x -= pos_x;
         y -= pos_y;
-        if (!(options&(_ICONLIST_BIG_ICONS|_ICONLIST_MINI_ICONS)))
+        if (!(options & (_ICONLIST_BIG_ICONS | _ICONLIST_MINI_ICONS)))
         {
             y -= header->getDefaultHeight();
         }
-        if (options&(_ICONLIST_BIG_ICONS|_ICONLIST_MINI_ICONS))
+        if (options & (_ICONLIST_BIG_ICONS | _ICONLIST_MINI_ICONS))
         {
-            if (options&_ICONLIST_COLUMNS)
+            if (options & _ICONLIST_COLUMNS)
             {
-                r = index/ncols;
-                c = index%ncols;
+                r = index / ncols;
+                c = index % ncols;
             }
             else
             {
-                c = index/nrows;
-                r = index%nrows;
+                c = index / nrows;
+                r = index % nrows;
             }
         }
         else
@@ -1960,9 +1952,9 @@ int IconList::hitItem(int index, int x, int y, int ww, int hh) const
             r = index;
             c = 0;
         }
-        ix = itemSpace*c;
-        iy = itemHeight*r;
-        hit = items[index]->hitItem(this, x-ix, y-iy, ww, hh);
+        ix = itemSpace * c;
+        iy = itemHeight * r;
+        hit = items[index]->hitItem(this, x - ix, y - iy, ww, hh);
     }
     return(hit);
 }
@@ -1973,22 +1965,22 @@ void IconList::updateItem(int index) const
 {
     if (xid && (0 <= index) && (index < items.no()))
     {
-        if (options&(_ICONLIST_BIG_ICONS|_ICONLIST_MINI_ICONS))
+        if (options & (_ICONLIST_BIG_ICONS | _ICONLIST_MINI_ICONS))
         {
-            if (options&_ICONLIST_COLUMNS)
+            if (options & _ICONLIST_COLUMNS)
             {
                 FXASSERT(ncols > 0);
-                update(pos_x+itemSpace*(index%ncols), pos_y+itemHeight*(index/ncols), itemSpace, itemHeight);
+                update(pos_x + itemSpace * (index % ncols), pos_y + itemHeight * (index / ncols), itemSpace, itemHeight);
             }
             else
             {
                 FXASSERT(nrows > 0);
-                update(pos_x+itemSpace*(index/nrows), pos_y+itemHeight*(index%nrows), itemSpace, itemHeight);
+                update(pos_x + itemSpace * (index / nrows), pos_y + itemHeight * (index % nrows), itemSpace, itemHeight);
             }
         }
         else
         {
-            update(0, pos_y+header->getDefaultHeight()+index*itemHeight, width, itemHeight);
+            update(0, pos_y + header->getDefaultHeight() + index * itemHeight, width, itemHeight);
         }
     }
 }
@@ -2042,12 +2034,12 @@ FXbool IconList::selectItem(int index, FXbool notify)
     if (!items[index]->isSelected())
     {
 
-        switch (options&SELECT_MASK)
+        switch (options & SELECT_MASK)
         {
         case _ICONLIST_SINGLESELECT:
         case _ICONLIST_BROWSESELECT:
-            
-           killSelection(notify);
+
+            killSelection(notify);
 
         case _ICONLIST_EXTENDEDSELECT:
         case _ICONLIST_MULTIPLESELECT:
@@ -2075,7 +2067,7 @@ FXbool IconList::deselectItem(int index, FXbool notify)
     }
     if (items[index]->isSelected())
     {
-        switch (options&SELECT_MASK)
+        switch (options & SELECT_MASK)
         {
         case _ICONLIST_EXTENDEDSELECT:
         case _ICONLIST_MULTIPLESELECT:
@@ -2102,7 +2094,7 @@ FXbool IconList::toggleItem(int index, FXbool notify)
         fprintf(stderr, "%s::toggleItem: index out of range.\n", getClassName());
         exit(EXIT_FAILURE);
     }
-    switch (options&SELECT_MASK)
+    switch (options & SELECT_MASK)
     {
     case _ICONLIST_BROWSESELECT:
         if (!items[index]->isSelected())
@@ -2168,16 +2160,16 @@ FXbool IconList::toggleItem(int index, FXbool notify)
 // Select items in rectangle
 FXbool IconList::selectInRectangle(int x, int y, int w, int h, FXbool notify)
 {
-    register int    r, c, index;
-    register FXbool changed = false;
+    int r, c, index;
+    FXbool changed = false;
 
-    if (options&(_ICONLIST_BIG_ICONS|_ICONLIST_MINI_ICONS))
+    if (options & (_ICONLIST_BIG_ICONS | _ICONLIST_MINI_ICONS))
     {
         for (r = 0; r < nrows; r++)
         {
             for (c = 0; c < ncols; c++)
             {
-                index = (options&_ICONLIST_COLUMNS) ? ncols*r+c : nrows*c+r;
+                index = (options & _ICONLIST_COLUMNS) ? ncols * r + c : nrows * c + r;
                 if (index < items.no())
                 {
                     if (hitItem(index, x, y, w, h))
@@ -2205,8 +2197,8 @@ FXbool IconList::selectInRectangle(int x, int y, int w, int h, FXbool notify)
 // Extend selection
 FXbool IconList::extendSelection(int index, FXbool notify)
 {
-    register FXbool changes = false;
-    int             i1, i2, i3, i;
+    FXbool changes = false;
+    int i1, i2, i3, i;
 
     if ((0 <= index) && (0 <= anchor) && (0 <= extent))
     {
@@ -2274,7 +2266,7 @@ FXbool IconList::extendSelection(int index, FXbool notify)
         }
 
         // Second segment
-        for (i = i2+1; i <= i3; i++)
+        for (i = i2 + 1; i <= i3; i++)
         {
             // extent---anchor===item
             // anchor---extent===item
@@ -2317,8 +2309,8 @@ FXbool IconList::extendSelection(int index, FXbool notify)
 // Kill selection
 FXbool IconList::killSelection(FXbool notify)
 {
-    register FXbool changes = false;
-    register int    i;
+    FXbool changes = false;
+    int i;
 
     for (i = 0; i < items.no(); i++)
     {
@@ -2340,16 +2332,16 @@ FXbool IconList::killSelection(FXbool notify)
 // Lasso changed, so select/unselect items based on difference between new and old lasso box
 void IconList::lassoChanged(int ox, int oy, int ow, int oh, int nx, int ny, int nw, int nh, FXbool notify)
 {
-    register int r, c;
-    int          ohit, nhit, index;
+    int r, c;
+    int ohit, nhit, index;
 
-    if (options&(_ICONLIST_BIG_ICONS|_ICONLIST_MINI_ICONS))
+    if (options & (_ICONLIST_BIG_ICONS | _ICONLIST_MINI_ICONS))
     {
         for (r = 0; r < nrows; r++)
         {
             for (c = 0; c < ncols; c++)
             {
-                index = (options&_ICONLIST_COLUMNS) ? ncols*r+c : nrows*c+r;
+                index = (options & _ICONLIST_COLUMNS) ? ncols * r + c : nrows * c + r;
                 if (index < items.no())
                 {
                     ohit = hitItem(index, ox, oy, ow, oh);
@@ -2449,7 +2441,7 @@ long IconList::onQueryTip(FXObject* sender, FXSelector sel, void* ptr)
     if (file_tooltips)
     {
         // In detailed mode, avoid displaying the tooltip when the mouse is not on the first column
-        if (allowTooltip && (flags&FLAG_TIP) && (0 <= cursor))
+        if (allowTooltip && (flags & FLAG_TIP) && (0 <= cursor))
         {
             FXString string;
 
@@ -2480,29 +2472,29 @@ long IconList::onQueryTip(FXObject* sender, FXSelector sel, void* ptr)
                 {
                     // Compute root file size
                     FXulong dnsize;
-                    char    dsize[64];
+                    char dsize[64];
                     dnsize = ::dirsize(pathname.text());
 #if __WORDSIZE == 64
-                    snprintf(dsize, sizeof(dsize)-1, "%lu", dnsize);
+                    snprintf(dsize, sizeof(dsize) - 1, "%lu", dnsize);
 #else
-                    snprintf(dsize, sizeof(dsize)-1, "%llu", dnsize);
+                    snprintf(dsize, sizeof(dsize) - 1, "%llu", dnsize);
 #endif
                     size = ::hSize(dsize);
 
                     if (deldate.empty())
                     {
-                        string = _("Name: ")+name+"\n"+_("Size in root: ")+size+"\n"+_("Type: ")+type+"\n"
-                                 +_("Modified date: ")+date+"\n"+_("User: ")+user+" - "+_("Group: ")+group+"\n"
-                                 +_("Permissions: ")+perms;
+                        string = _("Name: ") + name + "\n" + _("Size in root: ") + size + "\n" + _("Type: ") + type + "\n"
+                                 + _("Modified date: ") + date + "\n" + _("User: ") + user + " - " + _("Group: ") + group + "\n"
+                                 + _("Permissions: ") + perms;
                     }
                     else
                     {
-                        string = _("Name: ")+name+"\n"+
-                                 +_("Original path: ")+origpath+"\n"
-                                 +_("Size in root: ")+size+"\n"+_("Type: ")+type+"\n"
-                                 +_("Modified date: ")+date+"\n"
-                                 +_("Deletion date: ")+deldate+"\n"
-                                 +_("User: ")+user+" - "+_("Group: ")+group+"\n"+_("Permissions: ")+perms;
+                        string = _("Name: ") + name + "\n" +
+                                 +_("Original path: ") + origpath + "\n"
+                                 + _("Size in root: ") + size + "\n" + _("Type: ") + type + "\n"
+                                 + _("Modified date: ") + date + "\n"
+                                 + _("Deletion date: ") + deldate + "\n"
+                                 + _("User: ") + user + " - " + _("Group: ") + group + "\n" + _("Permissions: ") + perms;
                     }
                 }
                 // Regular file
@@ -2510,18 +2502,18 @@ long IconList::onQueryTip(FXObject* sender, FXSelector sel, void* ptr)
                 {
                     if (deldate.empty())
                     {
-                        string = _("Name: ")+name+"\n"+_("Size: ")+size+"\n"+_("Type: ")+type+"\n"
-                                 +_("Modified date: ")+date+"\n"+_("User: ")+user+" - "+_("Group: ")+group
-                                 +"\n"+_("Permissions: ")+perms;
+                        string = _("Name: ") + name + "\n" + _("Size: ") + size + "\n" + _("Type: ") + type + "\n"
+                                 + _("Modified date: ") + date + "\n" + _("User: ") + user + " - " + _("Group: ") + group
+                                 + "\n" + _("Permissions: ") + perms;
                     }
                     else
                     {
-                        string = _("Name: ")+name+"\n"+
-                                 +_("Original path: ")+origpath+"\n"
-                                 +_("Size: ")+size+"\n"+_("Type: ")+type
-                                 +"\n"+_("Modified date: ")+date+"\n"
-                                 +_("Deletion date: ")+deldate+"\n"
-                                 +_("User: ")+user+" - "+_("Group: ")+group+"\n"+_("Permissions: ")+perms;
+                        string = _("Name: ") + name + "\n" +
+                                 +_("Original path: ") + origpath + "\n"
+                                 + _("Size: ") + size + "\n" + _("Type: ") + type
+                                 + "\n" + _("Modified date: ") + date + "\n"
+                                 + _("Deletion date: ") + deldate + "\n"
+                                 + _("User: ") + user + " - " + _("Group: ") + group + "\n" + _("Permissions: ") + perms;
                     }
                 }
             }
@@ -2549,7 +2541,7 @@ long IconList::onQueryHelp(FXObject* sender, FXSelector sel, void* ptr)
     {
         return(1);
     }
-    if ((flags&FLAG_HELP) && !help.empty())
+    if ((flags & FLAG_HELP) && !help.empty())
     {
         sender->handle(this, FXSEL(SEL_COMMAND, ID_SETSTRINGVALUE), (void*)&help);
         return(1);
@@ -2588,62 +2580,62 @@ long IconList::onFocusOut(FXObject* sender, FXSelector sel, void* ptr)
 
 // Draw item list
 long IconList::onPaint(FXObject*, FXSelector, void* ptr)
-{	
-    register int rlo, rhi, clo, chi, yy, xx;
-    register int x, y, r, c, index;
+{
+    int rlo, rhi, clo, chi, yy, xx;
+    int x, y, r, c, index;
     FXEvent*     event = (FXEvent*)ptr;
-    FXDCWindow   dc(this, event);
+    FXDCWindow dc(this, event);
 
-	// Only draw the rectangle background if item height hasn't been computed yet
-	// This avoids an ugly transient drawing on older hardware
-	if (itemHeight == ITEM_HEIGHT)
-	{
+    // Only draw the rectangle background if item height hasn't been computed yet
+    // This avoids an ugly transient drawing on older hardware
+    if (itemHeight == ITEM_HEIGHT)
+    {
         dc.setForeground(backColor);
         dc.fillRectangle(event->rect.x, event->rect.y, event->rect.w, event->rect.h);
 
-		return (0);
-	}
+        return (0);
+    }
 
     // Set font
     dc.setFont(font);
 
     // Icon mode
-    if (options&(_ICONLIST_BIG_ICONS|_ICONLIST_MINI_ICONS))
+    if (options & (_ICONLIST_BIG_ICONS | _ICONLIST_MINI_ICONS))
     {
         // Exposed rows
-        rlo = (event->rect.y-pos_y)/itemHeight;
-        rhi = (event->rect.y+event->rect.h-pos_y)/itemHeight;
+        rlo = (event->rect.y - pos_y) / itemHeight;
+        rhi = (event->rect.y + event->rect.h - pos_y) / itemHeight;
         if (rlo < 0)
         {
             rlo = 0;
         }
         if (rhi >= nrows)
         {
-            rhi = nrows-1;
+            rhi = nrows - 1;
         }
 
         // Exposed columns
-        clo = (event->rect.x-pos_x)/itemSpace;
-        chi = (event->rect.x+event->rect.w-pos_x)/itemSpace;
+        clo = (event->rect.x - pos_x) / itemSpace;
+        chi = (event->rect.x + event->rect.w - pos_x) / itemSpace;
         if (clo < 0)
         {
             clo = 0;
         }
         if (chi >= ncols)
         {
-            chi = ncols-1;
+            chi = ncols - 1;
         }
 
         // Big Icons
-        if (options&_ICONLIST_BIG_ICONS)
+        if (options & _ICONLIST_BIG_ICONS)
         {
             for (r = rlo; r <= rhi; r++)
             {
-                y = pos_y+r*itemHeight;
+                y = pos_y + r * itemHeight;
                 for (c = clo; c <= chi; c++)
                 {
-                    x = pos_x+c*itemSpace;
-                    index = (options&_ICONLIST_COLUMNS) ? ncols*r+c : nrows*c+r;
+                    x = pos_x + c * itemSpace;
+                    index = (options & _ICONLIST_COLUMNS) ? ncols * r + c : nrows * c + r;
                     dc.setForeground(backColor);
                     dc.fillRectangle(x, y, itemSpace, itemHeight);
                     if (index < items.no())
@@ -2654,16 +2646,16 @@ long IconList::onPaint(FXObject*, FXSelector, void* ptr)
             }
         }
 
-        // Mini icons
+        // Mini icons (same code as above, strange!)
         else
         {
             for (r = rlo; r <= rhi; r++)
             {
-                y = pos_y+r*itemHeight;
+                y = pos_y + r * itemHeight;
                 for (c = clo; c <= chi; c++)
                 {
-                    x = pos_x+c*itemSpace;
-                    index = (options&_ICONLIST_COLUMNS) ? ncols*r+c : nrows*c+r;
+                    x = pos_x + c * itemSpace;
+                    index = (options & _ICONLIST_COLUMNS) ? ncols * r + c : nrows * c + r;
                     dc.setForeground(backColor);
                     dc.fillRectangle(x, y, itemSpace, itemHeight);
                     if (index < items.no())
@@ -2675,17 +2667,17 @@ long IconList::onPaint(FXObject*, FXSelector, void* ptr)
         }
 
         // Repaint left-over background
-        yy = (rhi+1)*itemHeight;
-        if (yy < event->rect.y+event->rect.h)
+        yy = (rhi + 1) * itemHeight;
+        if (yy < event->rect.y + event->rect.h)
         {
             dc.setForeground(backColor);
-            dc.fillRectangle(event->rect.x, yy, event->rect.w, event->rect.y+event->rect.h-yy);
+            dc.fillRectangle(event->rect.x, yy, event->rect.w, event->rect.y + event->rect.h - yy);
         }
-        xx = (chi+1)*itemSpace;
-        if (xx < event->rect.x+event->rect.w)
+        xx = (chi + 1) * itemSpace;
+        if (xx < event->rect.x + event->rect.w)
         {
             dc.setForeground(backColor);
-            dc.fillRectangle(xx, event->rect.y, event->rect.x+event->rect.w-xx, event->rect.h);
+            dc.fillRectangle(xx, event->rect.y, event->rect.x + event->rect.w - xx, event->rect.h);
         }
     }
 
@@ -2693,19 +2685,19 @@ long IconList::onPaint(FXObject*, FXSelector, void* ptr)
     else
     {
         // Exposed rows
-        rlo = (event->rect.y-pos_y-header->getDefaultHeight())/itemHeight;
-        rhi = (event->rect.y+event->rect.h-pos_y-header->getDefaultHeight())/itemHeight;
+        rlo = (event->rect.y - pos_y - header->getDefaultHeight()) / itemHeight;
+        rhi = (event->rect.y + event->rect.h - pos_y - header->getDefaultHeight()) / itemHeight;
         if (rlo < 0)
         {
             rlo = 0;
         }
         if (rhi >= items.no())
         {
-            rhi = items.no()-1;
+            rhi = items.no() - 1;
         }
 
         // Repaint the items
-        y = pos_y+rlo*itemHeight+header->getDefaultHeight();
+        y = pos_y + rlo * itemHeight + header->getDefaultHeight();
         for (index = rlo; index <= rhi; index++, y += itemHeight)
         {
             dc.setForeground(backColor);
@@ -2714,10 +2706,10 @@ long IconList::onPaint(FXObject*, FXSelector, void* ptr)
         }
 
         // Repaint left-over background
-        if (y < event->rect.y+event->rect.h)
+        if (y < event->rect.y + event->rect.h)
         {
             dc.setForeground(backColor);
-            dc.fillRectangle(event->rect.x, y, event->rect.w, event->rect.y+event->rect.h-y);
+            dc.fillRectangle(event->rect.x, y, event->rect.w, event->rect.y + event->rect.h - y);
         }
     }
 
@@ -2754,8 +2746,8 @@ long IconList::onCmdArrangeByColumns(FXObject*, FXSelector, void*)
 // Update sender
 long IconList::onUpdArrangeByColumns(FXObject* sender, FXSelector, void*)
 {
-    sender->handle(this, (options&_ICONLIST_COLUMNS) ? FXSEL(SEL_COMMAND, ID_UNCHECK) : FXSEL(SEL_COMMAND, ID_CHECK), NULL);
-    sender->handle(this, (options&(_ICONLIST_MINI_ICONS|_ICONLIST_BIG_ICONS)) ? FXSEL(SEL_COMMAND, ID_ENABLE) : FXSEL(SEL_COMMAND, ID_DISABLE), NULL);
+    sender->handle(this, (options & _ICONLIST_COLUMNS) ? FXSEL(SEL_COMMAND, ID_UNCHECK) : FXSEL(SEL_COMMAND, ID_CHECK), NULL);
+    sender->handle(this, (options & (_ICONLIST_MINI_ICONS | _ICONLIST_BIG_ICONS)) ? FXSEL(SEL_COMMAND, ID_ENABLE) : FXSEL(SEL_COMMAND, ID_DISABLE), NULL);
     return(1);
 }
 
@@ -2772,8 +2764,8 @@ long IconList::onCmdArrangeByRows(FXObject*, FXSelector, void*)
 // Update sender
 long IconList::onUpdArrangeByRows(FXObject* sender, FXSelector, void*)
 {
-    sender->handle(this, (options&_ICONLIST_COLUMNS) ? FXSEL(SEL_COMMAND, ID_CHECK) : FXSEL(SEL_COMMAND, ID_UNCHECK), NULL);
-    sender->handle(this, (options&(_ICONLIST_MINI_ICONS|_ICONLIST_BIG_ICONS)) ? FXSEL(SEL_COMMAND, ID_ENABLE) : FXSEL(SEL_COMMAND, ID_DISABLE), NULL);
+    sender->handle(this, (options & _ICONLIST_COLUMNS) ? FXSEL(SEL_COMMAND, ID_CHECK) : FXSEL(SEL_COMMAND, ID_UNCHECK), NULL);
+    sender->handle(this, (options & (_ICONLIST_MINI_ICONS | _ICONLIST_BIG_ICONS)) ? FXSEL(SEL_COMMAND, ID_ENABLE) : FXSEL(SEL_COMMAND, ID_DISABLE), NULL);
     return(1);
 }
 
@@ -2781,7 +2773,7 @@ long IconList::onUpdArrangeByRows(FXObject* sender, FXSelector, void*)
 // Toggle autosize items
 long IconList::onCmdToggleAutosize(FXObject*, FXSelector, void*)
 {
-    if (options&_ICONLIST_AUTOSIZE)
+    if (options & _ICONLIST_AUTOSIZE)
     {
         options &= ~_ICONLIST_AUTOSIZE;
     }
@@ -2797,8 +2789,8 @@ long IconList::onCmdToggleAutosize(FXObject*, FXSelector, void*)
 // Update sender
 long IconList::onUpdToggleAutosize(FXObject* sender, FXSelector, void*)
 {
-    sender->handle(this, (options&_ICONLIST_AUTOSIZE) ? FXSEL(SEL_COMMAND, ID_CHECK) : FXSEL(SEL_COMMAND, ID_UNCHECK), NULL);
-    sender->handle(this, (options&(_ICONLIST_MINI_ICONS|_ICONLIST_BIG_ICONS)) ? FXSEL(SEL_COMMAND, ID_ENABLE) : FXSEL(SEL_COMMAND, ID_DISABLE), NULL);
+    sender->handle(this, (options & _ICONLIST_AUTOSIZE) ? FXSEL(SEL_COMMAND, ID_CHECK) : FXSEL(SEL_COMMAND, ID_UNCHECK), NULL);
+    sender->handle(this, (options & (_ICONLIST_MINI_ICONS | _ICONLIST_BIG_ICONS)) ? FXSEL(SEL_COMMAND, ID_ENABLE) : FXSEL(SEL_COMMAND, ID_DISABLE), NULL);
     return(1);
 }
 
@@ -2816,7 +2808,7 @@ long IconList::onCmdShowDetails(FXObject*, FXSelector, void*)
 // Update sender
 long IconList::onUpdShowDetails(FXObject* sender, FXSelector, void*)
 {
-    sender->handle(this, (options&(_ICONLIST_MINI_ICONS|_ICONLIST_BIG_ICONS)) ? FXSEL(SEL_COMMAND, ID_UNCHECK) : FXSEL(SEL_COMMAND, ID_CHECK), NULL);
+    sender->handle(this, (options & (_ICONLIST_MINI_ICONS | _ICONLIST_BIG_ICONS)) ? FXSEL(SEL_COMMAND, ID_UNCHECK) : FXSEL(SEL_COMMAND, ID_CHECK), NULL);
     return(1);
 }
 
@@ -2834,7 +2826,7 @@ long IconList::onCmdShowBigIcons(FXObject*, FXSelector, void*)
 // Update sender
 long IconList::onUpdShowBigIcons(FXObject* sender, FXSelector, void*)
 {
-    sender->handle(this, (options&_ICONLIST_BIG_ICONS) ? FXSEL(SEL_COMMAND, ID_CHECK) : FXSEL(SEL_COMMAND, ID_UNCHECK), NULL);
+    sender->handle(this, (options & _ICONLIST_BIG_ICONS) ? FXSEL(SEL_COMMAND, ID_CHECK) : FXSEL(SEL_COMMAND, ID_UNCHECK), NULL);
     return(1);
 }
 
@@ -2852,7 +2844,7 @@ long IconList::onCmdShowMiniIcons(FXObject*, FXSelector, void*)
 // Update sender
 long IconList::onUpdShowMiniIcons(FXObject* sender, FXSelector, void*)
 {
-    sender->handle(this, (options&_ICONLIST_MINI_ICONS) ? FXSEL(SEL_COMMAND, ID_CHECK) : FXSEL(SEL_COMMAND, ID_UNCHECK), NULL);
+    sender->handle(this, (options & _ICONLIST_MINI_ICONS) ? FXSEL(SEL_COMMAND, ID_CHECK) : FXSEL(SEL_COMMAND, ID_UNCHECK), NULL);
     return(1);
 }
 
@@ -2864,7 +2856,7 @@ long IconList::onCmdselectAll(FXObject*, FXSelector, void*)
     {
         selectItem(i, true);
     }
-    if (!(options&_ICONLIST_SEARCH) && !(options&_ICONLIST_STANDARD))
+    if (!(options & _ICONLIST_SEARCH) && !(options & _ICONLIST_STANDARD))
     {
         deselectItem(0, true);
     }
@@ -2890,7 +2882,7 @@ long IconList::onCmdSelectInverse(FXObject*, FXSelector, void*)
     {
         toggleItem(i, true);
     }
-    if (!(options&_ICONLIST_SEARCH) && !(options&_ICONLIST_STANDARD))
+    if (!(options & _ICONLIST_SEARCH) && !(options & _ICONLIST_STANDARD))
     {
         deselectItem(0, true);
     }
@@ -2901,34 +2893,30 @@ long IconList::onCmdSelectInverse(FXObject*, FXSelector, void*)
 // Compare sectioned strings
 int IconList::compareSection(const char* p, const char* q, int s)
 {
-    register int c1, c2, x;
+    int c1, c2, x;
 
     for (x = s; x && *p; x -= (*p++ == '\t'))
-    {
-    }
+    {}
     for (x = s; x && *q; x -= (*q++ == '\t'))
-    {
-    }
+    {}
     do
     {
         c1 = (FXuchar)(*p++);
         c2 = (FXuchar)(*q++);
     } while ('\t' < c1 && (c1 == c2));
-    return(c1-c2);
+    return(c1 - c2);
 }
 
 
 // Compare sectioned strings, case-insensitive
 int IconList::compareSectionCase(const char* p, const char* q, int s)
 {
-    register int c1, c2, x;
+    int c1, c2, x;
 
     for (x = s; x && *p; x -= (*p++ == '\t'))
-    {
-    }
+    {}
     for (x = s; x && *q; x -= (*q++ == '\t'))
-    {
-    }
+    {}
     do
     {
         if ((*p & 0x80) && (*q & 0x80))
@@ -2946,7 +2934,7 @@ int IconList::compareSectionCase(const char* p, const char* q, int s)
             q += 1;
         }
     } while ('\t' < c1 && (c1 == c2));
-    return(c1-c2);
+    return(c1 - c2);
 }
 
 
@@ -2981,9 +2969,9 @@ int IconList::descendingCase(const IconItem* a, const IconItem* b)
 // Sort the items based on the sort function
 void IconList::sortItems()
 {
-    register IconItem* v, *c = 0;
-    register FXbool    exch = false;
-    register int       i, j, h;
+    IconItem* v, *c = 0;
+    FXbool exch = false;
+    int i, j, h;
 
     if (sortfunc)
     {
@@ -2991,22 +2979,21 @@ void IconList::sortItems()
         {
             c = items[current];
         }
-        for (h = 1; h <= items.no()/9; h = 3*h+1)
-        {
-        }
+        for (h = 1; h <= items.no() / 9; h = 3 * h + 1)
+        {}
         for ( ; h > 0; h /= 3)
         {
-            for (i = h+1; i <= items.no(); i++)
+            for (i = h + 1; i <= items.no(); i++)
             {
-                v = items[i-1];
+                v = items[i - 1];
                 j = i;
-                while (j > h && sortfunc(items[j-h-1], v) > 0)
+                while (j > h && sortfunc(items[j - h - 1], v) > 0)
                 {
-                    items[j-1] = items[j-h-1];
+                    items[j - 1] = items[j - h - 1];
                     exch = true;
                     j -= h;
                 }
-                items[j-1] = v;
+                items[j - 1] = v;
             }
         }
         if (0 <= current)
@@ -3070,7 +3057,7 @@ void IconList::setCurrentItem(int index, FXbool notify)
     }
 
     // In browse selection mode, select item
-    if (((options&SELECT_MASK) == _ICONLIST_BROWSESELECT) && (0 <= current) && items[current]->isEnabled())
+    if (((options & SELECT_MASK) == _ICONLIST_BROWSESELECT) && (0 <= current) && items[current]->isEnabled())
     {
         selectItem(current, notify);
     }
@@ -3101,7 +3088,7 @@ long IconList::onLookupTimer(FXObject*, FXSelector, void*)
 long IconList::onKeyPress(FXObject*, FXSelector, void* ptr)
 {
     FXEvent* event = (FXEvent*)ptr;
-    int      index = current;
+    int index = current;
 
     flags &= ~FLAG_TIP;
     if (!isEnabled())
@@ -3120,7 +3107,7 @@ long IconList::onKeyPress(FXObject*, FXSelector, void* ptr)
     case KEY_Shift_R:
     case KEY_Alt_L:
     case KEY_Alt_R:
-        if (flags&FLAG_DODRAG)
+        if (flags & FLAG_DODRAG)
         {
             handle(this, FXSEL(SEL_DRAGGED, 0), ptr);
         }
@@ -3129,29 +3116,29 @@ long IconList::onKeyPress(FXObject*, FXSelector, void* ptr)
     case KEY_Page_Up:
     case KEY_KP_Page_Up:
         lookup = FXString::null;
-        setPosition(pos_x, pos_y+verticalScrollBar()->getPage());
+        setPosition(pos_x, pos_y + verticalScrollBar()->getPage());
         // To select an item in the current page
-        index -= (int)(verticalScrollBar()->getPage()/verticalScrollBar()->getLine());
+        index -= (int)(verticalScrollBar()->getPage() / verticalScrollBar()->getLine());
         goto hop;
         return(1);
 
     case KEY_Page_Down:
     case KEY_KP_Page_Down:
         lookup = FXString::null;
-        setPosition(pos_x, pos_y-verticalScrollBar()->getPage());
+        setPosition(pos_x, pos_y - verticalScrollBar()->getPage());
         // To select an item in the current page
-        index += (int)(verticalScrollBar()->getPage()/verticalScrollBar()->getLine());
+        index += (int)(verticalScrollBar()->getPage() / verticalScrollBar()->getLine());
         goto hop;
         return(1);
 
     case KEY_Right:
     case KEY_KP_Right:
-        if (!(options&(_ICONLIST_BIG_ICONS|_ICONLIST_MINI_ICONS)))
+        if (!(options & (_ICONLIST_BIG_ICONS | _ICONLIST_MINI_ICONS)))
         {
-            setPosition(pos_x-10, pos_y);
+            setPosition(pos_x - 10, pos_y);
             return(1);
         }
-        if (options&_ICONLIST_COLUMNS)
+        if (options & _ICONLIST_COLUMNS)
         {
             index += 1;
         }
@@ -3163,12 +3150,12 @@ long IconList::onKeyPress(FXObject*, FXSelector, void* ptr)
 
     case KEY_Left:
     case KEY_KP_Left:
-        if (!(options&(_ICONLIST_BIG_ICONS|_ICONLIST_MINI_ICONS)))
+        if (!(options & (_ICONLIST_BIG_ICONS | _ICONLIST_MINI_ICONS)))
         {
-            setPosition(pos_x+10, pos_y);
+            setPosition(pos_x + 10, pos_y);
             return(1);
         }
-        if (options&_ICONLIST_COLUMNS)
+        if (options & _ICONLIST_COLUMNS)
         {
             index -= 1;
         }
@@ -3180,7 +3167,7 @@ long IconList::onKeyPress(FXObject*, FXSelector, void* ptr)
 
     case KEY_Up:
     case KEY_KP_Up:
-        if (options&_ICONLIST_COLUMNS)
+        if (options & _ICONLIST_COLUMNS)
         {
             index -= ncols;
         }
@@ -3192,7 +3179,7 @@ long IconList::onKeyPress(FXObject*, FXSelector, void* ptr)
 
     case KEY_Down:
     case KEY_KP_Down:
-        if (options&_ICONLIST_COLUMNS)
+        if (options & _ICONLIST_COLUMNS)
         {
             index += ncols;
         }
@@ -3209,7 +3196,7 @@ long IconList::onKeyPress(FXObject*, FXSelector, void* ptr)
 
     case KEY_End:
     case KEY_KP_End:
-        index = items.no()-1;
+        index = items.no() - 1;
 hop:
         lookup = FXString::null;
         if ((0 <= index) && (index < items.no()))
@@ -3218,9 +3205,9 @@ hop:
             makeItemVisible(index);
             if (items[index]->isEnabled())
             {
-                if ((options&SELECT_MASK) == _ICONLIST_EXTENDEDSELECT)
+                if ((options & SELECT_MASK) == _ICONLIST_EXTENDEDSELECT)
                 {
-                    if (event->state&SHIFTMASK)
+                    if (event->state & SHIFTMASK)
                     {
                         if (0 <= anchor)
                         {
@@ -3232,7 +3219,7 @@ hop:
                             selectItem(index, true);
                         }
                     }
-                    else if (!(event->state&CONTROLMASK))
+                    else if (!(event->state & CONTROLMASK))
                     {
                         killSelection(true);
                         selectItem(index, true);
@@ -3257,10 +3244,10 @@ hop:
 
         if ((0 <= current) && items[current]->isEnabled())
         {
-            switch (options&SELECT_MASK)
+            switch (options & SELECT_MASK)
             {
             case _ICONLIST_EXTENDEDSELECT:
-                if (event->state&SHIFTMASK)
+                if (event->state & SHIFTMASK)
                 {
                     if (0 <= anchor)
                     {
@@ -3272,7 +3259,7 @@ hop:
                         selectItem(current, true);
                     }
                 }
-                else if (event->state&CONTROLMASK)
+                else if (event->state & CONTROLMASK)
                 {
                     toggleItem(current, true);
                 }
@@ -3302,8 +3289,8 @@ hop:
     case KEY_KP_Enter:
         lookup = FXString::null;
 
-		// Warn FilePanel::onCmdItemDoubleClicked or SearchPanel::onCmdItemDoubleClicked that we call from here
-		called_from_iconlist = true;
+        // Warn FilePanel::onCmdItemDoubleClicked or SearchPanel::onCmdItemDoubleClicked that we call from here
+        called_from_iconlist = true;
 
         handle(this, FXSEL(SEL_DOUBLECLICKED, 0), (void*)(FXival)(current));
         if ((0 <= current) && items[current]->isEnabled())
@@ -3317,7 +3304,7 @@ hop:
         {
             return(0);
         }
-        if (event->state&(CONTROLMASK|ALTMASK))
+        if (event->state & (CONTROLMASK | ALTMASK))
         {
             return(0);
         }
@@ -3331,11 +3318,11 @@ hop:
         // String lookup can be case insensitive now
         if (ignorecase)
         {
-            index = findItem(lookup, current, SEARCH_FORWARD|SEARCH_WRAP|SEARCH_PREFIX|SEARCH_IGNORECASE);
+            index = findItem(lookup, current, SEARCH_FORWARD | SEARCH_WRAP | SEARCH_PREFIX | SEARCH_IGNORECASE);
         }
         else
         {
-            index = findItem(lookup, current, SEARCH_FORWARD|SEARCH_WRAP|SEARCH_PREFIX);
+            index = findItem(lookup, current, SEARCH_FORWARD | SEARCH_WRAP | SEARCH_PREFIX);
         }
 
         if (0 <= index)
@@ -3344,7 +3331,7 @@ hop:
             makeItemVisible(index);
             if (items[index]->isEnabled())
             {
-                if ((options&SELECT_MASK) == _ICONLIST_EXTENDEDSELECT)
+                if ((options & SELECT_MASK) == _ICONLIST_EXTENDEDSELECT)
                 {
                     killSelection(true);
                     selectItem(index, true);
@@ -3384,7 +3371,7 @@ long IconList::onKeyRelease(FXObject*, FXSelector, void* ptr)
     case KEY_Control_R:
     case KEY_Alt_L:
     case KEY_Alt_R:
-        if (flags&FLAG_DODRAG)
+        if (flags & FLAG_DODRAG)
         {
             handle(this, FXSEL(SEL_DRAGGED, 0), ptr);
         }
@@ -3398,10 +3385,10 @@ long IconList::onKeyRelease(FXObject*, FXSelector, void* ptr)
 long IconList::onAutoScroll(FXObject* sender, FXSelector sel, void* ptr)
 {
     FXEvent* event = (FXEvent*)ptr;
-    int      olx, orx, oty, oby, nlx, nrx, nty, nby;
+    int olx, orx, oty, oby, nlx, nrx, nty, nby;
 
     // Lasso mode
-    if (flags&FLAG_LASSO)
+    if (flags & FLAG_LASSO)
     {
         // Hide the lasso before scrolling
         drawLasso(anchorx, anchory, currentx, currenty);
@@ -3412,11 +3399,11 @@ long IconList::onAutoScroll(FXObject* sender, FXSelector sel, void* ptr)
         // Select items in lasso
         FXMINMAX(olx, orx, anchorx, currentx);
         FXMINMAX(oty, oby, anchory, currenty);
-        currentx = event->win_x-pos_x;
-        currenty = event->win_y-pos_y;
+        currentx = event->win_x - pos_x;
+        currenty = event->win_y - pos_y;
         FXMINMAX(nlx, nrx, anchorx, currentx);
         FXMINMAX(nty, nby, anchory, currenty);
-        lassoChanged(pos_x+olx, pos_y+oty, orx-olx+1, oby-oty+1, pos_x+nlx, pos_y+nty, nrx-nlx+1, nby-nty+1, true);
+        lassoChanged(pos_x + olx, pos_y + oty, orx - olx + 1, oby - oty + 1, pos_x + nlx, pos_y + nty, nrx - nlx + 1, nby - nty + 1, true);
 
         // Force repaint on this window
         repaint();
@@ -3430,7 +3417,7 @@ long IconList::onAutoScroll(FXObject* sender, FXSelector sel, void* ptr)
     FXScrollArea::onAutoScroll(sender, sel, ptr);
 
     // Content scrolled, so perhaps something else under cursor
-    if (flags&FLAG_DODRAG)
+    if (flags & FLAG_DODRAG)
     {
         handle(this, FXSEL(SEL_DRAGGED, 0), ptr);
         return(1);
@@ -3443,10 +3430,10 @@ long IconList::onAutoScroll(FXObject* sender, FXSelector sel, void* ptr)
 // Mouse moved
 long IconList::onMotion(FXObject*, FXSelector, void* ptr)
 {
-    int      olx, orx, oty, oby, nlx, nrx, nty, nby;
+    int olx, orx, oty, oby, nlx, nrx, nty, nby;
     FXEvent* event = (FXEvent*)ptr;
-    int      oldcursor = cursor;
-    FXuint   flg = flags;
+    int oldcursor = cursor;
+    FXuint flg = flags;
 
     // Kill the tip
     flags &= ~FLAG_TIP;
@@ -3455,14 +3442,14 @@ long IconList::onMotion(FXObject*, FXSelector, void* ptr)
     getApp()->removeTimeout(this, ID_TIPTIMER);
 
     // Right mouse scrolling
-    if (flags&FLAG_SCROLLING)
+    if (flags & FLAG_SCROLLING)
     {
-        setPosition(event->win_x-grabx, event->win_y-graby);
+        setPosition(event->win_x - grabx, event->win_y - graby);
         return(1);
     }
 
     // Lasso selection mode
-    if (flags&FLAG_LASSO)
+    if (flags & FLAG_LASSO)
     {
         if (startAutoScroll(event, false))
         {
@@ -3475,11 +3462,11 @@ long IconList::onMotion(FXObject*, FXSelector, void* ptr)
         // Select items in lasso
         FXMINMAX(olx, orx, anchorx, currentx);
         FXMINMAX(oty, oby, anchory, currenty);
-        currentx = event->win_x-pos_x;
-        currenty = event->win_y-pos_y;
+        currentx = event->win_x - pos_x;
+        currenty = event->win_y - pos_y;
         FXMINMAX(nlx, nrx, anchorx, currentx);
         FXMINMAX(nty, nby, anchory, currenty);
-        lassoChanged(pos_x+olx, pos_y+oty, orx-olx+1, oby-oty+1, pos_x+nlx, pos_y+nty, nrx-nlx+1, nby-nty+1, true);
+        lassoChanged(pos_x + olx, pos_y + oty, orx - olx + 1, oby - oty + 1, pos_x + nlx, pos_y + nty, nrx - nlx + 1, nby - nty + 1, true);
 
         // Force repaint on this window
         repaint();
@@ -3490,7 +3477,7 @@ long IconList::onMotion(FXObject*, FXSelector, void* ptr)
     }
 
     // Drag and drop mode
-    if (flags&FLAG_DODRAG)
+    if (flags & FLAG_DODRAG)
     {
         if (startAutoScroll(event, true))
         {
@@ -3501,7 +3488,7 @@ long IconList::onMotion(FXObject*, FXSelector, void* ptr)
     }
 
     // Tentative drag and drop
-    if (flags&FLAG_TRYDRAG)
+    if (flags & FLAG_TRYDRAG)
     {
         if (event->moved)
         {
@@ -3521,7 +3508,7 @@ long IconList::onMotion(FXObject*, FXSelector, void* ptr)
     cursor = getItemAt(event->win_x, event->win_y);
 
     // Force GUI update only when needed
-    return((cursor != oldcursor) || (flg&FLAG_TIP));
+    return((cursor != oldcursor) || (flg & FLAG_TIP));
 }
 
 
@@ -3529,7 +3516,7 @@ long IconList::onMotion(FXObject*, FXSelector, void* ptr)
 long IconList::onLeftBtnPress(FXObject*, FXSelector, void* ptr)
 {
     FXEvent* event = (FXEvent*)ptr;
-    int      index, code;
+    int index, code;
 
     flags &= ~FLAG_TIP;
     handle(this, FXSEL(SEL_FOCUS_SELF, 0), ptr);
@@ -3551,20 +3538,20 @@ long IconList::onLeftBtnPress(FXObject*, FXSelector, void* ptr)
         if (index < 0)
         {
             // Start lasso
-            if ((options&SELECT_MASK) == _ICONLIST_EXTENDEDSELECT)
+            if ((options & SELECT_MASK) == _ICONLIST_EXTENDEDSELECT)
             {
                 // Kill selection
-                if (!(event->state&(SHIFTMASK|CONTROLMASK)))
+                if (!(event->state & (SHIFTMASK | CONTROLMASK)))
                 {
                     killSelection(true);
                 }
 
-                anchorx = currentx = event->win_x-pos_x;
-                anchory = currenty = event->win_y-pos_y;
+                anchorx = currentx = event->win_x - pos_x;
+                anchory = currenty = event->win_y - pos_y;
                 drawLasso(anchorx, anchory, currentx, currenty);
                 flags |= FLAG_LASSO;
             }
-            
+
             return(1);
         }
 
@@ -3577,10 +3564,10 @@ long IconList::onLeftBtnPress(FXObject*, FXSelector, void* ptr)
 
         // Change item selection
         state = items[index]->isSelected();
-        switch (options&SELECT_MASK)
+        switch (options & SELECT_MASK)
         {
         case _ICONLIST_EXTENDEDSELECT:
-            if (event->state&SHIFTMASK)
+            if (event->state & SHIFTMASK)
             {
                 if (0 <= anchor)
                 {
@@ -3599,7 +3586,7 @@ long IconList::onLeftBtnPress(FXObject*, FXSelector, void* ptr)
                     setAnchorItem(index);
                 }
             }
-            else if (event->state&CONTROLMASK)
+            else if (event->state & CONTROLMASK)
             {
                 if (items[index]->isEnabled() && !state)
                 {
@@ -3644,14 +3631,14 @@ long IconList::onLeftBtnPress(FXObject*, FXSelector, void* ptr)
 long IconList::onLeftBtnRelease(FXObject*, FXSelector, void* ptr)
 {
     FXEvent* event = (FXEvent*)ptr;
-    FXuint   flg = flags;
+    FXuint flg = flags;
 
     if (isEnabled())
     {
         ungrab();
         stopAutoScroll();
         flags |= FLAG_UPDATE;
-        flags &= ~(FLAG_PRESSED|FLAG_TRYDRAG|FLAG_LASSO|FLAG_DODRAG);
+        flags &= ~(FLAG_PRESSED | FLAG_TRYDRAG | FLAG_LASSO | FLAG_DODRAG);
 
         // First chance callback
         if (target && target->tryHandle(this, FXSEL(SEL_LEFTBUTTONRELEASE, message), ptr))
@@ -3660,36 +3647,36 @@ long IconList::onLeftBtnRelease(FXObject*, FXSelector, void* ptr)
         }
 
         // Was lassoing
-        if (flg&FLAG_LASSO)
+        if (flg & FLAG_LASSO)
         {
             drawLasso(anchorx, anchory, currentx, currenty);
             return(1);
         }
 
         // Was dragging
-        if (flg&FLAG_DODRAG)
+        if (flg & FLAG_DODRAG)
         {
             handle(this, FXSEL(SEL_ENDDRAG, 0), ptr);
             return(1);
         }
 
         // Must have pressed
-        if (flg&FLAG_PRESSED)
+        if (flg & FLAG_PRESSED)
         {
             // Selection change
-            switch (options&SELECT_MASK)
+            switch (options & SELECT_MASK)
             {
             case _ICONLIST_EXTENDEDSELECT:
                 if ((0 <= current) && items[current]->isEnabled())
                 {
-                    if (event->state&CONTROLMASK)
+                    if (event->state & CONTROLMASK)
                     {
                         if (state)
                         {
                             deselectItem(current, true);
                         }
                     }
-                    else if (!(event->state&SHIFTMASK))
+                    else if (!(event->state & SHIFTMASK))
                     {
                         if (state)
                         {
@@ -3760,8 +3747,8 @@ long IconList::onRightBtnPress(FXObject*, FXSelector, void* ptr)
             return(1);
         }
         flags |= FLAG_SCROLLING;
-        grabx = event->win_x-pos_x;
-        graby = event->win_y-pos_y;
+        grabx = event->win_x - pos_x;
+        graby = event->win_y - pos_y;
         return(1);
     }
     return(0);
@@ -3777,8 +3764,7 @@ long IconList::onRightBtnRelease(FXObject*, FXSelector, void* ptr)
         flags &= ~FLAG_SCROLLING;
         flags |= FLAG_UPDATE;
         if (target && target->tryHandle(this, FXSEL(SEL_RIGHTBUTTONRELEASE, message), ptr))
-        {
-        }
+        {}
         return(1);
     }
     return(0);
@@ -3789,7 +3775,7 @@ long IconList::onRightBtnRelease(FXObject*, FXSelector, void* ptr)
 long IconList::onUngrabbed(FXObject* sender, FXSelector sel, void* ptr)
 {
     FXScrollArea::onUngrabbed(sender, sel, ptr);
-    flags &= ~(FLAG_DODRAG|FLAG_LASSO|FLAG_TRYDRAG|FLAG_PRESSED|FLAG_CHANGED|FLAG_SCROLLING);
+    flags &= ~(FLAG_DODRAG | FLAG_LASSO | FLAG_TRYDRAG | FLAG_PRESSED | FLAG_CHANGED | FLAG_SCROLLING);
     flags |= FLAG_UPDATE;
     stopAutoScroll();
     return(1);
@@ -3891,7 +3877,7 @@ int IconList::setItem(int index, const FXString& text, FXIcon* big, FXIcon* mini
 // Insert item
 int IconList::insertItem(int index, IconItem* item, FXbool notify)
 {
-    register int old = current;
+    int old = current;
 
     // Must have item
     if (!item)
@@ -3954,7 +3940,7 @@ int IconList::insertItem(int index, IconItem* item, FXbool notify)
         {
             items[current]->setFocus(true);
         }
-        if (((options&SELECT_MASK) == _ICONLIST_BROWSESELECT) && items[current]->isEnabled())
+        if (((options & SELECT_MASK) == _ICONLIST_BROWSESELECT) && items[current]->isEnabled())
         {
             selectItem(current, notify);
         }
@@ -4004,7 +3990,7 @@ int IconList::prependItem(const FXString& text, FXIcon* big, FXIcon* mini, void*
 // Fill list by appending items from array of strings
 int IconList::fillItems(const char** strings, FXIcon* big, FXIcon* mini, void* ptr, FXbool notify)
 {
-    register int n = 0;
+    int n = 0;
 
     if (strings)
     {
@@ -4020,8 +4006,8 @@ int IconList::fillItems(const char** strings, FXIcon* big, FXIcon* mini, void* p
 // Fill list by appending items from newline separated strings
 int IconList::fillItems(const FXString& strings, FXIcon* big, FXIcon* mini, void* ptr, FXbool notify)
 {
-    register int n = 0;
-    FXString     text;
+    int n = 0;
+    FXString text;
 
     while (!(text = strings.section('\n', n)).empty())
     {
@@ -4035,8 +4021,8 @@ int IconList::fillItems(const FXString& strings, FXIcon* big, FXIcon* mini, void
 // Move item from oldindex to newindex
 int IconList::moveItem(int newindex, int oldindex, FXbool notify)
 {
-    register int       old = current;
-    register IconItem* item;
+    int old = current;
+    IconItem* item;
 
     // Must be in range
     if ((newindex < 0) || (oldindex < 0) || (items.no() <= newindex) || (items.no() <= oldindex))
@@ -4132,8 +4118,8 @@ int IconList::moveItem(int newindex, int oldindex, FXbool notify)
 // Extract node from list
 IconItem* IconList::extractItem(int index, FXbool notify)
 {
-    register IconItem* result;
-    register int       old = current;
+    IconItem* result;
+    int old = current;
 
     // Must be in range
     if ((index < 0) || (items.no() <= index))
@@ -4188,7 +4174,7 @@ IconItem* IconList::extractItem(int index, FXbool notify)
         {
             items[current]->setFocus(true);
         }
-        if (((options&SELECT_MASK) == _ICONLIST_BROWSESELECT) && items[current]->isEnabled())
+        if (((options & SELECT_MASK) == _ICONLIST_BROWSESELECT) && items[current]->isEnabled())
         {
             selectItem(current, notify);
         }
@@ -4205,7 +4191,7 @@ IconItem* IconList::extractItem(int index, FXbool notify)
 // Remove node from list
 void IconList::removeItem(int index, FXbool notify)
 {
-    register int old = current;
+    int old = current;
 
     // Must be in range
     if ((index < 0) || (items.no() <= index))
@@ -4260,7 +4246,7 @@ void IconList::removeItem(int index, FXbool notify)
         {
             items[current]->setFocus(true);
         }
-        if (((options&SELECT_MASK) == _ICONLIST_BROWSESELECT) && items[current]->isEnabled())
+        if (((options & SELECT_MASK) == _ICONLIST_BROWSESELECT) && items[current]->isEnabled())
         {
             selectItem(current, notify);
         }
@@ -4274,10 +4260,10 @@ void IconList::removeItem(int index, FXbool notify)
 // Remove all items
 void IconList::clearItems(FXbool notify)
 {
-    register int old = current;
+    int old = current;
 
     // Delete items
-    for (int index = items.no()-1; 0 <= index; index--)
+    for (int index = items.no() - 1; 0 <= index; index--)
     {
         if (notify && target)
         {
@@ -4300,7 +4286,7 @@ void IconList::clearItems(FXbool notify)
     {
         if (notify && target)
         {
-            target->tryHandle(this, FXSEL(SEL_CHANGED, message), (void*)(FXival)-1);
+            target->tryHandle(this, FXSEL(SEL_CHANGED, message), (void*)(FXival) - 1);
         }
     }
 
@@ -4377,7 +4363,7 @@ void IconList::setItemSpace(int s)
 // Change list style
 void IconList::setListStyle(FXuint style)
 {
-    FXuint opts = (options&~ICONLIST_MASK) | (style&ICONLIST_MASK);
+    FXuint opts = (options & ~ICONLIST_MASK) | (style & ICONLIST_MASK);
 
     if (options != opts)
     {
@@ -4390,7 +4376,7 @@ void IconList::setListStyle(FXuint style)
 // Get list style
 FXuint IconList::getListStyle() const
 {
-    return(options&ICONLIST_MASK);
+    return(options & ICONLIST_MASK);
 }
 
 

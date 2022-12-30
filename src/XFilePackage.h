@@ -12,14 +12,14 @@ protected:
     FXMenuPane* helpmenu;                   // Help menu
     FXMenuPane* prefsmenu;                  // Preferences menu
     FXToolBar*  toolbar;                    // Toolbar
-    FXString    filename;                   // Current package name
+    FXString filename;                      // Current package name
     FXTreeList* list;                       // File list
     FXText*     description;                // Package description
-    FXbool      smoothscroll;
-    FXbool      errorflag;
+    FXbool smoothscroll;
+    FXbool errorflag;
 protected:
     XFilePackage() : menubar(NULL), filemenu(NULL), helpmenu(NULL), prefsmenu(NULL), toolbar(NULL), list(NULL),
-                     description(NULL), smoothscroll(false), errorflag(false)
+        description(NULL), smoothscroll(false), errorflag(false)
     {}
 public:
     enum

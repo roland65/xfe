@@ -9,13 +9,13 @@ class CommandWindow : public DialogBox
     FXDECLARE(CommandWindow)
 protected:
 
-    int     pid;                     // Proccess ID of child (valid if busy).
-    int     pipes[2];                // Pipes to communicate with child process.
+    int pid = 0;                         // Proccess ID of child (valid if busy).
+    int pipes[2] = {0, 0};               // Pipes to communicate with child process.
     FXText* text;
 
     FXString command;                  // Command string
-    FXbool   killed;                   // True if the cancel button was pressed
-    FXbool   closed;                   // True if the closed button was pressed
+    FXbool killed;                     // True if the cancel button was pressed
+    FXbool closed;                     // True if the closed button was pressed
 
 private:
     CommandWindow() : pid(0), text(NULL), killed(false), closed(false)

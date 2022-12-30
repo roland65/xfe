@@ -39,7 +39,7 @@ protected:
     FXIcon*  bigIcon;     // Icon of item
     FXIcon*  miniIcon;    // Icon of item
     void*    data;        // Item user data pointer
-    FXuint   state;       // Item state flags
+    FXuint state;         // Item state flags
 private:
     IconItem(const IconItem&);
     IconItem& operator=(const IconItem&);
@@ -115,7 +115,7 @@ public:
     // Return true if item has focus
     FXbool hasFocus() const
     {
-        return((state&FOCUS) != 0);
+        return((state & FOCUS) != 0);
     }
 
     // Select item
@@ -124,7 +124,7 @@ public:
     // Return true if this item is selected
     FXbool isSelected() const
     {
-        return((state&SELECTED) != 0);
+        return((state & SELECTED) != 0);
     }
 
     // Enable or disable item
@@ -133,7 +133,7 @@ public:
     // Return true if this item is enabled
     FXbool isEnabled() const
     {
-        return((state&DISABLED) == 0);
+        return((state & DISABLED) == 0);
     }
 
     // Make item draggable
@@ -142,7 +142,7 @@ public:
     // Return true if this item is draggable
     FXbool isDraggable() const
     {
-        return((state&DRAGGABLE) != 0);
+        return((state & DRAGGABLE) != 0);
     }
 
     // Return width of item as drawn in list
@@ -203,46 +203,46 @@ class FXAPI IconList : public FXScrollArea
     FXDECLARE(IconList)
 protected:
     FXHeader*        header;             // Header control
-    IconItemList     items;              // Item list
-    int              nrows;              // Number of rows
-    int              ncols;              // Number of columns
-    int              anchor;             // Anchor item
-    int              current;            // Current item
-    int              extent;             // Extent item
-    int              cursor;             // Cursor item
-    int              viewable;           // Visible item
+    IconItemList items;                  // Item list
+    int nrows;                           // Number of rows
+    int ncols;                           // Number of columns
+    int anchor;                          // Anchor item
+    int current;                         // Current item
+    int extent;                          // Extent item
+    int cursor;                          // Cursor item
+    int viewable;                        // Visible item
     FXFont*          font;               // Font
     IconListSortFunc sortfunc;           // Item sort function
-    FXColor          textColor;          // Text color
-    FXColor          selbackColor;       // Selected back color
-    FXColor          seltextColor;       // Selected text color
-    FXColor          highlightColor;     // Highlight color
-    FXColor          sortColor;          // Sort color
-    FXColor          highlightSortColor; // Highlight sort color
-    int              itemWidth;          // Item width
-    int              itemHeight;         // Item height
-    int              itemSpace;          // Space for item label
-    int              anchorx;            // Rectangular selection
-    int              anchory;
-    int              currentx;
-    int              currenty;
-    int              grabx;           // Grab point x
-    int              graby;           // Grab point y
-    FXString         lookup;          // Lookup string
-    FXString         help;            // Help text
-    FXbool           state;           // State of item
-    FXbool           allowTooltip;    // Allow tooltip in single click mode
-    FXuint           numsortheader;   // Index of the sorted column
-    double           headerpct[10];   // Header sizes, relatively to the list width (in percent)
-    int              count;           // Counter used to properly initialize the relative header sizes
-    FXbool           ignorecase;      // Case sensitivity for file name sorting
-    FXbool           initheaderpct;   // Indicates we have to initialize the headerpct for the deletion columns
+    FXColor textColor;                   // Text color
+    FXColor selbackColor;                // Selected back color
+    FXColor seltextColor;                // Selected text color
+    FXColor highlightColor;              // Highlight color
+    FXColor sortColor;                   // Sort color
+    FXColor highlightSortColor;          // Highlight sort color
+    int itemWidth;                       // Item width
+    int itemHeight;                      // Item height
+    int itemSpace;                       // Space for item label
+    int anchorx;                         // Rectangular selection
+    int anchory;
+    int currentx;
+    int currenty;
+    int grabx;                        // Grab point x
+    int graby;                        // Grab point y
+    FXString lookup;                  // Lookup string
+    FXString help;                    // Help text
+    FXbool state;                     // State of item
+    FXbool allowTooltip;              // Allow tooltip in single click mode
+    FXuint numsortheader;             // Index of the sorted column
+    double headerpct[10];             // Header sizes, relatively to the list width (in percent)
+    int count;                        // Counter used to properly initialize the relative header sizes
+    FXbool ignorecase;                // Case sensitivity for file name sorting
+    FXbool initheaderpct;             // Indicates we have to initialize the headerpct for the deletion columns
 protected:
     IconList() : header(NULL), nrows(0), ncols(0), anchor(0), current(0), extent(0), cursor(0), viewable(0), font(NULL),
-                 sortfunc(NULL), textColor(FXRGB(0, 0, 0)), selbackColor(FXRGB(0, 0, 0)),
-                 seltextColor(FXRGB(0, 0, 0)), highlightColor(FXRGB(0, 0, 0)), sortColor(FXRGB(0, 0, 0)), highlightSortColor(FXRGB(0, 0, 0)),
-                 itemWidth(0), itemHeight(0), itemSpace(0), anchorx(0), anchory(0), currentx(0), currenty(0), grabx(0), graby(0), state(false),
-                 allowTooltip(false), numsortheader(0), count(0), ignorecase(false), initheaderpct(false)
+        sortfunc(NULL), textColor(FXRGB(0, 0, 0)), selbackColor(FXRGB(0, 0, 0)),
+        seltextColor(FXRGB(0, 0, 0)), highlightColor(FXRGB(0, 0, 0)), sortColor(FXRGB(0, 0, 0)), highlightSortColor(FXRGB(0, 0, 0)),
+        itemWidth(0), itemHeight(0), itemSpace(0), anchorx(0), anchory(0), currentx(0), currenty(0), grabx(0), graby(0), state(false),
+        allowTooltip(false), numsortheader(0), count(0), ignorecase(false), initheaderpct(false)
     {}
     void recompute();
     void getrowscols(int& nr, int& nc, int w, int h) const;
@@ -499,7 +499,7 @@ public:
     // The option SEARCH_IGNORECASE causes a case-insensitive match.  Finally,
     // passing SEARCH_PREFIX causes searching for a prefix of the item name.
     // Return -1 if no matching item is found.
-    int findItem(const FXString& text, int start = -1, FXuint flags = SEARCH_FORWARD|SEARCH_WRAP) const;
+    int findItem(const FXString& text, int start = -1, FXuint flags = SEARCH_FORWARD | SEARCH_WRAP) const;
 
 
     // Search items by associated user data, beginning from item start. If the
@@ -507,7 +507,7 @@ public:
     // Flags may be SEARCH_FORWARD or SEARCH_BACKWARD to control the
     // search direction; this can be combined with SEARCH_NOWRAP or SEARCH_WRAP
     // to control whether the search wraps at the start or end of the list.
-    int findItemByData(const void* ptr, int start = -1, FXuint flags = SEARCH_FORWARD|SEARCH_WRAP) const;
+    int findItemByData(const void* ptr, int start = -1, FXuint flags = SEARCH_FORWARD | SEARCH_WRAP) const;
 
     // Scroll to make item at index visible
     virtual void makeItemVisible(int index);

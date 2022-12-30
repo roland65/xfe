@@ -25,36 +25,37 @@ protected:
     InputDialog*       operationdialogrename;
     BrowseInputDialog* operationdialogmultiple;
     BrowseInputDialog* comparedialog;
-    FXString           searchdir;
-    FXbool             ctrlflag;        // Flag to select the right click control menu
-    FXbool             shiftf10;        // Flag indicating that Shift-F10 was pressed
+    FXString searchdir;
+    FXbool ctrlflag;                    // Flag to select the right click control menu
+    FXbool shiftf10;                    // Flag indicating that Shift-F10 was pressed
     FXPacker*          statusbar;
     FXLabel*           status;
     FXDragCorner*      corner;
-    FXString           trashfileslocation;
-    FXString           trashinfolocation;
-    FXDragType         urilistType;     // Standard uri-list type
-    FXDragType         xfelistType;     // Xfe, Gnome and XFCE list type
-    FXDragType         kdelistType;     // KDE list type
-    FXDragType         utf8Type;        // UTF-8 text type
+    FXString trashfileslocation;
+    FXString trashinfolocation;
+    FXDragType urilistType;             // Standard uri-list type
+    FXDragType xfelistType;             // Xfe, Gnome and XFCE list type
+    FXDragType kdelistType;             // KDE list type
+    FXDragType utf8Type;                // UTF-8 text type
     FXButton*          refreshbtn;
     FXButton*          gotodirbtn;
     FXButton*          copybtn;
     FXButton*          cutbtn;
     FXButton*          propbtn;
+    FXButton*          copynamebtn;
     FXButton*          trashbtn;
     FXButton*          delbtn;
     FXButton*          bigiconsbtn;
     FXButton*          smalliconsbtn;
     FXButton*          detailsbtn;
     FXToggleButton*    thumbbtn;
-    progsmap           progs;           // Map between program string identifiers and integer indexes
+    progsmap progs;                     // Map between program string identifiers and integer indexes
 protected:
     SearchPanel() : associations(NULL), list(NULL), archdialog(NULL), opendialog(NULL), operationdialogsingle(NULL),
-                    operationdialogrename(NULL), operationdialogmultiple(NULL), comparedialog(NULL),
-                    ctrlflag(false), shiftf10(false), statusbar(NULL), status(NULL), corner(NULL), urilistType(0), xfelistType(0),
-                    kdelistType(0), utf8Type(0), refreshbtn(NULL), gotodirbtn(NULL), copybtn(NULL), cutbtn(NULL), propbtn(NULL),
-                    trashbtn(NULL), delbtn(NULL), bigiconsbtn(NULL), smalliconsbtn(NULL), detailsbtn(NULL), thumbbtn(NULL)
+        operationdialogrename(NULL), operationdialogmultiple(NULL), comparedialog(NULL),
+        ctrlflag(false), shiftf10(false), statusbar(NULL), status(NULL), corner(NULL), urilistType(0), xfelistType(0),
+        kdelistType(0), utf8Type(0), refreshbtn(NULL), gotodirbtn(NULL), copybtn(NULL), cutbtn(NULL), propbtn(NULL),
+        trashbtn(NULL), delbtn(NULL), bigiconsbtn(NULL), smalliconsbtn(NULL), detailsbtn(NULL), thumbbtn(NULL)
     {}
 public:
     enum
@@ -83,6 +84,7 @@ public:
         ID_PROPERTIES,
         ID_COPY_CLIPBOARD,
         ID_CUT_CLIPBOARD,
+        ID_COPYNAME_CLIPBOARD,
         ID_GO_SCRIPTDIR,
         ID_GOTO_PARENTDIR,
         ID_FILE_COPYTO,
@@ -121,6 +123,7 @@ public:
     long onCmdProperties(FXObject* sender, FXSelector, void*);
     long onCmdPopupMenu(FXObject*, FXSelector, void*);
     long onCmdCopyCut(FXObject*, FXSelector, void*);
+    long onCmdCopyName(FXObject*, FXSelector, void*);
     long onCmdFileMan(FXObject*, FXSelector, void*);
     long onCmdAddToArch(FXObject*, FXSelector, void*);
     long onCmdExtract(FXObject*, FXSelector, void*);
@@ -269,11 +272,11 @@ public:
         list->onCmdRefresh(0, 0, 0);
     }
 
-	// Deselect all items
-	void deselectAll(void)
-	{
-		list->onCmdDeselectAll(0,0,0);
-	}
+    // Deselect all items
+    void deselectAll(void)
+    {
+        list->onCmdDeselectAll(0, 0, 0);
+    }
 };
 
 #endif

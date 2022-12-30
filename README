@@ -1,7 +1,7 @@
 
 
  XFE, X File Explorer File Manager
- Copyright (C) 2002-2020 Roland Baudin
+ Copyright (C) 2002-2022 Roland Baudin
  <http://roland65.free.fr/xfe>
  <http://sourceforge.net/projects/xfe>
 
@@ -75,7 +75,7 @@
     - Copy/cut/paste files from and to your favorite desktop (GNOME/KDE/XFCE/ROX)
     - Drag and Drop files from and to your favorite desktop (GNOME/KDE/XFCE/ROX)
     - Disk usage command
-    - Root mode with authentication by su or sudo
+    - Root mode with authentication by pkexec, sudo or su
     - Status line
     - File associations
     - Optional trash can for file delete operations (compliant with Freedesktop standards)
@@ -88,8 +88,7 @@
     - Toolbars
     - Bookmarks
     - Back and forward history lists for folder navigation
-    - Path linker for folder navigation
-    - Color themes (GNOME, KDE, Windows...)
+    - Icon themes (Default, GNOME, KDE, XFCE...)
     - Control themes (Standard or Clearlooks like)
     - Icon themes (Xfe, GNOME, KDE, Tango, Windows...)
     - Create archives (tar, compress, zip, gzip, bzip2, xz and 7zip formats are supported)
@@ -131,7 +130,7 @@
 	* Detailed file list				- F12
     * Toggle display hidden files   	- Ctrl-F6
 	* Toggle display thumbnails  	    - Ctrl-F7
-	* Vertical panels                   - Ctrl-Shift-F1
+	* Vertical panels                   - Ctrl-Ctrl-Shift-N
 	* Horizontal panels                 - Ctrl-Shift-F2
 	* Go to working folder              - Shift-F2
 	* Go to parent folder               - Backspace
@@ -170,6 +169,7 @@
 	* Move files to trash can           - Del
 	* Restore files from trash can      - Alt-Del
 	* Delete files                      - Shift-Del
+    * Copy file names to clipboard      - Ctrl-Shift-N
 	* Empty trash can                   - Ctrl-Del
 	
  
@@ -203,7 +203,7 @@
   some key actions are hardcoded an cannot be changed. These include:
 
 	* Ctrl-+ and Ctrl--                 - zoom in and zoom out image in Xfi
-	* Shift-F10							- display context menus in Xfe
+	* Ctrl-Shift-N0							- display context menus in Xfe
 	* Space								- select an item in file lists
 	* Return							- enter directories in file lists, open files, select button actions, etc.
 	* Esc								- close current dialog, unselect files, etc.
@@ -341,18 +341,18 @@
     - Press Ctrl + right click to open a context menu on the tree panel
     - When dragging a file/folder to a folder, hold on the mouse on the folder to expand it
 
-  Copy/paste file names
-    - Select a file and press Ctrl-C to copy its name into the clipboard. Then in a dialog,press Ctrl-V to paste
-      the file name.
-    - In a file operation dialog, select a filename in the line containing the source name and paste it directly
+ Copy/paste file path or name
+    - Select a file and press Ctrl-C to copy the file path to the clipboard. Then in a dialog or an application, press Ctrl-V
+      to paste the file path. Use the Copy name menu item (or press Ctrl-Shift-N) to copy the file name (without path) to the clipboard.
+    - In a file operation dialog, select a file name in the line containing the source name and paste it directly
       to the destination using the middle button of your mouse. Then modify it to suit your needs.
 
-  Add files to the clipboard	
+ Add files to the clipboard
     - You can select files from a directory, copy them to the clipboard by pressing Ctrl-C. This erases the previous
       clipboard content. Then, you can move to another directory, select other files and add them to the clipboard
-      content by pressing Shift-Ctrl-C. This does not erase the previous clipboard content. At last, you can move
+      content by pressing Ctrl-Shift-C. This does not erase the previous clipboard content. At last, you can move
       to the destination and press Ctrl-V to copy all the files you have in the clipboard. Of course, this also works
-      with Ctrl-X and Shift-Ctrl-X to cut and paste the files.
+      with Ctrl-X and Ctrl-Shift-X to cut and paste the files.
       
   Startup notification
     - Startup notification is the process that displays a feedback (a sandbox cursor or whatever) to the user when he
@@ -461,7 +461,7 @@
   Many thanks to Maxim Baranov for his excellent X Win Commander and to all people that have provided useful
   patches, translations, tests and advices.
  
- [Last revision: 6/05//2020]
+ [Last revision: 28/12/2022]
 
 
 

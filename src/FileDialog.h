@@ -32,14 +32,14 @@ protected:
     FXCheckButton* readonly;        // Open file as read only
     FXButton*      accept;          // Accept button
     FXButton*      cancel;          // Cancel button
-    FXuint         selectmode;      // Select mode
+    FXuint selectmode;              // Select mode
     FXArrowButton* btnbackhist;     // Back history
     FXArrowButton* btnforwardhist;  // Forward history
     PathLinker*    pathlink;
     TextLabel*     pathtext;
 protected:
     FileSelector() : list(NULL), filename(NULL), filefilter(NULL), readonly(NULL), accept(NULL), cancel(NULL),
-                     selectmode(0), btnbackhist(NULL), btnforwardhist(NULL), pathlink(NULL), pathtext(NULL)
+        selectmode(0), btnbackhist(NULL), btnforwardhist(NULL), pathlink(NULL), pathtext(NULL)
     {}
     virtual void create();
     static FXString patternFromText(const FXString& pattern);
@@ -71,8 +71,8 @@ public:
     long onCmdNewDir(FXObject*, FXSelector, void*);
     long onCmdNewFile(FXObject*, FXSelector, void*);
     long onCmdPopupMenu(FXObject*, FXSelector, void*);
-	long onCmdKeyPress(FXObject*, FXSelector, void*);
-	long onCmdKeyRelease(FXObject*, FXSelector, void*);
+    long onCmdKeyPress(FXObject*, FXSelector, void*);
+    long onCmdKeyRelease(FXObject*, FXSelector, void*);
 public:
     enum
     {

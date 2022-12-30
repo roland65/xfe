@@ -51,8 +51,8 @@ FXbool loadAppIcons(FXApp* app, FXbool *iconpathfound)
     FXbool success = true;
 
     // Set icon path if it exists, otherwise set icon path to default
-    FXString iconpath = app->reg().readStringEntry("SETTINGS", "iconpath", DEFAULTICONPATH);   
-    
+    FXString iconpath = app->reg().readStringEntry("SETTINGS", "iconpath", DEFAULTICONPATH);
+
     if ( !existFile(iconpath) )
     {
         iconpath = DEFAULTICONPATH;
@@ -220,6 +220,6 @@ FXbool loadAppIcons(FXApp* app, FXbool *iconpathfound)
     success = ((restore_bigicon = loadiconfile(app, iconpath, "restore_big.png")) != NULL) & success;
     success = ((horzpanelsicon = loadiconfile(app, iconpath, "horzpanels.png")) != NULL) & success;
     success = ((vertpanelsicon = loadiconfile(app, iconpath, "vertpanels.png")) != NULL) & success;
-    
+
     return(success);
 }

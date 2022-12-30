@@ -26,10 +26,10 @@ class FXAPI FileItem : public IconItem
 protected:
     FileAssoc* assoc;                       // File association record
     FileItem*  link;                        // Link to next item
-    FXulong    size;                        // File size
-    FXTime     date;                        // File date (mtime)
-    FXTime     cdate;                       // Changed date (ctime)
-    FXTime     deldate;                     // Deletion date
+    FXulong size;                           // File size
+    FXTime date;                            // File date (mtime)
+    FXTime cdate;                           // Changed date (ctime)
+    FXTime deldate;                         // Deletion date
 protected:
     FileItem() : assoc(NULL), link(NULL), size(0), date(0), cdate(0), deldate(0)
     {}
@@ -47,55 +47,55 @@ protected:
 public:
     // Constructor
     FileItem(const FXString& text, FXIcon* bi = NULL, FXIcon* mi = NULL, void* ptr = NULL) : IconItem(text, bi, mi, ptr), assoc(NULL),
-                                                                                             link(NULL), size(0), date(0), cdate(0), deldate(0)
+        link(NULL), size(0), date(0), cdate(0), deldate(0)
     {}
 
     // Return true if this is a file item
     FXbool isFile() const
     {
-        return((state&(FOLDER|BLOCKDEV|CHARDEV|FIFO|SOCK)) == 0);
+        return((state & (FOLDER | BLOCKDEV | CHARDEV | FIFO | SOCK)) == 0);
     }
 
     // Return true if this is a directory item
     FXbool isDirectory() const
     {
-        return((state&FOLDER) != 0);
+        return((state & FOLDER) != 0);
     }
 
     // Return true if this is an executable item
     FXbool isExecutable() const
     {
-        return((state&EXECUTABLE) != 0);
+        return((state & EXECUTABLE) != 0);
     }
 
     // Return true if this is a symbolic link item
     FXbool isSymlink() const
     {
-        return((state&SYMLINK) != 0);
+        return((state & SYMLINK) != 0);
     }
 
     // Return true if this is a character device item
     FXbool isChardev() const
     {
-        return((state&CHARDEV) != 0);
+        return((state & CHARDEV) != 0);
     }
 
     // Return true if this is a block device item
     FXbool isBlockdev() const
     {
-        return((state&BLOCKDEV) != 0);
+        return((state & BLOCKDEV) != 0);
     }
 
     // Return true if this is an FIFO item
     FXbool isFifo() const
     {
-        return((state&FIFO) != 0);
+        return((state & FIFO) != 0);
     }
 
     // Return true if this is a socket
     FXbool isSocket() const
     {
-        return((state&SOCK) != 0);
+        return((state & SOCK) != 0);
     }
 
     // Return the file-association object for this item
@@ -124,24 +124,24 @@ class FXAPI FileList : public IconList
     FXDECLARE(FileList)
 protected:
     FileItem*    list;               // File item list
-    int          prevIndex;
-    FXString     directory;          // Current directory
-    FXString     orgdirectory;       // Original directory
-    FXString     dropdirectory;      // Drop directory
+    int prevIndex;
+    FXString directory;              // Current directory
+    FXString orgdirectory;           // Original directory
+    FXString dropdirectory;          // Drop directory
     FXDragAction dropaction;         // Drop action
-    FXString     dragfiles;          // Dragged files
+    FXString dragfiles;              // Dragged files
     FileDict*    associations;       // Association table
-    FXString     pattern;            // Pattern of file names
-    FXuint       matchmode;          // File wildcard match mode
-    FXTime       timestamp;          // Time when last refreshed
-    FXuint       counter;            // Refresh counter
-    FXbool       allowrefresh;       // Allow or disallow periodic refresh
-    FXbool       displaythumbnails;  // Display thumbnails
-    FXString     trashfileslocation; // Location of the trash files directory
-    FXString     trashinfolocation;  // Location of the trash info directory
-    FXbool       dirsfirst;          // Sort directories first
-    int          deldatesize;
-    int          origpathsize;
+    FXString pattern;                // Pattern of file names
+    FXuint matchmode;                // File wildcard match mode
+    FXTime timestamp;                // Time when last refreshed
+    FXuint counter;                  // Refresh counter
+    FXbool allowrefresh;             // Allow or disallow periodic refresh
+    FXbool displaythumbnails;        // Display thumbnails
+    FXString trashfileslocation;     // Location of the trash files directory
+    FXString trashinfolocation;      // Location of the trash info directory
+    FXbool dirsfirst;                // Sort directories first
+    int deldatesize;
+    int origpathsize;
     FXWindow*    focuswindow;          // Window used to test focus
 public:
     StringList* backhist;              // Back history
@@ -149,8 +149,8 @@ public:
 
 protected:
     FileList() : list(NULL), prevIndex(0), dropaction(DRAG_MOVE), associations(NULL),
-                 matchmode(0), timestamp(0), counter(0), allowrefresh(false), displaythumbnails(false), dirsfirst(false),
-                 deldatesize(0), origpathsize(0), focuswindow(NULL), backhist(NULL), forwardhist(NULL)
+        matchmode(0), timestamp(0), counter(0), allowrefresh(false), displaythumbnails(false), dirsfirst(false),
+        deldatesize(0), origpathsize(0), focuswindow(NULL), backhist(NULL), forwardhist(NULL)
     {}
     virtual IconItem* createItem(const FXString& text, FXIcon* big, FXIcon* mini, void* ptr);
 

@@ -35,7 +35,7 @@ public:
         ID_LAST
     };
 public:
-    ExecuteBox(FXWindow* win, const FXString& name, const FXString& text, FXuint opts = DECOR_TITLE|DECOR_BORDER, int x = 0, int y = 0);
+    ExecuteBox(FXWindow* win, const FXString& name, const FXString& text, FXuint opts = DECOR_TITLE | DECOR_BORDER, int x = 0, int y = 0);
 };
 
 #endif

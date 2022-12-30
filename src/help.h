@@ -53,7 +53,7 @@
     - Copy/Cut/Paste files from and to your favorite desktop (GNOME/KDE/XFCE/ROX)\n \
     - Drag and Drop files from and to your favorite desktop (GNOME/KDE/XFCE/ROX)\n \
     - Disk usage command \n \
-    - Root mode with authentication by su or sudo\n \
+    - Root mode with authentication by pkexec, sudo or su\n \
     - Status line\n \
     - File associations\n \
     - Optional trash can for file delete operations (compliant with freedesktop.org standards)\n \
@@ -66,8 +66,8 @@
     - Toolbars\n \
     - Bookmarks\n \
     - Back and forward history lists for folder navigation\n \
-    - Color themes (GNOME, KDE, Windows...)\n \
-    - Icon themes (Xfe, GNOME, KDE, Tango, Windows...)\n \
+    - Color themes (GNOME, KDE, XFCE, Dark...)\n \
+    - Icon themes (Default, GNOME, KDE, XFCE...)\n \
     - Control themes (Standard or Clearlooks like)\n \
     - Create archives (tar, compress, zip, gzip, bzip2, xz and 7zip formats are supported)\n \
     - File comparison (through external tool)\n \
@@ -108,7 +108,7 @@
     * Detailed file list                 - F12\n \
     * Toggle display hidden files        - Ctrl-F6\n \
     * Toggle display thumbnails          - Ctrl-F7\n \
-    * Vertical panels                    - Ctrl-Shift-F1\n \
+    * Vertical panels                    - Ctrl-Ctrl-Shift-N\n \
     * Horizontal panels                  - Ctrl-Shift-F2\n \
     * Go to working folder               - Shift-F2\n \
     * Go to parent folder                - Backspace\n \
@@ -147,6 +147,7 @@
     * Move files to trash can           - Del\n \
     * Restore files from trash can      - Alt-Del\n \
     * Delete files                      - Shift-Del\n \
+    * Copy file names to clipboard      - Ctrl-Shift-N\n \
     * Empty trash can                   - Ctrl-Del\n \
 \n \
 \n \
@@ -180,7 +181,7 @@
  some key actions are hardcoded an cannot be changed. These include:\n \
 \n \
     * Ctrl-+ and Ctrl--                 - zoom in and zoom out image in Xfi\n \
-    * Shift-F10                         - display context menus in Xfe\n \
+    * Ctrl-Shift-N0                         - display context menus in Xfe\n \
     * Space                             - select an item in file list\n \
     * Return                            - enter folders in file lists, open files, select button actions, etc.\n \
     * Esc                               - close current dialog, unselect files, etc.\n \
@@ -321,18 +322,18 @@
     - Press Ctrl + right click to open a context menu on the tree panel\n \
     - When dragging a file/folder to a folder, hold on the mouse on the folder to expand it\n \
 \n \
- Copy/paste file names\n \
-    - Select a file and press Ctrl-C to copy its name into the clipboard. Then in a dialog,press Ctrl-V to paste\n \
-      the file name.\n \
-    - In a file operation dialog, select a filename in the line containing the source name and paste it directly\n \
+ Copy/paste file path or name\n \
+    - Select a file and press Ctrl-C to copy the file path to the clipboard. Then in a dialog or an application, press Ctrl-V \
+      to paste the file path. Use the Copy name menu item (or press Ctrl-Shift-N) to copy the file name (without path) to the clipboard. \
+    - In a file operation dialog, select a file name in the line containing the source name and paste it directly\n \
       to the destination using the middle button of your mouse. Then modify it to suit your needs.\n \
 \n \
  Add files to the clipboard\n \
     - You can select files from a directory, copy them to the clipboard by pressing Ctrl-C. This erases the previous\n \
       clipboard content. Then, you can move to another directory, select other files and add them to the clipboard\n \
-      content by pressing Shift-Ctrl-C. This does not erase the previous clipboard content. At last, you can move\n \
+      content by pressing Ctrl-Shift-C. This does not erase the previous clipboard content. At last, you can move\n \
       to the destination and press Ctrl-V to copy all the files you have in the clipboard. Of course, this also works\n \
-      with Ctrl-X and Shift-Ctrl-X to cut and paste the files.\n \
+      with Ctrl-X and Ctrl-Shift-X to cut and paste the files.\n \
 \n \
  Startup notification\n \
     - Startup notification is the process that displays a feedback (a sandbox cursor or whatever) to the user when\n \
@@ -380,7 +381,7 @@
  Many thanks to Maxim Baranov for his excellent X Win Commander and to all people that have provided useful\n \
  patches, translations, tests and advices.\n \
 \n \
- [Last revision: 19/06/2019]\n \
+ [Last revision: 12/12/2022]\n \
 \n \
  ")
 ;

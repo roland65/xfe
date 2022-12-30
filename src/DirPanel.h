@@ -19,37 +19,37 @@ protected:
     FXPacker*          statusbar;
     FXLabel*           status;
     FXButton*          activeicon;
-    FXString           trashlocation;
-    FXString           trashfileslocation;
-    FXString           trashinfolocation;
-    FXString           startlocation;
-    FXDragType         urilistType;      // Standard uri-list type
-    FXDragType         xfelistType;      // Xfe, Gnome and XFCE list type
-    FXDragType         kdelistType;      // KDE list type
-    FXDragType         utf8Type;         // UTF-8 text type
-    FXbool             clipboard_locked; // Clipboard locked to prevent changes when viewing it
+    FXString trashlocation;
+    FXString trashfileslocation;
+    FXString trashinfolocation;
+    FXString startlocation;
+    FXDragType urilistType;              // Standard uri-list type
+    FXDragType xfelistType;              // Xfe, Gnome and XFCE list type
+    FXDragType kdelistType;              // KDE list type
+    FXDragType utf8Type;                 // UTF-8 text type
+    FXbool clipboard_locked;             // Clipboard locked to prevent changes when viewing it
     InputDialog*       newdirdialog;
     ArchInputDialog*   archdialog;
     BrowseInputDialog* operationdialog;
     InputDialog*       operationdialogrename;
-    FXbool             fromPaste;
+    FXbool fromPaste;
     FXWindow*          focuswindow;
-    FXbool             ctrlflag;            // Flag to select the right click control menu
+    FXbool ctrlflag;                        // Flag to select the right click control menu
     TextLabel*         paneltitle;          // Panel title
-    FXbool             isactive;            // Flag to indicate is panel has keyboard focus
-    FXbool             stopListRefresh;     // To stop refreshing in some cases
-    time_t             curr_mtime;          // Current directory mtime
-    FXString           curr_dirpath;        // Current directory path
-    FXbool             allowDirsizeRefresh; // Allow or avoid directory size refresh
+    FXbool isactive;                        // Flag to indicate is panel has keyboard focus
+    FXbool stopListRefresh;                 // To stop refreshing in some cases
+    time_t curr_mtime;                      // Current directory mtime
+    FXString curr_dirpath;                  // Current directory path
+    FXbool allowDirsizeRefresh;             // Allow or avoid directory size refresh
 
 
 public:
     DirPanel(FXWindow* owner, FXComposite* p, FXColor listbackcolor = FXRGB(255, 255, 255), FXColor listforecolor = FXRGB(0, 0, 0),
              FXbool smoothscroll = true, FXuint opts = 0, int x = 0, int y = 0, int w = 0, int h = 0);
     DirPanel() : list(NULL), statusbar(NULL), status(NULL), activeicon(NULL), urilistType(0), xfelistType(0), kdelistType(0),
-                 utf8Type(0), clipboard_locked(false), newdirdialog(NULL), archdialog(NULL), operationdialog(NULL), operationdialogrename(NULL),
-                 fromPaste(false), focuswindow(NULL), ctrlflag(false), paneltitle(NULL), isactive(false), stopListRefresh(false), curr_mtime(0),
-                 allowDirsizeRefresh(false)
+        utf8Type(0), clipboard_locked(false), newdirdialog(NULL), archdialog(NULL), operationdialog(NULL), operationdialogrename(NULL),
+        fromPaste(false), focuswindow(NULL), ctrlflag(false), paneltitle(NULL), isactive(false), stopListRefresh(false), curr_mtime(0),
+        allowDirsizeRefresh(false)
     {}
     virtual void create();
 
@@ -76,6 +76,7 @@ public:
         ID_NEW_DIR,
         ID_XTERM,
         ID_COPY_CLIPBOARD,
+        ID_COPYNAME_CLIPBOARD,
         ID_CUT_CLIPBOARD,
         ID_ADDCOPY_CLIPBOARD,
         ID_ADDCUT_CLIPBOARD,
@@ -111,12 +112,13 @@ public:
     long onCmdNewDir(FXObject*, FXSelector, void*);
     long onCmdXTerm(FXObject*, FXSelector, void*);
     long onCmdCopyCut(FXObject*, FXSelector, void*);
+    long onCmdCopyName(FXObject*, FXSelector sel, void*);
     long onCmdPaste(FXObject*, FXSelector, void*);
     long onUpdPaste(FXObject*, FXSelector, void*);
     long onCmdDirectory(FXObject*, FXSelector, void*);
     long onCmdToggleTree(FXObject*, FXSelector sel, void*);
-
     long onCmdDirsizeRefresh(FXObject*, FXSelector, void*);
+
     long onUpdToggleTree(FXObject*, FXSelector, void*);
     long onUpdMount(FXObject*, FXSelector, void*);
     long onUpdUnmount(FXObject*, FXSelector, void*);
@@ -131,9 +133,11 @@ public:
     long onCmdFocus(FXObject*, FXSelector, void*);
     long onCmdStopListRefreshTimer(FXObject*, FXSelector, void*);
     long onUpdDirsizeRefresh(FXObject*, FXSelector, void*);
+
 #if defined(linux)
     long onCmdMount(FXObject*, FXSelector, void*);
 #endif
+
 public:
 
     void setActive();

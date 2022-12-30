@@ -5,10 +5,10 @@ class FXAPI Bookmarks : public FXObject
 {
     FXDECLARE(Bookmarks)
 protected:
-    FXString   group;           // MRU File group
+    FXString group;             // MRU File group
     FXObject*  target;          // Target object to send message
     FXSelector message;         // Message to send
-    int        maxbookmarks;    // Maximum number of bookmarks to track
+    int maxbookmarks;           // Maximum number of bookmarks to track
 private:
     Bookmarks(const Bookmarks&);
     Bookmarks& operator=(const Bookmarks&);

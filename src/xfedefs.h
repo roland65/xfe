@@ -1,7 +1,7 @@
 // Common Xfe constants
 
 #ifndef COPYRIGHT
-#define COPYRIGHT    "Copyright (C) 2002-2020 Roland Baudin (roland65@free.fr)"
+#define COPYRIGHT    "Copyright (C) 2002-2022 Roland Baudin (roland65@free.fr)"
 #endif
 
 // Default normal font
@@ -107,13 +107,26 @@
 #define FILTER_HIST_SIZE    30
 #endif
 
-#ifdef STARTUP_NOTIFICATION
 // If startup notification is used, this is the timeout value (seconds)
+#ifdef STARTUP_NOTIFICATION
+
+#ifndef STARTUP_TIMEOUT
 #define STARTUP_TIMEOUT    15
+#endif
+
 #endif
 
 // If startup notification is not used, we use an ugly simulation of a startup time (seconds)
 #define SIMULATED_STARTUP_TIME    3
+
+// Default timeout for mount points that are not responding in Linux
+#if defined(linux)
+
+#ifndef MOUNT_TIMEOUT
+#define MOUNT_TIMEOUT    30
+#endif
+
+#endif
 
 // Local data path
 #ifndef DATAPATH
@@ -168,6 +181,11 @@
 // Default icon path
 #ifndef DEFAULTICONPATH
 #define DEFAULTICONPATH    "~/.config/xfe/icons/default-theme:/usr/local/share/xfe/icons/default-theme:/usr/share/xfe/icons/default-theme"
+#endif
+
+// Command to launch Xfe as root with pkexec
+#ifndef DEFAULT_PKEXEC_CMD
+#define DEFAULT_PKEXEC_CMD    "pkexec xfe"
 #endif
 
 // Command to launch Xfe as root with sudo or su, using st as a terminal
@@ -271,10 +289,10 @@
 #define TAB2    (FXString)"\t\t"
 
 // Macro to add tab characters before and after a given string
-#define TABS(s)    ((FXString)"\t"+(s)+(FXString)"\t")
+#define TABS(s)    ((FXString)"\t" + (s) + (FXString)"\t")
 
 // Macro to add parentheses before and after a given string
-#define PARS(s)    ((FXString)" ("+(s)+(FXString)")")
+#define PARS(s)    ((FXString)" (" + (s) + (FXString)")")
 
 
 // Linux specials

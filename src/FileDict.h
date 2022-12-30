@@ -6,16 +6,16 @@
 // Registers stuff to know about the extension
 struct FileAssoc
 {
-    FXString   key;               // Key extension (ex: zip, cpp, ...)
-    FXString   command;           // Command to execute
-    FXString   extension;         // Full extension name (ex: ZIP Archive, C++ Source, ...)
-    FXString   mimetype;          // Mime type name
+    FXString key;                 // Key extension (ex: zip, cpp, ...)
+    FXString command;             // Command to execute
+    FXString extension;           // Full extension name (ex: ZIP Archive, C++ Source, ...)
+    FXString mimetype;            // Mime type name
     FXIcon*    bigicon;           // Big normal icon
     FXIcon*    bigiconopen;       // Big open icon
     FXIcon*    miniicon;          // Mini normal icon
     FXIcon*    miniiconopen;      // Mini open icon
     FXDragType dragtype;          // Registered drag type
-    FXuint     flags;             // Flags
+    FXuint flags;                 // Flags
 };
 
 
@@ -26,7 +26,7 @@ class FXAPI IconDict : public FXDict
 private:
     FXApp*        app;            // Application object
     FXIconSource* source;         // Icon source
-    FXString      path;           // Where to search icons
+    FXString path;                // Where to search icons
 protected:
     IconDict() : app(NULL), source(NULL)
     {}

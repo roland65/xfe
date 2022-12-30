@@ -23,23 +23,23 @@ private:
     FXCheckButton* suid;
     FXCheckButton* sgid;
     FXCheckButton* svtx;
-    FXDataTarget   cmd_radiotarget;
-    FXDataTarget   flt_radiotarget;
+    FXDataTarget cmd_radiotarget;
+    FXDataTarget flt_radiotarget;
     FXRadioButton* set;
     FXRadioButton* clear;
     FXRadioButton* dironly;
     FXRadioButton* fileonly;
     FXRadioButton* all;
     FXRadioButton* add;
-    int            cmd;
-    int            flt;
+    int cmd;
+    int flt;
     FXCheckButton* rec;
     FXCheckButton* own;
     FXComboBox*    user;
     FXComboBox*    grp;
 
     PermFrame() : ur(NULL), uw(NULL), ux(NULL), gr(NULL), gw(NULL), gx(NULL), or_(NULL), ow(NULL), ox(NULL), suid(NULL), sgid(NULL), svtx(NULL),
-                  set(NULL), clear(NULL), dironly(NULL), fileonly(NULL), all(NULL), add(NULL), cmd(0), flt(0), rec(NULL), own(NULL), user(NULL), grp(NULL)
+        set(NULL), clear(NULL), dironly(NULL), fileonly(NULL), all(NULL), add(NULL), cmd(0), flt(0), rec(NULL), own(NULL), user(NULL), grp(NULL)
     {}
 
 public:
@@ -51,13 +51,13 @@ class PropertiesBox : public DialogBox
     FXDECLARE(PropertiesBox)
 
 private:
-    int     pid;                     // Proccess ID of child (valid if busy).
-    int     pipes[2];                // Pipes to communicate with child process.
+    int pid = 0;                     // Proccess ID of child (valid if busy).
+    int pipes[2] = {0, 0};           // Pipes to communicate with child process.
 
-	FXuint 	     totalnbfiles;
-	FXuint       totalnbsubdirs;
-	FXulong      totaldirsize;
-	int          nbseldirs;
+    FXuint totalnbfiles;
+    FXuint totalnbsubdirs;
+    FXulong totaldirsize;
+    int nbseldirs;
     FXLabel*     fileSize;
     FXLabel*     fileSizeDetails;
     TextLabel*   location;
@@ -68,25 +68,25 @@ private:
     FXString*    files;
     FXString*    paths;
     FXLabel*     name_encoding;
-    FXString     source;
-    FXString     parentdir;
-    FXString     filename;
-    FXString     oldusr;
-    FXString     oldgrp;
-    FXString     descr_prev;
-    FXString     open_prev;
-    FXString     view_prev;
-    FXString     edit_prev;
-    FXString     bigic_prev;
-    FXString     miniic_prev;
-    int          num;
-    FXString     trashfileslocation;
-    FXString     trashinfolocation;
-    FXbool       executable;
+    FXString source;
+    FXString parentdir;
+    FXString filename;
+    FXString oldusr;
+    FXString oldgrp;
+    FXString descr_prev;
+    FXString open_prev;
+    FXString view_prev;
+    FXString edit_prev;
+    FXString bigic_prev;
+    FXString miniic_prev;
+    int num;
+    FXString trashfileslocation;
+    FXString trashinfolocation;
+    FXbool executable;
 #ifdef STARTUP_NOTIFICATION
     FXCheckButton* snbutton;
     FXGroupBox*    sngroup;
-    FXbool         sndisable_prev;
+    FXbool sndisable_prev;
 #endif
     FXTextField* input;
     FXTextField* username;
@@ -99,20 +99,20 @@ private:
     FXButton*    bigicbtn;
     FXTextField* miniic;
     FXButton*    miniicbtn;
-    FXbool       isDirectory;
-    FXbool       isMountpoint;
-    FXbool       recsize;
-    mode_t       mode;
-    mode_t       orig_mode;
+    FXbool isDirectory;
+    FXbool isMountpoint;
+    FXbool recsize;
+    mode_t mode;
+    mode_t orig_mode;
     PermFrame*   perm;
 
     PropertiesBox() : totalnbfiles(0), totalnbsubdirs(0), totaldirsize(0), nbseldirs(0), fileSize(NULL), fileSizeDetails(NULL), location(NULL), origlocation(NULL), linkto(NULL),
-                      deletiondate(NULL), ext(NULL), files(NULL), paths(NULL), name_encoding(NULL), num(0), executable(false),
+        deletiondate(NULL), ext(NULL), files(NULL), paths(NULL), name_encoding(NULL), num(0), executable(false),
 #ifdef STARTUP_NOTIFICATION
-                      snbutton(NULL), sngroup(NULL), sndisable_prev(false),
+        snbutton(NULL), sngroup(NULL), sndisable_prev(false),
 #endif
-                      input(NULL), username(NULL), grpname(NULL), open(NULL), view(NULL), edit(NULL), descr(NULL), bigic(NULL), bigicbtn(NULL),
-                      miniic(NULL), miniicbtn(NULL), isDirectory(false), isMountpoint(false), recsize(false), mode(0), orig_mode(0), perm(NULL)
+        input(NULL), username(NULL), grpname(NULL), open(NULL), view(NULL), edit(NULL), descr(NULL), bigic(NULL), bigicbtn(NULL),
+        miniic(NULL), miniicbtn(NULL), isDirectory(false), isMountpoint(false), recsize(false), mode(0), orig_mode(0), perm(NULL)
     {}
 
 public:

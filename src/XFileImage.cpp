@@ -36,18 +36,18 @@
 
 // Global variables
 char**   args;
-FXColor  listbackcolor, listforecolor;
-FXColor  highlightcolor;
-FXbool   allowPopupScroll = false;
-FXuint   single_click;
-FXbool   file_tooltips;
-FXbool   relative_resize;
-FXbool   show_pathlink;
-FXbool   save_win_pos;
+FXColor listbackcolor, listforecolor;
+FXColor highlightcolor;
+FXbool allowPopupScroll = false;
+FXuint single_click;
+FXbool file_tooltips;
+FXbool relative_resize;
+FXbool show_pathlink;
+FXbool save_win_pos;
 FXString homedir;
 FXString xdgconfighome;
 FXString xdgdatahome;
-FXbool   xim_used = false;
+FXbool xim_used = false;
 
 // Main window (not used but necessary for compilation)
 FXMainWindow* mainWindow = NULL;
@@ -62,104 +62,104 @@ extern double scalefrac;
 #define hand1_y_hot     1
 static const FXuchar hand1_bits[] =
 {
-   0x00, 0x00, 0x00, 0x00, 0x70, 0x00, 0x00, 0x00, 0x90, 0x00, 0x00, 0x00,
-   0x90, 0x00, 0x00, 0x00, 0x90, 0x00, 0x00, 0x00, 0x90, 0x03, 0x00, 0x00,
-   0x90, 0x1c, 0x00, 0x00, 0x10, 0xe4, 0x00, 0x00, 0x1c, 0x20, 0x01, 0x00,
-   0x12, 0x00, 0x01, 0x00, 0x12, 0x00, 0x01, 0x00, 0x92, 0x24, 0x01, 0x00,
-   0x82, 0x24, 0x01, 0x00, 0x02, 0x00, 0x01, 0x00, 0x02, 0x00, 0x01, 0x00,
-   0x02, 0x00, 0x01, 0x00, 0xfc, 0xff, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
+    0x00, 0x00, 0x00, 0x00, 0x70, 0x00, 0x00, 0x00, 0x90, 0x00, 0x00, 0x00,
+    0x90, 0x00, 0x00, 0x00, 0x90, 0x00, 0x00, 0x00, 0x90, 0x03, 0x00, 0x00,
+    0x90, 0x1c, 0x00, 0x00, 0x10, 0xe4, 0x00, 0x00, 0x1c, 0x20, 0x01, 0x00,
+    0x12, 0x00, 0x01, 0x00, 0x12, 0x00, 0x01, 0x00, 0x92, 0x24, 0x01, 0x00,
+    0x82, 0x24, 0x01, 0x00, 0x02, 0x00, 0x01, 0x00, 0x02, 0x00, 0x01, 0x00,
+    0x02, 0x00, 0x01, 0x00, 0xfc, 0xff, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
 };
 
 static const FXuchar hand1_mask_bits[] =
 {
-   0x00, 0x00, 0x00, 0x00, 0x70, 0x00, 0x00, 0x00, 0xf0, 0x00, 0x00, 0x00,
-   0xf0, 0x00, 0x00, 0x00, 0xf0, 0x00, 0x00, 0x00, 0xf0, 0x03, 0x00, 0x00,
-   0xf0, 0x1f, 0x00, 0x00, 0xf0, 0xff, 0x00, 0x00, 0xfc, 0xff, 0x01, 0x00,
-   0xfe, 0xff, 0x01, 0x00, 0xfe, 0xff, 0x01, 0x00, 0xfe, 0xff, 0x01, 0x00,
-   0xfe, 0xff, 0x01, 0x00, 0xfe, 0xff, 0x01, 0x00, 0xfe, 0xff, 0x01, 0x00,
-   0xfe, 0xff, 0x01, 0x00, 0xfc, 0xff, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
+    0x00, 0x00, 0x00, 0x00, 0x70, 0x00, 0x00, 0x00, 0xf0, 0x00, 0x00, 0x00,
+    0xf0, 0x00, 0x00, 0x00, 0xf0, 0x00, 0x00, 0x00, 0xf0, 0x03, 0x00, 0x00,
+    0xf0, 0x1f, 0x00, 0x00, 0xf0, 0xff, 0x00, 0x00, 0xfc, 0xff, 0x01, 0x00,
+    0xfe, 0xff, 0x01, 0x00, 0xfe, 0xff, 0x01, 0x00, 0xfe, 0xff, 0x01, 0x00,
+    0xfe, 0xff, 0x01, 0x00, 0xfe, 0xff, 0x01, 0x00, 0xfe, 0xff, 0x01, 0x00,
+    0xfe, 0xff, 0x01, 0x00, 0xfc, 0xff, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
 };
 
 
-// Hand cursor replacement (integer scaling factor = 2) 
+// Hand cursor replacement (integer scaling factor = 2)
 #define hand2_width     32
 #define hand2_height    32
 #define hand2_x_hot     6
 #define hand2_y_hot     1
 static const FXuchar hand2_bits[] =
 {
-   0x00, 0x00, 0x00, 0x00, 0xc0, 0x03, 0x00, 0x00, 0x60, 0x06, 0x00, 0x00,
-   0x60, 0x06, 0x00, 0x00, 0x20, 0x06, 0x00, 0x00, 0x60, 0x06, 0x00, 0x00,
-   0x20, 0x1e, 0x00, 0x00, 0x60, 0x3e, 0x00, 0x00, 0x20, 0xe2, 0x03, 0x00,
-   0x60, 0x62, 0x1e, 0x00, 0x38, 0x00, 0x74, 0x00, 0x7c, 0x00, 0x60, 0x00,
-   0x24, 0x00, 0x40, 0x00, 0x64, 0x00, 0x60, 0x00, 0x26, 0x00, 0x40, 0x00,
-   0x26, 0x22, 0x62, 0x00, 0x06, 0x22, 0x42, 0x00, 0x06, 0x00, 0x60, 0x00,
-   0x06, 0x00, 0x40, 0x00, 0x06, 0x00, 0x60, 0x00, 0x04, 0x00, 0x60, 0x00,
-   0xfc, 0xff, 0x3f, 0x00, 0xf0, 0xff, 0x1f, 0x00, 0x00, 0x00, 0x00, 0x00,
-   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
+    0x00, 0x00, 0x00, 0x00, 0xc0, 0x03, 0x00, 0x00, 0x60, 0x06, 0x00, 0x00,
+    0x60, 0x06, 0x00, 0x00, 0x20, 0x06, 0x00, 0x00, 0x60, 0x06, 0x00, 0x00,
+    0x20, 0x1e, 0x00, 0x00, 0x60, 0x3e, 0x00, 0x00, 0x20, 0xe2, 0x03, 0x00,
+    0x60, 0x62, 0x1e, 0x00, 0x38, 0x00, 0x74, 0x00, 0x7c, 0x00, 0x60, 0x00,
+    0x24, 0x00, 0x40, 0x00, 0x64, 0x00, 0x60, 0x00, 0x26, 0x00, 0x40, 0x00,
+    0x26, 0x22, 0x62, 0x00, 0x06, 0x22, 0x42, 0x00, 0x06, 0x00, 0x60, 0x00,
+    0x06, 0x00, 0x40, 0x00, 0x06, 0x00, 0x60, 0x00, 0x04, 0x00, 0x60, 0x00,
+    0xfc, 0xff, 0x3f, 0x00, 0xf0, 0xff, 0x1f, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
 };
 
 static const FXuchar hand2_mask_bits[] =
 {
-   0x00, 0x00, 0x00, 0x00, 0xc0, 0x03, 0x00, 0x00, 0xe0, 0x07, 0x00, 0x00,
-   0xe0, 0x07, 0x00, 0x00, 0xe0, 0x07, 0x00, 0x00, 0xe0, 0x07, 0x00, 0x00,
-   0xe0, 0x1f, 0x00, 0x00, 0xe0, 0x3f, 0x00, 0x00, 0xe0, 0xff, 0x03, 0x00,
-   0xe0, 0xff, 0x1f, 0x00, 0xf8, 0xff, 0x7f, 0x00, 0xfc, 0xff, 0x7f, 0x00,
-   0xfc, 0xff, 0x7f, 0x00, 0xfc, 0xff, 0x7f, 0x00, 0xfe, 0xff, 0x7f, 0x00,
-   0xfe, 0xff, 0x7f, 0x00, 0xfe, 0xff, 0x7f, 0x00, 0xfe, 0xff, 0x7f, 0x00,
-   0xfe, 0xff, 0x7f, 0x00, 0xfe, 0xff, 0x7f, 0x00, 0xfc, 0xff, 0x7f, 0x00,
-   0xfc, 0xff, 0x3f, 0x00, 0xf0, 0xff, 0x1f, 0x00, 0x00, 0x00, 0x00, 0x00,
-   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
+    0x00, 0x00, 0x00, 0x00, 0xc0, 0x03, 0x00, 0x00, 0xe0, 0x07, 0x00, 0x00,
+    0xe0, 0x07, 0x00, 0x00, 0xe0, 0x07, 0x00, 0x00, 0xe0, 0x07, 0x00, 0x00,
+    0xe0, 0x1f, 0x00, 0x00, 0xe0, 0x3f, 0x00, 0x00, 0xe0, 0xff, 0x03, 0x00,
+    0xe0, 0xff, 0x1f, 0x00, 0xf8, 0xff, 0x7f, 0x00, 0xfc, 0xff, 0x7f, 0x00,
+    0xfc, 0xff, 0x7f, 0x00, 0xfc, 0xff, 0x7f, 0x00, 0xfe, 0xff, 0x7f, 0x00,
+    0xfe, 0xff, 0x7f, 0x00, 0xfe, 0xff, 0x7f, 0x00, 0xfe, 0xff, 0x7f, 0x00,
+    0xfe, 0xff, 0x7f, 0x00, 0xfe, 0xff, 0x7f, 0x00, 0xfc, 0xff, 0x7f, 0x00,
+    0xfc, 0xff, 0x3f, 0x00, 0xf0, 0xff, 0x1f, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
 };
 
 
-// Hand cursor replacement (integer scaling factor = 3 or more) 
+// Hand cursor replacement (integer scaling factor = 3 or more)
 #define hand3_width     32
 #define hand3_height    32
 #define hand3_x_hot     6
 #define hand3_y_hot     1
 static const FXuchar hand3_bits[] =
 {
-   0x80, 0x1f, 0x00, 0x00, 0xc0, 0x3f, 0x00, 0x00, 0xc0, 0x30, 0x00, 0x00,
-   0xc0, 0x30, 0x00, 0x00, 0xc0, 0x30, 0x00, 0x00, 0xc0, 0x30, 0x00, 0x00,
-   0xc0, 0x30, 0x00, 0x00, 0xc0, 0x30, 0x00, 0x00, 0xc0, 0xf0, 0x03, 0x00,
-   0xc0, 0xf0, 0x07, 0x00, 0xc0, 0x30, 0xfe, 0x00, 0xc0, 0x10, 0xfe, 0x01,
-   0xc0, 0x10, 0x8c, 0x3f, 0xc0, 0x10, 0x04, 0x7f, 0xfc, 0x00, 0x04, 0xe1,
-   0xfe, 0x00, 0x04, 0xc1, 0xc6, 0x00, 0x04, 0xc0, 0xc6, 0x00, 0x00, 0xc0,
-   0xc6, 0x00, 0x00, 0xc0, 0xc3, 0x00, 0x00, 0xc0, 0xc3, 0x00, 0x00, 0xc0,
-   0xc3, 0x10, 0x04, 0xc1, 0x03, 0x10, 0x04, 0xc1, 0x03, 0x10, 0x04, 0xc1,
-   0x03, 0x00, 0x00, 0xc0, 0x03, 0x00, 0x00, 0xc0, 0x03, 0x00, 0x00, 0xc0,
-   0x03, 0x00, 0x00, 0xc0, 0x03, 0x00, 0x00, 0xc0, 0x07, 0x00, 0x00, 0xe0,
-   0xfe, 0xff, 0xff, 0x7f, 0xfc, 0xff, 0xff, 0x3f
+    0x80, 0x1f, 0x00, 0x00, 0xc0, 0x3f, 0x00, 0x00, 0xc0, 0x30, 0x00, 0x00,
+    0xc0, 0x30, 0x00, 0x00, 0xc0, 0x30, 0x00, 0x00, 0xc0, 0x30, 0x00, 0x00,
+    0xc0, 0x30, 0x00, 0x00, 0xc0, 0x30, 0x00, 0x00, 0xc0, 0xf0, 0x03, 0x00,
+    0xc0, 0xf0, 0x07, 0x00, 0xc0, 0x30, 0xfe, 0x00, 0xc0, 0x10, 0xfe, 0x01,
+    0xc0, 0x10, 0x8c, 0x3f, 0xc0, 0x10, 0x04, 0x7f, 0xfc, 0x00, 0x04, 0xe1,
+    0xfe, 0x00, 0x04, 0xc1, 0xc6, 0x00, 0x04, 0xc0, 0xc6, 0x00, 0x00, 0xc0,
+    0xc6, 0x00, 0x00, 0xc0, 0xc3, 0x00, 0x00, 0xc0, 0xc3, 0x00, 0x00, 0xc0,
+    0xc3, 0x10, 0x04, 0xc1, 0x03, 0x10, 0x04, 0xc1, 0x03, 0x10, 0x04, 0xc1,
+    0x03, 0x00, 0x00, 0xc0, 0x03, 0x00, 0x00, 0xc0, 0x03, 0x00, 0x00, 0xc0,
+    0x03, 0x00, 0x00, 0xc0, 0x03, 0x00, 0x00, 0xc0, 0x07, 0x00, 0x00, 0xe0,
+    0xfe, 0xff, 0xff, 0x7f, 0xfc, 0xff, 0xff, 0x3f
 };
 
 static const FXuchar hand3_mask_bits[] =
 {
-   0x80, 0x1f, 0x00, 0x00, 0xc0, 0x3f, 0x00, 0x00, 0xc0, 0x3f, 0x00, 0x00,
-   0xc0, 0x3f, 0x00, 0x00, 0xc0, 0x3f, 0x00, 0x00, 0xc0, 0x3f, 0x00, 0x00,
-   0xc0, 0x3f, 0x00, 0x00, 0xc0, 0x3f, 0x00, 0x00, 0xc0, 0xff, 0x03, 0x00,
-   0xc0, 0xff, 0x07, 0x00, 0xc0, 0xff, 0xff, 0x00, 0xc0, 0xff, 0xff, 0x01,
-   0xc0, 0xff, 0xff, 0x3f, 0xc0, 0xff, 0xff, 0x7f, 0xfc, 0xff, 0xff, 0xff,
-   0xfe, 0xff, 0xff, 0xff, 0xfe, 0xff, 0xff, 0xff, 0xfe, 0xff, 0xff, 0xff,
-   0xfe, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
-   0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
-   0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
-   0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
-   0xfe, 0xff, 0xff, 0x7f, 0xfc, 0xff, 0xff, 0x3f
+    0x80, 0x1f, 0x00, 0x00, 0xc0, 0x3f, 0x00, 0x00, 0xc0, 0x3f, 0x00, 0x00,
+    0xc0, 0x3f, 0x00, 0x00, 0xc0, 0x3f, 0x00, 0x00, 0xc0, 0x3f, 0x00, 0x00,
+    0xc0, 0x3f, 0x00, 0x00, 0xc0, 0x3f, 0x00, 0x00, 0xc0, 0xff, 0x03, 0x00,
+    0xc0, 0xff, 0x07, 0x00, 0xc0, 0xff, 0xff, 0x00, 0xc0, 0xff, 0xff, 0x01,
+    0xc0, 0xff, 0xff, 0x3f, 0xc0, 0xff, 0xff, 0x7f, 0xfc, 0xff, 0xff, 0xff,
+    0xfe, 0xff, 0xff, 0xff, 0xfe, 0xff, 0xff, 0xff, 0xfe, 0xff, 0xff, 0xff,
+    0xfe, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+    0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+    0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+    0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+    0xfe, 0xff, 0xff, 0x7f, 0xfc, 0xff, 0xff, 0x3f
 };
 
 
@@ -204,9 +204,9 @@ const FXString imgpatterns = "*.gif,*.bmp,*.xpm,*.pcx,*.ico,*.rgb,*.xbm,*.tga,*.
 void toolbarSeparator(FXToolBar* tb)
 {
 #define SEP_SPACE_TB    1
-    new FXFrame(tb, LAYOUT_CENTER_Y|LAYOUT_LEFT|LAYOUT_FIX_WIDTH|LAYOUT_FIX_HEIGHT, 0, 0, SEP_SPACE_TB);
-    new FXVerticalSeparator(tb, LAYOUT_SIDE_TOP|LAYOUT_CENTER_Y|SEPARATOR_GROOVE|LAYOUT_FILL_Y);
-    new FXFrame(tb, LAYOUT_CENTER_Y|LAYOUT_LEFT|LAYOUT_FIX_WIDTH|LAYOUT_FIX_HEIGHT, 0, 0, SEP_SPACE_TB);
+    new FXFrame(tb, LAYOUT_CENTER_Y | LAYOUT_LEFT | LAYOUT_FIX_WIDTH | LAYOUT_FIX_HEIGHT, 0, 0, SEP_SPACE_TB);
+    new FXVerticalSeparator(tb, LAYOUT_SIDE_TOP | LAYOUT_CENTER_Y | SEPARATOR_GROOVE | LAYOUT_FILL_Y);
+    new FXFrame(tb, LAYOUT_CENTER_Y | LAYOUT_LEFT | LAYOUT_FIX_WIDTH | LAYOUT_FIX_HEIGHT, 0, 0, SEP_SPACE_TB);
 }
 
 
@@ -214,9 +214,9 @@ void toolbarSeparator(FXToolBar* tb)
 void hframeSeparator(FXHorizontalFrame* hframe)
 {
 #define SEP_SPACE_HF    5
-    new FXFrame(hframe, LAYOUT_CENTER_Y|LAYOUT_LEFT|LAYOUT_FIX_WIDTH|LAYOUT_FIX_HEIGHT, 0, 0, SEP_SPACE_HF);
-    new FXVerticalSeparator(hframe, LAYOUT_SIDE_TOP|LAYOUT_CENTER_Y|SEPARATOR_GROOVE|LAYOUT_FILL_Y);
-    new FXFrame(hframe, LAYOUT_CENTER_Y|LAYOUT_LEFT|LAYOUT_FIX_WIDTH|LAYOUT_FIX_HEIGHT, 0, 0, SEP_SPACE_HF);
+    new FXFrame(hframe, LAYOUT_CENTER_Y | LAYOUT_LEFT | LAYOUT_FIX_WIDTH | LAYOUT_FIX_HEIGHT, 0, 0, SEP_SPACE_HF);
+    new FXVerticalSeparator(hframe, LAYOUT_SIDE_TOP | LAYOUT_CENTER_Y | SEPARATOR_GROOVE | LAYOUT_FILL_Y);
+    new FXFrame(hframe, LAYOUT_CENTER_Y | LAYOUT_LEFT | LAYOUT_FIX_WIDTH | LAYOUT_FIX_HEIGHT, 0, 0, SEP_SPACE_HF);
 }
 
 
@@ -302,24 +302,24 @@ XFileImage::XFileImage(FXApp* a, FXbool smoothscroll) : FXMainWindow(a, "Xfi ", 
     setIcon(xfiicon);
 
     FXButton* btn = NULL;
-    FXHotKey  hotkey;
-    FXString  key;
+    FXHotKey hotkey;
+    FXString key;
 
     setTarget(this);
     setSelector(ID_TITLE);
 
     // Make menu bar
-    menubar = new FXMenuBar(this, LAYOUT_DOCK_NEXT|LAYOUT_SIDE_TOP|LAYOUT_FILL_X|FRAME_RAISED);
+    menubar = new FXMenuBar(this, LAYOUT_DOCK_NEXT | LAYOUT_SIDE_TOP | LAYOUT_FILL_X | FRAME_RAISED);
 
     // Sites where to dock
-    FXDockSite* topdock = new FXDockSite(this, LAYOUT_SIDE_TOP|LAYOUT_FILL_X);
-    new FXDockSite(this, LAYOUT_SIDE_BOTTOM|LAYOUT_FILL_X);
-    new FXDockSite(this, LAYOUT_SIDE_LEFT|LAYOUT_FILL_Y);
-    new FXDockSite(this, LAYOUT_SIDE_RIGHT|LAYOUT_FILL_Y);
+    FXDockSite* topdock = new FXDockSite(this, LAYOUT_SIDE_TOP | LAYOUT_FILL_X);
+    new FXDockSite(this, LAYOUT_SIDE_BOTTOM | LAYOUT_FILL_X);
+    new FXDockSite(this, LAYOUT_SIDE_LEFT | LAYOUT_FILL_Y);
+    new FXDockSite(this, LAYOUT_SIDE_RIGHT | LAYOUT_FILL_Y);
 
     // Tool bar
     FXToolBarShell* dragshell1 = new FXToolBarShell(this, FRAME_RAISED);
-    toolbar = new FXToolBar(topdock, dragshell1, LAYOUT_DOCK_NEXT|LAYOUT_SIDE_TOP|LAYOUT_FILL_X|LAYOUT_FILL_Y|FRAME_RAISED);
+    toolbar = new FXToolBar(topdock, dragshell1, LAYOUT_DOCK_NEXT | LAYOUT_SIDE_TOP | LAYOUT_FILL_X | LAYOUT_FILL_Y | FRAME_RAISED);
     new FXToolBarGrip(toolbar, toolbar, FXToolBar::ID_TOOLBARGRIP, TOOLBARGRIP_DOUBLE);
 
     // File menu
@@ -343,49 +343,49 @@ XFileImage::XFileImage(FXApp* a, FXbool smoothscroll) : FXMainWindow(a, "Xfi ", 
     new FXMenuTitle(menubar, _("&Help"), NULL, helpmenu);
 
     // Splitter
-    FXVerticalFrame* vframe = new FXVerticalFrame(this, LAYOUT_FILL_X|LAYOUT_FILL_Y, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+    FXVerticalFrame* vframe = new FXVerticalFrame(this, LAYOUT_FILL_X | LAYOUT_FILL_Y, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 
     // Set order of the file list and image widgets
     filelistbefore = getApp()->reg().readUnsignedEntry("OPTIONS", "filelist_before", false);
     if (filelistbefore)
     {
-        splitter = new FXSplitter(vframe, LAYOUT_SIDE_TOP|LAYOUT_FILL_X|LAYOUT_FILL_Y|SPLITTER_TRACKING|SPLITTER_VERTICAL);
-        filebox = new FXVerticalFrame(splitter, LAYOUT_FILL_X|LAYOUT_FILL_Y|FRAME_NONE, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-        imageview = new FXImageView(splitter, NULL, NULL, 0, LAYOUT_FILL_X|LAYOUT_FILL_Y|FRAME_SUNKEN);
+        splitter = new FXSplitter(vframe, LAYOUT_SIDE_TOP | LAYOUT_FILL_X | LAYOUT_FILL_Y | SPLITTER_TRACKING | SPLITTER_VERTICAL);
+        filebox = new FXVerticalFrame(splitter, LAYOUT_FILL_X | LAYOUT_FILL_Y | FRAME_NONE, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        imageview = new FXImageView(splitter, NULL, NULL, 0, LAYOUT_FILL_X | LAYOUT_FILL_Y | FRAME_SUNKEN);
     }
     else
     {
-        splitter = new FXSplitter(vframe, LAYOUT_SIDE_TOP|LAYOUT_FILL_X|LAYOUT_FILL_Y|SPLITTER_TRACKING|SPLITTER_VERTICAL|SPLITTER_REVERSED);
-        imageview = new FXImageView(splitter, NULL, NULL, 0, LAYOUT_FILL_X|LAYOUT_FILL_Y|FRAME_SUNKEN);
-        filebox = new FXVerticalFrame(splitter, LAYOUT_FILL_X|LAYOUT_FILL_Y|FRAME_NONE, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        splitter = new FXSplitter(vframe, LAYOUT_SIDE_TOP | LAYOUT_FILL_X | LAYOUT_FILL_Y | SPLITTER_TRACKING | SPLITTER_VERTICAL | SPLITTER_REVERSED);
+        imageview = new FXImageView(splitter, NULL, NULL, 0, LAYOUT_FILL_X | LAYOUT_FILL_Y | FRAME_SUNKEN);
+        filebox = new FXVerticalFrame(splitter, LAYOUT_FILL_X | LAYOUT_FILL_Y | FRAME_NONE, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
     }
 
     // Stack panels horizontally or vertically
     vertpanels = getApp()->reg().readUnsignedEntry("OPTIONS", "vert_panels", false);
     if (vertpanels)
     {
-        splitter->setSplitterStyle(splitter->getSplitterStyle()&~SPLITTER_VERTICAL);
+        splitter->setSplitterStyle(splitter->getSplitterStyle() & ~SPLITTER_VERTICAL);
     }
     else
     {
-        splitter->setSplitterStyle(splitter->getSplitterStyle()|SPLITTER_VERTICAL);
+        splitter->setSplitterStyle(splitter->getSplitterStyle() | SPLITTER_VERTICAL);
     }
 
     // Container for the action buttons
-    FXHorizontalFrame* buttons = new FXHorizontalFrame(filebox, LAYOUT_SIDE_TOP|LAYOUT_FILL_X|FRAME_RAISED, 0, 0, 0, 0, 5, 5, 5, 5, 0, 0);
+    FXHorizontalFrame* buttons = new FXHorizontalFrame(filebox, LAYOUT_SIDE_TOP | LAYOUT_FILL_X | FRAME_RAISED, 0, 0, 0, 0, 5, 5, 5, 5, 0, 0);
 
     // Container for the path linker
-    FXHorizontalFrame* pathframe = new FXHorizontalFrame(filebox, LAYOUT_FILL_X|FRAME_RAISED, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+    FXHorizontalFrame* pathframe = new FXHorizontalFrame(filebox, LAYOUT_FILL_X | FRAME_RAISED, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 
     // File list
     FXuint options;
     if (smoothscroll)
     {
-        options = LAYOUT_FILL_X|LAYOUT_FILL_Y|_ICONLIST_MINI_ICONS|_ICONLIST_BROWSESELECT;
+        options = LAYOUT_FILL_X | LAYOUT_FILL_Y | _ICONLIST_MINI_ICONS | _ICONLIST_BROWSESELECT;
     }
     else
     {
-        options = LAYOUT_FILL_X|LAYOUT_FILL_Y|_ICONLIST_MINI_ICONS|_ICONLIST_BROWSESELECT|SCROLLERS_DONT_TRACK;
+        options = LAYOUT_FILL_X | LAYOUT_FILL_Y | _ICONLIST_MINI_ICONS | _ICONLIST_BROWSESELECT | SCROLLERS_DONT_TRACK;
     }
 
     thumbnails = getApp()->reg().readUnsignedEntry("OPTIONS", "thumbnails", 0);
@@ -405,19 +405,19 @@ XFileImage::XFileImage(FXApp* a, FXbool smoothscroll) : FXMainWindow(a, "Xfi ", 
     new FXFrame(buttons, LAYOUT_FIX_WIDTH, 0, 0, 4, 1);
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "go_back", "Ctrl-Backspace");
-    btn = new FXButton(buttons, TAB+_("Go to previous folder")+PARS(key), dirbackicon, this, ID_DIR_BACK, BUTTON_TOOLBAR|FRAME_RAISED|LAYOUT_CENTER_Y|LAYOUT_LEFT);
+    btn = new FXButton(buttons, TAB + _("Go to previous folder") + PARS(key), dirbackicon, this, ID_DIR_BACK, BUTTON_TOOLBAR | FRAME_RAISED | LAYOUT_CENTER_Y | LAYOUT_LEFT);
     hotkey = _parseAccel(key);
     btn->addHotKey(hotkey);
-    btnbackhist = new FXArrowButton(buttons, this, ID_DIR_BACK_HIST, LAYOUT_FILL_Y|FRAME_RAISED|FRAME_THICK|ARROW_DOWN|ARROW_TOOLBAR);
+    btnbackhist = new FXArrowButton(buttons, this, ID_DIR_BACK_HIST, LAYOUT_FILL_Y | FRAME_RAISED | FRAME_THICK | ARROW_DOWN | ARROW_TOOLBAR);
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "go_forward", "Shift-Backspace");
-    btn = new FXButton(buttons, TAB+_("Go to next folder")+PARS(key), dirforwardicon, this, ID_DIR_FORWARD, BUTTON_TOOLBAR|FRAME_RAISED|LAYOUT_CENTER_Y|LAYOUT_LEFT);
+    btn = new FXButton(buttons, TAB + _("Go to next folder") + PARS(key), dirforwardicon, this, ID_DIR_FORWARD, BUTTON_TOOLBAR | FRAME_RAISED | LAYOUT_CENTER_Y | LAYOUT_LEFT);
     hotkey = _parseAccel(key);
     btn->addHotKey(hotkey);
-    btnforwardhist = new FXArrowButton(buttons, this, ID_DIR_FORWARD_HIST, LAYOUT_FILL_Y|FRAME_RAISED|FRAME_THICK|ARROW_DOWN|ARROW_TOOLBAR);
+    btnforwardhist = new FXArrowButton(buttons, this, ID_DIR_FORWARD_HIST, LAYOUT_FILL_Y | FRAME_RAISED | FRAME_THICK | ARROW_DOWN | ARROW_TOOLBAR);
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "go_up", "Backspace");
-    btn = new FXButton(buttons, TAB+_("Go to parent folder")+PARS(key), dirupicon, this, ID_DIR_UP, BUTTON_TOOLBAR|FRAME_RAISED|LAYOUT_CENTER_Y|LAYOUT_LEFT);
+    btn = new FXButton(buttons, TAB + _("Go to parent folder") + PARS(key), dirupicon, this, ID_DIR_UP, BUTTON_TOOLBAR | FRAME_RAISED | LAYOUT_CENTER_Y | LAYOUT_LEFT);
     hotkey = _parseAccel(key);
     btn->addHotKey(hotkey);
 
@@ -425,12 +425,12 @@ XFileImage::XFileImage(FXApp* a, FXbool smoothscroll) : FXMainWindow(a, "Xfi ", 
     hframeSeparator(buttons);
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "go_home", "Ctrl-H");
-    new FXButton(buttons, TAB+_("Go to home folder")+PARS(key), homeicon, this, ID_GO_HOME, BUTTON_TOOLBAR|FRAME_RAISED|LAYOUT_CENTER_Y|LAYOUT_LEFT);
+    new FXButton(buttons, TAB + _("Go to home folder") + PARS(key), homeicon, this, ID_GO_HOME, BUTTON_TOOLBAR | FRAME_RAISED | LAYOUT_CENTER_Y | LAYOUT_LEFT);
     hotkey = _parseAccel(key);
     btn->addHotKey(hotkey);
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "go_work", "Shift-F2");
-    new FXButton(buttons, TAB+_("Go to working folder")+PARS(key), workicon, this, ID_GO_WORK, BUTTON_TOOLBAR|FRAME_RAISED|LAYOUT_CENTER_Y|LAYOUT_LEFT);
+    new FXButton(buttons, TAB + _("Go to working folder") + PARS(key), workicon, this, ID_GO_WORK, BUTTON_TOOLBAR | FRAME_RAISED | LAYOUT_CENTER_Y | LAYOUT_LEFT);
     hotkey = _parseAccel(key);
     btn->addHotKey(hotkey);
 
@@ -439,17 +439,17 @@ XFileImage::XFileImage(FXApp* a, FXbool smoothscroll) : FXMainWindow(a, "Xfi ", 
 
     // Switch display modes
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "big_icons", "F10");
-    btn = new FXButton(buttons, TAB+_("Big icon list")+PARS(key), bigiconsicon, this, ID_SHOW_BIG_ICONS, BUTTON_TOOLBAR|LAYOUT_CENTER_Y|LAYOUT_LEFT|ICON_BEFORE_TEXT|FRAME_RAISED);
+    btn = new FXButton(buttons, TAB + _("Big icon list") + PARS(key), bigiconsicon, this, ID_SHOW_BIG_ICONS, BUTTON_TOOLBAR | LAYOUT_CENTER_Y | LAYOUT_LEFT | ICON_BEFORE_TEXT | FRAME_RAISED);
     hotkey = _parseAccel(key);
     btn->addHotKey(hotkey);
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "small_icons", "F11");
-    btn = new FXButton(buttons, TAB+_("Small icon list")+PARS(key), smalliconsicon, this, ID_SHOW_MINI_ICONS, BUTTON_TOOLBAR|LAYOUT_CENTER_Y|LAYOUT_LEFT|ICON_BEFORE_TEXT|FRAME_RAISED);
+    btn = new FXButton(buttons, TAB + _("Small icon list") + PARS(key), smalliconsicon, this, ID_SHOW_MINI_ICONS, BUTTON_TOOLBAR | LAYOUT_CENTER_Y | LAYOUT_LEFT | ICON_BEFORE_TEXT | FRAME_RAISED);
     hotkey = _parseAccel(key);
     btn->addHotKey(hotkey);
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "detailed_file_list", "F12");
-    btn = new FXButton(buttons, TAB+_("Detailed file list")+PARS(key), detailsicon, this, ID_SHOW_DETAILS, BUTTON_TOOLBAR|LAYOUT_CENTER_Y|LAYOUT_LEFT|ICON_BEFORE_TEXT|FRAME_RAISED);
+    btn = new FXButton(buttons, TAB + _("Detailed file list") + PARS(key), detailsicon, this, ID_SHOW_DETAILS, BUTTON_TOOLBAR | LAYOUT_CENTER_Y | LAYOUT_LEFT | ICON_BEFORE_TEXT | FRAME_RAISED);
     hotkey = _parseAccel(key);
     btn->addHotKey(hotkey);
 
@@ -458,25 +458,25 @@ XFileImage::XFileImage(FXApp* a, FXbool smoothscroll) : FXMainWindow(a, "Xfi ", 
 
     // Vertical panels
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "vert_panels", "Ctrl-Shift-F1");
-    btn = new FXButton(buttons, TAB+_("Vertical panels")+PARS(key), vertpanelsicon, this, XFileImage::ID_VERT_PANELS, BUTTON_TOOLBAR|FRAME_RAISED|LAYOUT_CENTER_Y|LAYOUT_LEFT|ICON_BEFORE_TEXT);
+    btn = new FXButton(buttons, TAB + _("Vertical panels") + PARS(key), vertpanelsicon, this, XFileImage::ID_VERT_PANELS, BUTTON_TOOLBAR | FRAME_RAISED | LAYOUT_CENTER_Y | LAYOUT_LEFT | ICON_BEFORE_TEXT);
     hotkey = _parseAccel(key);
     btn->addHotKey(hotkey);
 
     // Horizontal panels
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "horz_panels", "Ctrl-Shift-F2");
-    btn = new FXButton(buttons, TAB+_("Horizontal panels")+PARS(key), horzpanelsicon, this, XFileImage::ID_HORZ_PANELS, BUTTON_TOOLBAR|FRAME_RAISED|LAYOUT_CENTER_Y|LAYOUT_LEFT|ICON_BEFORE_TEXT);
+    btn = new FXButton(buttons, TAB + _("Horizontal panels") + PARS(key), horzpanelsicon, this, XFileImage::ID_HORZ_PANELS, BUTTON_TOOLBAR | FRAME_RAISED | LAYOUT_CENTER_Y | LAYOUT_LEFT | ICON_BEFORE_TEXT);
     hotkey = _parseAccel(key);
     btn->addHotKey(hotkey);
 
     // Panel title
-    pathtext = new TextLabel(pathframe, 0, this, 0, LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    pathtext = new TextLabel(pathframe, 0, this, 0, LAYOUT_FILL_X | LAYOUT_FILL_Y);
     pathtext->setBackColor(getApp()->getBaseColor());
 
     // Path linker
     pathlink = new PathLinker(pathframe, filelist, NULL, LAYOUT_FILL_X);
 
     // Status bar
-    statusbar = new FXHorizontalFrame(vframe, JUSTIFY_LEFT|LAYOUT_FILL_X|FRAME_RAISED, 0, 0, 0, 0, 3, 3, 0, 0);
+    statusbar = new FXHorizontalFrame(vframe, JUSTIFY_LEFT | LAYOUT_FILL_X | FRAME_RAISED, 0, 0, 0, 0, 3, 3, 0, 0);
 
     // Read and set sort function for file list
     FXString sort_func = getApp()->reg().readStringEntry("OPTIONS", "sort_func", "ascendingCase");
@@ -633,23 +633,23 @@ XFileImage::XFileImage(FXApp* a, FXbool smoothscroll) : FXMainWindow(a, "Xfi ", 
 
     // Status bar buttons
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "hidden_files", "Ctrl-F6");
-    new FXToggleButton(statusbar, TAB+_("Show hidden files")+PARS(key), TAB+_("Hide hidden files")+PARS(key), showhiddenicon, hidehiddenicon, this->filelist,
-                       FileList::ID_TOGGLE_HIDDEN, BUTTON_TOOLBAR|LAYOUT_LEFT|ICON_BEFORE_TEXT);
+    new FXToggleButton(statusbar, TAB + _("Show hidden files") + PARS(key), TAB + _("Hide hidden files") + PARS(key), showhiddenicon, hidehiddenicon, this->filelist,
+                       FileList::ID_TOGGLE_HIDDEN, BUTTON_TOOLBAR | LAYOUT_LEFT | ICON_BEFORE_TEXT);
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "thumbnails", "Ctrl-F7");
-    new FXToggleButton(statusbar, TAB+_("Show thumbnails")+PARS(key), TAB+_("Hide thumbnails")+PARS(key), showthumbicon, hidethumbicon, this->filelist,
-                       FileList::ID_TOGGLE_THUMBNAILS, BUTTON_TOOLBAR|LAYOUT_LEFT|ICON_BEFORE_TEXT);
+    new FXToggleButton(statusbar, TAB + _("Show thumbnails") + PARS(key), TAB + _("Hide thumbnails") + PARS(key), showthumbicon, hidethumbicon, this->filelist,
+                       FileList::ID_TOGGLE_THUMBNAILS, BUTTON_TOOLBAR | LAYOUT_LEFT | ICON_BEFORE_TEXT);
 
-    new FXStatusBar(statusbar, LAYOUT_SIDE_BOTTOM|LAYOUT_FILL_X);
+    new FXStatusBar(statusbar, LAYOUT_SIDE_BOTTOM | LAYOUT_FILL_X);
     new FXDragCorner(statusbar);
 
     // Toolbar button: Open file
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "open", "Ctrl-O");
-    new FXButton(toolbar, TAB+_("Open")+PARS(key)+TAB+_("Open image file.")+PARS(key), fileopenicon, this, ID_OPEN, ICON_ABOVE_TEXT|BUTTON_TOOLBAR|FRAME_RAISED);
+    new FXButton(toolbar, TAB + _("Open") + PARS(key) + TAB + _("Open image file.") + PARS(key), fileopenicon, this, ID_OPEN, ICON_ABOVE_TEXT | BUTTON_TOOLBAR | FRAME_RAISED);
 
     // Toolbar button: Print
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "print", "Ctrl-P");
-    new FXButton(toolbar, TAB+_("Print")+PARS(key)+TAB+_("Print image file.")+PARS(key), printicon, this, ID_PRINT, BUTTON_TOOLBAR|FRAME_RAISED);
+    new FXButton(toolbar, TAB + _("Print") + PARS(key) + TAB + _("Print image file.") + PARS(key), printicon, this, ID_PRINT, BUTTON_TOOLBAR | FRAME_RAISED);
 
     // Separator
     toolbarSeparator(toolbar);
@@ -657,54 +657,54 @@ XFileImage::XFileImage(FXApp* a, FXbool smoothscroll) : FXMainWindow(a, "Xfi ", 
     // Note : Ctrl+ and Ctrl- cannot be changed from the registry!
 
     // Toolbar button: Zoom in
-    btn = new FXButton(toolbar, TAB+_("Zoom in")+PARS("Ctrl+")+TAB+_("Zoom in image.")+PARS("Ctrl+"), zoominicon, this, ID_ZOOM_IN, ICON_ABOVE_TEXT|BUTTON_TOOLBAR|FRAME_RAISED);
-    hotkey = (CONTROLMASK<<16) |  KEY_KP_Add;
+    btn = new FXButton(toolbar, TAB + _("Zoom in") + PARS("Ctrl+") + TAB + _("Zoom in image.") + PARS("Ctrl+"), zoominicon, this, ID_ZOOM_IN, ICON_ABOVE_TEXT | BUTTON_TOOLBAR | FRAME_RAISED);
+    hotkey = (CONTROLMASK << 16) | KEY_KP_Add;
     btn->addHotKey(hotkey);
 
     // Toolbar button: Zoom out
-    btn = new FXButton(toolbar, TAB+_("Zoom out")+PARS("Ctrl-")+TAB+_("Zoom out image.")+PARS("Ctrl-"), zoomouticon, this, ID_ZOOM_OUT, ICON_ABOVE_TEXT|BUTTON_TOOLBAR|FRAME_RAISED);
-    hotkey = (CONTROLMASK<<16) | KEY_KP_Subtract;
+    btn = new FXButton(toolbar, TAB + _("Zoom out") + PARS("Ctrl-") + TAB + _("Zoom out image.") + PARS("Ctrl-"), zoomouticon, this, ID_ZOOM_OUT, ICON_ABOVE_TEXT | BUTTON_TOOLBAR | FRAME_RAISED);
+    hotkey = (CONTROLMASK << 16) | KEY_KP_Subtract;
     btn->addHotKey(hotkey);
 
     // Toolbar button: Zoom 100%
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "zoom_100", "Ctrl-I");
-    new FXButton(toolbar, TAB+_("Zoom 100%")+PARS(key)+TAB+_("Zoom image to 100%.")+PARS(key), zoom100icon, this, ID_ZOOM_100, ICON_ABOVE_TEXT|BUTTON_TOOLBAR|FRAME_RAISED);
+    new FXButton(toolbar, TAB + _("Zoom 100%") + PARS(key) + TAB + _("Zoom image to 100%.") + PARS(key), zoom100icon, this, ID_ZOOM_100, ICON_ABOVE_TEXT | BUTTON_TOOLBAR | FRAME_RAISED);
 
     // Toolbar button: Zoom to fit window
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "zoom_win", "Ctrl-F");
-    new FXButton(toolbar, TAB+_("Zoom to fit")+PARS(key)+TAB+_("Zoom to fit window.")+PARS(key), zoomwinicon, this, ID_ZOOM_WIN, ICON_ABOVE_TEXT|BUTTON_TOOLBAR|FRAME_RAISED);
+    new FXButton(toolbar, TAB + _("Zoom to fit") + PARS(key) + TAB + _("Zoom to fit window.") + PARS(key), zoomwinicon, this, ID_ZOOM_WIN, ICON_ABOVE_TEXT | BUTTON_TOOLBAR | FRAME_RAISED);
 
     // Separator
     toolbarSeparator(toolbar);
 
     // Toolbar button: Rotate left
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "rotate_left", "Ctrl-L");
-    new FXButton(toolbar, TAB+_("Rotate left")+PARS(key)+TAB+_("Rotate left image.")+PARS(key), rotatelefticon, this, ID_ROTATE_90, ICON_ABOVE_TEXT|BUTTON_TOOLBAR|FRAME_RAISED);
+    new FXButton(toolbar, TAB + _("Rotate left") + PARS(key) + TAB + _("Rotate left image.") + PARS(key), rotatelefticon, this, ID_ROTATE_90, ICON_ABOVE_TEXT | BUTTON_TOOLBAR | FRAME_RAISED);
 
     // Toolbar button: Rotate right
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "rotate_right", "Ctrl-R");
-    new FXButton(toolbar, TAB+_("Rotate right")+PARS(key)+TAB+_("Rotate right image.")+PARS(key), rotaterighticon, this, ID_ROTATE_270, ICON_ABOVE_TEXT|BUTTON_TOOLBAR|FRAME_RAISED);
+    new FXButton(toolbar, TAB + _("Rotate right") + PARS(key) + TAB + _("Rotate right image.") + PARS(key), rotaterighticon, this, ID_ROTATE_270, ICON_ABOVE_TEXT | BUTTON_TOOLBAR | FRAME_RAISED);
 
     // Toolbar button: mirror horizontally
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "mirror_horizontally", "Ctrl-Shift-H");
-    new FXButton(toolbar, TAB+_("Mirror horizontally")+PARS(key)+TAB+_("Mirror image horizontally.")+PARS(key), fliplricon, this, ID_MIRROR_HOR, ICON_ABOVE_TEXT|BUTTON_TOOLBAR|FRAME_RAISED);
+    new FXButton(toolbar, TAB + _("Mirror horizontally") + PARS(key) + TAB + _("Mirror image horizontally.") + PARS(key), fliplricon, this, ID_MIRROR_HOR, ICON_ABOVE_TEXT | BUTTON_TOOLBAR | FRAME_RAISED);
 
     // Toolbar button: mirror vertically
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "mirror_vertically", "Ctrl-Shift-V");
-    new FXButton(toolbar, TAB+_("Mirror vertically")+PARS(key)+TAB+_("Mirror image vertically.")+PARS(key), flipudicon, this, ID_MIRROR_VER, ICON_ABOVE_TEXT|BUTTON_TOOLBAR|FRAME_RAISED);
+    new FXButton(toolbar, TAB + _("Mirror vertically") + PARS(key) + TAB + _("Mirror image vertically.") + PARS(key), flipudicon, this, ID_MIRROR_VER, ICON_ABOVE_TEXT | BUTTON_TOOLBAR | FRAME_RAISED);
 
     // File Menu entries
     FXMenuCommand* mc = NULL;
-    FXString       text;
+    FXString text;
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "open", "Ctrl-O");
-    text = _("&Open...")+TABS(key)+_("Open image file.")+PARS(key);
+    text = _("&Open...") + TABS(key) + _("Open image file.") + PARS(key);
     mc = new FXMenuCommand(filemenu, text, fileopenicon, this, ID_OPEN);
     hotkey = _parseAccel(key);
     getAccelTable()->addAccel(hotkey, mc, FXSEL(SEL_COMMAND, FXMenuCommand::ID_ACCEL));
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "print", "Ctrl-P");
-    text = _("&Print...")+TABS(key)+_("Print image file.")+PARS(key);
+    text = _("&Print...") + TABS(key) + _("Print image file.") + PARS(key);
     mc = new FXMenuCommand(filemenu, text, printicon, this, ID_PRINT);
     hotkey = _parseAccel(key);
     getAccelTable()->addAccel(hotkey, mc, FXSEL(SEL_COMMAND, FXMenuCommand::ID_ACCEL));
@@ -718,67 +718,67 @@ XFileImage::XFileImage(FXApp* a, FXbool smoothscroll) : FXMainWindow(a, "Xfi ", 
     new FXMenuCommand(filemenu, FXString::null, NULL, &mrufiles, FXRecentFiles::ID_FILE_3);
     new FXMenuCommand(filemenu, FXString::null, NULL, &mrufiles, FXRecentFiles::ID_FILE_4);
     new FXMenuCommand(filemenu, FXString::null, NULL, &mrufiles, FXRecentFiles::ID_FILE_5);
-    new FXMenuCommand(filemenu, _("&Clear recent files")+TAB2+_("Clear recent file menu."), NULL, &mrufiles, FXRecentFiles::ID_CLEAR);
+    new FXMenuCommand(filemenu, _("&Clear recent files") + TAB2 + _("Clear recent file menu."), NULL, &mrufiles, FXRecentFiles::ID_CLEAR);
     FXMenuSeparator* sep2 = new FXMenuSeparator(filemenu);
     sep2->setTarget(&mrufiles);
     sep2->setSelector(FXRecentFiles::ID_ANYFILES);
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "quit", "Ctrl-Q");
-    text = _("&Quit")+TABS(key)+_("Quit Xfi.")+PARS(key);
+    text = _("&Quit") + TABS(key) + _("Quit Xfi.") + PARS(key);
     mc = new FXMenuCommand(filemenu, text, quiticon, this, ID_QUIT);
     hotkey = _parseAccel(key);
     getAccelTable()->addAccel(hotkey, mc, FXSEL(SEL_COMMAND, FXMenuCommand::ID_ACCEL));
     getAccelTable()->addAccel(KEY_Escape, this, FXSEL(SEL_COMMAND, ID_QUIT));
 
     // Image Menu entries
-    new FXMenuCommand(imagemenu, _("Zoom &in")+TAB+(FXString)"Ctrl+"+TAB+_("Zoom in image.")+PARS("Ctrl+"), zoominicon, this, ID_ZOOM_IN);
-    new FXMenuCommand(imagemenu, _("Zoom &out")+TAB+(FXString)"Ctrl-"+TAB+_("Zoom out image.")+PARS("Ctrl-"), zoomouticon, this, ID_ZOOM_OUT);
+    new FXMenuCommand(imagemenu, _("Zoom &in") + TAB + (FXString)"Ctrl+" + TAB + _("Zoom in image.") + PARS("Ctrl+"), zoominicon, this, ID_ZOOM_IN);
+    new FXMenuCommand(imagemenu, _("Zoom &out") + TAB + (FXString)"Ctrl-" + TAB + _("Zoom out image.") + PARS("Ctrl-"), zoomouticon, this, ID_ZOOM_OUT);
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "zoom_100", "Ctrl-I");
-    text = _("Zoo&m 100%")+TABS(key)+_("Zoom image to 100%.")+PARS(key);
+    text = _("Zoo&m 100%") + TABS(key) + _("Zoom image to 100%.") + PARS(key);
     mc = new FXMenuCommand(imagemenu, text, zoom100icon, this, ID_ZOOM_100);
     hotkey = _parseAccel(key);
     getAccelTable()->addAccel(hotkey, mc, FXSEL(SEL_COMMAND, FXMenuCommand::ID_ACCEL));
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "zoom_win", "Ctrl-F");
-    text = _("Zoom to fit &window")+TABS(key)+_("Zoom to fit window.")+PARS(key);
+    text = _("Zoom to fit &window") + TABS(key) + _("Zoom to fit window.") + PARS(key);
     mc = new FXMenuCommand(imagemenu, text, zoomwinicon, this, ID_ZOOM_WIN);
     hotkey = _parseAccel(key);
     getAccelTable()->addAccel(hotkey, mc, FXSEL(SEL_COMMAND, FXMenuCommand::ID_ACCEL));
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "rotate_right", "Ctrl-R");
-    text = _("Rotate &right")+TABS(key)+_("Rotate right.")+PARS(key);
+    text = _("Rotate &right") + TABS(key) + _("Rotate right.") + PARS(key);
     mc = new FXMenuCommand(imagemenu, text, rotaterighticon, this, ID_ROTATE_270);
     hotkey = _parseAccel(key);
     getAccelTable()->addAccel(hotkey, mc, FXSEL(SEL_COMMAND, FXMenuCommand::ID_ACCEL));
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "rotate_left", "Ctrl-L");
-    text = _("Rotate &left")+TABS(key)+_("Rotate left.")+PARS(key);
+    text = _("Rotate &left") + TABS(key) + _("Rotate left.") + PARS(key);
     mc = new FXMenuCommand(imagemenu, text, rotatelefticon, this, ID_ROTATE_90);
     hotkey = _parseAccel(key);
     getAccelTable()->addAccel(hotkey, mc, FXSEL(SEL_COMMAND, FXMenuCommand::ID_ACCEL));
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "mirror_horizontally", "Ctrl-Shift-H");
-    text = _("Mirror &horizontally")+TABS(key)+_("Mirror horizontally.")+PARS(key);
+    text = _("Mirror &horizontally") + TABS(key) + _("Mirror horizontally.") + PARS(key);
     mc = new FXMenuCommand(imagemenu, text, fliplricon, this, ID_MIRROR_HOR);
     hotkey = _parseAccel(key);
     getAccelTable()->addAccel(hotkey, mc, FXSEL(SEL_COMMAND, FXMenuCommand::ID_ACCEL));
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "mirror_vertically", "Ctrl-Shift-V");
-    text = _("Mirror &vertically")+TABS(key)+_("Mirror vertically.")+PARS(key);
+    text = _("Mirror &vertically") + TABS(key) + _("Mirror vertically.") + PARS(key);
     mc = new FXMenuCommand(imagemenu, text, flipudicon, this, ID_MIRROR_VER);
     hotkey = _parseAccel(key);
     getAccelTable()->addAccel(hotkey, mc, FXSEL(SEL_COMMAND, FXMenuCommand::ID_ACCEL));
 
     // View Menu entries
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "hidden_files", "Ctrl-F6");
-    text = _("&Hidden files")+TABS(key)+_("Show hidden files and folders.")+PARS(key);
+    text = _("&Hidden files") + TABS(key) + _("Show hidden files and folders.") + PARS(key);
     mc = new FXMenuCheck(viewmenu, text, this, ID_TOGGLE_HIDDEN);
     hotkey = _parseAccel(key);
     getAccelTable()->addAccel(hotkey, mc, FXSEL(SEL_COMMAND, FXMenuCommand::ID_ACCEL));
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "thumbnails", "Ctrl-F7");
-    text = _("&Thumbnails")+TABS(key)+_("Show image thumbnails.")+PARS(key);
+    text = _("&Thumbnails") + TABS(key) + _("Show image thumbnails.") + PARS(key);
     mc = new FXMenuCheck(viewmenu, text, this, ID_TOGGLE_THUMBNAILS);
     hotkey = _parseAccel(key);
     getAccelTable()->addAccel(hotkey, mc, FXSEL(SEL_COMMAND, FXMenuCommand::ID_ACCEL));
@@ -786,19 +786,19 @@ XFileImage::XFileImage(FXApp* a, FXbool smoothscroll) : FXMainWindow(a, "Xfi ", 
     new FXMenuSeparator(viewmenu);
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "big_icons", "F10");
-    text = _("&Big icons")+TABS(key)+_("Display folders with big icons.")+PARS(key);
+    text = _("&Big icons") + TABS(key) + _("Display folders with big icons.") + PARS(key);
     mc = new FXMenuRadio(viewmenu, text, this, ID_SHOW_BIG_ICONS);
     hotkey = _parseAccel(key);
     getAccelTable()->addAccel(hotkey, mc, FXSEL(SEL_COMMAND, FXMenuCommand::ID_ACCEL));
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "small_icons", "F11");
-    text = _("&Small icons")+TABS(key)+_("Display folders with small icons.")+PARS(key);
+    text = _("&Small icons") + TABS(key) + _("Display folders with small icons.") + PARS(key);
     mc = new FXMenuRadio(viewmenu, text, this, ID_SHOW_MINI_ICONS);
     hotkey = _parseAccel(key);
     getAccelTable()->addAccel(hotkey, mc, FXSEL(SEL_COMMAND, FXMenuCommand::ID_ACCEL));
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "detailed_file_list", "F12");
-    text = _("&Detailed file list")+TABS(key)+_("Display detailed folder listing.")+PARS(key);
+    text = _("&Detailed file list") + TABS(key) + _("Display detailed folder listing.") + PARS(key);
     mc = new FXMenuRadio(viewmenu, text, this, ID_SHOW_DETAILS);
     hotkey = _parseAccel(key);
     getAccelTable()->addAccel(hotkey, mc, FXSEL(SEL_COMMAND, FXMenuCommand::ID_ACCEL));
@@ -814,21 +814,21 @@ XFileImage::XFileImage(FXApp* a, FXbool smoothscroll) : FXMainWindow(a, "Xfi ", 
     mc->setAccelText(key);
 
     new FXMenuSeparator(viewmenu);
-    new FXMenuRadio(viewmenu, _("&Rows")+TAB2+_("View icons row-wise."), filelist, FileList::ID_ARRANGE_BY_ROWS);
-    new FXMenuRadio(viewmenu, _("&Columns")+TAB2+_("View icons column-wise."), filelist, FileList::ID_ARRANGE_BY_COLUMNS);
-    new FXMenuCheck(viewmenu, _("&Autosize")+TAB2+_("Autosize icon names."), filelist, FileList::ID_AUTOSIZE);
+    new FXMenuRadio(viewmenu, _("&Rows") + TAB2 + _("View icons row-wise."), filelist, FileList::ID_ARRANGE_BY_ROWS);
+    new FXMenuRadio(viewmenu, _("&Columns") + TAB2 + _("View icons column-wise."), filelist, FileList::ID_ARRANGE_BY_COLUMNS);
+    new FXMenuCheck(viewmenu, _("&Autosize") + TAB2 + _("Autosize icon names."), filelist, FileList::ID_AUTOSIZE);
 
     // Preferences menu
-    new FXMenuCheck(prefsmenu, _("&Toolbar")+TAB2+_("Display toolbar."), toolbar, FXWindow::ID_TOGGLESHOWN);
-    new FXMenuCheck(prefsmenu, _("&File list")+TAB2+_("Display file list."), filebox, FXWindow::ID_TOGGLESHOWN);
-    new FXMenuCheck(prefsmenu, _("File list &before")+TAB2+_("Display file list before image window."), this, ID_TOGGLE_FILELIST_BEFORE);
-    new FXMenuCheck(prefsmenu, _("&Filter images")+TAB2+_("List only image files."), this, ID_TOGGLE_FILTER_IMAGES);
-    new FXMenuCheck(prefsmenu, _("Fit &window when opening")+TAB2+_("Zoom to fit window when opening an image."), this, ID_TOGGLE_FIT_WIN);
+    new FXMenuCheck(prefsmenu, _("&Toolbar") + TAB2 + _("Display toolbar."), toolbar, FXWindow::ID_TOGGLESHOWN);
+    new FXMenuCheck(prefsmenu, _("&File list") + TAB2 + _("Display file list."), filebox, FXWindow::ID_TOGGLESHOWN);
+    new FXMenuCheck(prefsmenu, _("File list &before") + TAB2 + _("Display file list before image window."), this, ID_TOGGLE_FILELIST_BEFORE);
+    new FXMenuCheck(prefsmenu, _("&Filter images") + TAB2 + _("List only image files."), this, ID_TOGGLE_FILTER_IMAGES);
+    new FXMenuCheck(prefsmenu, _("Fit &window when opening") + TAB2 + _("Zoom to fit window when opening an image."), this, ID_TOGGLE_FIT_WIN);
 
 
     // Help Menu entries
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "help", "F1");
-    text = _("&About X File Image")+TABS(key)+_("About X File Image.")+PARS(key);
+    text = _("&About X File Image") + TABS(key) + _("About X File Image.") + PARS(key);
     mc = new FXMenuCommand(helpmenu, text, NULL, this, ID_ABOUT, 0);
     hotkey = _parseAccel(key);
     getAccelTable()->addAccel(hotkey, mc, FXSEL(SEL_COMMAND, FXMenuCommand::ID_ACCEL));
@@ -868,6 +868,11 @@ XFileImage::XFileImage(FXApp* a, FXbool smoothscroll) : FXMainWindow(a, "Xfi ", 
     // Initialize previous window width / height
     prev_width = getWidth();
     prev_height = getHeight();
+    
+    delete btn;
+    delete mc;
+    delete sep1;
+    delete sep2;
 }
 
 
@@ -898,8 +903,8 @@ long XFileImage::onCmdPopupMenu(FXObject* o, FXSelector s, void* p)
 {
     // Popup menu pane
     FXMenuPane menu(this);
-    int        x, y;
-    FXuint     state;
+    int x, y;
+    FXuint state;
 
     getRoot()->getCursorPosition(x, y, state);
 
@@ -945,7 +950,7 @@ long XFileImage::onKeyPress(FXObject* sender, FXSelector sel, void* ptr)
     FXEvent* event = (FXEvent*)ptr;
 
     // Shift-F10 or Menu was pressed : open popup menu
-   	if ((event->state&SHIFTMASK && event->code == KEY_F10) || event->code == KEY_Menu)
+    if ((event->state & SHIFTMASK && event->code == KEY_F10) || event->code == KEY_Menu)
     {
         this->handle(sender, FXSEL(SEL_COMMAND, XFileImage::ID_POPUP_MENU), ptr);
         return(1);
@@ -1008,7 +1013,7 @@ long XFileImage::onCmdDirBack(FXObject*, FXSelector s, void* p)
 {
     StringList* backhist, *forwardhist;
     StringItem* item;
-    FXString    pathname;
+    FXString pathname;
 
     // Get the filelist history
     backhist = filelist->backhist;
@@ -1040,7 +1045,7 @@ long XFileImage::onCmdDirBack(FXObject*, FXSelector s, void* p)
 long XFileImage::onUpdDirBack(FXObject* sender, FXSelector sel, void* ptr)
 {
     StringList* backhist;
-    FXString    pathname;
+    FXString pathname;
 
     // Get the filelist history
     backhist = filelist->backhist;
@@ -1064,7 +1069,7 @@ long XFileImage::onCmdDirForward(FXObject*, FXSelector s, void* p)
 {
     StringList* backhist, *forwardhist;
     StringItem* item;
-    FXString    pathname;
+    FXString pathname;
 
     // Get the filelist history
     backhist = filelist->backhist;
@@ -1096,7 +1101,7 @@ long XFileImage::onCmdDirForward(FXObject*, FXSelector s, void* p)
 long XFileImage::onUpdDirForward(FXObject* sender, FXSelector sel, void* ptr)
 {
     StringList* forwardhist;
-    FXString    pathname;
+    FXString pathname;
 
     // Get the filelist history
     forwardhist = filelist->forwardhist;
@@ -1120,7 +1125,7 @@ long XFileImage::onCmdDirBackHist(FXObject* sender, FXSelector sel, void* ptr)
 {
     StringList* backhist, *forwardhist;
     StringItem* item;
-    FXString    pathname;
+    FXString pathname;
 
     // Get the filelist history
     backhist = filelist->backhist;
@@ -1131,35 +1136,35 @@ long XFileImage::onCmdDirBackHist(FXObject* sender, FXSelector sel, void* ptr)
     if (num > 0)
     {
         FXString* dirs = new FXString[num];
-        FXString  strlist = "";
+        FXString strlist = "";
 
         // Get string items
         item = backhist->getFirst();
-        for (int i = 0; i <= num-1; i++)
+        for (int i = 0; i <= num - 1; i++)
         {
             if (item)
             {
                 FXString str = backhist->getString(item);
                 dirs[i] = str;
-                strlist = strlist+str+"\n";
+                strlist = strlist + str + "\n";
                 item = backhist->getNext(item);
             }
         }
 
         // Display list box
-        int pos = DirHistBox::box(btnbackhist, DECOR_NONE, strlist, this->getX()+245, this->getY()+37);
+        int pos = DirHistBox::box(btnbackhist, DECOR_NONE, strlist, this->getX() + 245, this->getY() + 37);
 
         // If an item was selected
         if (pos != -1)
         {
             // Update back history
-            if (pos == num-1)
+            if (pos == num - 1)
             {
                 backhist->removeAllItems();
             }
             else
             {
-                item = backhist->getItemAtPos(pos+1);
+                item = backhist->getItemAtPos(pos + 1);
                 backhist->removeAllItemsBefore(item);
             }
 
@@ -1167,7 +1172,7 @@ long XFileImage::onCmdDirBackHist(FXObject* sender, FXSelector sel, void* ptr)
             forwardhist->insertFirstItem(filelist->getDirectory());
             if (pos > 0)
             {
-                for (int i = 0; i <= pos-1; i++)
+                for (int i = 0; i <= pos - 1; i++)
                 {
                     forwardhist->insertFirstItem(dirs[i]);
                 }
@@ -1190,7 +1195,7 @@ long XFileImage::onCmdDirBackHist(FXObject* sender, FXSelector sel, void* ptr)
 long XFileImage::onUpdDirBackHist(FXObject* sender, FXSelector sel, void* ptr)
 {
     StringList* backhist;
-    FXString    pathname;
+    FXString pathname;
 
     // Get the filelist history
     backhist = filelist->backhist;
@@ -1214,7 +1219,7 @@ long XFileImage::onCmdDirForwardHist(FXObject* sender, FXSelector sel, void* ptr
 {
     StringList* backhist, *forwardhist;
     StringItem* item;
-    FXString    pathname;
+    FXString pathname;
 
     // Get the filelist history
     backhist = filelist->backhist;
@@ -1225,35 +1230,35 @@ long XFileImage::onCmdDirForwardHist(FXObject* sender, FXSelector sel, void* ptr
     if (num > 0)
     {
         FXString* dirs = new FXString[num];
-        FXString  strlist = "";
+        FXString strlist = "";
 
         // Get string items
         item = forwardhist->getFirst();
-        for (int i = 0; i <= num-1; i++)
+        for (int i = 0; i <= num - 1; i++)
         {
             if (item)
             {
                 FXString str = forwardhist->getString(item);
                 dirs[i] = str;
-                strlist = strlist+str+"\n";
+                strlist = strlist + str + "\n";
                 item = forwardhist->getNext(item);
             }
         }
 
         // Display list box
-        int pos = DirHistBox::box(btnforwardhist, DECOR_NONE, strlist, this->getX()+285, this->getY()+37);
+        int pos = DirHistBox::box(btnforwardhist, DECOR_NONE, strlist, this->getX() + 285, this->getY() + 37);
 
         // If an item was selected
         if (pos != -1)
         {
             // Update forward history
-            if (pos == num-1)
+            if (pos == num - 1)
             {
                 forwardhist->removeAllItems();
             }
             else
             {
-                item = forwardhist->getItemAtPos(pos+1);
+                item = forwardhist->getItemAtPos(pos + 1);
                 forwardhist->removeAllItemsBefore(item);
             }
 
@@ -1261,7 +1266,7 @@ long XFileImage::onCmdDirForwardHist(FXObject* sender, FXSelector sel, void* ptr
             backhist->insertFirstItem(filelist->getDirectory());
             if (pos > 0)
             {
-                for (int i = 0; i <= pos-1; i++)
+                for (int i = 0; i <= pos - 1; i++)
                 {
                     backhist->insertFirstItem(dirs[i]);
                 }
@@ -1284,7 +1289,7 @@ long XFileImage::onCmdDirForwardHist(FXObject* sender, FXSelector sel, void* ptr
 long XFileImage::onUpdDirForwardHist(FXObject* sender, FXSelector sel, void* ptr)
 {
     StringList* forwardhist;
-    FXString    pathname;
+    FXString pathname;
 
     // Get the filelist history
     forwardhist = filelist->forwardhist;
@@ -1332,8 +1337,8 @@ long XFileImage::onCmdAbout(FXObject*, FXSelector, void*)
 
     msg.format(_("X File Image Version %s is a simple image viewer.\n\n"), VERSION);
     msg += COPYRIGHT;
-    MessageBox about(this, _("About X File Image"), msg.text(), xfiicon, BOX_OK|DECOR_TITLE|DECOR_BORDER,
-                     JUSTIFY_CENTER_X|ICON_BEFORE_TEXT|LAYOUT_CENTER_Y|LAYOUT_LEFT|LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    MessageBox about(this, _("About X File Image"), msg.text(), xfiicon, BOX_OK | DECOR_TITLE | DECOR_BORDER,
+                     JUSTIFY_CENTER_X | ICON_BEFORE_TEXT | LAYOUT_CENTER_Y | LAYOUT_LEFT | LAYOUT_FILL_X | LAYOUT_FILL_Y);
     about.execute(PLACEMENT_OWNER);
 
     filelist->setFocus();
@@ -1373,62 +1378,62 @@ FXbool XFileImage::loadimage(const FXString& file)
 
     if (comparecase(ext, "gif") == 0)
     {
-        img = new FXGIFImage(getApp(), NULL, IMAGE_KEEP|IMAGE_SHMI|IMAGE_SHMP);
-        tmpimg = new FXGIFImage(getApp(), NULL, IMAGE_KEEP|IMAGE_SHMI|IMAGE_SHMP);
+        img = new FXGIFImage(getApp(), NULL, IMAGE_KEEP | IMAGE_SHMI | IMAGE_SHMP);
+        tmpimg = new FXGIFImage(getApp(), NULL, IMAGE_KEEP | IMAGE_SHMI | IMAGE_SHMP);
     }
     else if (comparecase(ext, "bmp") == 0)
     {
-        img = new FXBMPImage(getApp(), NULL, IMAGE_KEEP|IMAGE_SHMI|IMAGE_SHMP);
-        tmpimg = new FXBMPImage(getApp(), NULL, IMAGE_KEEP|IMAGE_SHMI|IMAGE_SHMP);
+        img = new FXBMPImage(getApp(), NULL, IMAGE_KEEP | IMAGE_SHMI | IMAGE_SHMP);
+        tmpimg = new FXBMPImage(getApp(), NULL, IMAGE_KEEP | IMAGE_SHMI | IMAGE_SHMP);
     }
     else if (comparecase(ext, "xpm") == 0)
     {
-        img = new FXXPMImage(getApp(), NULL, IMAGE_KEEP|IMAGE_SHMI|IMAGE_SHMP);
-        tmpimg = new FXXPMImage(getApp(), NULL, IMAGE_KEEP|IMAGE_SHMI|IMAGE_SHMP);
+        img = new FXXPMImage(getApp(), NULL, IMAGE_KEEP | IMAGE_SHMI | IMAGE_SHMP);
+        tmpimg = new FXXPMImage(getApp(), NULL, IMAGE_KEEP | IMAGE_SHMI | IMAGE_SHMP);
     }
     else if (comparecase(ext, "pcx") == 0)
     {
-        img = new FXPCXImage(getApp(), NULL, IMAGE_KEEP|IMAGE_SHMI|IMAGE_SHMP);
-        tmpimg = new FXPCXImage(getApp(), NULL, IMAGE_KEEP|IMAGE_SHMI|IMAGE_SHMP);
+        img = new FXPCXImage(getApp(), NULL, IMAGE_KEEP | IMAGE_SHMI | IMAGE_SHMP);
+        tmpimg = new FXPCXImage(getApp(), NULL, IMAGE_KEEP | IMAGE_SHMI | IMAGE_SHMP);
     }
     else if ((comparecase(ext, "ico") == 0) || (comparecase(ext, "cur") == 0))
     {
-        img = new FXICOImage(getApp(), NULL, IMAGE_KEEP|IMAGE_SHMI|IMAGE_SHMP);
-        tmpimg = new FXICOImage(getApp(), NULL, IMAGE_KEEP|IMAGE_SHMI|IMAGE_SHMP);
+        img = new FXICOImage(getApp(), NULL, IMAGE_KEEP | IMAGE_SHMI | IMAGE_SHMP);
+        tmpimg = new FXICOImage(getApp(), NULL, IMAGE_KEEP | IMAGE_SHMI | IMAGE_SHMP);
     }
     else if (comparecase(ext, "tga") == 0)
     {
-        img = new FXTGAImage(getApp(), NULL, IMAGE_KEEP|IMAGE_SHMI|IMAGE_SHMP);
-        tmpimg = new FXTGAImage(getApp(), NULL, IMAGE_KEEP|IMAGE_SHMI|IMAGE_SHMP);
+        img = new FXTGAImage(getApp(), NULL, IMAGE_KEEP | IMAGE_SHMI | IMAGE_SHMP);
+        tmpimg = new FXTGAImage(getApp(), NULL, IMAGE_KEEP | IMAGE_SHMI | IMAGE_SHMP);
     }
     else if (comparecase(ext, "rgb") == 0)
     {
-        img = new FXRGBImage(getApp(), NULL, IMAGE_KEEP|IMAGE_SHMI|IMAGE_SHMP);
+        img = new FXRGBImage(getApp(), NULL, IMAGE_KEEP | IMAGE_SHMI | IMAGE_SHMP);
     }
     else if (comparecase(ext, "xbm") == 0)
     {
-        img = new FXXBMImage(getApp(), NULL, NULL, IMAGE_KEEP|IMAGE_SHMI|IMAGE_SHMP);
-        tmpimg = new FXXBMImage(getApp(), NULL, NULL, IMAGE_KEEP|IMAGE_SHMI|IMAGE_SHMP);
+        img = new FXXBMImage(getApp(), NULL, NULL, IMAGE_KEEP | IMAGE_SHMI | IMAGE_SHMP);
+        tmpimg = new FXXBMImage(getApp(), NULL, NULL, IMAGE_KEEP | IMAGE_SHMI | IMAGE_SHMP);
     }
     else if (comparecase(ext, "ppm") == 0)
     {
-        img = new FXPPMImage(getApp(), NULL, IMAGE_KEEP|IMAGE_SHMI|IMAGE_SHMP);
-        tmpimg = new FXPPMImage(getApp(), NULL, IMAGE_KEEP|IMAGE_SHMI|IMAGE_SHMP);
+        img = new FXPPMImage(getApp(), NULL, IMAGE_KEEP | IMAGE_SHMI | IMAGE_SHMP);
+        tmpimg = new FXPPMImage(getApp(), NULL, IMAGE_KEEP | IMAGE_SHMI | IMAGE_SHMP);
     }
     else if (comparecase(ext, "png") == 0)
     {
-        img = new FXPNGImage(getApp(), NULL, IMAGE_KEEP|IMAGE_SHMI|IMAGE_SHMP);
-        tmpimg = new FXPNGImage(getApp(), NULL, IMAGE_KEEP|IMAGE_SHMI|IMAGE_SHMP);
+        img = new FXPNGImage(getApp(), NULL, IMAGE_KEEP | IMAGE_SHMI | IMAGE_SHMP);
+        tmpimg = new FXPNGImage(getApp(), NULL, IMAGE_KEEP | IMAGE_SHMI | IMAGE_SHMP);
     }
     else if ((comparecase(ext, "jpg") == 0) || (comparecase(ext, "jpeg") == 0))
     {
-        img = new FXJPGImage(getApp(), NULL, IMAGE_KEEP|IMAGE_SHMI|IMAGE_SHMP);
-        tmpimg = new FXJPGImage(getApp(), NULL, IMAGE_KEEP|IMAGE_SHMI|IMAGE_SHMP);
+        img = new FXJPGImage(getApp(), NULL, IMAGE_KEEP | IMAGE_SHMI | IMAGE_SHMP);
+        tmpimg = new FXJPGImage(getApp(), NULL, IMAGE_KEEP | IMAGE_SHMI | IMAGE_SHMP);
     }
     else if ((comparecase(ext, "tif") == 0) || (comparecase(ext, "tiff") == 0))
     {
-        img = new FXTIFImage(getApp(), NULL, IMAGE_KEEP|IMAGE_SHMI|IMAGE_SHMP);
-        tmpimg = new FXTIFImage(getApp(), NULL, IMAGE_KEEP|IMAGE_SHMI|IMAGE_SHMP);
+        img = new FXTIFImage(getApp(), NULL, IMAGE_KEEP | IMAGE_SHMI | IMAGE_SHMP);
+        tmpimg = new FXTIFImage(getApp(), NULL, IMAGE_KEEP | IMAGE_SHMI | IMAGE_SHMP);
     }
     else
     {
@@ -1466,7 +1471,7 @@ FXbool XFileImage::loadimage(const FXString& file)
             return(false);
         }
 
-        if (!FXMEMDUP(&tmpdata, img->getData(), FXColor, img->getWidth()*img->getHeight()))
+        if (!FXMEMDUP(&tmpdata, img->getData(), FXColor, img->getWidth() * img->getHeight()))
         {
             throw FXMemoryException(_("Unable to load image"));
         }
@@ -1488,9 +1493,22 @@ FXbool XFileImage::loadimage(const FXString& file)
             handle(this, FXSEL(SEL_COMMAND, ID_ZOOM_WIN), NULL);
         }
     }
+
     filelist->setDirectory(FXPath::directory(file));
     pathlink->setPath(filelist->getDirectory());
     pathtext->setText(filelist->getDirectory());
+
+    // Select image in file list
+    for (int u = 0; u < filelist->getNumItems(); u++)
+    {
+        FXString name = filelist->getItemFilename(u);
+
+        if (name == FXPath::name(file))
+        {
+            filelist->selectItem(u);
+            break;
+        }
+    }
 
     return(true);
 }
@@ -1798,7 +1816,7 @@ long XFileImage::onUpdFileView(FXObject* sender, FXSelector sel, void* ptr)
             // File box shown
             if (filebox->shown())
             {
-                filebox->setWidth((int)round(filewidth_pct*width));
+                filebox->setWidth((int)round(filewidth_pct * width));
             }
         }
 
@@ -1806,7 +1824,7 @@ long XFileImage::onUpdFileView(FXObject* sender, FXSelector sel, void* ptr)
         prev_width = width;
         if (getWidth() > 10)
         {
-            filewidth_pct = (double)(filebox->getWidth())/(double)(getWidth());
+            filewidth_pct = (double)(filebox->getWidth()) / (double)(getWidth());
         }
     }
 
@@ -1818,7 +1836,7 @@ long XFileImage::onUpdFileView(FXObject* sender, FXSelector sel, void* ptr)
             // File box shown
             if (filebox->shown())
             {
-                filebox->setHeight((int)round(fileheight_pct*height));
+                filebox->setHeight((int)round(fileheight_pct * height));
             }
         }
 
@@ -1826,7 +1844,7 @@ long XFileImage::onUpdFileView(FXObject* sender, FXSelector sel, void* ptr)
         prev_height = height;
         if (getHeight() > 10)
         {
-            fileheight_pct = (double)(filebox->getHeight())/(double)(getHeight());
+            fileheight_pct = (double)(filebox->getHeight()) / (double)(getHeight());
         }
     }
 
@@ -1876,8 +1894,7 @@ long XFileImage::onUpdFileView(FXObject* sender, FXSelector sel, void* ptr)
 long XFileImage::onSigHarvest(FXObject*, FXSelector, void*)
 {
     while (waitpid(-1, NULL, WNOHANG) > 0)
-    {
-    }
+    {}
     return(1);
 }
 
@@ -1902,7 +1919,7 @@ long XFileImage::onUpdTitle(FXObject* sender, FXSelector, void*)
 
     if (image && (img != NULL))
     {
-        title += " (" + FXStringVal(img->getWidth()) + "x" + FXStringVal(img->getHeight()) + " - " + FXStringVal(zoomval*100) + "%" ")";
+        title += " (" + FXStringVal(img->getWidth()) + "x" + FXStringVal(img->getHeight()) + " - " + FXStringVal(zoomval * 100) + "%" ")";
     }
     sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_SETSTRINGVALUE), (void*)&title);
     return(1);
@@ -1958,11 +1975,11 @@ long XFileImage::onCmdItemClicked(FXObject* sender, FXSelector sel, void* ptr)
     if (single_click != SINGLE_CLICK_NONE)
     {
         // In detailed mode, avoid single click when cursor is not over the first column
-        int    x, y;
+        int x, y;
         FXuint state;
         filelist->getCursorPosition(x, y, state);
         FXbool allow = true;
-        if (!(filelist->getListStyle()&(_ICONLIST_BIG_ICONS|_ICONLIST_MINI_ICONS)) && ((x-filelist->getXPosition()) > filelist->getHeaderSize(0)))
+        if (!(filelist->getListStyle() & (_ICONLIST_BIG_ICONS | _ICONLIST_MINI_ICONS)) && ((x - filelist->getXPosition()) > filelist->getHeaderSize(0)))
         {
             allow = false;
         }
@@ -1970,7 +1987,7 @@ long XFileImage::onCmdItemClicked(FXObject* sender, FXSelector sel, void* ptr)
         int index = (int)(FXival)ptr;
         if (0 <= index)
         {
-            if ((single_click != SINGLE_CLICK_NONE) && filelist->isItemDirectory(index) && allow)
+            if (filelist->isItemDirectory(index) && allow)
             {
                 FXString pathname = filelist->getItemPathname(index);
 
@@ -2094,7 +2111,7 @@ long XFileImage::onCmdZoomIn(FXObject*, FXSelector, void*)
     getApp()->beginWaitCursor();
 
     // Copy the original image into the actual one
-    if (!FXMEMDUP(&tmpdata, img->getData(), FXColor, img->getWidth()*img->getHeight()))
+    if (!FXMEMDUP(&tmpdata, img->getData(), FXColor, img->getWidth() * img->getHeight()))
     {
         throw FXMemoryException(_("Unable to load image"));
     }
@@ -2102,12 +2119,12 @@ long XFileImage::onCmdZoomIn(FXObject*, FXSelector, void*)
 
     // Resize the actual image according to the new zoom factor
     indZoom += 1;
-    if (indZoom > NB_ZOOM-1)
+    if (indZoom > NB_ZOOM - 1)
     {
-        indZoom = NB_ZOOM-1;
+        indZoom = NB_ZOOM - 1;
     }
-    int sx = (int)(tmpimg->getWidth()*zoomtab[indZoom]);
-    int sy = (int)(tmpimg->getHeight()*zoomtab[indZoom]);
+    int sx = (int)(tmpimg->getWidth() * zoomtab[indZoom]);
+    int sy = (int)(tmpimg->getHeight() * zoomtab[indZoom]);
 
     // Scale only if the actual image size is different
     if (indZoom == ZOOM_100)
@@ -2124,8 +2141,8 @@ long XFileImage::onCmdZoomIn(FXObject*, FXSelector, void*)
             {
                 indZoom = 0;
             }
-            sx = (int)(tmpimg->getWidth()*zoomtab[indZoom]);
-            sy = (int)(tmpimg->getHeight()*zoomtab[indZoom]);
+            sx = (int)(tmpimg->getWidth() * zoomtab[indZoom]);
+            sy = (int)(tmpimg->getHeight() * zoomtab[indZoom]);
         }
 
         // Scale image according to the new zoom factor
@@ -2148,7 +2165,7 @@ long XFileImage::onCmdZoomOut(FXObject*, FXSelector, void*)
     getApp()->beginWaitCursor();
 
     // Copy the original image into the actual one
-    if (!FXMEMDUP(&tmpdata, img->getData(), FXColor, img->getWidth()*img->getHeight()))
+    if (!FXMEMDUP(&tmpdata, img->getData(), FXColor, img->getWidth() * img->getHeight()))
     {
         throw FXMemoryException(_("Unable to load image"));
     }
@@ -2160,8 +2177,8 @@ long XFileImage::onCmdZoomOut(FXObject*, FXSelector, void*)
     {
         indZoom = 0;
     }
-    int sx = (int)(tmpimg->getWidth()*zoomtab[indZoom]);
-    int sy = (int)(tmpimg->getHeight()*zoomtab[indZoom]);
+    int sx = (int)(tmpimg->getWidth() * zoomtab[indZoom]);
+    int sy = (int)(tmpimg->getHeight() * zoomtab[indZoom]);
 
     // Scale only if the actual image size is different
     if (indZoom == ZOOM_100)
@@ -2210,13 +2227,13 @@ long XFileImage::onCmdZoomWin(FXObject*, FXSelector, void*)
 
     // Compute zoom factor
     double fitwin;
-    if (double(w)/double(h) > double(winw)/double(winh))
+    if (double(w) / double(h) > double(winw) / double(winh))
     {
-        fitwin = 0.98*(double)winw/(double)w;
+        fitwin = 0.98 * (double)winw / (double)w;
     }
     else
     {
-        fitwin = 0.98*(double)winh/(double)h;
+        fitwin = 0.98 * (double)winh / (double)h;
     }
 
     // Find the most approaching predefined zoom
@@ -2225,7 +2242,7 @@ long XFileImage::onCmdZoomWin(FXObject*, FXSelector, void*)
     {
         if (zoomtab[k] > fitwin)
         {
-            indZoom = k-1;
+            indZoom = k - 1;
             break;
         }
     }
@@ -2235,19 +2252,19 @@ long XFileImage::onCmdZoomWin(FXObject*, FXSelector, void*)
     }
     if (indZoom >= NB_ZOOM)
     {
-        indZoom = NB_ZOOM-1;
+        indZoom = NB_ZOOM - 1;
     }
 
     // Copy the original image into the actual one
-    if (!FXMEMDUP(&tmpdata, img->getData(), FXColor, img->getWidth()*img->getHeight()))
+    if (!FXMEMDUP(&tmpdata, img->getData(), FXColor, img->getWidth() * img->getHeight()))
     {
         throw FXMemoryException(_("Unable to load image"));
     }
     tmpimg->setData(tmpdata, IMAGE_OWNED, img->getWidth(), img->getHeight());
 
     // Resize the image according to the new zoom factor
-    int sx = (int)(w*fitwin);
-    int sy = (int)(h*fitwin);
+    int sx = (int)(w * fitwin);
+    int sy = (int)(h * fitwin);
 
     // Scale image according to the new zoom factor
     tmpimg->scale(sx, sy, 1);
@@ -2345,7 +2362,7 @@ void XFileImage::create()
 
     // Set list style
     liststyle = getApp()->reg().readUnsignedEntry("OPTIONS", "liststyle", _ICONLIST_MINI_ICONS);
-    filelist->setListStyle(liststyle|_ICONLIST_BROWSESELECT);
+    filelist->setListStyle(liststyle | _ICONLIST_BROWSESELECT);
 
     // Set file view
     fileview = getApp()->reg().readUnsignedEntry("OPTIONS", "fileview", ID_SHOW_MINI_ICONS);
@@ -2379,11 +2396,11 @@ void XFileImage::create()
     // Set filebox width or height
     if (vertpanels)
     {
-        filebox->setWidth((int)round(filewidth_pct*getWidth()));
+        filebox->setWidth((int)round(filewidth_pct * getWidth()));
     }
     else
     {
-        filebox->setHeight((int)round(fileheight_pct*getHeight()));
+        filebox->setHeight((int)round(fileheight_pct * getHeight()));
     }
 
     // Set focus on file list
@@ -2404,12 +2421,12 @@ long XFileImage::onCmdHorzVertPanels(FXObject* sender, FXSelector sel, void* ptr
     switch (FXSELID(sel))
     {
     case ID_VERT_PANELS:
-        splitter->setSplitterStyle(splitter->getSplitterStyle()&~SPLITTER_VERTICAL);
+        splitter->setSplitterStyle(splitter->getSplitterStyle() & ~SPLITTER_VERTICAL);
         vertpanels = true;
         break;
 
     case ID_HORZ_PANELS:
-        splitter->setSplitterStyle(splitter->getSplitterStyle()|SPLITTER_VERTICAL);
+        splitter->setSplitterStyle(splitter->getSplitterStyle() | SPLITTER_VERTICAL);
         vertpanels = false;
         break;
     }
@@ -2465,8 +2482,8 @@ void XFileImage::saveConfig()
         XWindowAttributes xwattr;
         if (XGetWindowAttributes((Display*)getApp()->getDisplay(), this->id(), &xwattr))
         {
-            getApp()->reg().writeIntEntry("OPTIONS", "xpos", getX()-xwattr.x);
-            getApp()->reg().writeIntEntry("OPTIONS", "ypos", getY()-xwattr.y);
+            getApp()->reg().writeIntEntry("OPTIONS", "xpos", getX() - xwattr.x);
+            getApp()->reg().writeIntEntry("OPTIONS", "ypos", getY() - xwattr.y);
         }
         else
         {
@@ -2476,8 +2493,8 @@ void XFileImage::saveConfig()
     }
 
     // Width and height of filebox
-    getApp()->reg().writeRealEntry("OPTIONS", "filewidth_pct", (int)(filewidth_pct*100)/100.0);
-    getApp()->reg().writeRealEntry("OPTIONS", "fileheight_pct", (int)(fileheight_pct*100)/100.0);
+    getApp()->reg().writeRealEntry("OPTIONS", "filewidth_pct", (int)(filewidth_pct * 100) / 100.0);
+    getApp()->reg().writeRealEntry("OPTIONS", "fileheight_pct", (int)(fileheight_pct * 100) / 100.0);
 
     // Was filebox shown
     getApp()->reg().writeIntEntry("OPTIONS", "filesshown", filebox->shown());
@@ -2698,13 +2715,13 @@ void XFileImage::saveConfig()
 // Start the whole thing
 int main(int argc, char* argv[])
 {
-    int         i;
-    FXString    startimage = "";
+    int i;
+    FXString startimage = "";
     const char* appname = "xfi";
     const char* xfename = XFEAPPNAME;
     const char* vdrname = XFEVDRNAME;
-    FXbool      loadicons;
-    FXString    xmodifiers;
+    FXbool loadicons;
+    FXString xmodifiers;
 
     // Get environment variables $HOME, $XDG_DATA_HOME and $XDG_CONFIG_HOME
     homedir = FXSystem::getHomeDirectory();
@@ -2778,25 +2795,25 @@ int main(int argc, char* argv[])
     FXRegistry* reg_xfe = new FXRegistry(xfename, vdrname);
     reg_xfe->read();
 
-	// Compute integer and fractional scaling factors depending on the monitor resolution
-	FXint res = reg_xfe->readUnsignedEntry("SETTINGS", "screenres", 100);
-	scaleint = round(res / 100.0);
-	scalefrac = FXMAX(1.0, res / 100.0);
-	
+    // Compute integer and fractional scaling factors depending on the monitor resolution
+    FXint res = reg_xfe->readUnsignedEntry("SETTINGS", "screenres", 100);
+    scaleint = round(res / 100.0);
+    scalefrac = FXMAX(1.0, res / 100.0);
+
     // Redefine the default hand cursor depending on the integer scaling factor
     FXCursor* hand;
     if (scaleint == 1)
     {
-		hand = new FXCursor(application, hand1_bits, hand1_mask_bits, hand1_width, hand1_height, hand1_x_hot, hand1_y_hot);
-	}
-	else if (scaleint == 2)
+        hand = new FXCursor(application, hand1_bits, hand1_mask_bits, hand1_width, hand1_height, hand1_x_hot, hand1_y_hot);
+    }
+    else if (scaleint == 2)
     {
-		hand = new FXCursor(application, hand2_bits, hand2_mask_bits, hand2_width, hand2_height, hand2_x_hot, hand2_y_hot);
-	}
-	else
-	{
-		hand = new FXCursor(application, hand3_bits, hand3_mask_bits, hand3_width, hand3_height, hand3_x_hot, hand3_y_hot);
-	}
+        hand = new FXCursor(application, hand2_bits, hand2_mask_bits, hand2_width, hand2_height, hand2_x_hot, hand2_y_hot);
+    }
+    else
+    {
+        hand = new FXCursor(application, hand3_bits, hand3_mask_bits, hand3_width, hand3_height, hand3_x_hot, hand3_y_hot);
+    }
     application->setDefaultCursor(DEF_HAND_CURSOR, hand);
 
     // Load all application icons
@@ -2863,7 +2880,7 @@ int main(int argc, char* argv[])
     {
         MessageBox::error(application, BOX_OK, _("Error loading icons"), _("Icon path doesn't exist, icon theme was set back to default. Please check your icon path!") );
     }
-    
+
     // Some icons not found
     if (!loadicons)
     {

@@ -46,7 +46,7 @@ PathLinker::PathLinker(FXComposite* a, FileList* flist, DirList* dlist, FXuint o
     currentButton = 0;
 
     // Right most button is a TextLabel and is only used for focus
-    focusButton = new TextLabel(this, 0, this, ID_FOCUS_BUTTON, LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    focusButton = new TextLabel(this, 0, this, ID_FOCUS_BUTTON, LAYOUT_FILL_X | LAYOUT_FILL_Y);
 
     // Create highlight font (bold if normal font is normal, and normal if normal font is bold)
     FXFontDesc fontdesc;
@@ -61,7 +61,6 @@ PathLinker::PathLinker(FXComposite* a, FileList* flist, DirList* dlist, FXuint o
         fontdesc.weight = FXFont::Normal;
     }
     highlightFont = new FXFont(getApp(), fontdesc);
-    highlightFont->create();
 
     // Set the focus button initial color
     focusButton->setBackColor(getApp()->getBaseColor());
@@ -71,6 +70,7 @@ PathLinker::PathLinker(FXComposite* a, FileList* flist, DirList* dlist, FXuint o
 // Create the path linker
 void PathLinker::create()
 {
+    highlightFont->create();
     FXHorizontalFrame::create();
 }
 
@@ -100,7 +100,7 @@ void PathLinker::setPath(FXString text)
     }
     else
     {
-        visited = visitedPath.find(path+PATHSEPSTRING);
+        visited = visitedPath.find(path + PATHSEPSTRING);
     }
 
     // If actual path is included in the visited path
@@ -154,7 +154,7 @@ void PathLinker::setPath(FXString text)
         previousPos = nextPos + 1;
         nextPos = displayText.find(PATHSEPSTRING, previousPos);
     }
-    nbActiveButtons = ind+1;
+    nbActiveButtons = ind + 1;
     setText(ind, displayText.mid(previousPos, displayText.length()));
 
     if (ind < MAX_LINKS) // Avoid crashing when the number of path links is too high
@@ -193,8 +193,8 @@ void PathLinker::updatePath(FXString text, FXuint index)
     visitedPath = path;
     FXString displayText = visitedPath;
 
-    int    nextPos = 0;
-    int    previousPos = 0;
+    int nextPos = 0;
+    int previousPos = 0;
     FXuint ind = 0;
     nextPos = displayText.find(PATHSEPSTRING, 0);
 
@@ -216,7 +216,7 @@ void PathLinker::updatePath(FXString text, FXuint index)
         previousPos = nextPos + 1;
         nextPos = displayText.find(PATHSEPSTRING, previousPos);
     }
-    nbActiveButtons = ind+1;
+    nbActiveButtons = ind + 1;
 
     setText(ind, displayText.mid(previousPos, displayText.length()));
 
@@ -253,7 +253,7 @@ long PathLinker::pathButtonPressed(FXObject* obj, FXSelector sel, void* ptr)
     filelist->setFocus();
 
     FXString filePath("");
-    int      endId = FXSELID(sel);
+    int endId = FXSELID(sel);
 
     if (endId == ID_START_LINK)
     {
@@ -264,7 +264,7 @@ long PathLinker::pathButtonPressed(FXObject* obj, FXSelector sel, void* ptr)
     {
         int rpos = 0;
         rpos = visitedPath.rfind((char)PATHSEPSTRING[0], 0x7FFFFFFF, nbActiveButtons - (endId - ID_START_LINK + 1));
-        filePath = visitedPath.left(rpos+1);
+        filePath = visitedPath.left(rpos + 1);
     }
 
     // Update the path text
@@ -308,12 +308,12 @@ long PathLinker::onUpdPath(FXObject* obj, FXSelector sel, void* ptr)
         }
         else
         {
-            currentlink = visitedPath.before((char)PATHSEPSTRING[0], currentButton+1);
+            currentlink = visitedPath.before((char)PATHSEPSTRING[0], currentButton + 1);
         }
 
         // Test each link for existence and update to the current path if necessary
         FXString path = visitedPath;
-        FXuint   n = 1;
+        FXuint n = 1;
         while (path != "")
         {
             if (!existFile(path))

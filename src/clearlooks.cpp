@@ -17,8 +17,8 @@ extern FXint scaleint;
 // Default is vertical gradient
 static void drawGradientRectangle(FXDC& dc, FXColor upper, FXColor lower, int x, int y, int w, int h, FXbool vert = true)
 {
-    register int rr, gg, bb, dr, dg, db, r1, g1, b1, r2, g2, b2, yl, yh, yy, dy, n, t, ww;
-    const int    MAXSTEPS = 128;
+    int rr, gg, bb, dr, dg, db, r1, g1, b1, r2, g2, b2, yl, yh, yy, dy, n, t, ww;
+    const int MAXSTEPS = 128;
 
     if ((0 < w) && (0 < h))
     {
@@ -35,13 +35,13 @@ static void drawGradientRectangle(FXDC& dc, FXColor upper, FXColor lower, int x,
 
         r1 = FXREDVAL(upper);
         r2 = FXREDVAL(lower);
-        dr = r2-r1;
+        dr = r2 - r1;
         g1 = FXGREENVAL(upper);
         g2 = FXGREENVAL(lower);
-        dg = g2-g1;
+        dg = g2 - g1;
         b1 = FXBLUEVAL(upper);
         b2 = FXBLUEVAL(lower);
-        db = b2-b1;
+        db = b2 - b1;
 
         n = FXABS(dr);
         if ((t = FXABS(dg)) > n)
@@ -61,33 +61,33 @@ static void drawGradientRectangle(FXDC& dc, FXColor upper, FXColor lower, int x,
         {
             n = MAXSTEPS;
         }
-        rr = (r1<<16)+32767;
-        gg = (g1<<16)+32767;
-        bb = (b1<<16)+32767;
+        rr = (r1 << 16) + 32767;
+        gg = (g1 << 16) + 32767;
+        bb = (b1 << 16) + 32767;
         yy = 32767;
 
-        dr = (dr<<16)/n;
-        dg = (dg<<16)/n;
-        db = (db<<16)/n;
-        dy = (h<<16)/n;
+        dr = (dr << 16) / n;
+        dg = (dg << 16) / n;
+        db = (db << 16) / n;
+        dy = (h << 16) / n;
 
         do
         {
-            yl = yy>>16;
+            yl = yy >> 16;
             yy += dy;
-            yh = yy>>16;
-            dc.setForeground(FXRGB(rr>>16, gg>>16, bb>>16));
+            yh = yy >> 16;
+            dc.setForeground(FXRGB(rr >> 16, gg >> 16, bb >> 16));
 
             // Vertical gradient
             if (vert)
             {
-                dc.fillRectangle(x, y+yl, w, yh-yl);
+                dc.fillRectangle(x, y + yl, w, yh - yl);
             }
 
             // Horizontal gradient
             else
             {
-                dc.fillRectangle(x+yl, y, yh-yl, w);
+                dc.fillRectangle(x + yl, y, yh - yl, w);
             }
 
             rr += dr;
@@ -106,19 +106,19 @@ static void drawGradientRectangle(FXDC& dc, FXColor upper, FXColor lower, int x,
     dc.drawPoints(basebackground, 4);                                          \
                                                                                \
     dc.setForeground(bordercolor);                                             \
-    dc.drawRectangle(2, 0, width-5, 0);                                        \
-    dc.drawRectangle(2, height-1, width-5, height-1);                          \
-    dc.drawRectangle(0, 2, 0, height-5);                                       \
-    dc.drawRectangle(width-1, 2, 0, height-5);                                 \
+    dc.drawRectangle(2, 0, width - 5, 0);                                        \
+    dc.drawRectangle(2, height - 1, width - 5, height - 1);                          \
+    dc.drawRectangle(0, 2, 0, height - 5);                                       \
+    dc.drawRectangle(width - 1, 2, 0, height - 5);                                 \
     dc.drawPoints(bordercorners, 4);                                           \
     dc.setForeground(shadecolor);                                              \
     dc.drawPoints(bordershade, 16);                                            \
                                                                                \
-    drawGradientRectangle(dc, topcolor, bottomcolor, 2, 1, width-4, height-2); \
+    drawGradientRectangle(dc, topcolor, bottomcolor, 2, 1, width - 4, height - 2); \
     dc.setForeground(topcolor);                                                \
-    dc.drawRectangle(1, 3, 0, height-7);                                       \
+    dc.drawRectangle(1, 3, 0, height - 7);                                       \
     dc.setForeground(bottomcolor);                                             \
-    dc.drawRectangle(width-2, 3, 0, height-7);
+    dc.drawRectangle(width - 2, 3, 0, height - 7);
 
 
 #define DRAW_CLEARLOOKS_BUTTON_DOWN                   \
@@ -129,10 +129,10 @@ static void drawGradientRectangle(FXDC& dc, FXColor upper, FXColor lower, int x,
     dc.drawPoints(basebackground, 4);                 \
                                                       \
     dc.setForeground(bordercolor);                    \
-    dc.drawRectangle(2, 0, width-5, 0);               \
-    dc.drawRectangle(2, height-1, width-5, height-1); \
-    dc.drawRectangle(0, 2, 0, height-5);              \
-    dc.drawRectangle(width-1, 2, 0, height-5);        \
+    dc.drawRectangle(2, 0, width - 5, 0);               \
+    dc.drawRectangle(2, height - 1, width - 5, height - 1); \
+    dc.drawRectangle(0, 2, 0, height - 5);              \
+    dc.drawRectangle(width - 1, 2, 0, height - 5);        \
     dc.drawPoints(bordercorners, 4);                  \
     dc.setForeground(shadecolor);                     \
     dc.drawPoints(bordershade, 16);
@@ -140,8 +140,8 @@ static void drawGradientRectangle(FXDC& dc, FXColor upper, FXColor lower, int x,
 
 #define DRAW_STANDARD_BUTTON_UP                                        \
     dc.setForeground(backColor);                                       \
-    dc.fillRectangle(border, border, width-border*2, height-border*2); \
-    if (options&FRAME_THICK) {                                         \
+    dc.fillRectangle(border, border, width - border * 2, height - border * 2); \
+    if (options & FRAME_THICK) {                                         \
         drawDoubleRaisedRectangle(dc, 0, 0, width, height); }          \
     else{                                                              \
         drawRaisedRectangle(dc, 0, 0, width, height); }
@@ -149,8 +149,8 @@ static void drawGradientRectangle(FXDC& dc, FXColor upper, FXColor lower, int x,
 
 #define DRAW_STANDARD_BUTTON_DOWN                                      \
     dc.setForeground(hiliteColor);                                     \
-    dc.fillRectangle(border, border, width-border*2, height-border*2); \
-    if (options&FRAME_THICK) {                                         \
+    dc.fillRectangle(border, border, width - border * 2, height - border * 2); \
+    if (options & FRAME_THICK) {                                         \
         drawDoubleSunkenRectangle(dc, 0, 0, width, height); }          \
     else{                                                              \
         drawSunkenRectangle(dc, 0, 0, width, height); }
@@ -158,20 +158,20 @@ static void drawGradientRectangle(FXDC& dc, FXColor upper, FXColor lower, int x,
 
 #define INIT_CLEARLOOKS                                                                          \
     static FXbool init = true;                                                                   \
-    static FXbool  use_clearlooks = true;                                                        \
+    static FXbool use_clearlooks = true;                                                        \
     static FXColor topcolor, bottomcolor, shadecolor, bordercolor;                               \
                                                                                                  \
-    FXPoint basebackground[4] = { FXPoint(0, 0), FXPoint(width-1, 0), FXPoint(0, height-1),      \
-                                  FXPoint(width-1, height-1) };                                  \
+    FXPoint basebackground[4] = { FXPoint(0, 0), FXPoint(width - 1, 0), FXPoint(0, height - 1),      \
+                                  FXPoint(width - 1, height - 1) };                                  \
     FXPoint bordershade[16] = { FXPoint(0, 1), FXPoint(1, 0), FXPoint(1, 2), FXPoint(2, 1),      \
-                                FXPoint(width-2, 0), FXPoint(width-1, 1), FXPoint(width-3, 1),   \
-                                FXPoint(width-2, 2), FXPoint(0, height-2), FXPoint(1, height-1), \
-                                FXPoint(1, height-3), FXPoint(2, height-2),                      \
-                                FXPoint(width-1, height-2), FXPoint(width-2, height-1),          \
-                                FXPoint(width-2, height-3), FXPoint(width-3, height-2)           \
+                                FXPoint(width - 2, 0), FXPoint(width - 1, 1), FXPoint(width - 3, 1),   \
+                                FXPoint(width - 2, 2), FXPoint(0, height - 2), FXPoint(1, height - 1), \
+                                FXPoint(1, height - 3), FXPoint(2, height - 2),                      \
+                                FXPoint(width - 1, height - 2), FXPoint(width - 2, height - 1),          \
+                                FXPoint(width - 2, height - 3), FXPoint(width - 3, height - 2)           \
     };                                                                                           \
-    FXPoint bordercorners[4] = { FXPoint(1, 1), FXPoint(1, height-2), FXPoint(width-2, 1),       \
-                                 FXPoint(width-2, height-2) };                                   \
+    FXPoint bordercorners[4] = { FXPoint(1, 1), FXPoint(1, height - 2), FXPoint(width - 2, 1),       \
+                                 FXPoint(width - 2, height - 2) };                                   \
                                                                                                  \
     if (init)                                                                                    \
     {                                                                                            \
@@ -183,12 +183,12 @@ static void drawGradientRectangle(FXDC& dc, FXColor upper, FXColor lower, int x,
             FXuint g = FXGREENVAL(baseColor);                                                    \
             FXuint b = FXBLUEVAL(baseColor);                                                     \
                                                                                                  \
-            topcolor = FXRGB(FXMIN(1.1*r, 255), FXMIN(1.1*g, 255), FXMIN(1.1*b, 255));           \
+            topcolor = FXRGB(FXMIN(1.1 * r, 255), FXMIN(1.1 * g, 255), FXMIN(1.1 * b, 255));           \
             (void)topcolor;      /* Hack to avoid unused variable compiler warning */            \
-            bottomcolor = FXRGB(0.9*r, 0.9*g, 0.9*b);                                            \
+            bottomcolor = FXRGB(0.9 * r, 0.9 * g, 0.9 * b);                                            \
             (void)bottomcolor;   /* Hack to avoid unused variable compiler warning */            \
-            shadecolor = FXRGB(0.9*r, 0.9*g, 0.9*b);                                             \
-            bordercolor = FXRGB(0.5*r, 0.5*g, 0.5*b);                                            \
+            shadecolor = FXRGB(0.9 * r, 0.9 * g, 0.9 * b);                                             \
+            bordercolor = FXRGB(0.5 * r, 0.5 * g, 0.5 * b);                                            \
         }                                                                                        \
         init = false;                                                                            \
     }
@@ -209,13 +209,13 @@ long FXButton::onPaint(FXObject*, FXSelector, void* ptr)
 
     FXEvent*   ev = (FXEvent*)ptr;
     FXDCWindow dc(this, ev);
-    int        tw = 0, th = 0, iw = 0, ih = 0, tx, ty, ix, iy;
+    int tw = 0, th = 0, iw = 0, ih = 0, tx, ty, ix, iy;
 
     // Button with nice gradient effect and rounded corners (Clearlooks)
     if (use_clearlooks)
     {
         // Toolbar style
-        if (options&BUTTON_TOOLBAR)
+        if (options & BUTTON_TOOLBAR)
         {
             // Enabled and cursor inside, and up
             if (isEnabled() && underCursor() && (state == STATE_UP))
@@ -264,10 +264,10 @@ long FXButton::onPaint(FXObject*, FXSelector, void* ptr)
     else
     {
         // Got a border at all?
-        if (options&(FRAME_RAISED|FRAME_SUNKEN))
+        if (options & (FRAME_RAISED | FRAME_SUNKEN))
         {
             // Toolbar style
-            if (options&BUTTON_TOOLBAR)
+            if (options & BUTTON_TOOLBAR)
             {
                 // Enabled and cursor inside, and up
                 if (isEnabled() && underCursor() && (state == STATE_UP))
@@ -316,8 +316,8 @@ long FXButton::onPaint(FXObject*, FXSelector, void* ptr)
                     {
                         dc.setForeground(backColor);
                     }
-                    dc.fillRectangle(border, border, width-border*2, height-border*2);
-                    if (options&FRAME_THICK)
+                    dc.fillRectangle(border, border, width - border * 2, height - border * 2);
+                    if (options & FRAME_THICK)
                     {
                         drawDoubleSunkenRectangle(dc, 0, 0, width, height);
                     }
@@ -361,7 +361,7 @@ long FXButton::onPaint(FXObject*, FXSelector, void* ptr)
     just_y(ty, iy, th, ih);
 
     // Shift a bit when pressed
-    if (state && (options&(FRAME_RAISED|FRAME_SUNKEN)))
+    if (state && (options & (FRAME_RAISED | FRAME_SUNKEN)))
     {
         ++tx;
         ++ty;
@@ -384,7 +384,7 @@ long FXButton::onPaint(FXObject*, FXSelector, void* ptr)
         }
         if (hasFocus())
         {
-            dc.drawFocusRectangle(border+1, border+1, width-2*border-2, height-2*border-2);
+            dc.drawFocusRectangle(border + 1, border + 1, width - 2 * border - 2, height - 2 * border - 2);
         }
     }
 
@@ -399,7 +399,7 @@ long FXButton::onPaint(FXObject*, FXSelector, void* ptr)
         {
             dc.setFont(font);
             dc.setForeground(hiliteColor);
-            drawLabel(dc, label, hotoff, tx+1, ty+1, tw, th);
+            drawLabel(dc, label, hotoff, tx + 1, ty + 1, tw, th);
             dc.setForeground(shadowColor);
             drawLabel(dc, label, hotoff, tx, ty, tw, th);
         }
@@ -420,8 +420,8 @@ long FXButton::onPaint(FXObject*, FXSelector, void* ptr)
 long FXCheckButton::onPaint(FXObject*, FXSelector, void* ptr)
 {
     // Initialize Clearlooks (don't use the macro because here it's different)
-    static FXbool  init = true;
-    static FXbool  use_clearlooks = true;
+    static FXbool init = true;
+    static FXbool use_clearlooks = true;
     static FXColor shadecolor, bordercolor;
 
     if (init)
@@ -434,14 +434,14 @@ long FXCheckButton::onPaint(FXObject*, FXSelector, void* ptr)
             FXuint g = FXGREENVAL(baseColor);
             FXuint b = FXBLUEVAL(baseColor);
 
-            shadecolor = FXRGB(0.9*r, 0.9*g, 0.9*b);
-            bordercolor = FXRGB(0.5*r, 0.5*g, 0.5*b);
+            shadecolor = FXRGB(0.9 * r, 0.9 * g, 0.9 * b);
+            bordercolor = FXRGB(0.5 * r, 0.5 * g, 0.5 * b);
         }
         init = false;
     }
 
     FXEvent* ev = (FXEvent*)ptr;
-    FXint    tw = 0, th = 0, tx, ty, ix, iy;
+    FXint tw = 0, th = 0, tx, ty, ix, iy;
 
     FXDCWindow dc(this, ev);
 
@@ -455,8 +455,8 @@ long FXCheckButton::onPaint(FXObject*, FXSelector, void* ptr)
     // Placement
     just_x(tx, ix, tw, scaleint * 13);
     just_y(ty, iy, th, scaleint * 13);
-	ix = FXMAX(ix, 0);
-	iy = FXMAX(iy, 0);
+    ix = FXMAX(ix, 0);
+    iy = FXMAX(iy, 0);
 
     // Button with nice gradient effect and rounded corners (Clearlooks)
     if (use_clearlooks)
@@ -465,63 +465,63 @@ long FXCheckButton::onPaint(FXObject*, FXSelector, void* ptr)
         dc.setForeground(backColor);
         dc.fillRectangle(ev->rect.x, ev->rect.y, scaleint * ev->rect.w, scaleint * ev->rect.h);
 
-		FXRectangle recs[4];
+        FXRectangle recs[4];
 
-		// Check background
-		recs[0].x = ix+2*scaleint;
-		recs[0].y = iy+2*scaleint;
-		recs[0].w = 9*scaleint;
-		recs[0].h = 9*scaleint;
-		if ((check == MAYBE) || !isEnabled())
-		{
-			dc.setForeground(baseColor);
-		}
-		else
-		{
-			dc.setForeground(boxColor);
-		}
-		dc.fillRectangles(recs, 1);
+        // Check background
+        recs[0].x = ix + 2 * scaleint;
+        recs[0].y = iy + 2 * scaleint;
+        recs[0].w = 9 * scaleint;
+        recs[0].h = 9 * scaleint;
+        if ((check == MAYBE) || !isEnabled())
+        {
+            dc.setForeground(baseColor);
+        }
+        else
+        {
+            dc.setForeground(boxColor);
+        }
+        dc.fillRectangles(recs, 1);
 
-		// Check border
-		recs[0].x = ix+2*scaleint;
-		recs[0].y = iy+1*scaleint;
-		recs[0].w = 9*scaleint;
-		recs[0].h = 1*scaleint;
-		recs[1].x = ix+2*scaleint;
-		recs[1].y = iy+11*scaleint;
-		recs[1].w = 9*scaleint;
-		recs[1].h = 1*scaleint;
-		recs[2].x = ix+1*scaleint;
-		recs[2].y = iy+2*scaleint;
-		recs[2].w = 1*scaleint;
-		recs[2].h = 9*scaleint;
-		recs[3].x = ix+11*scaleint;
-		recs[3].y = iy+2*scaleint;
-		recs[3].w = 1*scaleint;
-		recs[3].h = 9*scaleint;
+        // Check border
+        recs[0].x = ix + 2 * scaleint;
+        recs[0].y = iy + 1 * scaleint;
+        recs[0].w = 9 * scaleint;
+        recs[0].h = 1 * scaleint;
+        recs[1].x = ix + 2 * scaleint;
+        recs[1].y = iy + 11 * scaleint;
+        recs[1].w = 9 * scaleint;
+        recs[1].h = 1 * scaleint;
+        recs[2].x = ix + 1 * scaleint;
+        recs[2].y = iy + 2 * scaleint;
+        recs[2].w = 1 * scaleint;
+        recs[2].h = 9 * scaleint;
+        recs[3].x = ix + 11 * scaleint;
+        recs[3].y = iy + 2 * scaleint;
+        recs[3].w = 1 * scaleint;
+        recs[3].h = 9 * scaleint;
         dc.setForeground(bordercolor);
-		dc.fillRectangles(recs, 4);
-		
-		// Check border corners
-		recs[0].x = ix+1*scaleint;
-		recs[0].y = iy+1*scaleint;
-		recs[0].w = 1*scaleint;
-		recs[0].h = 1*scaleint;
-		recs[1].x = ix+11*scaleint;
-		recs[1].y = iy+1*scaleint;
-		recs[1].w = 1*scaleint;
-		recs[1].h = 1*scaleint;
-		recs[2].x = ix+1*scaleint;
-		recs[2].y = iy+11*scaleint;
-		recs[2].w = 1*scaleint;
-		recs[2].h = 1*scaleint;
-		recs[3].x = ix+11*scaleint;
-		recs[3].y = iy+11*scaleint;
-		recs[3].w = 1*scaleint;
-		recs[3].h = 1*scaleint;
+        dc.fillRectangles(recs, 4);
+
+        // Check border corners
+        recs[0].x = ix + 1 * scaleint;
+        recs[0].y = iy + 1 * scaleint;
+        recs[0].w = 1 * scaleint;
+        recs[0].h = 1 * scaleint;
+        recs[1].x = ix + 11 * scaleint;
+        recs[1].y = iy + 1 * scaleint;
+        recs[1].w = 1 * scaleint;
+        recs[1].h = 1 * scaleint;
+        recs[2].x = ix + 1 * scaleint;
+        recs[2].y = iy + 11 * scaleint;
+        recs[2].w = 1 * scaleint;
+        recs[2].h = 1 * scaleint;
+        recs[3].x = ix + 11 * scaleint;
+        recs[3].y = iy + 11 * scaleint;
+        recs[3].w = 1 * scaleint;
+        recs[3].h = 1 * scaleint;
         dc.setForeground(shadecolor);
-		dc.fillRectangles(recs, 4);
-		
+        dc.fillRectangles(recs, 4);
+
         // Check color
         if ((check == MAYBE) || !isEnabled())
         {
@@ -540,66 +540,66 @@ long FXCheckButton::onPaint(FXObject*, FXSelector, void* ptr)
         dc.setForeground(backColor);
         dc.fillRectangle(ev->rect.x, ev->rect.y, scaleint * ev->rect.w, scaleint * ev->rect.h);
 
-		FXRectangle recs[2];
+        FXRectangle recs[2];
 
-		// Check background
-		recs[0].x = ix+2*scaleint;
-		recs[0].y = iy+2*scaleint;
-		recs[0].w = 9*scaleint;
-		recs[0].h = 9*scaleint;
-		if ((check == MAYBE) || !isEnabled())
-		{
-			dc.setForeground(baseColor);
-		}
-		else
-		{
-			dc.setForeground(boxColor);
-		}
-		dc.fillRectangles(recs, 1);
+        // Check background
+        recs[0].x = ix + 2 * scaleint;
+        recs[0].y = iy + 2 * scaleint;
+        recs[0].w = 9 * scaleint;
+        recs[0].h = 9 * scaleint;
+        if ((check == MAYBE) || !isEnabled())
+        {
+            dc.setForeground(baseColor);
+        }
+        else
+        {
+            dc.setForeground(boxColor);
+        }
+        dc.fillRectangles(recs, 1);
 
         // Check border for +
-        if (options&CHECKBUTTON_PLUS)
+        if (options & CHECKBUTTON_PLUS)
         {
             dc.setForeground(textColor);
-            dc.drawRectangle(ix+scaleint*2, iy+scaleint*2, 8*scaleint, 8*scaleint);
+            dc.drawRectangle(ix + scaleint * 2, iy + scaleint * 2, 8 * scaleint, 8 * scaleint);
         }
 
         // Check border for v
         else
         {
-			// Check border
-			recs[0].x = ix;
-			recs[0].y = iy;
-			recs[0].w = 12*scaleint;
-			recs[0].h = 1*scaleint;
-			recs[1].x = ix;
-			recs[1].y = iy+1*scaleint;
-			recs[1].w = 1*scaleint;
-			recs[1].h = 11*scaleint;
-			dc.setForeground(shadowColor);
-			dc.fillRectangles(recs, 2);
+            // Check border
+            recs[0].x = ix;
+            recs[0].y = iy;
+            recs[0].w = 12 * scaleint;
+            recs[0].h = 1 * scaleint;
+            recs[1].x = ix;
+            recs[1].y = iy + 1 * scaleint;
+            recs[1].w = 1 * scaleint;
+            recs[1].h = 11 * scaleint;
+            dc.setForeground(shadowColor);
+            dc.fillRectangles(recs, 2);
 
-			recs[0].x = ix+1*scaleint;
-			recs[0].y = iy+1*scaleint;
-			recs[0].w = 10*scaleint;
-			recs[0].h = 1*scaleint;
-			recs[1].x = ix+1*scaleint;
-			recs[1].y = iy+2*scaleint;
-			recs[1].w = 1*scaleint;
-			recs[1].h = 9*scaleint;
-			dc.setForeground(borderColor);
-			dc.fillRectangles(recs, 2);
+            recs[0].x = ix + 1 * scaleint;
+            recs[0].y = iy + 1 * scaleint;
+            recs[0].w = 10 * scaleint;
+            recs[0].h = 1 * scaleint;
+            recs[1].x = ix + 1 * scaleint;
+            recs[1].y = iy + 2 * scaleint;
+            recs[1].w = 1 * scaleint;
+            recs[1].h = 9 * scaleint;
+            dc.setForeground(borderColor);
+            dc.fillRectangles(recs, 2);
 
-			recs[0].x = ix;
-			recs[0].y = iy+12*scaleint;
-			recs[0].w = 13*scaleint;
-			recs[0].h = 1*scaleint;
-			recs[1].x = ix+12*scaleint;
-			recs[1].y = iy;
-			recs[1].w = 1*scaleint;
-			recs[1].h = 13*scaleint;
-			dc.setForeground(hiliteColor);
-			dc.fillRectangles(recs, 2);
+            recs[0].x = ix;
+            recs[0].y = iy + 12 * scaleint;
+            recs[0].w = 13 * scaleint;
+            recs[0].h = 1 * scaleint;
+            recs[1].x = ix + 12 * scaleint;
+            recs[1].y = iy;
+            recs[1].w = 1 * scaleint;
+            recs[1].h = 13 * scaleint;
+            dc.setForeground(hiliteColor);
+            dc.fillRectangles(recs, 2);
         }
 
         // Check color
@@ -614,13 +614,13 @@ long FXCheckButton::onPaint(FXObject*, FXSelector, void* ptr)
     }
 
     // Show as +
-    if (options&CHECKBUTTON_PLUS)
+    if (options & CHECKBUTTON_PLUS)
     {
         if (check != true)
         {
-            dc.fillRectangle(ix+scaleint*6, iy+scaleint*4, 1*scaleint, 5*scaleint);
+            dc.fillRectangle(ix + scaleint * 6, iy + scaleint * 4, 1 * scaleint, 5 * scaleint);
         }
-        dc.fillRectangle(ix+scaleint*4, iy+scaleint*6, 5*scaleint, 1*scaleint);
+        dc.fillRectangle(ix + scaleint * 4, iy + scaleint * 6, 5 * scaleint, 1 * scaleint);
     }
 
     // Show as v
@@ -629,35 +629,35 @@ long FXCheckButton::onPaint(FXObject*, FXSelector, void* ptr)
         if (check != false)
         {
             FXRectangle recs[7];
-            recs[0].x = ix+3*scaleint;
-            recs[0].y = iy+5*scaleint;
-            recs[0].w = 1*scaleint;
-            recs[0].h = 3*scaleint;
-            recs[1].x = ix+4*scaleint;
-            recs[1].y = iy+6*scaleint;
-            recs[1].w = 1*scaleint;
-            recs[1].h = 3*scaleint;
-            recs[2].x = ix+5*scaleint;
-            recs[2].y = iy+7*scaleint;
-            recs[2].w = 1*scaleint;
-            recs[2].h = 3*scaleint;
-            recs[3].x = ix+6*scaleint;
-            recs[3].y = iy+6*scaleint;
-            recs[3].w = 1*scaleint;
-            recs[3].h = 3*scaleint;
-            recs[4].x = ix+7*scaleint;
-            recs[4].y = iy+5*scaleint;
-            recs[4].w = 1*scaleint;
-            recs[4].h = 3*scaleint;
-            recs[5].x = ix+8*scaleint;
-            recs[5].y = iy+4*scaleint;
-            recs[5].w = 1*scaleint;
-            recs[5].h = 3*scaleint;
-            recs[6].x = ix+9*scaleint;
-            recs[6].y = iy+3*scaleint;
-            recs[6].w = 1*scaleint;
-            recs[6].h = 3*scaleint;
-			dc.fillRectangles(recs, 7);
+            recs[0].x = ix + 3 * scaleint;
+            recs[0].y = iy + 5 * scaleint;
+            recs[0].w = 1 * scaleint;
+            recs[0].h = 3 * scaleint;
+            recs[1].x = ix + 4 * scaleint;
+            recs[1].y = iy + 6 * scaleint;
+            recs[1].w = 1 * scaleint;
+            recs[1].h = 3 * scaleint;
+            recs[2].x = ix + 5 * scaleint;
+            recs[2].y = iy + 7 * scaleint;
+            recs[2].w = 1 * scaleint;
+            recs[2].h = 3 * scaleint;
+            recs[3].x = ix + 6 * scaleint;
+            recs[3].y = iy + 6 * scaleint;
+            recs[3].w = 1 * scaleint;
+            recs[3].h = 3 * scaleint;
+            recs[4].x = ix + 7 * scaleint;
+            recs[4].y = iy + 5 * scaleint;
+            recs[4].w = 1 * scaleint;
+            recs[4].h = 3 * scaleint;
+            recs[5].x = ix + 8 * scaleint;
+            recs[5].y = iy + 4 * scaleint;
+            recs[5].w = 1 * scaleint;
+            recs[5].h = 3 * scaleint;
+            recs[6].x = ix + 9 * scaleint;
+            recs[6].y = iy + 3 * scaleint;
+            recs[6].w = 1 * scaleint;
+            recs[6].h = 3 * scaleint;
+            dc.fillRectangles(recs, 7);
         }
     }
 
@@ -671,13 +671,13 @@ long FXCheckButton::onPaint(FXObject*, FXSelector, void* ptr)
             drawLabel(dc, label, hotoff, tx, ty, tw, th);
             if (hasFocus())
             {
-                dc.drawFocusRectangle(tx-1, ty-1, tw+2, th+2);
+                dc.drawFocusRectangle(tx - 1, ty - 1, tw + 2, th + 2);
             }
         }
         else
         {
             dc.setForeground(hiliteColor);
-            drawLabel(dc, label, hotoff, tx+1, ty+1, tw, th);
+            drawLabel(dc, label, hotoff, tx + 1, ty + 1, tw, th);
             dc.setForeground(shadowColor);
             drawLabel(dc, label, hotoff, tx, ty, tw, th);
         }
@@ -708,11 +708,11 @@ long FXTextField::onPaint(FXObject*, FXSelector, void* ptr)
 
     // Draw background
     dc.setForeground(backColor);
-    dc.fillRectangle(border, border, width-(border<<1), height-(border<<1));
+    dc.fillRectangle(border, border, width - (border << 1), height - (border << 1));
 
     // !!! Hack to get an optional rounded rectangle shape
     // only if _TEXTFIELD_NOFRAME is not specified !!!
-    if ( (!(options&_TEXTFIELD_NOFRAME))  & use_clearlooks )
+    if ( (!(options & _TEXTFIELD_NOFRAME)) & use_clearlooks )
     {
         // Outside Background
         dc.setForeground(baseColor);
@@ -721,30 +721,30 @@ long FXTextField::onPaint(FXObject*, FXSelector, void* ptr)
 
         // Border
         dc.setForeground(bordercolor);
-        dc.drawRectangle(2, 0, width-5, 0);
-        dc.drawRectangle(2, height-1, width-5, height-1);
-        dc.drawRectangle(0, 2, 0, height-5);
-        dc.drawRectangle(width-1, 2, 0, height-5);
+        dc.drawRectangle(2, 0, width - 5, 0);
+        dc.drawRectangle(2, height - 1, width - 5, height - 1);
+        dc.drawRectangle(0, 2, 0, height - 5);
+        dc.drawRectangle(width - 1, 2, 0, height - 5);
         dc.drawPoints(bordercorners, 4);
         dc.setForeground(shadecolor);
         dc.drawPoints(bordershade, 16);
         dc.setForeground(backColor);
-        dc.fillRectangle(2, 1, width-4, height-2);
+        dc.fillRectangle(2, 1, width - 4, height - 2);
     }
     // !!! End of hack
 
     // Draw text, clipped against frame interior
-    dc.setClipRectangle(border, border, width-(border<<1), height-(border<<1));
+    dc.setClipRectangle(border, border, width - (border << 1), height - (border << 1));
     drawTextRange(dc, 0, contents.length());
 
     // Draw caret
-    if (flags&FLAG_CARET)
+    if (flags & FLAG_CARET)
     {
-        int xx = coord(cursor)-1;
+        int xx = coord(cursor) - 1;
         dc.setForeground(cursorColor);
-        dc.fillRectangle(xx, padtop+border, 1, height-padbottom-padtop-(border<<1));
-        dc.fillRectangle(xx-2, padtop+border, 5, 1);
-        dc.fillRectangle(xx-2, height-border-padbottom-1, 5, 1);
+        dc.fillRectangle(xx, padtop + border, 1, height - padbottom - padtop - (border << 1));
+        dc.fillRectangle(xx - 2, padtop + border, 5, 1);
+        dc.fillRectangle(xx - 2, height - border - padbottom - 1, 5, 1);
     }
 
     return(1);
@@ -761,7 +761,7 @@ long FXToggleButton::onPaint(FXObject*, FXSelector, void* ptr)
     // Initialize Clearlooks
     INIT_CLEARLOOKS
 
-    int        tw = 0, th = 0, iw = 0, ih = 0, tx, ty, ix, iy;
+    int tw = 0, th = 0, iw = 0, ih = 0, tx, ty, ix, iy;
     FXEvent*   ev = (FXEvent*)ptr;
     FXDCWindow dc(this, ev);
 
@@ -769,10 +769,10 @@ long FXToggleButton::onPaint(FXObject*, FXSelector, void* ptr)
     if (use_clearlooks)
     {
         // Button style is toolbar
-        if (options&TOGGLEBUTTON_TOOLBAR)
+        if (options & TOGGLEBUTTON_TOOLBAR)
         {
             // Enabled and cursor inside and button down
-            if (down || ((options&TOGGLEBUTTON_KEEPSTATE) && state))
+            if (down || ((options & TOGGLEBUTTON_KEEPSTATE) && state))
             {
                 DRAW_CLEARLOOKS_BUTTON_DOWN
             }
@@ -794,7 +794,7 @@ long FXToggleButton::onPaint(FXObject*, FXSelector, void* ptr)
         else
         {
             // Button down
-            if (down || ((options&TOGGLEBUTTON_KEEPSTATE) && state))
+            if (down || ((options & TOGGLEBUTTON_KEEPSTATE) && state))
             {
                 DRAW_CLEARLOOKS_BUTTON_DOWN
             }
@@ -811,13 +811,13 @@ long FXToggleButton::onPaint(FXObject*, FXSelector, void* ptr)
     else
     {
         // Got a border at all?
-        if (options&(FRAME_RAISED|FRAME_SUNKEN))
+        if (options & (FRAME_RAISED | FRAME_SUNKEN))
         {
             // Button style is normal
-            if (options&TOGGLEBUTTON_TOOLBAR)
+            if (options & TOGGLEBUTTON_TOOLBAR)
             {
                 // Enabled and cursor inside and down
-                if (down || ((options&TOGGLEBUTTON_KEEPSTATE) && state))
+                if (down || ((options & TOGGLEBUTTON_KEEPSTATE) && state))
                 {
                     DRAW_STANDARD_BUTTON_DOWN
                 }
@@ -840,7 +840,7 @@ long FXToggleButton::onPaint(FXObject*, FXSelector, void* ptr)
             else
             {
                 // Draw sunken if pressed
-                if (down || ((options&TOGGLEBUTTON_KEEPSTATE) && state))
+                if (down || ((options & TOGGLEBUTTON_KEEPSTATE) && state))
                 {
                     DRAW_STANDARD_BUTTON_DOWN
                 }
@@ -887,7 +887,7 @@ long FXToggleButton::onPaint(FXObject*, FXSelector, void* ptr)
     just_y(ty, iy, th, ih);
 
     // Shift a bit when pressed
-    if ((down || ((options&TOGGLEBUTTON_KEEPSTATE) && state)) && (options&(FRAME_RAISED|FRAME_SUNKEN)))
+    if ((down || ((options & TOGGLEBUTTON_KEEPSTATE) && state)) && (options & (FRAME_RAISED | FRAME_SUNKEN)))
     {
         ++tx;
         ++ty;
@@ -920,7 +920,7 @@ long FXToggleButton::onPaint(FXObject*, FXSelector, void* ptr)
         }
         if (hasFocus())
         {
-            dc.drawFocusRectangle(border+1, border+1, width-2*border-2, height-2*border-2);
+            dc.drawFocusRectangle(border + 1, border + 1, width - 2 * border - 2, height - 2 * border - 2);
         }
     }
 
@@ -939,7 +939,7 @@ long FXToggleButton::onPaint(FXObject*, FXSelector, void* ptr)
         {
             dc.setFont(font);
             dc.setForeground(hiliteColor);
-            drawLabel(dc, altlabel, althotoff, tx+1, ty+1, tw, th);
+            drawLabel(dc, altlabel, althotoff, tx + 1, ty + 1, tw, th);
             dc.setForeground(shadowColor);
             drawLabel(dc, altlabel, althotoff, tx, ty, tw, th);
         }
@@ -947,7 +947,7 @@ long FXToggleButton::onPaint(FXObject*, FXSelector, void* ptr)
         {
             dc.setFont(font);
             dc.setForeground(hiliteColor);
-            drawLabel(dc, label, hotoff, tx+1, ty+1, tw, th);
+            drawLabel(dc, label, hotoff, tx + 1, ty + 1, tw, th);
             dc.setForeground(shadowColor);
             drawLabel(dc, label, hotoff, tx, ty, tw, th);
         }
@@ -967,44 +967,44 @@ static void drawGradientScrollButton(FXDCWindow& dc, FXColor topcolor, FXColor b
                                      FXuint options, int x, int y, int w, int h)
 {
     // Fill rectangle with gradient in the right direction (vertical or horizontal)
-    FXbool vertical = ((options&SCROLLBAR_HORIZONTAL) ? true : false);
+    FXbool vertical = ((options & SCROLLBAR_HORIZONTAL) ? true : false);
 
     drawGradientRectangle(dc, topcolor, bottomcolor, x, y, w, h, vertical);
 
     // Draw button borders
     dc.setForeground(lightcolor);
-    dc.fillRectangle(x+1, y+1, w-1, 1);
-    dc.fillRectangle(x+1, y+1, 1, h-2);
+    dc.fillRectangle(x + 1, y + 1, w - 1, 1);
+    dc.fillRectangle(x + 1, y + 1, 1, h - 2);
     dc.setForeground(shadecolor);
     dc.fillRectangle(x, y, w, 1);
-    dc.fillRectangle(x, y, 1, h-1);
-    dc.fillRectangle(x, y+h-1, w, 1);
-    dc.fillRectangle(x+w-1, y, 1, h);
+    dc.fillRectangle(x, y, 1, h - 1);
+    dc.fillRectangle(x, y + h - 1, w, 1);
+    dc.fillRectangle(x + w - 1, y, 1, h);
 
     // Draw grip lines for horizontal scrollbar
-    if ((options&SCROLLBAR_HORIZONTAL))
+    if ((options & SCROLLBAR_HORIZONTAL))
     {
         dc.setForeground(shadecolor);
-        dc.fillRectangle(x+w/2-3, y+4, 1, h-7);
-        dc.fillRectangle(x+w/2, y+4, 1, h-7);
-        dc.fillRectangle(x+w/2+3, y+4, 1, h-7);
+        dc.fillRectangle(x + w / 2 - 3, y + 4, 1, h - 7);
+        dc.fillRectangle(x + w / 2, y + 4, 1, h - 7);
+        dc.fillRectangle(x + w / 2 + 3, y + 4, 1, h - 7);
         dc.setForeground(lightcolor);
-        dc.fillRectangle(x+w/2-2, y+4, 1, h-7);
-        dc.fillRectangle(x+w/2+1, y+4, 1, h-7);
-        dc.fillRectangle(x+w/2+4, y+4, 1, h-7);
+        dc.fillRectangle(x + w / 2 - 2, y + 4, 1, h - 7);
+        dc.fillRectangle(x + w / 2 + 1, y + 4, 1, h - 7);
+        dc.fillRectangle(x + w / 2 + 4, y + 4, 1, h - 7);
     }
 
     // Draw grip lines for vertical scrollbar
     else
     {
         dc.setForeground(shadecolor);
-        dc.fillRectangle(x+4, y+h/2-3, w-7, 1);
-        dc.fillRectangle(x+4, y+h/2, w-7, 1);
-        dc.fillRectangle(x+4, y+h/2+3, w-7, 1);
+        dc.fillRectangle(x + 4, y + h / 2 - 3, w - 7, 1);
+        dc.fillRectangle(x + 4, y + h / 2, w - 7, 1);
+        dc.fillRectangle(x + 4, y + h / 2 + 3, w - 7, 1);
         dc.setForeground(lightcolor);
-        dc.fillRectangle(x+4, y+h/2-2, w-7, 1);
-        dc.fillRectangle(x+4, y+h/2+1, w-7, 1);
-        dc.fillRectangle(x+4, y+h/2+4, w-7, 1);
+        dc.fillRectangle(x + 4, y + h / 2 - 2, w - 7, 1);
+        dc.fillRectangle(x + 4, y + h / 2 + 1, w - 7, 1);
+        dc.fillRectangle(x + 4, y + h / 2 + 4, w - 7, 1);
     }
 }
 
@@ -1019,62 +1019,62 @@ void FXScrollBar::setPosition(int p)
     {
         pos = 0;
     }
-    if (pos > (range-page))
+    if (pos > (range - page))
     {
-        pos = range-page;
+        pos = range - page;
     }
     lo = thumbpos;
-    hi = thumbpos+thumbsize;
-    if (options&SCROLLBAR_HORIZONTAL)
+    hi = thumbpos + thumbsize;
+    if (options & SCROLLBAR_HORIZONTAL)
     {
-        total = width-height-height;
-        thumbsize = (total*page)/range;
+        total = width - height - height;
+        thumbsize = (total * page) / range;
         // !!! Hack to change the minimum button size !!!
-        if (thumbsize < (barsize<<1))
+        if (thumbsize < (barsize << 1))
         {
-            thumbsize = (barsize<<1);
+            thumbsize = (barsize << 1);
         }
         // !!! End of hack !!!
-        travel = total-thumbsize;
+        travel = total - thumbsize;
         if (range > page)
         {
-            thumbpos = height+(int)((((double)pos)*travel)/(range-page));
+            thumbpos = height + (int)((((double)pos) * travel) / (range - page));
         }
         else
         {
             thumbpos = height;
         }
         l = thumbpos;
-        h = thumbpos+thumbsize;
+        h = thumbpos + thumbsize;
         if ((l != lo) || (h != hi))
         {
-            update(FXMIN(l, lo), 0, FXMAX(h, hi)-FXMIN(l, lo), height);
+            update(FXMIN(l, lo), 0, FXMAX(h, hi) - FXMIN(l, lo), height);
         }
     }
     else
     {
-        total = height-width-width;
-        thumbsize = (total*page)/range;
+        total = height - width - width;
+        thumbsize = (total * page) / range;
         // !!! Hack to change the minimum button size !!!
-        if (thumbsize < (barsize<<1))
+        if (thumbsize < (barsize << 1))
         {
-            thumbsize = (barsize<<1);
+            thumbsize = (barsize << 1);
         }
         // !!! End of hack !!!
-        travel = total-thumbsize;
+        travel = total - thumbsize;
         if (range > page)
         {
-            thumbpos = width+(int)((((double)pos)*travel)/(range-page));
+            thumbpos = width + (int)((((double)pos) * travel) / (range - page));
         }
         else
         {
             thumbpos = width;
         }
         l = thumbpos;
-        h = thumbpos+thumbsize;
+        h = thumbpos + thumbsize;
         if ((l != lo) || (h != hi))
         {
-            update(0, FXMIN(l, lo), width, FXMAX(h, hi)-FXMIN(l, lo));
+            update(0, FXMIN(l, lo), width, FXMAX(h, hi) - FXMIN(l, lo));
         }
     }
 }
@@ -1096,7 +1096,7 @@ static void drawGradientArrowButton(FXDCWindow& dc, FXColor backcolor, FXColor t
                                     FXuint options, int x, int y, int w, int h, FXbool down, FXuint direction)
 {
     FXPoint arrowpoints[3];
-    int     xx, yy, ah, ab;
+    int xx, yy, ah, ab;
 
     FXPoint basebackground[2];
     FXPoint bordershade[8];
@@ -1107,139 +1107,139 @@ static void drawGradientArrowButton(FXDCWindow& dc, FXColor backcolor, FXColor t
     {
         // Rounded corners
         basebackground[0] = FXPoint(0, 0);
-        basebackground[1] = FXPoint(w-1, 0);
+        basebackground[1] = FXPoint(w - 1, 0);
         bordercorners[0] = FXPoint(1, 1);
-        bordercorners[1] = FXPoint(w-2, 1);
+        bordercorners[1] = FXPoint(w - 2, 1);
         bordershade[0] = FXPoint(0, 1);
         bordershade[1] = FXPoint(1, 0);
         bordershade[2] = FXPoint(1, 2);
         bordershade[3] = FXPoint(2, 1);
-        bordershade[4] = FXPoint(w-2, 0);
-        bordershade[5] = FXPoint(w-1, 1);
-        bordershade[6] = FXPoint(w-3, 1);
-        bordershade[7] = FXPoint(w-2, 2);
+        bordershade[4] = FXPoint(w - 2, 0);
+        bordershade[5] = FXPoint(w - 1, 1);
+        bordershade[6] = FXPoint(w - 3, 1);
+        bordershade[7] = FXPoint(w - 2, 2);
 
         // Arrow points
-        ab = (w-7)|1;
-        ah = ab>>1;
-        xx = x+((w-ab)>>1);
-        yy = y+((h-ah)>>1);
+        ab = (w - 7) | 1;
+        ah = ab >> 1;
+        xx = x + ((w - ab) >> 1);
+        yy = y + ((h - ah) >> 1);
         if (down)
         {
             ++xx;
             ++yy;
         }
-        arrowpoints[0] = FXPoint(xx+(ab>>1), yy-1);
-        arrowpoints[1] = FXPoint(xx, yy+ah);
-        arrowpoints[2] = FXPoint(xx+ab, yy+ah);
+        arrowpoints[0] = FXPoint(xx + (ab >> 1), yy - 1);
+        arrowpoints[1] = FXPoint(xx, yy + ah);
+        arrowpoints[2] = FXPoint(xx + ab, yy + ah);
     }
     else if (direction == _ARROW_DOWN)
     {
         // Rounded corners
-        basebackground[0] = FXPoint(x, y+h-1);
-        basebackground[1] = FXPoint(x+w-1, y+h-1);
-        bordercorners[0] = FXPoint(x+1, y+h-2);
-        bordercorners[1] = FXPoint(x+w-2, y+h-2);
-        bordershade[0] = FXPoint(x, y+h-2);
-        bordershade[1] = FXPoint(x+1, y+h-1);
-        bordershade[2] = FXPoint(x+1, y+h-3);
-        bordershade[3] = FXPoint(x+2, y+h-2);
-        bordershade[4] = FXPoint(x+w-1, y+h-2);
-        bordershade[5] = FXPoint(x+w-2, y+h-1);
-        bordershade[6] = FXPoint(x+w-2, y+h-3);
-        bordershade[7] = FXPoint(x+w-3, y+h-2);
+        basebackground[0] = FXPoint(x, y + h - 1);
+        basebackground[1] = FXPoint(x + w - 1, y + h - 1);
+        bordercorners[0] = FXPoint(x + 1, y + h - 2);
+        bordercorners[1] = FXPoint(x + w - 2, y + h - 2);
+        bordershade[0] = FXPoint(x, y + h - 2);
+        bordershade[1] = FXPoint(x + 1, y + h - 1);
+        bordershade[2] = FXPoint(x + 1, y + h - 3);
+        bordershade[3] = FXPoint(x + 2, y + h - 2);
+        bordershade[4] = FXPoint(x + w - 1, y + h - 2);
+        bordershade[5] = FXPoint(x + w - 2, y + h - 1);
+        bordershade[6] = FXPoint(x + w - 2, y + h - 3);
+        bordershade[7] = FXPoint(x + w - 3, y + h - 2);
 
         // Arrow points
-        ab = (w-7)|1;
-        ah = ab>>1;
-        xx = x+((w-ab)>>1);
-        yy = y+((h-ah)>>1);
+        ab = (w - 7) | 1;
+        ah = ab >> 1;
+        xx = x + ((w - ab) >> 1);
+        yy = y + ((h - ah) >> 1);
         if (down)
         {
             ++xx;
             ++yy;
         }
-        arrowpoints[0] = FXPoint(xx+1, yy);
-        arrowpoints[1] = FXPoint(xx+ab-1, yy);
-        arrowpoints[2] = FXPoint(xx+(ab>>1), yy+ah);
+        arrowpoints[0] = FXPoint(xx + 1, yy);
+        arrowpoints[1] = FXPoint(xx + ab - 1, yy);
+        arrowpoints[2] = FXPoint(xx + (ab >> 1), yy + ah);
     }
     else if (direction == _ARROW_LEFT)
     {
         // Rounded corners
         basebackground[0] = FXPoint(0, 0);
-        basebackground[1] = FXPoint(0, h-1);
+        basebackground[1] = FXPoint(0, h - 1);
         bordercorners[0] = FXPoint(1, 1);
-        bordercorners[1] = FXPoint(1, h-2);
+        bordercorners[1] = FXPoint(1, h - 2);
         bordershade[0] = FXPoint(0, 1);
         bordershade[1] = FXPoint(1, 0);
         bordershade[2] = FXPoint(1, 2);
         bordershade[3] = FXPoint(2, 1);
-        bordershade[4] = FXPoint(0, h-2);
-        bordershade[5] = FXPoint(1, h-1);
-        bordershade[6] = FXPoint(1, h-3);
-        bordershade[7] = FXPoint(2, h-2);
+        bordershade[4] = FXPoint(0, h - 2);
+        bordershade[5] = FXPoint(1, h - 1);
+        bordershade[6] = FXPoint(1, h - 3);
+        bordershade[7] = FXPoint(2, h - 2);
 
         // Arrow points
-        ab = (h-7)|1;
-        ah = ab>>1;
-        xx = x+((w-ah)>>1);
-        yy = y+((h-ab)>>1);
+        ab = (h - 7) | 1;
+        ah = ab >> 1;
+        xx = x + ((w - ah) >> 1);
+        yy = y + ((h - ab) >> 1);
         if (down)
         {
             ++xx;
             ++yy;
         }
-        arrowpoints[0] = FXPoint(xx+ah, yy);
-        arrowpoints[1] = FXPoint(xx+ah, yy+ab-1);
-        arrowpoints[2] = FXPoint(xx, yy+(ab>>1));
+        arrowpoints[0] = FXPoint(xx + ah, yy);
+        arrowpoints[1] = FXPoint(xx + ah, yy + ab - 1);
+        arrowpoints[2] = FXPoint(xx, yy + (ab >> 1));
     }
     else // _ARROW_RIGHT
     {
         // Rounded corners
-        basebackground[0] = FXPoint(x+w-1, y);
-        basebackground[1] = FXPoint(x+w-1, y+h-1);
-        bordercorners[0] = FXPoint(x+w-2, y+1);
-        bordercorners[1] = FXPoint(x+w-2, y+h-2);
-        bordershade[0] = FXPoint(x+w-2, y);
-        bordershade[1] = FXPoint(x+w-1, y+1);
-        bordershade[2] = FXPoint(x+w-3, y+1);
-        bordershade[3] = FXPoint(x+w-2, y+2);
-        bordershade[4] = FXPoint(x+w-1, y+h-2);
-        bordershade[5] = FXPoint(x+w-2, y+h-1);
-        bordershade[6] = FXPoint(x+w-2, y+h-3);
-        bordershade[7] = FXPoint(x+w-3, y+h-2);
+        basebackground[0] = FXPoint(x + w - 1, y);
+        basebackground[1] = FXPoint(x + w - 1, y + h - 1);
+        bordercorners[0] = FXPoint(x + w - 2, y + 1);
+        bordercorners[1] = FXPoint(x + w - 2, y + h - 2);
+        bordershade[0] = FXPoint(x + w - 2, y);
+        bordershade[1] = FXPoint(x + w - 1, y + 1);
+        bordershade[2] = FXPoint(x + w - 3, y + 1);
+        bordershade[3] = FXPoint(x + w - 2, y + 2);
+        bordershade[4] = FXPoint(x + w - 1, y + h - 2);
+        bordershade[5] = FXPoint(x + w - 2, y + h - 1);
+        bordershade[6] = FXPoint(x + w - 2, y + h - 3);
+        bordershade[7] = FXPoint(x + w - 3, y + h - 2);
 
         // Arrow points
-        ab = (h-7)|1;
-        ah = ab>>1;
-        xx = x+((w-ah)>>1);
-        yy = y+((h-ab)>>1);
+        ab = (h - 7) | 1;
+        ah = ab >> 1;
+        xx = x + ((w - ah) >> 1);
+        yy = y + ((h - ab) >> 1);
         if (down)
         {
             ++xx;
             ++yy;
         }
         arrowpoints[0] = FXPoint(xx, yy);
-        arrowpoints[1] = FXPoint(xx, yy+ab-1);
-        arrowpoints[2] = FXPoint(xx+ah, yy+(ab>>1));
+        arrowpoints[1] = FXPoint(xx, yy + ab - 1);
+        arrowpoints[2] = FXPoint(xx + ah, yy + (ab >> 1));
     }
 
     // Draw button when up
     if (!down)
     {
         // Fill rectangle with gradient in the right direction (vertical or horizontal)
-        FXbool vertical = ((options&SCROLLBAR_HORIZONTAL) ? true : false);
+        FXbool vertical = ((options & SCROLLBAR_HORIZONTAL) ? true : false);
         drawGradientRectangle(dc, topcolor, bottomcolor, x, y, w, h, vertical);
 
         // Button borders
         dc.setForeground(lightcolor);
-        dc.fillRectangle(x+1, y+1, w-1, 1);
-        dc.fillRectangle(x+1, y+1, 1, h-2);
+        dc.fillRectangle(x + 1, y + 1, w - 1, 1);
+        dc.fillRectangle(x + 1, y + 1, 1, h - 2);
         dc.setForeground(shadecolor);
         dc.fillRectangle(x, y, w, 1);
-        dc.fillRectangle(x, y, 1, h-1);
-        dc.fillRectangle(x, y+h-1, w, 1);
-        dc.fillRectangle(x+w-1, y, 1, h);
+        dc.fillRectangle(x, y, 1, h - 1);
+        dc.fillRectangle(x, y + h - 1, w, 1);
+        dc.fillRectangle(x + w - 1, y, 1, h);
 
         // Rounded corners
         dc.setForeground(backcolor);
@@ -1263,13 +1263,13 @@ static void drawGradientArrowButton(FXDCWindow& dc, FXColor backcolor, FXColor t
 
         // Button borders
         dc.setForeground(lightcolor);
-        dc.fillRectangle(x+1, y+1, w-1, 1);
-        dc.fillRectangle(x+1, y+1, 1, h-2);
+        dc.fillRectangle(x + 1, y + 1, w - 1, 1);
+        dc.fillRectangle(x + 1, y + 1, 1, h - 2);
         dc.setForeground(shadecolor);
         dc.fillRectangle(x, y, w, 1);
-        dc.fillRectangle(x, y, 1, h-1);
-        dc.fillRectangle(x, y+h-1, w, 1);
-        dc.fillRectangle(x+w-1, y, 1, h);
+        dc.fillRectangle(x, y, 1, h - 1);
+        dc.fillRectangle(x, y + h - 1, w, 1);
+        dc.fillRectangle(x + w - 1, y, 1, h);
 
         // Rounded corners
         dc.setForeground(backcolor);
@@ -1290,36 +1290,36 @@ static void drawGradientArrowButton(FXDCWindow& dc, FXColor backcolor, FXColor t
 static void drawFlatScrollButton(FXDCWindow& dc, FXint x, FXint y, FXint w, FXint h, FXbool down, FXColor hilitecolor, FXColor shadowcolor, FXColor bordercolor, FXColor scrollbarcolor)
 {
     dc.setForeground(scrollbarcolor);
-    dc.fillRectangle(x+2, y+2, w-4, h-4);
+    dc.fillRectangle(x + 2, y + 2, w - 4, h - 4);
     if (!down)
     {
         dc.setForeground(scrollbarcolor);
-        dc.fillRectangle(x, y, w-1, 1);
-        dc.fillRectangle(x, y, 1, h-1);
+        dc.fillRectangle(x, y, w - 1, 1);
+        dc.fillRectangle(x, y, 1, h - 1);
         dc.setForeground(hilitecolor);
-        dc.fillRectangle(x+1, y+1, w-2, 1);
-        dc.fillRectangle(x+1, y+1, 1, h-2);
+        dc.fillRectangle(x + 1, y + 1, w - 2, 1);
+        dc.fillRectangle(x + 1, y + 1, 1, h - 2);
         dc.setForeground(shadowcolor);
-        dc.fillRectangle(x+1, y+h-2, w-2, 1);
-        dc.fillRectangle(x+w-2, y+1, 1, h-2);
+        dc.fillRectangle(x + 1, y + h - 2, w - 2, 1);
+        dc.fillRectangle(x + w - 2, y + 1, 1, h - 2);
         dc.setForeground(bordercolor);
-        dc.fillRectangle(x, y+h-1, w, 1);
-        dc.fillRectangle(x+w-1, y, 1, h);
+        dc.fillRectangle(x, y + h - 1, w, 1);
+        dc.fillRectangle(x + w - 1, y, 1, h);
     }
     else
     {
         dc.setForeground(bordercolor);
-        dc.fillRectangle(x, y, w-2, 1);
-        dc.fillRectangle(x, y, 1, h-2);
+        dc.fillRectangle(x, y, w - 2, 1);
+        dc.fillRectangle(x, y, 1, h - 2);
         dc.setForeground(shadowcolor);
-        dc.fillRectangle(x+1, y+1, w-3, 1);
-        dc.fillRectangle(x+1, y+1, 1, h-3);
+        dc.fillRectangle(x + 1, y + 1, w - 3, 1);
+        dc.fillRectangle(x + 1, y + 1, 1, h - 3);
         dc.setForeground(hilitecolor);
-        dc.fillRectangle(x, y+h-1, w-1, 1);
-        dc.fillRectangle(x+w-1, y+1, 1, h-1);
+        dc.fillRectangle(x, y + h - 1, w - 1, 1);
+        dc.fillRectangle(x + w - 1, y + 1, 1, h - 1);
         dc.setForeground(scrollbarcolor);
-        dc.fillRectangle(x+1, y+h-2, w-1, 1);
-        dc.fillRectangle(x+w-2, y+2, 1, h-2);
+        dc.fillRectangle(x + 1, y + h - 2, w - 1, 1);
+        dc.fillRectangle(x + w - 2, y + 2, 1, h - 2);
     }
 }
 
@@ -1329,14 +1329,14 @@ long FXScrollBar::onPaint(FXObject*, FXSelector, void* ptr)
 {
     // Caution! Don't use the macro here because it's slightly different
 
-    static FXbool  init = true;
-    static FXbool  use_clearlooks = true;
+    static FXbool init = true;
+    static FXbool use_clearlooks = true;
     static FXColor bg_topcolor, bg_bottomcolor, bg_shadecolor, bg_bordercolor, bg_lightcolor;
     static FXColor sb_topcolor, sb_bottomcolor, sb_shadecolor, sb_bordercolor, sb_lightcolor, scrollbarcolor;
 
-    register FXEvent* ev = (FXEvent*)ptr;
-    register int      total;
-    FXDCWindow        dc(this, ev);
+    FXEvent* ev = (FXEvent*)ptr;
+    int total;
+    FXDCWindow dc(this, ev);
 
     // At first run, select the scrollbar style and color
     if (init)
@@ -1353,22 +1353,22 @@ long FXScrollBar::onPaint(FXObject*, FXSelector, void* ptr)
             FXuint b = FXBLUEVAL(backColor);
 
             // Compute the gradient colors from the base color (background)
-            bg_topcolor = FXRGB(FXMIN(1.1*r, 255), FXMIN(1.1*g, 255), FXMIN(1.1*b, 255));
-            bg_bottomcolor = FXRGB(0.9*r, 0.9*g, 0.9*b);
-            bg_shadecolor = FXRGB(0.8*r, 0.8*g, 0.8*b);
-            bg_bordercolor = FXRGB(0.9*r, 0.9*g, 0.9*b);
-            bg_lightcolor = FXRGB(FXMIN(1.3*r, 255), FXMIN(1.3*g, 255), FXMIN(1.3*b, 255));
+            bg_topcolor = FXRGB(FXMIN(1.1 * r, 255), FXMIN(1.1 * g, 255), FXMIN(1.1 * b, 255));
+            bg_bottomcolor = FXRGB(0.9 * r, 0.9 * g, 0.9 * b);
+            bg_shadecolor = FXRGB(0.8 * r, 0.8 * g, 0.8 * b);
+            bg_bordercolor = FXRGB(0.9 * r, 0.9 * g, 0.9 * b);
+            bg_lightcolor = FXRGB(FXMIN(1.3 * r, 255), FXMIN(1.3 * g, 255), FXMIN(1.3 * b, 255));
 
             // Compute the gradient colors from the base color (scrollbar)
             r = FXREDVAL(scrollbarcolor);
             g = FXGREENVAL(scrollbarcolor);
             b = FXBLUEVAL(scrollbarcolor);
-            sb_topcolor = FXRGB(FXMIN(1.1*r, 255), FXMIN(1.1*g, 255), FXMIN(1.1*b, 255));
-            sb_bottomcolor = FXRGB(0.9*r, 0.9*g, 0.9*b);
-            sb_shadecolor = FXRGB(0.8*r, 0.8*g, 0.8*b);
-            sb_bordercolor = FXRGB(0.9*r, 0.9*g, 0.9*b);
+            sb_topcolor = FXRGB(FXMIN(1.1 * r, 255), FXMIN(1.1 * g, 255), FXMIN(1.1 * b, 255));
+            sb_bottomcolor = FXRGB(0.9 * r, 0.9 * g, 0.9 * b);
+            sb_shadecolor = FXRGB(0.8 * r, 0.8 * g, 0.8 * b);
+            sb_bordercolor = FXRGB(0.9 * r, 0.9 * g, 0.9 * b);
             (void)sb_bordercolor; // Hack to avoid unused variable compiler warning
-            sb_lightcolor = FXRGB(FXMIN(1.3*r, 255), FXMIN(1.3*g, 255), FXMIN(1.3*b, 255));
+            sb_lightcolor = FXRGB(FXMIN(1.3 * r, 255), FXMIN(1.3 * g, 255), FXMIN(1.3 * b, 255));
         }
         init = false;
     }
@@ -1376,16 +1376,16 @@ long FXScrollBar::onPaint(FXObject*, FXSelector, void* ptr)
     // Nice scrollbar with gradient and rounded corners
     if (use_clearlooks)
     {
-        if (options&SCROLLBAR_HORIZONTAL)
+        if (options & SCROLLBAR_HORIZONTAL)
         {
-            total = width-height-height;
+            total = width - height - height;
             if (thumbsize < total)                                    // Scrollable
             {
                 drawGradientScrollButton(dc, sb_topcolor, sb_bottomcolor, sb_shadecolor, sb_lightcolor, options, thumbpos, 0, thumbsize, height);
                 dc.setForeground(bg_bordercolor);
                 dc.setBackground(backColor);
-                dc.fillRectangle(height, 0, thumbpos-height, height);
-                dc.fillRectangle(thumbpos+thumbsize, 0, width-height-thumbpos-thumbsize, height);
+                dc.fillRectangle(height, 0, thumbpos - height, height);
+                dc.fillRectangle(thumbpos + thumbsize, 0, width - height - thumbpos - thumbsize, height);
             }
             else                                                    // Non-scrollable
             {
@@ -1393,21 +1393,21 @@ long FXScrollBar::onPaint(FXObject*, FXSelector, void* ptr)
                 dc.setBackground(backColor);
                 dc.fillRectangle(height, 0, total, height);
             }
-            drawGradientArrowButton(dc, backColor, bg_topcolor, bg_bottomcolor, bg_shadecolor, bg_lightcolor, bg_bordercolor, arrowColor, options, width-height, 0, height, height, (mode == MODE_INC), _ARROW_RIGHT);
+            drawGradientArrowButton(dc, backColor, bg_topcolor, bg_bottomcolor, bg_shadecolor, bg_lightcolor, bg_bordercolor, arrowColor, options, width - height, 0, height, height, (mode == MODE_INC), _ARROW_RIGHT);
             drawGradientArrowButton(dc, backColor, bg_topcolor, bg_bottomcolor, bg_shadecolor, bg_lightcolor, bg_bordercolor, arrowColor, options, 0, 0, height, height, (mode == MODE_DEC), _ARROW_LEFT);
         }
 
         // Vertical
         else
         {
-            total = height-width-width;
+            total = height - width - width;
             if (thumbsize < total)                                    // Scrollable
             {
                 drawGradientScrollButton(dc, sb_topcolor, sb_bottomcolor, sb_shadecolor, sb_lightcolor, options, 0, thumbpos, width, thumbsize);
                 dc.setForeground(bg_bordercolor);
                 dc.setBackground(backColor);
-                dc.fillRectangle(0, width, width, thumbpos-width);
-                dc.fillRectangle(0, thumbpos+thumbsize, width, height-width-thumbpos-thumbsize);
+                dc.fillRectangle(0, width, width, thumbpos - width);
+                dc.fillRectangle(0, thumbpos + thumbsize, width, height - width - thumbpos - thumbsize);
             }
             else                                                    // Non-scrollable
             {
@@ -1415,7 +1415,7 @@ long FXScrollBar::onPaint(FXObject*, FXSelector, void* ptr)
                 dc.setBackground(backColor);
                 dc.fillRectangle(0, width, width, total);
             }
-            drawGradientArrowButton(dc, backColor, bg_topcolor, bg_bottomcolor, bg_shadecolor, bg_lightcolor, bg_bordercolor, arrowColor, options, 0, height-width, width, width, (mode == MODE_INC), _ARROW_DOWN);
+            drawGradientArrowButton(dc, backColor, bg_topcolor, bg_bottomcolor, bg_shadecolor, bg_lightcolor, bg_bordercolor, arrowColor, options, 0, height - width, width, width, (mode == MODE_INC), _ARROW_DOWN);
             drawGradientArrowButton(dc, backColor, bg_topcolor, bg_bottomcolor, bg_shadecolor, bg_lightcolor, bg_bordercolor, arrowColor, options, 0, 0, width, width, (mode == MODE_DEC), _ARROW_UP);
         }
     }
@@ -1423,9 +1423,9 @@ long FXScrollBar::onPaint(FXObject*, FXSelector, void* ptr)
     // Standard (flat) scrollbar with selected color
     else
     {
-        if (options&SCROLLBAR_HORIZONTAL)
+        if (options & SCROLLBAR_HORIZONTAL)
         {
-            total = width-height-height;
+            total = width - height - height;
             if (thumbsize < total)                                    // Scrollable
             {
                 drawFlatScrollButton(dc, thumbpos, 0, thumbsize, height, 0, hiliteColor, shadowColor, borderColor, scrollbarcolor);
@@ -1441,7 +1441,7 @@ long FXScrollBar::onPaint(FXObject*, FXSelector, void* ptr)
                     dc.setForeground(hiliteColor);
                     dc.setBackground(backColor);
                 }
-                dc.fillRectangle(height, 0, thumbpos-height, height);
+                dc.fillRectangle(height, 0, thumbpos - height, height);
                 if (mode == MODE_PAGE_INC)
                 {
                     dc.setForeground(backColor);
@@ -1452,7 +1452,7 @@ long FXScrollBar::onPaint(FXObject*, FXSelector, void* ptr)
                     dc.setForeground(hiliteColor);
                     dc.setBackground(backColor);
                 }
-                dc.fillRectangle(thumbpos+thumbsize, 0, width-height-thumbpos-thumbsize, height);
+                dc.fillRectangle(thumbpos + thumbsize, 0, width - height - thumbpos - thumbsize, height);
             }
             else                                                    // Non-scrollable
             {
@@ -1463,14 +1463,14 @@ long FXScrollBar::onPaint(FXObject*, FXSelector, void* ptr)
                 dc.fillRectangle(height, 0, total, height);
             }
             dc.setFillStyle(FILL_SOLID);
-            drawButton(dc, width-height, 0, height, height, (mode == MODE_INC));
-            drawRightArrow(dc, width-height, 0, height, height, (mode == MODE_INC));
+            drawButton(dc, width - height, 0, height, height, (mode == MODE_INC));
+            drawRightArrow(dc, width - height, 0, height, height, (mode == MODE_INC));
             drawButton(dc, 0, 0, height, height, (mode == MODE_DEC));
             drawLeftArrow(dc, 0, 0, height, height, (mode == MODE_DEC));
         }
         else
         {
-            total = height-width-width;
+            total = height - width - width;
             if (thumbsize < total)                                    // Scrollable
             {
                 drawFlatScrollButton(dc, 0, thumbpos, width, thumbsize, 0, hiliteColor, shadowColor, borderColor, scrollbarcolor);
@@ -1486,7 +1486,7 @@ long FXScrollBar::onPaint(FXObject*, FXSelector, void* ptr)
                     dc.setForeground(hiliteColor);
                     dc.setBackground(backColor);
                 }
-                dc.fillRectangle(0, width, width, thumbpos-width);
+                dc.fillRectangle(0, width, width, thumbpos - width);
                 if (mode == MODE_PAGE_INC)
                 {
                     dc.setForeground(backColor);
@@ -1497,7 +1497,7 @@ long FXScrollBar::onPaint(FXObject*, FXSelector, void* ptr)
                     dc.setForeground(hiliteColor);
                     dc.setBackground(backColor);
                 }
-                dc.fillRectangle(0, thumbpos+thumbsize, width, height-width-thumbpos-thumbsize);
+                dc.fillRectangle(0, thumbpos + thumbsize, width, height - width - thumbpos - thumbsize);
             }
             else                                                    // Non-scrollable
             {
@@ -1508,8 +1508,8 @@ long FXScrollBar::onPaint(FXObject*, FXSelector, void* ptr)
                 dc.fillRectangle(0, width, width, total);
             }
             dc.setFillStyle(FILL_SOLID);
-            drawButton(dc, 0, height-width, width, width, (mode == MODE_INC));
-            drawDownArrow(dc, 0, height-width, width, width, (mode == MODE_INC));
+            drawButton(dc, 0, height - width, width, width, (mode == MODE_INC));
+            drawDownArrow(dc, 0, height - width, width, width, (mode == MODE_INC));
             drawButton(dc, 0, 0, width, width, (mode == MODE_DEC));
             drawUpArrow(dc, 0, 0, width, width, (mode == MODE_DEC));
         }
@@ -1539,17 +1539,17 @@ FXComboBox::FXComboBox(FXComposite* p, int cols, FXObject* tgt, FXSelector sel, 
     field = new FXTextField(this, cols, this, FXComboBox::ID_TEXT, TEXTFIELD_NORMAL, 0, 0, 0, 0, pl, pr, pt, pb);
     // !!! End of hack
 
-    if (options&COMBOBOX_STATIC)
+    if (options & COMBOBOX_STATIC)
     {
         field->setEditable(false);
     }
     pane = new FXPopup(this, FRAME_LINE);
-    list = new FXList(pane, this, FXComboBox::ID_LIST, LIST_BROWSESELECT|LIST_AUTOSELECT|LAYOUT_FILL_X|LAYOUT_FILL_Y|SCROLLERS_TRACK|HSCROLLER_NEVER);
-    if (options&COMBOBOX_STATIC)
+    list = new FXList(pane, this, FXComboBox::ID_LIST, LIST_BROWSESELECT | LIST_AUTOSELECT | LAYOUT_FILL_X | LAYOUT_FILL_Y | SCROLLERS_TRACK | HSCROLLER_NEVER);
+    if (options & COMBOBOX_STATIC)
     {
-        list->setScrollStyle(SCROLLERS_TRACK|HSCROLLING_OFF);
+        list->setScrollStyle(SCROLLERS_TRACK | HSCROLLING_OFF);
     }
-    button = new FXMenuButton(this, FXString::null, NULL, pane, FRAME_RAISED|FRAME_THICK|MENUBUTTON_DOWN|MENUBUTTON_ATTACH_RIGHT, 0, 0, 0, 0, 0, 0, 0, 0);
+    button = new FXMenuButton(this, FXString::null, NULL, pane, FRAME_RAISED | FRAME_THICK | MENUBUTTON_DOWN | MENUBUTTON_ATTACH_RIGHT, 0, 0, 0, 0, 0, 0, 0, 0);
     button->setXOffset(border);
     button->setYOffset(border);
 
@@ -1572,7 +1572,7 @@ long FXMenuTitle::onPaint(FXObject*, FXSelector, void* ptr)
 
     FXEvent*   ev = (FXEvent*)ptr;
     FXDCWindow dc(this, ev);
-    FXint      xx, yy;
+    FXint xx, yy;
 
     dc.setFont(font);
     xx = 6;
@@ -1590,10 +1590,10 @@ long FXMenuTitle::onPaint(FXObject*, FXSelector, void* ptr)
                 dc.setForeground(backColor);
                 dc.drawPoints(basebackground, 4);
                 dc.setForeground(bordercolor);
-                dc.drawRectangle(2, 0, width-5, 0);
-                dc.drawRectangle(2, height-1, width-5, height-1);
-                dc.drawRectangle(0, 2, 0, height-5);
-                dc.drawRectangle(width-1, 2, 0, height-5);
+                dc.drawRectangle(2, 0, width - 5, 0);
+                dc.drawRectangle(2, height - 1, width - 5, height - 1);
+                dc.drawRectangle(0, 2, 0, height - 5);
+                dc.drawRectangle(width - 1, 2, 0, height - 5);
                 dc.drawPoints(bordercorners, 4);
                 dc.setForeground(selbackColor);
                 dc.drawPoints(bordershade, 16);
@@ -1603,13 +1603,13 @@ long FXMenuTitle::onPaint(FXObject*, FXSelector, void* ptr)
             else
             {
                 dc.setForeground(selbackColor);
-                dc.fillRectangle(1, 1, width-2, height-2);
+                dc.fillRectangle(1, 1, width - 2, height - 2);
                 dc.setForeground(shadowColor);
                 dc.fillRectangle(0, 0, width, 1);
                 dc.fillRectangle(0, 0, 1, height);
                 dc.setForeground(hiliteColor);
-                dc.fillRectangle(0, height-1, width, 1);
-                dc.fillRectangle(width-1, 0, 1, height);
+                dc.fillRectangle(0, height - 1, width, 1);
+                dc.fillRectangle(width - 1, 0, 1, height);
             }
             xx++;
             yy++;
@@ -1626,10 +1626,10 @@ long FXMenuTitle::onPaint(FXObject*, FXSelector, void* ptr)
             else
             {
                 dc.setForeground(backColor);
-                dc.fillRectangle(1, 1, width-2, height-2);
+                dc.fillRectangle(1, 1, width - 2, height - 2);
                 dc.setForeground(shadowColor);
-                dc.fillRectangle(0, height-1, width, 1);
-                dc.fillRectangle(width-1, 0, 1, height);
+                dc.fillRectangle(0, height - 1, width, 1);
+                dc.fillRectangle(width - 1, 0, 1, height);
                 dc.setForeground(hiliteColor);
                 dc.fillRectangle(0, 0, width, 1);
                 dc.fillRectangle(0, 0, 1, height);
@@ -1644,18 +1644,18 @@ long FXMenuTitle::onPaint(FXObject*, FXSelector, void* ptr)
 
         if (icon)
         {
-            dc.drawIcon(icon, xx, yy+(height-icon->getHeight())/2);
-            xx += 5+icon->getWidth();
+            dc.drawIcon(icon, xx, yy + (height - icon->getHeight()) / 2);
+            xx += 5 + icon->getWidth();
         }
 
         if (!label.empty())
         {
-            yy += font->getFontAscent()+(height-font->getFontHeight())/2;
+            yy += font->getFontAscent() + (height - font->getFontHeight()) / 2;
             dc.setForeground(isActive() ? seltextColor : textColor);
             dc.drawText(xx, yy, label);
             if (0 <= hotoff)
             {
-                dc.fillRectangle(xx+font->getTextWidth(&label[0], hotoff), yy+1, font->getTextWidth(&label[hotoff], wclen(&label[hotoff])), 1);
+                dc.fillRectangle(xx + font->getTextWidth(&label[0], hotoff), yy + 1, font->getTextWidth(&label[hotoff], wclen(&label[hotoff])), 1);
             }
         }
     }
@@ -1666,23 +1666,23 @@ long FXMenuTitle::onPaint(FXObject*, FXSelector, void* ptr)
         dc.fillRectangle(0, 0, width, height);
         if (icon)
         {
-            dc.drawIconSunken(icon, xx, yy+(height-icon->getHeight())/2);
-            xx += 5+icon->getWidth();
+            dc.drawIconSunken(icon, xx, yy + (height - icon->getHeight()) / 2);
+            xx += 5 + icon->getWidth();
         }
         if (!label.empty())
         {
-            yy += font->getFontAscent()+(height-font->getFontHeight())/2;
+            yy += font->getFontAscent() + (height - font->getFontHeight()) / 2;
             dc.setForeground(hiliteColor);
-            dc.drawText(xx+1, yy+1, label);
+            dc.drawText(xx + 1, yy + 1, label);
             if (0 <= hotoff)
             {
-                dc.fillRectangle(xx+font->getTextWidth(&label[0], hotoff), yy+1, font->getTextWidth(&label[hotoff], wclen(&label[hotoff])), 1);
+                dc.fillRectangle(xx + font->getTextWidth(&label[0], hotoff), yy + 1, font->getTextWidth(&label[hotoff], wclen(&label[hotoff])), 1);
             }
             dc.setForeground(shadowColor);
             dc.drawText(xx, yy, label);
             if (0 <= hotoff)
             {
-                dc.fillRectangle(xx+font->getTextWidth(&label[0], hotoff), yy+1, font->getTextWidth(&label[hotoff], wclen(&label[hotoff])), 1);
+                dc.fillRectangle(xx + font->getTextWidth(&label[0], hotoff), yy + 1, font->getTextWidth(&label[hotoff], wclen(&label[hotoff])), 1);
             }
         }
     }
@@ -1702,8 +1702,8 @@ long FXMenuTitle::onPaint(FXObject*, FXSelector, void* ptr)
 long FXRadioButton::onPaint(FXObject*, FXSelector, void* ptr)
 {
     // Initialize Clearlooks (don't use the macro because here it's different)
-    static FXbool  init = true;
-    static FXbool  use_clearlooks = true;
+    static FXbool init = true;
+    static FXbool use_clearlooks = true;
     static FXColor bordercolor;
 
     if (init)
@@ -1716,15 +1716,15 @@ long FXRadioButton::onPaint(FXObject*, FXSelector, void* ptr)
             FXuint g = FXGREENVAL(baseColor);
             FXuint b = FXBLUEVAL(baseColor);
 
-            bordercolor = FXRGB(0.5*r, 0.5*g, 0.5*b);
+            bordercolor = FXRGB(0.5 * r, 0.5 * g, 0.5 * b);
         }
         init = false;
     }
 
     FXEvent*    ev = (FXEvent*)ptr;
-    FXint       tw = 0, th = 0, tx, ty, ix, iy;
+    FXint tw = 0, th = 0, tx, ty, ix, iy;
     FXRectangle recs[6];
-    FXDCWindow  dc(this, ev);
+    FXDCWindow dc(this, ev);
 
     dc.setForeground(backColor);
     dc.fillRectangle(ev->rect.x, ev->rect.y, ev->rect.w, ev->rect.h);
@@ -1738,30 +1738,30 @@ long FXRadioButton::onPaint(FXObject*, FXSelector, void* ptr)
     // Placement
     just_x(tx, ix, tw, scaleint * 13);
     just_y(ty, iy, th, scaleint * 13);
-	ix = FXMAX(ix, 0);
-	iy = FXMAX(iy, 0);
+    ix = FXMAX(ix, 0);
+    iy = FXMAX(iy, 0);
 
     // Inside
-    recs[0].x = ix+4*scaleint;
-    recs[0].y = iy+2*scaleint;
-    recs[0].w = 4*scaleint;
-    recs[0].h = 1*scaleint;
-    recs[1].x = ix+3*scaleint;
-    recs[1].y = iy+3*scaleint;
-    recs[1].w = 6*scaleint;
-    recs[1].h = 1*scaleint;
-    recs[2].x = ix+2*scaleint;
-    recs[2].y = iy+4*scaleint;
-    recs[2].w = 8*scaleint;
-    recs[2].h = 4*scaleint;
-    recs[3].x = ix+3*scaleint;
-    recs[3].y = iy+8*scaleint;
-    recs[3].w = 6*scaleint;
-    recs[3].h = 1*scaleint;
-    recs[4].x = ix+4*scaleint;
-    recs[4].y = iy+9*scaleint;
-    recs[4].w = 4*scaleint;
-    recs[4].h = 1*scaleint;
+    recs[0].x = ix + 4 * scaleint;
+    recs[0].y = iy + 2 * scaleint;
+    recs[0].w = 4 * scaleint;
+    recs[0].h = 1 * scaleint;
+    recs[1].x = ix + 3 * scaleint;
+    recs[1].y = iy + 3 * scaleint;
+    recs[1].w = 6 * scaleint;
+    recs[1].h = 1 * scaleint;
+    recs[2].x = ix + 2 * scaleint;
+    recs[2].y = iy + 4 * scaleint;
+    recs[2].w = 8 * scaleint;
+    recs[2].h = 4 * scaleint;
+    recs[3].x = ix + 3 * scaleint;
+    recs[3].y = iy + 8 * scaleint;
+    recs[3].w = 6 * scaleint;
+    recs[3].h = 1 * scaleint;
+    recs[4].x = ix + 4 * scaleint;
+    recs[4].y = iy + 9 * scaleint;
+    recs[4].w = 4 * scaleint;
+    recs[4].h = 1 * scaleint;
 
     if (!isEnabled())  // fix by Daniel Gehriger (gehriger@linkcad.com)
     {
@@ -1777,58 +1777,58 @@ long FXRadioButton::onPaint(FXObject*, FXSelector, void* ptr)
     if (use_clearlooks)
     {
         // Top left inside
-        recs[0].x = ix+4*scaleint;
-        recs[0].y = iy+1*scaleint;
-        recs[0].w = 4*scaleint;
-        recs[0].h = 1*scaleint;
-        recs[1].x = ix+2*scaleint;
-        recs[1].y = iy+2*scaleint;
-        recs[1].w = 2*scaleint;
-        recs[1].h = 1*scaleint;
-        recs[2].x = ix+8*scaleint;
-        recs[2].y = iy+2*scaleint;
-        recs[2].w = 2*scaleint;
-        recs[2].h = 1*scaleint;
-        recs[3].x = ix+2*scaleint;
-        recs[3].y = iy+3*scaleint;
-        recs[3].w = 1*scaleint;
-        recs[3].h = 1*scaleint;
-        recs[4].x = ix+1*scaleint;
-        recs[4].y = iy+4*scaleint;
-        recs[4].w = 1*scaleint;
-        recs[4].h = 4*scaleint;
-        recs[5].x = ix+2*scaleint;
-        recs[5].y = iy+8*scaleint;
-        recs[5].w = 1*scaleint;
-        recs[5].h = 2*scaleint;
+        recs[0].x = ix + 4 * scaleint;
+        recs[0].y = iy + 1 * scaleint;
+        recs[0].w = 4 * scaleint;
+        recs[0].h = 1 * scaleint;
+        recs[1].x = ix + 2 * scaleint;
+        recs[1].y = iy + 2 * scaleint;
+        recs[1].w = 2 * scaleint;
+        recs[1].h = 1 * scaleint;
+        recs[2].x = ix + 8 * scaleint;
+        recs[2].y = iy + 2 * scaleint;
+        recs[2].w = 2 * scaleint;
+        recs[2].h = 1 * scaleint;
+        recs[3].x = ix + 2 * scaleint;
+        recs[3].y = iy + 3 * scaleint;
+        recs[3].w = 1 * scaleint;
+        recs[3].h = 1 * scaleint;
+        recs[4].x = ix + 1 * scaleint;
+        recs[4].y = iy + 4 * scaleint;
+        recs[4].w = 1 * scaleint;
+        recs[4].h = 4 * scaleint;
+        recs[5].x = ix + 2 * scaleint;
+        recs[5].y = iy + 8 * scaleint;
+        recs[5].w = 1 * scaleint;
+        recs[5].h = 2 * scaleint;
         dc.setForeground(bordercolor);
         dc.fillRectangles(recs, 6);
 
         // Bottom right inside
-        recs[0].x = ix+9*scaleint;
-        recs[0].y = iy+3*scaleint;
-        recs[0].w = 1*scaleint;
-        recs[0].h = 1*scaleint;
-        recs[1].x = ix+10*scaleint;
-        recs[1].y = iy+4*scaleint;
-        recs[1].w = 1*scaleint;
-        recs[1].h = 4*scaleint;
-        recs[2].x = ix+9*scaleint;
-        recs[2].y = iy+8*scaleint;
-        recs[2].w = 1*scaleint;
-        recs[2].h = 1*scaleint;
-        recs[3].x = ix+8*scaleint;
-        recs[3].y = iy+9*scaleint;
-        recs[3].w = 2*scaleint;
-        recs[3].h = 1*scaleint;
-        recs[4].x = ix+3*scaleint;
-        recs[4].y = iy+9*scaleint;
-        recs[4].w = 1*scaleint;
-        recs[4].h = 1*scaleint;
-        recs[5].x = ix+4*scaleint;
-        recs[5].y = iy+10*scaleint;
-        recs[5].w = 4*scaleint;
-        recs[5].h = 1*scaleint;
+        recs[0].x = ix + 9 * scaleint;
+        recs[0].y = iy + 3 * scaleint;
+        recs[0].w = 1 * scaleint;
+        recs[0].h = 1 * scaleint;
+        recs[1].x = ix + 10 * scaleint;
+        recs[1].y = iy + 4 * scaleint;
+        recs[1].w = 1 * scaleint;
+        recs[1].h = 4 * scaleint;
+        recs[2].x = ix + 9 * scaleint;
+        recs[2].y = iy + 8 * scaleint;
+        recs[2].w = 1 * scaleint;
+        recs[2].h = 1 * scaleint;
+        recs[3].x = ix + 8 * scaleint;
+        recs[3].y = iy + 9 * scaleint;
+        recs[3].w = 2 * scaleint;
+        recs[3].h = 1 * scaleint;
+        recs[4].x = ix + 3 * scaleint;
+        recs[4].y = iy + 9 * scaleint;
+        recs[4].w = 1 * scaleint;
+        recs[4].h = 1 * scaleint;
+        recs[5].x = ix + 4 * scaleint;
+        recs[5].y = iy + 10 * scaleint;
+        recs[5].w = 4 * scaleint;
+        recs[5].h = 1 * scaleint;
         dc.setForeground(bordercolor);
         dc.fillRectangles(recs, 6);
     }
@@ -1837,114 +1837,114 @@ long FXRadioButton::onPaint(FXObject*, FXSelector, void* ptr)
     else
     {
         // Top left outside
-        recs[0].x = ix+4*scaleint;
-        recs[0].y = iy+0*scaleint;
-        recs[0].w = 4*scaleint;
-        recs[0].h = 1*scaleint;
-        recs[1].x = ix+2*scaleint;
-        recs[1].y = iy+1*scaleint;
-        recs[1].w = 2*scaleint;
-        recs[1].h = 1*scaleint;
-        recs[2].x = ix+8*scaleint;
-        recs[2].y = iy+1*scaleint;
-        recs[2].w = 2*scaleint;
-        recs[2].h = 1*scaleint;
-        recs[3].x = ix+1*scaleint;
-        recs[3].y = iy+2*scaleint;
-        recs[3].w = 1*scaleint;
-        recs[3].h = 2*scaleint;
-        recs[4].x = ix+0*scaleint;
-        recs[4].y = iy+4*scaleint;
-        recs[4].w = 1*scaleint;
-        recs[4].h = 4*scaleint;
-        recs[5].x = ix+1*scaleint;
-        recs[5].y = iy+8*scaleint;
-        recs[5].w = 1*scaleint;
-        recs[5].h = 2*scaleint;
+        recs[0].x = ix + 4 * scaleint;
+        recs[0].y = iy + 0 * scaleint;
+        recs[0].w = 4 * scaleint;
+        recs[0].h = 1 * scaleint;
+        recs[1].x = ix + 2 * scaleint;
+        recs[1].y = iy + 1 * scaleint;
+        recs[1].w = 2 * scaleint;
+        recs[1].h = 1 * scaleint;
+        recs[2].x = ix + 8 * scaleint;
+        recs[2].y = iy + 1 * scaleint;
+        recs[2].w = 2 * scaleint;
+        recs[2].h = 1 * scaleint;
+        recs[3].x = ix + 1 * scaleint;
+        recs[3].y = iy + 2 * scaleint;
+        recs[3].w = 1 * scaleint;
+        recs[3].h = 2 * scaleint;
+        recs[4].x = ix + 0 * scaleint;
+        recs[4].y = iy + 4 * scaleint;
+        recs[4].w = 1 * scaleint;
+        recs[4].h = 4 * scaleint;
+        recs[5].x = ix + 1 * scaleint;
+        recs[5].y = iy + 8 * scaleint;
+        recs[5].w = 1 * scaleint;
+        recs[5].h = 2 * scaleint;
         dc.setForeground(shadowColor);
         dc.fillRectangles(recs, 6);
 
         // Top left inside
-        recs[0].x = ix+4*scaleint;
-        recs[0].y = iy+1*scaleint;
-        recs[0].w = 4*scaleint;
-        recs[0].h = 1*scaleint;
-        recs[1].x = ix+2*scaleint;
-        recs[1].y = iy+2*scaleint;
-        recs[1].w = 2*scaleint;
-        recs[1].h = 1*scaleint;
-        recs[2].x = ix+8*scaleint;
-        recs[2].y = iy+2*scaleint;
-        recs[2].w = 2*scaleint;
-        recs[2].h = 1*scaleint;
-        recs[3].x = ix+2*scaleint;
-        recs[3].y = iy+3*scaleint;
-        recs[3].w = 1*scaleint;
-        recs[3].h = 1*scaleint;
-        recs[4].x = ix+1*scaleint;
-        recs[4].y = iy+4*scaleint;
-        recs[4].w = 1*scaleint;
-        recs[4].h = 4*scaleint;
-        recs[5].x = ix+2*scaleint;
-        recs[5].y = iy+8*scaleint;
-        recs[5].w = 1*scaleint;
-        recs[5].h = 2*scaleint;
+        recs[0].x = ix + 4 * scaleint;
+        recs[0].y = iy + 1 * scaleint;
+        recs[0].w = 4 * scaleint;
+        recs[0].h = 1 * scaleint;
+        recs[1].x = ix + 2 * scaleint;
+        recs[1].y = iy + 2 * scaleint;
+        recs[1].w = 2 * scaleint;
+        recs[1].h = 1 * scaleint;
+        recs[2].x = ix + 8 * scaleint;
+        recs[2].y = iy + 2 * scaleint;
+        recs[2].w = 2 * scaleint;
+        recs[2].h = 1 * scaleint;
+        recs[3].x = ix + 2 * scaleint;
+        recs[3].y = iy + 3 * scaleint;
+        recs[3].w = 1 * scaleint;
+        recs[3].h = 1 * scaleint;
+        recs[4].x = ix + 1 * scaleint;
+        recs[4].y = iy + 4 * scaleint;
+        recs[4].w = 1 * scaleint;
+        recs[4].h = 4 * scaleint;
+        recs[5].x = ix + 2 * scaleint;
+        recs[5].y = iy + 8 * scaleint;
+        recs[5].w = 1 * scaleint;
+        recs[5].h = 2 * scaleint;
         dc.setForeground(borderColor);
         dc.fillRectangles(recs, 6);
 
         // Bottom right outside
-        recs[0].x = ix+10*scaleint;
-        recs[0].y = iy+2*scaleint;
-        recs[0].w = 1*scaleint;
-        recs[0].h = 2*scaleint;
-        recs[1].x = ix+11*scaleint;
-        recs[1].y = iy+4*scaleint;
-        recs[1].w = 1*scaleint;
-        recs[1].h = 4*scaleint;
-        recs[2].x = ix+10*scaleint;
-        recs[2].y = iy+8*scaleint;
-        recs[2].w = 1*scaleint;
-        recs[2].h = 2*scaleint;
-        recs[3].x = ix+8*scaleint;
-        recs[3].y = iy+10*scaleint;
-        recs[3].w = 2*scaleint;
-        recs[3].h = 1*scaleint;
-        recs[4].x = ix+2*scaleint;
-        recs[4].y = iy+10*scaleint;
-        recs[4].w = 2*scaleint;
-        recs[4].h = 1*scaleint;
-        recs[5].x = ix+4*scaleint;
-        recs[5].y = iy+11*scaleint;
-        recs[5].w = 4*scaleint;
-        recs[5].h = 1*scaleint;
+        recs[0].x = ix + 10 * scaleint;
+        recs[0].y = iy + 2 * scaleint;
+        recs[0].w = 1 * scaleint;
+        recs[0].h = 2 * scaleint;
+        recs[1].x = ix + 11 * scaleint;
+        recs[1].y = iy + 4 * scaleint;
+        recs[1].w = 1 * scaleint;
+        recs[1].h = 4 * scaleint;
+        recs[2].x = ix + 10 * scaleint;
+        recs[2].y = iy + 8 * scaleint;
+        recs[2].w = 1 * scaleint;
+        recs[2].h = 2 * scaleint;
+        recs[3].x = ix + 8 * scaleint;
+        recs[3].y = iy + 10 * scaleint;
+        recs[3].w = 2 * scaleint;
+        recs[3].h = 1 * scaleint;
+        recs[4].x = ix + 2 * scaleint;
+        recs[4].y = iy + 10 * scaleint;
+        recs[4].w = 2 * scaleint;
+        recs[4].h = 1 * scaleint;
+        recs[5].x = ix + 4 * scaleint;
+        recs[5].y = iy + 11 * scaleint;
+        recs[5].w = 4 * scaleint;
+        recs[5].h = 1 * scaleint;
         dc.setForeground(hiliteColor);
         dc.fillRectangles(recs, 6);
 
         // Bottom right inside
-        recs[0].x = ix+9*scaleint;
-        recs[0].y = iy+3*scaleint;
-        recs[0].w = 1*scaleint;
-        recs[0].h = 1*scaleint;
-        recs[1].x = ix+10*scaleint;
-        recs[1].y = iy+4*scaleint;
-        recs[1].w = 1*scaleint;
-        recs[1].h = 4*scaleint;
-        recs[2].x = ix+9*scaleint;
-        recs[2].y = iy+8*scaleint;
-        recs[2].w = 1*scaleint;
-        recs[2].h = 1*scaleint;
-        recs[3].x = ix+8*scaleint;
-        recs[3].y = iy+9*scaleint;
-        recs[3].w = 2*scaleint;
-        recs[3].h = 1*scaleint;
-        recs[4].x = ix+3*scaleint;
-        recs[4].y = iy+9*scaleint;
-        recs[4].w = 1*scaleint;
-        recs[4].h = 1*scaleint;
-        recs[5].x = ix+4*scaleint;
-        recs[5].y = iy+10*scaleint;
-        recs[5].w = 4*scaleint;
-        recs[5].h = 1*scaleint;
+        recs[0].x = ix + 9 * scaleint;
+        recs[0].y = iy + 3 * scaleint;
+        recs[0].w = 1 * scaleint;
+        recs[0].h = 1 * scaleint;
+        recs[1].x = ix + 10 * scaleint;
+        recs[1].y = iy + 4 * scaleint;
+        recs[1].w = 1 * scaleint;
+        recs[1].h = 4 * scaleint;
+        recs[2].x = ix + 9 * scaleint;
+        recs[2].y = iy + 8 * scaleint;
+        recs[2].w = 1 * scaleint;
+        recs[2].h = 1 * scaleint;
+        recs[3].x = ix + 8 * scaleint;
+        recs[3].y = iy + 9 * scaleint;
+        recs[3].w = 2 * scaleint;
+        recs[3].h = 1 * scaleint;
+        recs[4].x = ix + 3 * scaleint;
+        recs[4].y = iy + 9 * scaleint;
+        recs[4].w = 1 * scaleint;
+        recs[4].h = 1 * scaleint;
+        recs[5].x = ix + 4 * scaleint;
+        recs[5].y = iy + 10 * scaleint;
+        recs[5].w = 4 * scaleint;
+        recs[5].h = 1 * scaleint;
         dc.setForeground(baseColor);
         dc.fillRectangles(recs, 6);
     }
@@ -1952,18 +1952,18 @@ long FXRadioButton::onPaint(FXObject*, FXSelector, void* ptr)
     // Ball inside
     if (check != false)
     {
-        recs[0].x = ix+5*scaleint;
-        recs[0].y = iy+4*scaleint;
-        recs[0].w = 2*scaleint;
-        recs[0].h = 1*scaleint;
-        recs[1].x = ix+4*scaleint;
-        recs[1].y = iy+5*scaleint;
-        recs[1].w = 4*scaleint;
-        recs[1].h = 2*scaleint;
-        recs[2].x = ix+5*scaleint;
-        recs[2].y = iy+7*scaleint;
-        recs[2].w = 2*scaleint;
-        recs[2].h = 1*scaleint;
+        recs[0].x = ix + 5 * scaleint;
+        recs[0].y = iy + 4 * scaleint;
+        recs[0].w = 2 * scaleint;
+        recs[0].h = 1 * scaleint;
+        recs[1].x = ix + 4 * scaleint;
+        recs[1].y = iy + 5 * scaleint;
+        recs[1].w = 4 * scaleint;
+        recs[1].h = 2 * scaleint;
+        recs[2].x = ix + 5 * scaleint;
+        recs[2].y = iy + 7 * scaleint;
+        recs[2].w = 2 * scaleint;
+        recs[2].h = 1 * scaleint;
         if (isEnabled())
         {
             dc.setForeground(radioColor);
@@ -1985,13 +1985,13 @@ long FXRadioButton::onPaint(FXObject*, FXSelector, void* ptr)
             drawLabel(dc, label, hotoff, tx, ty, tw, th);
             if (hasFocus())
             {
-                dc.drawFocusRectangle(tx-1, ty-1, tw+2*scaleint, th+2);
+                dc.drawFocusRectangle(tx - 1, ty - 1, tw + 2 * scaleint, th + 2);
             }
         }
         else
         {
             dc.setForeground(hiliteColor);
-            drawLabel(dc, label, hotoff, tx+1, ty+1, tw, th);
+            drawLabel(dc, label, hotoff, tx + 1, ty + 1, tw, th);
             dc.setForeground(shadowColor);
             drawLabel(dc, label, hotoff, tx, ty, tw, th);
         }
@@ -2013,16 +2013,16 @@ long FXMenuButton::onPaint(FXObject*, FXSelector, void* ptr)
     // Initialize Clearlooks
     INIT_CLEARLOOKS
 
-    int        tw = 0, th = 0, iw = 0, ih = 0, tx, ty, ix, iy;
+    int tw = 0, th = 0, iw = 0, ih = 0, tx, ty, ix, iy;
     FXEvent*   ev = (FXEvent*)ptr;
-    FXPoint    points[3];
+    FXPoint points[3];
     FXDCWindow dc(this, ev);
 
     // Button with nice gradient effect and rounded corners (Clearlooks)
     if (use_clearlooks)
     {
         // Toolbar style
-        if (options&MENUBUTTON_TOOLBAR)
+        if (options & MENUBUTTON_TOOLBAR)
         {
             // Enabled and cursor inside, and not popped up
             if (isEnabled() && underCursor() && !state)
@@ -2066,10 +2066,10 @@ long FXMenuButton::onPaint(FXObject*, FXSelector, void* ptr)
     else
     {
         // Got a border at all?
-        if (options&(FRAME_RAISED|FRAME_SUNKEN))
+        if (options & (FRAME_RAISED | FRAME_SUNKEN))
         {
             // Toolbar style
-            if (options&MENUBUTTON_TOOLBAR)
+            if (options & MENUBUTTON_TOOLBAR)
             {
                 // Enabled and cursor inside, and not popped up
                 if (isEnabled() && underCursor() && !state)
@@ -2139,9 +2139,9 @@ long FXMenuButton::onPaint(FXObject*, FXSelector, void* ptr)
     }
 
     // Arrows?
-    else if (!(options&MENUBUTTON_NOARROWS))
+    else if (!(options & MENUBUTTON_NOARROWS))
     {
-        if (options&MENUBUTTON_LEFT)
+        if (options & MENUBUTTON_LEFT)
         {
             ih = MENUBUTTONARROW_WIDTH;
             iw = MENUBUTTONARROW_HEIGHT;
@@ -2180,10 +2180,10 @@ long FXMenuButton::onPaint(FXObject*, FXSelector, void* ptr)
     }
 
     // Draw arrows
-    else if (!(options&MENUBUTTON_NOARROWS))
+    else if (!(options & MENUBUTTON_NOARROWS))
     {
         // Right arrow
-        if ((options&MENUBUTTON_RIGHT) == MENUBUTTON_RIGHT)
+        if ((options & MENUBUTTON_RIGHT) == MENUBUTTON_RIGHT)
         {
             if (isEnabled())
             {
@@ -2196,14 +2196,14 @@ long FXMenuButton::onPaint(FXObject*, FXSelector, void* ptr)
             points[0].x = ix;
             points[0].y = iy;
             points[1].x = ix;
-            points[1].y = iy+MENUBUTTONARROW_WIDTH-1;
-            points[2].x = ix+MENUBUTTONARROW_HEIGHT;
-            points[2].y = (short)(iy+(MENUBUTTONARROW_WIDTH>>1));
+            points[1].y = iy + MENUBUTTONARROW_WIDTH - 1;
+            points[2].x = ix + MENUBUTTONARROW_HEIGHT;
+            points[2].y = (short)(iy + (MENUBUTTONARROW_WIDTH >> 1));
             dc.fillPolygon(points, 3);
         }
 
         // Left arrow
-        else if (options&MENUBUTTON_LEFT)
+        else if (options & MENUBUTTON_LEFT)
         {
             if (isEnabled())
             {
@@ -2213,17 +2213,17 @@ long FXMenuButton::onPaint(FXObject*, FXSelector, void* ptr)
             {
                 dc.setForeground(shadowColor);
             }
-            points[0].x = ix+MENUBUTTONARROW_HEIGHT;
+            points[0].x = ix + MENUBUTTONARROW_HEIGHT;
             points[0].y = iy;
-            points[1].x = ix+MENUBUTTONARROW_HEIGHT;
-            points[1].y = iy+MENUBUTTONARROW_WIDTH-1;
+            points[1].x = ix + MENUBUTTONARROW_HEIGHT;
+            points[1].y = iy + MENUBUTTONARROW_WIDTH - 1;
             points[2].x = ix;
-            points[2].y = (short)(iy+(MENUBUTTONARROW_WIDTH>>1));
+            points[2].y = (short)(iy + (MENUBUTTONARROW_WIDTH >> 1));
             dc.fillPolygon(points, 3);
         }
 
         // Up arrow
-        else if (options&MENUBUTTON_UP)
+        else if (options & MENUBUTTON_UP)
         {
             if (isEnabled())
             {
@@ -2233,12 +2233,12 @@ long FXMenuButton::onPaint(FXObject*, FXSelector, void* ptr)
             {
                 dc.setForeground(shadowColor);
             }
-            points[0].x = (short)(ix+(MENUBUTTONARROW_WIDTH>>1));
-            points[0].y = iy-1;
+            points[0].x = (short)(ix + (MENUBUTTONARROW_WIDTH >> 1));
+            points[0].y = iy - 1;
             points[1].x = ix;
-            points[1].y = iy+MENUBUTTONARROW_HEIGHT;
-            points[2].x = ix+MENUBUTTONARROW_WIDTH;
-            points[2].y = iy+MENUBUTTONARROW_HEIGHT;
+            points[1].y = iy + MENUBUTTONARROW_HEIGHT;
+            points[2].x = ix + MENUBUTTONARROW_WIDTH;
+            points[2].y = iy + MENUBUTTONARROW_HEIGHT;
             dc.fillPolygon(points, 3);
         }
 
@@ -2253,12 +2253,12 @@ long FXMenuButton::onPaint(FXObject*, FXSelector, void* ptr)
             {
                 dc.setForeground(shadowColor);
             }
-            points[0].x = ix+1;
+            points[0].x = ix + 1;
             points[0].y = iy;
-            points[2].x = ix+MENUBUTTONARROW_WIDTH-1;
+            points[2].x = ix + MENUBUTTONARROW_WIDTH - 1;
             points[2].y = iy;
-            points[1].x = (short)(ix+(MENUBUTTONARROW_WIDTH>>1));
-            points[1].y = iy+MENUBUTTONARROW_HEIGHT;
+            points[1].x = (short)(ix + (MENUBUTTONARROW_WIDTH >> 1));
+            points[1].y = iy + MENUBUTTONARROW_HEIGHT;
             dc.fillPolygon(points, 3);
         }
     }
@@ -2275,7 +2275,7 @@ long FXMenuButton::onPaint(FXObject*, FXSelector, void* ptr)
         else
         {
             dc.setForeground(hiliteColor);
-            drawLabel(dc, label, hotoff, tx+1, ty+1, tw, th);
+            drawLabel(dc, label, hotoff, tx + 1, ty + 1, tw, th);
             dc.setForeground(shadowColor);
             drawLabel(dc, label, hotoff, tx, ty, tw, th);
         }
@@ -2286,7 +2286,7 @@ long FXMenuButton::onPaint(FXObject*, FXSelector, void* ptr)
     {
         if (isEnabled())
         {
-            dc.drawFocusRectangle(border+1, border+1, width-2*border-2, height-2*border-2);
+            dc.drawFocusRectangle(border + 1, border + 1, width - 2 * border - 2, height - 2 * border - 2);
         }
     }
     return(1);
@@ -2306,14 +2306,14 @@ long FXArrowButton::onPaint(FXObject*, FXSelector, void* ptr)
 
     FXEvent*   ev = (FXEvent*)ptr;
     FXDCWindow dc(this, ev);
-    FXPoint    points[3];
-    int        xx, yy, ww, hh, q;
+    FXPoint points[3];
+    int xx, yy, ww, hh, q;
 
     // Button with nice gradient effect and rounded corners (Clearlooks)
     if (use_clearlooks)
     {
         // Toolbar style
-        if (options&ARROW_TOOLBAR)
+        if (options & ARROW_TOOLBAR)
         {
             // Enabled and cursor inside, and up
             if (isEnabled() && underCursor() && !state)
@@ -2356,10 +2356,10 @@ long FXArrowButton::onPaint(FXObject*, FXSelector, void* ptr)
     else
     {
         // With borders
-        if (options&(FRAME_RAISED|FRAME_SUNKEN))
+        if (options & (FRAME_RAISED | FRAME_SUNKEN))
         {
             // Toolbar style
-            if (options&ARROW_TOOLBAR)
+            if (options & ARROW_TOOLBAR)
             {
                 // Enabled and cursor inside, and up
                 if (isEnabled() && underCursor() && !state)
@@ -2415,53 +2415,53 @@ long FXArrowButton::onPaint(FXObject*, FXSelector, void* ptr)
     }   // End of normal painting
 
     // Compute size of the arrows....
-    ww = width-padleft-padright-(border<<1);
-    hh = height-padtop-padbottom-(border<<1);
-    if (options&(ARROW_UP|ARROW_DOWN))
+    ww = width - padleft - padright - (border << 1);
+    hh = height - padtop - padbottom - (border << 1);
+    if (options & (ARROW_UP | ARROW_DOWN))
     {
-        q = ww|1;
-        if (q > (hh<<1))
+        q = ww | 1;
+        if (q > (hh << 1))
         {
-            q = (hh<<1)-1;
+            q = (hh << 1) - 1;
         }
         ww = q;
-        hh = q>>1;
+        hh = q >> 1;
     }
     else
     {
-        q = hh|1;
-        if (q > (ww<<1))
+        q = hh | 1;
+        if (q > (ww << 1))
         {
-            q = (ww<<1)-1;
+            q = (ww << 1) - 1;
         }
-        ww = q>>1;
+        ww = q >> 1;
         hh = q;
     }
 
-    if (options&JUSTIFY_LEFT)
+    if (options & JUSTIFY_LEFT)
     {
-        xx = padleft+border;
+        xx = padleft + border;
     }
-    else if (options&JUSTIFY_RIGHT)
+    else if (options & JUSTIFY_RIGHT)
     {
-        xx = width-ww-padright-border;
+        xx = width - ww - padright - border;
     }
     else
     {
-        xx = (width-ww)/2;
+        xx = (width - ww) / 2;
     }
 
-    if (options&JUSTIFY_TOP)
+    if (options & JUSTIFY_TOP)
     {
-        yy = padtop+border;
+        yy = padtop + border;
     }
-    else if (options&JUSTIFY_BOTTOM)
+    else if (options & JUSTIFY_BOTTOM)
     {
-        yy = height-hh-padbottom-border;
+        yy = height - hh - padbottom - border;
     }
     else
     {
-        yy = (height-hh)/2;
+        yy = (height - hh) / 2;
     }
 
     if (state)
@@ -2480,44 +2480,44 @@ long FXArrowButton::onPaint(FXObject*, FXSelector, void* ptr)
     }
 
     // NB Size of arrow should stretch
-    if (options&ARROW_UP)
+    if (options & ARROW_UP)
     {
-        points[0].x = xx+(ww>>1);
-        points[0].y = yy-1;
+        points[0].x = xx + (ww >> 1);
+        points[0].y = yy - 1;
         points[1].x = xx;
-        points[1].y = yy+hh;
-        points[2].x = xx+ww;
-        points[2].y = yy+hh;
+        points[1].y = yy + hh;
+        points[2].x = xx + ww;
+        points[2].y = yy + hh;
         dc.fillPolygon(points, 3);
     }
-    else if (options&ARROW_DOWN)
+    else if (options & ARROW_DOWN)
     {
-        points[0].x = xx+1;
+        points[0].x = xx + 1;
         points[0].y = yy;
-        points[1].x = xx+ww-1;
+        points[1].x = xx + ww - 1;
         points[1].y = yy;
-        points[2].x = xx+(ww>>1);
-        points[2].y = yy+hh;
+        points[2].x = xx + (ww >> 1);
+        points[2].y = yy + hh;
         dc.fillPolygon(points, 3);
     }
-    else if (options&ARROW_LEFT)
+    else if (options & ARROW_LEFT)
     {
-        points[0].x = xx+ww;
+        points[0].x = xx + ww;
         points[0].y = yy;
-        points[1].x = xx+ww;
-        points[1].y = yy+hh-1;
+        points[1].x = xx + ww;
+        points[1].y = yy + hh - 1;
         points[2].x = xx;
-        points[2].y = yy+(hh>>1);
+        points[2].y = yy + (hh >> 1);
         dc.fillPolygon(points, 3);
     }
-    else if (options&ARROW_RIGHT)
+    else if (options & ARROW_RIGHT)
     {
         points[0].x = xx;
         points[0].y = yy;
         points[1].x = xx;
-        points[1].y = yy+hh-1;
-        points[2].x = xx+ww;
-        points[2].y = yy+(hh>>1);
+        points[1].y = yy + hh - 1;
+        points[2].x = xx + ww;
+        points[2].y = yy + (hh >> 1);
         dc.fillPolygon(points, 3);
     }
     return(1);
@@ -2535,12 +2535,12 @@ long FXArrowButton::onPaint(FXObject*, FXSelector, void* ptr)
 // Draw only the interior, i.e. the part that changes
 void FXProgressBar::drawInterior(FXDCWindow& dc)
 {
-    static FXbool  init = true;
-    static FXbool  use_clearlooks = true;
+    static FXbool init = true;
+    static FXbool use_clearlooks = true;
     static FXColor topcolor, bottomcolor, bordercolor;
 
-    FXPoint bordercorners[4] = { FXPoint(1, 1), FXPoint(1, height-2), FXPoint(width-2, 1),      
-                                 FXPoint(width-2, height-2) };                                  
+    FXPoint bordercorners[4] = { FXPoint(1, 1), FXPoint(1, height - 2), FXPoint(width - 2, 1),
+                                 FXPoint(width - 2, height - 2) };
 
     // Init Clearlooks (don't use the macro because here it's different)
     if (init)
@@ -2553,22 +2553,22 @@ void FXProgressBar::drawInterior(FXDCWindow& dc)
             FXuint g = FXGREENVAL(barColor);
             FXuint b = FXBLUEVAL(barColor);
 
-            topcolor = FXRGB(FXMIN(1.2*r, 255), FXMIN(1.2*g, 255), FXMIN(1.2*b, 255));
-            bottomcolor = FXRGB(0.9*r, 0.9*g, 0.9*b);
+            topcolor = FXRGB(FXMIN(1.2 * r, 255), FXMIN(1.2 * g, 255), FXMIN(1.2 * b, 255));
+            bottomcolor = FXRGB(0.9 * r, 0.9 * g, 0.9 * b);
 
             r = FXREDVAL(baseColor);
             g = FXGREENVAL(baseColor);
             b = FXBLUEVAL(baseColor);
 
-            bordercolor = FXRGB(0.5*r, 0.5*g, 0.5*b);
+            bordercolor = FXRGB(0.5 * r, 0.5 * g, 0.5 * b);
         }
         init = false;
     }
 
-    int  percent, barlength, barfilled, tx, ty, tw, th, n, d;
+    int percent, barlength, barfilled, tx, ty, tw, th, n, d;
     char numtext[6];
 
-    if (options&PROGRESSBAR_DIAL)
+    if (options & PROGRESSBAR_DIAL)
     {
         // If total is 0, it's 100%
         barfilled = 23040;
@@ -2579,17 +2579,17 @@ void FXProgressBar::drawInterior(FXDCWindow& dc)
             percent = (FXuint)(((double)progress * 100.0) / (double)total);
         }
 
-        tw = width-(border<<1)-padleft-padright;
-        th = height-(border<<1)-padtop-padbottom;
-        d = FXMIN(tw, th)-1;
+        tw = width - (border << 1) - padleft - padright;
+        th = height - (border << 1) - padtop - padbottom;
+        d = FXMIN(tw, th) - 1;
 
-        tx = border+padleft+((tw-d)/2);
-        ty = border+padtop+((th-d)/2);
+        tx = border + padleft + ((tw - d) / 2);
+        ty = border + padtop + ((th - d) / 2);
 
         if (barfilled != 23040)
         {
             dc.setForeground(barBGColor);
-            dc.fillArc(tx, ty, d, d, 5760, 23040-barfilled);
+            dc.fillArc(tx, ty, d, d, 5760, 23040 - barfilled);
         }
         if (barfilled != 0)
         {
@@ -2599,44 +2599,44 @@ void FXProgressBar::drawInterior(FXDCWindow& dc)
 
         // Draw outside circle
         dc.setForeground(borderColor);
-        dc.drawArc(tx+1, ty, d, d, 90*64, 45*64);
-        dc.drawArc(tx, ty+1, d, d, 135*64, 45*64);
+        dc.drawArc(tx + 1, ty, d, d, 90 * 64, 45 * 64);
+        dc.drawArc(tx, ty + 1, d, d, 135 * 64, 45 * 64);
         dc.setForeground(baseColor);
-        dc.drawArc(tx-1, ty, d, d, 270*64, 45*64);
-        dc.drawArc(tx, ty-1, d, d, 315*64, 45*64);
+        dc.drawArc(tx - 1, ty, d, d, 270 * 64, 45 * 64);
+        dc.drawArc(tx, ty - 1, d, d, 315 * 64, 45 * 64);
 
         dc.setForeground(shadowColor);
-        dc.drawArc(tx, ty, d, d, 45*64, 180*64);
+        dc.drawArc(tx, ty, d, d, 45 * 64, 180 * 64);
         dc.setForeground(hiliteColor);
-        dc.drawArc(tx, ty, d, d, 225*64, 180*64);
+        dc.drawArc(tx, ty, d, d, 225 * 64, 180 * 64);
 
         // Draw text
-        if (options&PROGRESSBAR_PERCENTAGE)
+        if (options & PROGRESSBAR_PERCENTAGE)
         {
             dc.setFont(font);
             tw = font->getTextWidth("100%", 4);
-            if (tw > (10*d)/16)
+            if (tw > (10 * d) / 16)
             {
                 return;
             }
             th = font->getFontHeight();
-            if (th > d/2)
+            if (th > d / 2)
             {
                 return;
             }
-            snprintf(numtext, sizeof(numtext)-1, "%d%%", percent);
+            snprintf(numtext, sizeof(numtext) - 1, "%d%%", percent);
             n = strlen(numtext);
             tw = font->getTextWidth(numtext, n);
-            th = font->getFontHeight();
-            tx = tx+d/2-tw/2;
-            ty = ty+d/2+font->getFontAscent()+5;
+            //th = font->getFontHeight();
+            tx = tx + d / 2 - tw / 2;
+            ty = ty + d / 2 + font->getFontAscent() + 5;
             //dc.setForeground(textNumColor);
 #ifdef HAVE_XFT_H
             dc.setForeground(barBGColor);             // Code for XFT until XFT can use BLT_SRC_XOR_DST
-            dc.drawText(tx-1, ty, numtext, n);
-            dc.drawText(tx+1, ty, numtext, n);
-            dc.drawText(tx, ty-1, numtext, n);
-            dc.drawText(tx, ty+1, numtext, n);
+            dc.drawText(tx - 1, ty, numtext, n);
+            dc.drawText(tx + 1, ty, numtext, n);
+            dc.drawText(tx, ty - 1, numtext, n);
+            dc.drawText(tx, ty + 1, numtext, n);
             dc.setForeground(textNumColor);
             dc.drawText(tx, ty, numtext, n);
 #else
@@ -2648,13 +2648,13 @@ void FXProgressBar::drawInterior(FXDCWindow& dc)
     }
 
     // Vertical bar
-    else if (options&PROGRESSBAR_VERTICAL)
+    else if (options & PROGRESSBAR_VERTICAL)
     {
         // If total is 0, it's 100%
-        barlength = height-border-border;
+        barlength = height - border - border;
         barfilled = barlength;
         percent = 100;
-      
+
         if (total != 0)
         {
             barfilled = (FXuint)(((double)progress * (double)barlength) / (double)total);
@@ -2664,46 +2664,46 @@ void FXProgressBar::drawInterior(FXDCWindow& dc)
         // Draw completed bar
         if (0 < barfilled)
         {
-			dc.setForeground(barColor);
-			dc.fillRectangle(border, height-border-barfilled, width-(border<<1), barfilled);
+            dc.setForeground(barColor);
+            dc.fillRectangle(border, height - border - barfilled, width - (border << 1), barfilled);
         }
 
         // Draw uncompleted bar
         if (barfilled < barlength)
         {
-			dc.setForeground(barBGColor);
-			dc.fillRectangle(border, border, width-(border<<1), barlength-barfilled);
+            dc.setForeground(barBGColor);
+            dc.fillRectangle(border, border, width - (border << 1), barlength - barfilled);
         }
 
         // Draw text
-        if (options&PROGRESSBAR_PERCENTAGE)
+        if (options & PROGRESSBAR_PERCENTAGE)
         {
             dc.setFont(font);
-            snprintf(numtext, sizeof(numtext)-1, "%d%%", percent);
+            snprintf(numtext, sizeof(numtext) - 1, "%d%%", percent);
             n = strlen(numtext);
             tw = font->getTextWidth(numtext, n);
             th = font->getFontHeight();
-            ty = (height-th)/2+font->getFontAscent();
-            tx = (width-tw)/2;
-            if (height-border-barfilled > ty)           // In upper side
+            ty = (height - th) / 2 + font->getFontAscent();
+            tx = (width - tw) / 2;
+            if (height - border - barfilled > ty)           // In upper side
             {
                 dc.setForeground(textNumColor);
-                dc.setClipRectangle(border, border, width-(border<<1), height-(border<<1));
+                dc.setClipRectangle(border, border, width - (border << 1), height - (border << 1));
                 dc.drawText(tx, ty, numtext, n);
             }
-            else if (ty-th > height-border-barfilled)   // In lower side
+            else if (ty - th > height - border - barfilled)   // In lower side
             {
                 dc.setForeground(textAltColor);
-                dc.setClipRectangle(border, border, width-(border<<1), height-(border<<1));
+                dc.setClipRectangle(border, border, width - (border << 1), height - (border << 1));
                 dc.drawText(tx, ty, numtext, n);
             }
             else                                      // In between!
             {
                 dc.setForeground(textAltColor);
-                dc.setClipRectangle(border, height-border-barfilled, width-(border<<1), barfilled);
+                dc.setClipRectangle(border, height - border - barfilled, width - (border << 1), barfilled);
                 dc.drawText(tx, ty, numtext, n);
                 dc.setForeground(textNumColor);
-                dc.setClipRectangle(border, border, width-(border<<1), barlength-barfilled);
+                dc.setClipRectangle(border, border, width - (border << 1), barlength - barfilled);
                 dc.drawText(tx, ty, numtext, n);
                 dc.clearClipRectangle();
             }
@@ -2714,7 +2714,7 @@ void FXProgressBar::drawInterior(FXDCWindow& dc)
     else
     {
         // If total is 0, it's 100%
-        barlength = width-border-border;
+        barlength = width - border - border;
         barfilled = barlength;
         percent = 100;
         if (total != 0)
@@ -2729,14 +2729,14 @@ void FXProgressBar::drawInterior(FXDCWindow& dc)
             // Clearlooks (gradient with rounded corners)
             if (use_clearlooks)
             {
-	            dc.setForeground(barBGColor);
-	            dc.fillRectangle(border+barfilled+(border>>1), border>>1, barlength-barfilled, height-border);
+                dc.setForeground(barBGColor);
+                dc.fillRectangle(border + barfilled + (border >> 1), border >> 1, barlength - barfilled, height - border);
             }
             // Standard (flat)
             else
             {
-	            dc.setForeground(barBGColor);
-	            dc.fillRectangle(border+barfilled, border, barlength-barfilled, height-(border<<1));
+                dc.setForeground(barBGColor);
+                dc.fillRectangle(border + barfilled, border, barlength - barfilled, height - (border << 1));
             }
         }
 
@@ -2746,42 +2746,42 @@ void FXProgressBar::drawInterior(FXDCWindow& dc)
             // Clearlooks (gradient with rounded corners)
             if (use_clearlooks)
             {
-                drawGradientRectangle(dc, topcolor, bottomcolor, border-1, border-1, barfilled+2, height-border, true);
-				
-				dc.setForeground(bordercolor);                                               
-				dc.fillRectangle(barfilled+3, 2, 1, height-(border<<1));
-				dc.drawPoints(bordercorners, 4);
+                drawGradientRectangle(dc, topcolor, bottomcolor, border - 1, border - 1, barfilled + 2, height - border, true);
 
-    			FXPoint barcorners[2] = { FXPoint(barfilled+2, 1), FXPoint(barfilled+2, height-border) };                                  
-				dc.drawPoints(barcorners, 2);
-			}
+                dc.setForeground(bordercolor);
+                dc.fillRectangle(barfilled + 3, 2, 1, height - (border << 1));
+                dc.drawPoints(bordercorners, 4);
+
+                FXPoint barcorners[2] = { FXPoint(barfilled + 2, 1), FXPoint(barfilled + 2, height - border) };
+                dc.drawPoints(barcorners, 2);
+            }
             // Standard (flat)
             else
             {
                 dc.setForeground(barColor);
-                dc.fillRectangle(border, border, barfilled, height-(border<<1));
+                dc.fillRectangle(border, border, barfilled, height - (border << 1));
             }
         }
         // Draw text
-        if (options&PROGRESSBAR_PERCENTAGE)
+        if (options & PROGRESSBAR_PERCENTAGE)
         {
             dc.setFont(font);
-            snprintf(numtext, sizeof(numtext)-1, "%d%%", percent);
+            snprintf(numtext, sizeof(numtext) - 1, "%d%%", percent);
             n = strlen(numtext);
             tw = font->getTextWidth(numtext, n);
             th = font->getFontHeight();
-            ty = (height-th)/2+font->getFontAscent();
-            tx = (width-tw)/2;
-            if (border+barfilled <= tx)           // In right side
+            ty = (height - th) / 2 + font->getFontAscent();
+            tx = (width - tw) / 2;
+            if (border + barfilled <= tx)           // In right side
             {
                 dc.setForeground(textNumColor);
-                dc.setClipRectangle(border, border, width-(border<<1), height-(border<<1));
+                dc.setClipRectangle(border, border, width - (border << 1), height - (border << 1));
                 dc.drawText(tx, ty, numtext, n);
             }
-            else if (tx+tw <= border+barfilled)   // In left side
+            else if (tx + tw <= border + barfilled)   // In left side
             {
                 dc.setForeground(textAltColor);
-                dc.setClipRectangle(border, border, width-(border<<1), height-(border<<1));
+                dc.setClipRectangle(border, border, width - (border << 1), height - (border << 1));
                 dc.drawText(tx, ty, numtext, n);
             }
             else                                // In between!
@@ -2790,7 +2790,7 @@ void FXProgressBar::drawInterior(FXDCWindow& dc)
                 dc.setClipRectangle(border, border, barfilled, height);
                 dc.drawText(tx, ty, numtext, n);
                 dc.setForeground(textNumColor);
-                dc.setClipRectangle(border+barfilled, border, barlength-barfilled, height);
+                dc.setClipRectangle(border + barfilled, border, barlength - barfilled, height);
                 dc.drawText(tx, ty, numtext, n);
                 dc.clearClipRectangle();
             }
@@ -2800,24 +2800,24 @@ void FXProgressBar::drawInterior(FXDCWindow& dc)
 
 
 // Draw the progress bar
-long FXProgressBar::onPaint(FXObject*,FXSelector,void *ptr)
+long FXProgressBar::onPaint(FXObject*, FXSelector, void *ptr)
 {
     // Initialize Clearlooks
     INIT_CLEARLOOKS
 
-	FXEvent *event=(FXEvent*)ptr;
-	FXDCWindow dc(this,event);
+    FXEvent *event = (FXEvent*)ptr;
+    FXDCWindow dc(this, event);
 
-	// Draw borders if any
-	drawFrame(dc,0,0,width,height);
+    // Draw borders if any
+    drawFrame(dc, 0, 0, width, height);
 
-	// Background
-	dc.setForeground(getBaseColor());
-	dc.fillRectangle(border,border,width-(border<<1),height-(border<<1));
+    // Background
+    dc.setForeground(getBaseColor());
+    dc.fillRectangle(border, border, width - (border << 1), height - (border << 1));
 
     // !!! Hack to get an optional rounded rectangle shape
     // only if _TEXTFIELD_NOFRAME is not specified !!!
-    if ( (!(options&_TEXTFIELD_NOFRAME))  & use_clearlooks )
+    if ( (!(options & _TEXTFIELD_NOFRAME)) & use_clearlooks )
     {
         // Outside Background
         dc.setForeground(baseColor);
@@ -2826,21 +2826,21 @@ long FXProgressBar::onPaint(FXObject*,FXSelector,void *ptr)
 
         // Border
         dc.setForeground(bordercolor);
-        dc.drawRectangle(2, 0, width-5, 0);
-        dc.drawRectangle(2, height-1, width-5, height-1);
-        dc.drawRectangle(0, 2, 0, height-5);
-        dc.drawRectangle(width-1, 2, 0, height-5);
+        dc.drawRectangle(2, 0, width - 5, 0);
+        dc.drawRectangle(2, height - 1, width - 5, height - 1);
+        dc.drawRectangle(0, 2, 0, height - 5);
+        dc.drawRectangle(width - 1, 2, 0, height - 5);
         dc.drawPoints(bordercorners, 4);
         dc.setForeground(shadecolor);
         dc.drawPoints(bordershade, 16);
         dc.setForeground(backColor);
-        dc.fillRectangle(2, 1, width-4, height-2);
+        dc.fillRectangle(2, 1, width - 4, height - 2);
     }
     // !!! End of hack
 
-	// Interior
-	drawInterior(dc);
-	return 1;
+    // Interior
+    drawInterior(dc);
+    return 1;
 }
 
 
@@ -2851,23 +2851,23 @@ long FXProgressBar::onPaint(FXObject*,FXSelector,void *ptr)
 // This hack optionally draws a rectangle with rounded corners (Clearlooks)
 void FXPacker::drawGrooveRectangle(FXDCWindow& dc, FXint x, FXint y, FXint w, FXint h)
 {
-    static FXbool  init = true;
-    static FXbool  use_clearlooks = true;
+    static FXbool init = true;
+    static FXbool use_clearlooks = true;
     static FXColor shadecolor, bordercolor;
 
     FXPoint bordershade[16] =
     {
-        FXPoint(x, y+1), FXPoint(x+1, y), FXPoint(x+1, y+2), FXPoint(x+2, y+1),
-        FXPoint(x+w-2, y), FXPoint(x+w-1, y+1), FXPoint(x+w-3, y+1),
-        FXPoint(x+w-2, y+2), FXPoint(x, y+h-2), FXPoint(x+1, y+h-1),
-        FXPoint(x+1, y+h-3), FXPoint(x+2, y+h-2),
-        FXPoint(x+w-1, y+h-2), FXPoint(x+w-2, y+h-1),
-        FXPoint(x+w-2, y+h-3), FXPoint(x+w-3, y+h-2)
+        FXPoint(x, y + 1), FXPoint(x + 1, y), FXPoint(x + 1, y + 2), FXPoint(x + 2, y + 1),
+        FXPoint(x + w - 2, y), FXPoint(x + w - 1, y + 1), FXPoint(x + w - 3, y + 1),
+        FXPoint(x + w - 2, y + 2), FXPoint(x, y + h - 2), FXPoint(x + 1, y + h - 1),
+        FXPoint(x + 1, y + h - 3), FXPoint(x + 2, y + h - 2),
+        FXPoint(x + w - 1, y + h - 2), FXPoint(x + w - 2, y + h - 1),
+        FXPoint(x + w - 2, y + h - 3), FXPoint(x + w - 3, y + h - 2)
     };
     FXPoint bordercorners[4] =
     {
-        FXPoint(x+1, y+1), FXPoint(x+1, y+h-2), FXPoint(x+w-2, y+1),
-        FXPoint(x+w-2, y+h-2)
+        FXPoint(x + 1, y + 1), FXPoint(x + 1, y + h - 2), FXPoint(x + w - 2, y + 1),
+        FXPoint(x + w - 2, y + h - 2)
     };
 
     if (init)
@@ -2880,8 +2880,8 @@ void FXPacker::drawGrooveRectangle(FXDCWindow& dc, FXint x, FXint y, FXint w, FX
             FXuint g = FXGREENVAL(backColor);
             FXuint b = FXBLUEVAL(backColor);
 
-            shadecolor = FXRGB(0.9*r, 0.9*g, 0.9*b);
-            bordercolor = FXRGB(0.5*r, 0.5*g, 0.5*b);
+            shadecolor = FXRGB(0.9 * r, 0.9 * g, 0.9 * b);
+            bordercolor = FXRGB(0.5 * r, 0.5 * g, 0.5 * b);
             (void)bordercolor; // Hack to avoid unused variable compiler warning
         }
         init = false;
@@ -2894,10 +2894,10 @@ void FXPacker::drawGrooveRectangle(FXDCWindow& dc, FXint x, FXint y, FXint w, FX
         {
             // Draw the 4 edges
             dc.setForeground(shadowColor);
-            dc.drawRectangle(x+w-1, y+2, 0, h-5); // right
-            dc.drawRectangle(x, y+2, 0, h-5);     // left
-            dc.drawRectangle(x+2, y, w-5, 0);     // up
-            dc.drawRectangle(x+2, y+h-1, w-5, 0); // down
+            dc.drawRectangle(x + w - 1, y + 2, 0, h - 5); // right
+            dc.drawRectangle(x, y + 2, 0, h - 5);     // left
+            dc.drawRectangle(x + 2, y, w - 5, 0);     // up
+            dc.drawRectangle(x + 2, y + h - 1, w - 5, 0); // down
 
             // Draw the 4 rounded corners (with shade)
             dc.setForeground(shadowColor);
@@ -2913,16 +2913,16 @@ void FXPacker::drawGrooveRectangle(FXDCWindow& dc, FXint x, FXint y, FXint w, FX
             dc.fillRectangle(x, y, w, 1);
             dc.fillRectangle(x, y, 1, h);
             dc.setForeground(hiliteColor);
-            dc.fillRectangle(x, y+h-1, w, 1);
-            dc.fillRectangle(x+w-1, y, 1, h);
+            dc.fillRectangle(x, y + h - 1, w, 1);
+            dc.fillRectangle(x + w - 1, y, 1, h);
             if ((1 < w) && (1 < h))
             {
                 dc.setForeground(shadowColor);
-                dc.fillRectangle(x+1, y+h-2, w-2, 1);
-                dc.fillRectangle(x+w-2, y+1, 1, h-2);
+                dc.fillRectangle(x + 1, y + h - 2, w - 2, 1);
+                dc.fillRectangle(x + w - 2, y + 1, 1, h - 2);
                 dc.setForeground(hiliteColor);
-                dc.fillRectangle(x+1, y+1, w-3, 1);
-                dc.fillRectangle(x+1, y+1, 1, h-3);
+                dc.fillRectangle(x + 1, y + 1, w - 3, 1);
+                dc.fillRectangle(x + 1, y + 1, 1, h - 3);
             }
         }
     }
@@ -2940,31 +2940,31 @@ void FXPacker::drawGrooveRectangle(FXDCWindow& dc, FXint x, FXint y, FXint w, FX
 
 
 // Handle repaint
-long FXMenuRadio::onPaint(FXObject*,FXSelector,void* ptr)
+long FXMenuRadio::onPaint(FXObject*, FXSelector, void* ptr)
 {
-    FXEvent *ev=(FXEvent*)ptr;
-    FXDCWindow dc(this,ev);
-    FXint xx,yy;
+    FXEvent *ev = (FXEvent*)ptr;
+    FXDCWindow dc(this, ev);
+    FXint xx, yy;
 
-    xx=LEADSPACE;
+    xx = LEADSPACE;
 
     // Grayed out
     if(!isEnabled())
     {
         dc.setForeground(backColor);
-        dc.fillRectangle(0,0,width,height);
+        dc.fillRectangle(0, 0, width, height);
         if(!label.empty())
         {
-            yy=font->getFontAscent()+(height-font->getFontHeight())/2;
+            yy = font->getFontAscent() + (height - font->getFontHeight()) / 2;
             dc.setFont(font);
             dc.setForeground(hiliteColor);
-            dc.drawText(xx+1,yy+1,label);
-            if(!accel.empty()) dc.drawText(width-TRAILSPACE-font->getTextWidth(accel)+1,yy+1,accel);
-            if(0<=hotoff) dc.fillRectangle(xx+font->getTextWidth(&label[0],hotoff)+1,yy+2,font->getTextWidth(&label[hotoff],wclen(&label[hotoff])),1);
+            dc.drawText(xx + 1, yy + 1, label);
+            if(!accel.empty()) dc.drawText(width - TRAILSPACE - font->getTextWidth(accel) + 1, yy + 1, accel);
+            if(0 <= hotoff) dc.fillRectangle(xx + font->getTextWidth(&label[0], hotoff) + 1, yy + 2, font->getTextWidth(&label[hotoff], wclen(&label[hotoff])), 1);
             dc.setForeground(shadowColor);
-            dc.drawText(xx,yy,label);
-            if(!accel.empty()) dc.drawText(width-TRAILSPACE-font->getTextWidth(accel),yy,accel);
-            if(0<=hotoff) dc.fillRectangle(xx+font->getTextWidth(&label[0],hotoff),yy+1,font->getTextWidth(&label[hotoff],wclen(&label[hotoff])),1);
+            dc.drawText(xx, yy, label);
+            if(!accel.empty()) dc.drawText(width - TRAILSPACE - font->getTextWidth(accel), yy, accel);
+            if(0 <= hotoff) dc.fillRectangle(xx + font->getTextWidth(&label[0], hotoff), yy + 1, font->getTextWidth(&label[hotoff], wclen(&label[hotoff])), 1);
         }
     }
 
@@ -2972,15 +2972,15 @@ long FXMenuRadio::onPaint(FXObject*,FXSelector,void* ptr)
     else if(isActive())
     {
         dc.setForeground(selbackColor);
-        dc.fillRectangle(0,0,width,height);
+        dc.fillRectangle(0, 0, width, height);
         if(!label.empty())
         {
-            yy=font->getFontAscent()+(height-font->getFontHeight())/2;
+            yy = font->getFontAscent() + (height - font->getFontHeight()) / 2;
             dc.setFont(font);
             dc.setForeground(isEnabled() ? seltextColor : shadowColor);
-            dc.drawText(xx,yy,label);
-            if(!accel.empty()) dc.drawText(width-TRAILSPACE-font->getTextWidth(accel),yy,accel);
-            if(0<=hotoff) dc.fillRectangle(xx+font->getTextWidth(&label[0],hotoff),yy+1,font->getTextWidth(&label[hotoff],wclen(&label[hotoff])),1);
+            dc.drawText(xx, yy, label);
+            if(!accel.empty()) dc.drawText(width - TRAILSPACE - font->getTextWidth(accel), yy, accel);
+            if(0 <= hotoff) dc.fillRectangle(xx + font->getTextWidth(&label[0], hotoff), yy + 1, font->getTextWidth(&label[hotoff], wclen(&label[hotoff])), 1);
         }
     }
 
@@ -2988,49 +2988,49 @@ long FXMenuRadio::onPaint(FXObject*,FXSelector,void* ptr)
     else
     {
         dc.setForeground(backColor);
-        dc.fillRectangle(0,0,width,height);
+        dc.fillRectangle(0, 0, width, height);
         if(!label.empty())
         {
-            yy=font->getFontAscent()+(height-font->getFontHeight())/2;
+            yy = font->getFontAscent() + (height - font->getFontHeight()) / 2;
             dc.setFont(font);
             dc.setForeground(textColor);
-            dc.drawText(xx,yy,label);
-            if(!accel.empty()) dc.drawText(width-TRAILSPACE-font->getTextWidth(accel),yy,accel);
-            if(0<=hotoff) dc.fillRectangle(xx+font->getTextWidth(&label[0],hotoff),yy+1,font->getTextWidth(&label[hotoff],wclen(&label[hotoff])),1);
+            dc.drawText(xx, yy, label);
+            if(!accel.empty()) dc.drawText(width - TRAILSPACE - font->getTextWidth(accel), yy, accel);
+            if(0 <= hotoff) dc.fillRectangle(xx + font->getTextWidth(&label[0], hotoff), yy + 1, font->getTextWidth(&label[hotoff], wclen(&label[hotoff])), 1);
         }
     }
 
     // Draw the radio
-    xx=5/scaleint;
-    yy=(height-9*scaleint)/2;
+    xx = 5 / scaleint;
+    yy = (height - 9 * scaleint) / 2;
 
     if(!isEnabled())
         dc.setForeground(backColor);
     else
         dc.setForeground(radioColor);
-    dc.fillArc(xx,yy,9*scaleint,9*scaleint,0,360*64);
+    dc.fillArc(xx, yy, 9 * scaleint, 9 * scaleint, 0, 360 * 64);
     dc.setForeground(shadowColor);
-    dc.drawArc(xx,yy,9*scaleint,9*scaleint,0,360*64);
+    dc.drawArc(xx, yy, 9 * scaleint, 9 * scaleint, 0, 360 * 64);
 
     // Draw the bullit
-    if(check!=FALSE)
+    if(check != FALSE)
     {
         FXRectangle recs[3];
-        recs[0].x=xx+4*scaleint;
-        recs[0].y=yy+3*scaleint;
-        recs[0].w=2*scaleint;
-        recs[0].h=1*scaleint;
-        recs[1].x=xx+3*scaleint;
-        recs[1].y=yy+4*scaleint;
-        recs[1].w=4*scaleint;
-        recs[1].h=2*scaleint;
-        recs[2].x=xx+4*scaleint;
-        recs[2].y=yy+6*scaleint;
-        recs[2].w=2*scaleint;
-        recs[2].h=1*scaleint;
+        recs[0].x = xx + 4 * scaleint;
+        recs[0].y = yy + 3 * scaleint;
+        recs[0].w = 2 * scaleint;
+        recs[0].h = 1 * scaleint;
+        recs[1].x = xx + 3 * scaleint;
+        recs[1].y = yy + 4 * scaleint;
+        recs[1].w = 4 * scaleint;
+        recs[1].h = 2 * scaleint;
+        recs[2].x = xx + 4 * scaleint;
+        recs[2].y = yy + 6 * scaleint;
+        recs[2].w = 2 * scaleint;
+        recs[2].h = 1 * scaleint;
         if(isEnabled())
         {
-            if(check==MAYBE)
+            if(check == MAYBE)
                 dc.setForeground(shadowColor);
             else
                 dc.setForeground(textColor);
@@ -3039,7 +3039,7 @@ long FXMenuRadio::onPaint(FXObject*,FXSelector,void* ptr)
         {
             dc.setForeground(shadowColor);
         }
-        dc.fillRectangles(recs,3);
+        dc.fillRectangles(recs, 3);
     }
 
     return 1;
@@ -3053,31 +3053,31 @@ long FXMenuRadio::onPaint(FXObject*,FXSelector,void* ptr)
 // For HiDPI scaling
 
 // Handle repaint
-long FXMenuCheck::onPaint(FXObject*,FXSelector,void* ptr)
+long FXMenuCheck::onPaint(FXObject*, FXSelector, void* ptr)
 {
-    FXEvent *ev=(FXEvent*)ptr;
-    FXDCWindow dc(this,ev);
-    FXint xx,yy;
+    FXEvent *ev = (FXEvent*)ptr;
+    FXDCWindow dc(this, ev);
+    FXint xx, yy;
 
-    xx=LEADSPACE;
+    xx = LEADSPACE;
 
     // Grayed out
     if(!isEnabled())
     {
         dc.setForeground(backColor);
-        dc.fillRectangle(0,0,width,height);
+        dc.fillRectangle(0, 0, width, height);
         if(!label.empty())
         {
-            yy=font->getFontAscent()+(height-font->getFontHeight())/2;
+            yy = font->getFontAscent() + (height - font->getFontHeight()) / 2;
             dc.setFont(font);
             dc.setForeground(hiliteColor);
-            dc.drawText(xx+1,yy+1,label);
-            if(!accel.empty()) dc.drawText(width-TRAILSPACE-font->getTextWidth(accel)+1,yy+1,accel);
-            if(0<=hotoff) dc.fillRectangle(xx+font->getTextWidth(&label[0],hotoff)+1,yy+2,font->getTextWidth(&label[hotoff],wclen(&label[hotoff])),1);
+            dc.drawText(xx + 1, yy + 1, label);
+            if(!accel.empty()) dc.drawText(width - TRAILSPACE - font->getTextWidth(accel) + 1, yy + 1, accel);
+            if(0 <= hotoff) dc.fillRectangle(xx + font->getTextWidth(&label[0], hotoff) + 1, yy + 2, font->getTextWidth(&label[hotoff], wclen(&label[hotoff])), 1);
             dc.setForeground(shadowColor);
-            dc.drawText(xx,yy,label);
-            if(!accel.empty()) dc.drawText(width-TRAILSPACE-font->getTextWidth(accel),yy,accel);
-            if(0<=hotoff) dc.fillRectangle(xx+font->getTextWidth(&label[0],hotoff),yy+1,font->getTextWidth(&label[hotoff],wclen(&label[hotoff])),1);
+            dc.drawText(xx, yy, label);
+            if(!accel.empty()) dc.drawText(width - TRAILSPACE - font->getTextWidth(accel), yy, accel);
+            if(0 <= hotoff) dc.fillRectangle(xx + font->getTextWidth(&label[0], hotoff), yy + 1, font->getTextWidth(&label[hotoff], wclen(&label[hotoff])), 1);
         }
     }
 
@@ -3085,15 +3085,15 @@ long FXMenuCheck::onPaint(FXObject*,FXSelector,void* ptr)
     else if(isActive())
     {
         dc.setForeground(selbackColor);
-        dc.fillRectangle(0,0,width,height);
+        dc.fillRectangle(0, 0, width, height);
         if(!label.empty())
         {
-            yy=font->getFontAscent()+(height-font->getFontHeight())/2;
+            yy = font->getFontAscent() + (height - font->getFontHeight()) / 2;
             dc.setFont(font);
             dc.setForeground(isEnabled() ? seltextColor : shadowColor);
-            dc.drawText(xx,yy,label);
-            if(!accel.empty()) dc.drawText(width-TRAILSPACE-font->getTextWidth(accel),yy,accel);
-            if(0<=hotoff) dc.fillRectangle(xx+font->getTextWidth(&label[0],hotoff),yy+1,font->getTextWidth(&label[hotoff],wclen(&label[hotoff])),1);
+            dc.drawText(xx, yy, label);
+            if(!accel.empty()) dc.drawText(width - TRAILSPACE - font->getTextWidth(accel), yy, accel);
+            if(0 <= hotoff) dc.fillRectangle(xx + font->getTextWidth(&label[0], hotoff), yy + 1, font->getTextWidth(&label[hotoff], wclen(&label[hotoff])), 1);
         }
     }
 
@@ -3101,65 +3101,65 @@ long FXMenuCheck::onPaint(FXObject*,FXSelector,void* ptr)
     else
     {
         dc.setForeground(backColor);
-        dc.fillRectangle(0,0,width,height);
+        dc.fillRectangle(0, 0, width, height);
         if(!label.empty())
         {
-            yy=font->getFontAscent()+(height-font->getFontHeight())/2;
+            yy = font->getFontAscent() + (height - font->getFontHeight()) / 2;
             dc.setFont(font);
             dc.setForeground(textColor);
-            dc.drawText(xx,yy,label);
-            if(!accel.empty()) dc.drawText(width-TRAILSPACE-font->getTextWidth(accel),yy,accel);
-            if(0<=hotoff) dc.fillRectangle(xx+font->getTextWidth(&label[0],hotoff),yy+1,font->getTextWidth(&label[hotoff],wclen(&label[hotoff])),1);
+            dc.drawText(xx, yy, label);
+            if(!accel.empty()) dc.drawText(width - TRAILSPACE - font->getTextWidth(accel), yy, accel);
+            if(0 <= hotoff) dc.fillRectangle(xx + font->getTextWidth(&label[0], hotoff), yy + 1, font->getTextWidth(&label[hotoff], wclen(&label[hotoff])), 1);
         }
     }
 
     // Draw the box
-    xx=5/scaleint;
-    yy=(height-9*scaleint)/2;
+    xx = 5 / scaleint;
+    yy = (height - 9 * scaleint) / 2;
     if(!isEnabled())
         dc.setForeground(backColor);
     else
         dc.setForeground(boxColor);
-    dc.fillRectangle(xx+1,yy+1,8*scaleint,8*scaleint);
+    dc.fillRectangle(xx + 1, yy + 1, 8 * scaleint, 8 * scaleint);
     dc.setForeground(shadowColor);
-    dc.drawRectangle(xx,yy,9*scaleint,9*scaleint);
+    dc.drawRectangle(xx, yy, 9 * scaleint, 9 * scaleint);
 
     // Draw the check
-    if(check!=FALSE)
+    if(check != FALSE)
     {
-		FXRectangle recs[7];
-		recs[0].x = xx+2*scaleint;
-		recs[0].y = yy+4*scaleint;
-		recs[0].w = 1*scaleint;
-		recs[0].h = 3*scaleint;
-		recs[1].x = xx+3*scaleint;
-		recs[1].y = yy+5*scaleint;
-		recs[1].w = 1*scaleint;
-		recs[1].h = 3*scaleint;
-		recs[2].x = xx+4*scaleint;
-		recs[2].y = yy+6*scaleint;
-		recs[2].w = 1*scaleint;
-		recs[2].h = 3*scaleint;
-		recs[3].x = xx+5*scaleint;
-		recs[3].y = yy+5*scaleint;
-		recs[3].w = 1*scaleint;
-		recs[3].h = 3*scaleint;
-		recs[4].x = xx+6*scaleint;
-		recs[4].y = yy+4*scaleint;
-		recs[4].w = 1*scaleint;
-		recs[4].h = 3*scaleint;
-		recs[5].x = xx+7*scaleint;
-		recs[5].y = yy+3*scaleint;
-		recs[5].w = 1*scaleint;
-		recs[5].h = 3*scaleint;
-		recs[6].x = xx+8*scaleint;
-		recs[6].y = yy+2*scaleint;
-		recs[6].w = 1*scaleint;
-		recs[6].h = 3*scaleint;
+        FXRectangle recs[7];
+        recs[0].x = xx + 2 * scaleint;
+        recs[0].y = yy + 4 * scaleint;
+        recs[0].w = 1 * scaleint;
+        recs[0].h = 3 * scaleint;
+        recs[1].x = xx + 3 * scaleint;
+        recs[1].y = yy + 5 * scaleint;
+        recs[1].w = 1 * scaleint;
+        recs[1].h = 3 * scaleint;
+        recs[2].x = xx + 4 * scaleint;
+        recs[2].y = yy + 6 * scaleint;
+        recs[2].w = 1 * scaleint;
+        recs[2].h = 3 * scaleint;
+        recs[3].x = xx + 5 * scaleint;
+        recs[3].y = yy + 5 * scaleint;
+        recs[3].w = 1 * scaleint;
+        recs[3].h = 3 * scaleint;
+        recs[4].x = xx + 6 * scaleint;
+        recs[4].y = yy + 4 * scaleint;
+        recs[4].w = 1 * scaleint;
+        recs[4].h = 3 * scaleint;
+        recs[5].x = xx + 7 * scaleint;
+        recs[5].y = yy + 3 * scaleint;
+        recs[5].w = 1 * scaleint;
+        recs[5].h = 3 * scaleint;
+        recs[6].x = xx + 8 * scaleint;
+        recs[6].y = yy + 2 * scaleint;
+        recs[6].w = 1 * scaleint;
+        recs[6].h = 3 * scaleint;
 
         if(isEnabled())
         {
-            if(check==MAYBE)
+            if(check == MAYBE)
                 dc.setForeground(shadowColor);
             else
                 dc.setForeground(textColor);
@@ -3186,99 +3186,99 @@ long FXMenuCheck::onPaint(FXObject*,FXSelector,void* ptr)
 #define HALFBOX_SIZE        4   // Half box size
 
 // Draw item list
-long FXTreeList::onPaint(FXObject*,FXSelector,void* ptr)
+long FXTreeList::onPaint(FXObject*, FXSelector, void* ptr)
 {
-    FXEvent* event=(FXEvent*)ptr;
-    FXTreeItem* item=firstitem;
+    FXEvent* event = (FXEvent*)ptr;
+    FXTreeItem* item = firstitem;
     FXTreeItem* p;
-    FXint yh,xh,x,y,w,h,xp,hh;
-    FXDCWindow dc(this,event);
+    FXint yh, xh, x, y, w, h, xp, hh;
+    FXDCWindow dc(this, event);
     dc.setFont(font);
-    x=pos_x;
-    y=pos_y;
-    if(options&TREELIST_ROOT_BOXES) x+=(4+indent);
-    while(item && y<event->rect.y+event->rect.h)
+    x = pos_x;
+    y = pos_y;
+    if(options & TREELIST_ROOT_BOXES) x += (4 + indent);
+    while(item && y < event->rect.y + event->rect.h)
     {
-        w=item->getWidth(this);
-        h=item->getHeight(this);
-        if(event->rect.y<=y+h)
+        w = item->getWidth(this);
+        h = item->getHeight(this);
+        if(event->rect.y <= y + h)
         {
             // Draw item
             dc.setForeground(backColor);
-            dc.fillRectangle(0,y,width,h);
-            item->draw(this,dc,x,y,w,h);
+            dc.fillRectangle(0, y, width, h);
+            item->draw(this, dc, x, y, w, h);
 
             // Show other paraphernalia such as dotted lines and expand-boxes
-            if((options&(TREELIST_SHOWS_LINES|TREELIST_SHOWS_BOXES)) && (item->parent || (options&TREELIST_ROOT_BOXES)))
+            if((options & (TREELIST_SHOWS_LINES | TREELIST_SHOWS_BOXES)) && (item->parent || (options & TREELIST_ROOT_BOXES)))
             {
-                hh=h/2;
-                yh=y+hh;
-                xh=x-indent+(SIDE_SPACING/2) - (scaleint - 1) * SIDE_SPACING;
+                hh = h / 2;
+                yh = y + hh;
+                xh = x - indent + (SIDE_SPACING / 2) - (scaleint - 1) * SIDE_SPACING;
                 dc.setForeground(lineColor);
                 dc.setBackground(backColor);
-                dc.setStipple(STIPPLE_GRAY,pos_x&1,pos_y&1);
-                if(options&TREELIST_SHOWS_LINES)                    // Connect items with lines
+                dc.setStipple(STIPPLE_GRAY, pos_x & 1, pos_y & 1);
+                if(options & TREELIST_SHOWS_LINES)                    // Connect items with lines
                 {
-                    p=item->parent;
-                    xp=xh;
+                    p = item->parent;
+                    xp = xh;
                     dc.setFillStyle(FILL_OPAQUESTIPPLED);
                     while(p)
                     {
-                        xp-=(indent+p->getHeight(this)/2);
-                        if(p->next) dc.fillRectangle(xp,y,1,h);
-                        p=p->parent;
+                        xp -= (indent + p->getHeight(this) / 2);
+                        if(p->next) dc.fillRectangle(xp, y, 1, h);
+                        p = p->parent;
                     }
-                    if((options&TREELIST_SHOWS_BOXES) && (item->hasItems() || item->getFirst()))
+                    if((options & TREELIST_SHOWS_BOXES) && (item->hasItems() || item->getFirst()))
                     {
-                        if(item->prev || item->parent) dc.fillRectangle(xh,y,1,yh-y-scaleint*HALFBOX_SIZE);
-                        if(item->next) dc.fillRectangle(xh,yh+scaleint*HALFBOX_SIZE,1,(y+h-yh-scaleint*HALFBOX_SIZE));
+                        if(item->prev || item->parent) dc.fillRectangle(xh, y, 1, yh - y - scaleint * HALFBOX_SIZE);
+                        if(item->next) dc.fillRectangle(xh, yh + scaleint * HALFBOX_SIZE, 1, (y + h - yh - scaleint * HALFBOX_SIZE));
                     }
                     else
                     {
-                        if(item->prev || item->parent) dc.fillRectangle(xh,y,1,hh);
-                        if(item->next) dc.fillRectangle(xh,yh,1,h);
-                        dc.fillRectangle(xh,yh,x+(SIDE_SPACING/2)-scaleint*2-xh,1);
+                        if(item->prev || item->parent) dc.fillRectangle(xh, y, 1, hh);
+                        if(item->next) dc.fillRectangle(xh, yh, 1, h);
+                        dc.fillRectangle(xh, yh, x + (SIDE_SPACING / 2) - scaleint * 2 - xh, 1);
                     }
                     dc.setFillStyle(FILL_SOLID);
                 }
 
                 // Boxes before items for expand/collapse of item
-                if((options&TREELIST_SHOWS_BOXES) && (item->hasItems() || item->getFirst()))
+                if((options & TREELIST_SHOWS_BOXES) && (item->hasItems() || item->getFirst()))
                 {
                     dc.setFillStyle(FILL_OPAQUESTIPPLED);
-                    dc.fillRectangle((xh+scaleint*4),yh,scaleint*( (SIDE_SPACING/2)-2 ),scaleint*1);
+                    dc.fillRectangle((xh + scaleint * 4), yh, scaleint * ( (SIDE_SPACING / 2) - 2 ), scaleint * 1);
                     dc.setFillStyle(FILL_SOLID);
-                    dc.drawRectangle(xh-scaleint*HALFBOX_SIZE,yh-scaleint*HALFBOX_SIZE, scaleint*(HALFBOX_SIZE+HALFBOX_SIZE),scaleint*(HALFBOX_SIZE+HALFBOX_SIZE));
-                    dc.setForeground(textColor);                   
-                    dc.fillRectangle(xh-scaleint*(HALFBOX_SIZE-2),yh,scaleint*(HALFBOX_SIZE+HALFBOX_SIZE-3),scaleint*1);
-                    if(!(options&TREELIST_AUTOSELECT) && !item->isExpanded())
+                    dc.drawRectangle(xh - scaleint * HALFBOX_SIZE, yh - scaleint * HALFBOX_SIZE, scaleint * (HALFBOX_SIZE + HALFBOX_SIZE), scaleint * (HALFBOX_SIZE + HALFBOX_SIZE));
+                    dc.setForeground(textColor);
+                    dc.fillRectangle(xh - scaleint * (HALFBOX_SIZE - 2), yh, scaleint * (HALFBOX_SIZE + HALFBOX_SIZE - 3), scaleint * 1);
+                    if(!(options & TREELIST_AUTOSELECT) && !item->isExpanded())
                     {
-                        dc.fillRectangle(xh,yh-scaleint*(HALFBOX_SIZE-2),scaleint*1,scaleint*(HALFBOX_SIZE+HALFBOX_SIZE-3));
+                        dc.fillRectangle(xh, yh - scaleint * (HALFBOX_SIZE - 2), scaleint * 1, scaleint * (HALFBOX_SIZE + HALFBOX_SIZE - 3));
                     }
                 }
             }
         }
 
-        y+=h;
+        y += h;
 
         // Move on to the next item
-        if(item->first && ((options&TREELIST_AUTOSELECT) || item->isExpanded()))
+        if(item->first && ((options & TREELIST_AUTOSELECT) || item->isExpanded()))
         {
-            x+=(indent+h/2);
-            item=item->first;
+            x += (indent + h / 2);
+            item = item->first;
             continue;
         }
         while(!item->next && item->parent)
         {
-            item=item->parent;
-            x-=(indent+item->getHeight(this)/2);
+            item = item->parent;
+            x -= (indent + item->getHeight(this) / 2);
         }
-        item=item->next;
+        item = item->next;
     }
-    if(y<event->rect.y+event->rect.h)
+    if(y < event->rect.y + event->rect.h)
     {
         dc.setForeground(backColor);
-        dc.fillRectangle(event->rect.x,y,event->rect.w,event->rect.y+event->rect.h-y);
+        dc.fillRectangle(event->rect.x, y, event->rect.w, event->rect.y + event->rect.h - y);
     }
     return 1;
 }

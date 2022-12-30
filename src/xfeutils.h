@@ -26,17 +26,21 @@
  * 3. This notice may not be removed or altered from any source distribution.
  */
 
-// The convaccents() function and the accents table are adapted from
-// code found here: http://rosettacode.org/wiki/Natural_sorting
+// The convaccents() function and the accents table are adapted from code found here:
+// http://rosettacode.org/wiki/Natural_sorting
 
 
 #include <errno.h>
 #include <unistd.h>
+#include <signal.h>
 #include <sys/stat.h>
 #include <dirent.h>
 #include <ctype.h>
 #include <wctype.h>
+#include <sys/statvfs.h>
 #include <vector>
+#include <sys/wait.h>
+#include <time.h>
 
 #include <fx.h>
 
@@ -178,9 +182,9 @@ static inline int comparenat_left(const char* a, const char* b)
 // Perform natural comparison on single byte strings (so foo10 comes after foo2, 0.2foo comes before 10.2foo, etc.)
 static inline int comparenat(const char* a, const char* b, FXbool igncase)
 {
-    int  ai, bi;
+    int ai, bi;
     char ca, cb;
-    int  fractional, result;
+    int fractional, result;
 
     ai = bi = 0;
     while (1)
@@ -211,14 +215,14 @@ static inline int comparenat(const char* a, const char* b, FXbool igncase)
 
             if (fractional)
             {
-                if ((result = comparenat_left(a+ai, b+bi)) != 0)
+                if ((result = comparenat_left(a + ai, b + bi)) != 0)
                 {
                     return(result);
                 }
             }
             else
             {
-                if ((result = comparenat_right(a+ai, b+bi)) != 0)
+                if ((result = comparenat_right(a + ai, b + bi)) != 0)
                 {
                     return(result);
                 }
@@ -296,7 +300,7 @@ static inline wchar_t convaccents(const wchar_t wc, const wchar_t* const* tbl, i
         }
         else
         {
-            wr = tbl[n+1][0];
+            wr = tbl[n + 1][0];
             break;
         }
     }
@@ -386,9 +390,9 @@ static inline int comparewnat_left(const wchar_t* wa, const wchar_t* wb)
 // Perform natural comparison on wide strings (so foo10 comes after foo2, 0.2foo comes before 10.2foo, etc.)
 static inline int comparewnat(const wchar_t* wa, const wchar_t* wb, int igncase)
 {
-    wint_t  ai, bi;
+    wint_t ai, bi;
     wchar_t wca, wcb;
-    int     fractional, result;
+    int fractional, result;
 
     ai = bi = 0;
     while (1)
@@ -408,8 +412,8 @@ static inline int comparewnat(const wchar_t* wa, const wchar_t* wb, int igncase)
         }
 
         /* convert accents  */
-        wca = convaccents(wca, accents, sizeof(accents)/sizeof(wchar_t*));
-        wcb = convaccents(wcb, accents, sizeof(accents)/sizeof(wchar_t*));
+        wca = convaccents(wca, accents, sizeof(accents) / sizeof(wchar_t*));
+        wcb = convaccents(wcb, accents, sizeof(accents) / sizeof(wchar_t*));
 
         /* process run of digits */
         if (iswdigit(wca) && iswdigit(wcb))
@@ -418,14 +422,14 @@ static inline int comparewnat(const wchar_t* wa, const wchar_t* wb, int igncase)
 
             if (fractional)
             {
-                if ((result = comparewnat_left(wa+ai, wb+bi)) != 0)
+                if ((result = comparewnat_left(wa + ai, wb + bi)) != 0)
                 {
                     return(result);
                 }
             }
             else
             {
-                if ((result = comparewnat_right(wa+ai, wb+bi)) != 0)
+                if ((result = comparewnat_right(wa + ai, wb + bi)) != 0)
                 {
                     return(result);
                 }
@@ -489,17 +493,81 @@ static inline void strlow(char* str)
 }
 
 
+// Stat function with a timeout, used to test if a mount point is up or down
+// Return 0 on success, -1 on error with errno set and 1 on timeout
+static inline int statvfsTimeout(const char *filename, FXuint timeout)
+{
+    // Create child process
+    int pid = fork();
+    if (pid == -1)
+    {
+        return -1;
+    }
+
+    if (pid == 0)
+    {
+        // Here, we are running as the child process!
+        
+        struct statvfs buf;
+        int ret = statvfs(filename, &buf);
+        exit(ret);
+    }
+    else
+    {
+        // Here, we are running as the parent process!
+	    
+	    int ret = -1;
+	    time_t t0;
+        time(&t0);
+        
+        while (1)
+        {
+            if ( (waitpid(pid, &ret, WNOHANG) == 0 ) )
+            {
+                // Child is still running, wait
+                time_t t;
+                time(&t);
+
+                // Timeout exceeded, abort
+                if (difftime(t, t0) > timeout)
+                {
+                    kill(pid, SIGKILL);
+                    waitpid(pid, NULL, WNOHANG);       // Avoids zombies
+                    return 1;                          // Return 1 on timeout
+                }
+            }
+            else
+            {
+                // Child has finished
+                if (ret == 0)
+                {
+			        struct statvfs buf;
+                    int ret = statvfs(filename, &buf);
+                    return ret;
+                }
+                else
+                {
+                    return -1;
+                }
+            }
+        }
+    }
+	
+	return -1;
+}
+
+
 // Replacement of the stat function
-static inline int statrep(const char* filename, struct stat* buf)
+static inline int statrep(const char* path, struct stat* buf)
 {
 #if defined(linux)
     static int ret;
 
     // It's a mount point
-    if (mtdevices != NULL && mtdevices->find(filename))
+    if (mtdevices != NULL && mtdevices->find(path))
     {
         // Mount point is down
-        if (streq(updevices->find(filename), "down"))
+        if (streq(updevices->find(path), "down"))
         {
             return(-1);
         }
@@ -507,11 +575,11 @@ static inline int statrep(const char* filename, struct stat* buf)
         // Mount point is up
         else
         {
-            ret = stat(filename, buf);
+            ret = stat(path, buf);
             if ((ret == -1) && (errno != EACCES))
             {
-                updevices->remove(filename);
-                updevices->insert(filename, "down");
+                updevices->remove(path);
+                updevices->insert(path, "down");
             }
             return(ret);
         }
@@ -520,21 +588,21 @@ static inline int statrep(const char* filename, struct stat* buf)
     // It's not a mount point
     else
 #endif
-    return(stat(filename, buf));
+    return(stat(path, buf));
 }
 
 
 // Replacement of the lstat function
-static inline int lstatrep(const char* filename, struct stat* buf)
+static inline int lstatrep(const char* path, struct stat* buf)
 {
 #if defined(linux)
     static int ret;
 
     // It's a mount point
-    if (mtdevices != NULL && mtdevices->find(filename))
+    if (mtdevices != NULL && mtdevices->find(path))
     {
         // Mount point is down
-        if (streq(updevices->find(filename), "down"))
+        if (streq(updevices->find(path), "down"))
         {
             return(-1);
         }
@@ -542,11 +610,11 @@ static inline int lstatrep(const char* filename, struct stat* buf)
         // Mount point is up
         else
         {
-            ret = lstat(filename, buf);
+            ret = lstat(path, buf);
             if ((ret == -1) && (errno != EACCES))
             {
-                updevices->remove(filename);
-                updevices->insert(filename, "down");
+                updevices->remove(path);
+                updevices->insert(path, "down");
             }
             return(ret);
         }
@@ -555,7 +623,7 @@ static inline int lstatrep(const char* filename, struct stat* buf)
     // It's not a mount point
     else
 #endif
-    return(lstat(filename, buf));
+    return(lstat(path, buf));
 }
 
 
@@ -570,17 +638,14 @@ int createTrashinfo(FXString, FXString, FXString, FXString);
 FXString mimetype(FXString);
 FXString quote(FXString);
 FXbool isUtf8(const char*, FXuint);
-int statrep(const char*, struct stat*);
-int lstatrep(const char*, struct stat*);
 
-#if defined(linux)
-int lstatmt(const char*, struct stat*);
-
-#endif
+#if !defined (__OpenBSD__)
 size_t strlcpy(char*, const char*, size_t);
 size_t strlcat(char*, const char*, size_t);
+#endif
+
 FXulong dirsize(const char*);
-FXulong pathsize(char*, FXuint*, FXuint*, FXulong*, int* =  NULL);
+FXulong pathsize(char*, FXuint*, FXuint*, FXulong*, int* = NULL);
 FXString hSize(char*);
 FXString cleanPath(const FXString);
 FXString filePath(const FXString);
@@ -615,5 +680,7 @@ FXIcon* loadiconfile(FXApp*, const FXString, const FXString);
 
 FXString truncLine(FXString, FXuint);
 FXString multiLines(FXString, FXuint);
+
+FXbool keepMount(FXString, FXString);
 
 #endif

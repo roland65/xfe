@@ -15,7 +15,7 @@ extern FXMainWindow* mainWindow;
 FXDEFMAP(DialogBox) DialogBoxMap[] =
 {
     FXMAPFUNC(SEL_KEYPRESS, 0, DialogBox::onKeyPress),
-	FXMAPFUNC(SEL_KEYRELEASE,0,DialogBox::onKeyRelease),
+    FXMAPFUNC(SEL_KEYRELEASE, 0, DialogBox::onKeyRelease),
     FXMAPFUNC(SEL_CLOSE, 0, DialogBox::onClose),
     FXMAPFUNC(SEL_COMMAND, DialogBox::ID_CANCEL, DialogBox::onCmdCancel),
     FXMAPFUNC(SEL_COMMAND, DialogBox::ID_ACCEPT, DialogBox::onCmdAccept),
@@ -45,14 +45,14 @@ DialogBox::DialogBox(FXApp* a, const FXString& name, FXuint opts, int x, int y, 
 
 // Close window & cancel out of dialog
 long DialogBox::onClose(FXObject*, FXSelector, void*)
-{	
+{
     if (target && target->handle(this, FXSEL(SEL_CLOSE, message), NULL))
     {
-		// Set focus to main window (if defined)
-		if (mainWindow)
-		{
-			mainWindow->setFocus();
-		}
+        // Set focus to main window (if defined)
+        if (mainWindow)
+        {
+            mainWindow->setFocus();
+        }
 
         return(1);
     }
@@ -66,13 +66,13 @@ long DialogBox::onCmdAccept(FXObject*, FXSelector, void*)
 {
     getApp()->stopModal(this, true);
     hide();
-    
+
     // Set focus to main window (if defined)
     if (mainWindow)
     {
-    	mainWindow->setFocus();
-	}
-       
+        mainWindow->setFocus();
+    }
+
     return(1);
 }
 
@@ -86,9 +86,9 @@ long DialogBox::onCmdCancel(FXObject*, FXSelector, void*)
     // Set focus to main window (if defined)
     if (mainWindow)
     {
-    	mainWindow->setFocus();
-	}
-	
+        mainWindow->setFocus();
+    }
+
     return(1);
 }
 
@@ -118,7 +118,7 @@ void DialogBox::create()
 // Show window such that the cursor is in it
 void DialogBox::show(FXuint placement)
 {
-    int    rw, rh, wx, wy, ww, wh, x, y;
+    int rw, rh, wx, wy, ww, wh, x, y;
     FXuint state;
 
     // Get dialog size
@@ -130,7 +130,7 @@ void DialogBox::show(FXuint placement)
     getRoot()->getCursorPosition(x, y, state);
 
     // Place such that mouse in the middle
-    if ((x < wx) || (y < wy) || (wx+ww <= x) || (wy+wh <= y))
+    if ((x < wx) || (y < wy) || (wx + ww <= x) || (wy + wh <= y))
     {
         // Get root window size
         rw = getRoot()->getWidth();
@@ -139,19 +139,19 @@ void DialogBox::show(FXuint placement)
         // Move by the minimal amount
         if (x < wx)
         {
-            wx = x-20;
+            wx = x - 20;
         }
-        else if (wx+ww <= x)
+        else if (wx + ww <= x)
         {
-            wx = x-ww+20;
+            wx = x - ww + 20;
         }
         if (y < wy)
         {
-            wy = y-20;
+            wy = y - 20;
         }
-        else if (wy+wh <= y)
+        else if (wy + wh <= y)
         {
-            wy = y-wh+20;
+            wy = y - wh + 20;
         }
 
         // Adjust so dialog is fully visible
@@ -163,13 +163,13 @@ void DialogBox::show(FXuint placement)
         {
             wy = 10;
         }
-        if (wx+ww > rw)
+        if (wx + ww > rw)
         {
-            wx = rw-ww-10;
+            wx = rw - ww - 10;
         }
-        if (wy+wh > rh)
+        if (wy + wh > rh)
         {
-            wy = rh-wh-10;
+            wy = rh - wh - 10;
         }
 
         move(wx, wy);
@@ -220,18 +220,18 @@ long DialogBox::onKeyPress(FXObject* sender, FXSelector sel, void* ptr)
 }
 
 // Keyboard release; handle escape to close the dialog
-long DialogBox::onKeyRelease(FXObject* sender,FXSelector sel,void* ptr)
+long DialogBox::onKeyRelease(FXObject* sender, FXSelector sel, void* ptr)
 {
-	if(FXTopWindow::onKeyRelease(sender,sel,ptr))
-	{
-		return 1;
-	}
+    if(FXTopWindow::onKeyRelease(sender, sel, ptr))
+    {
+        return 1;
+    }
 
-	if(((FXEvent*)ptr)->code==KEY_Escape)
-	{
-		return 1;
-	}
-	return 0;
+    if(((FXEvent*)ptr)->code == KEY_Escape)
+    {
+        return 1;
+    }
+    return 0;
 }
 
 

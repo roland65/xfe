@@ -22,8 +22,8 @@ protected:
     TextLabel*         msg;
     FXLabel*           iconlabel;
     FXHorizontalFrame* checkbutton;
-    FXuint             browsetype;
-    FXString           initialdir;
+    FXuint browsetype;
+    FXString initialdir;
 private:
     BrowseInputDialog() : input(NULL), msg(NULL), iconlabel(NULL), checkbutton(NULL), browsetype(0)
     {}

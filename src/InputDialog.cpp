@@ -21,19 +21,19 @@ FXIMPLEMENT(InputDialog, DialogBox, InputDialogMap, ARRAYNUMBER(InputDialogMap))
 
 // Construct a dialog box
 InputDialog::InputDialog(FXWindow* win, FXString inp, FXString message, FXString title, FXString label, FXIcon* icon, FXbool option, FXString optiontext) :
-    DialogBox(win, title, DECOR_TITLE|DECOR_BORDER|DECOR_STRETCHABLE|DECOR_MAXIMIZE|DECOR_CLOSE)
+    DialogBox(win, title, DECOR_TITLE | DECOR_BORDER | DECOR_STRETCHABLE | DECOR_MAXIMIZE | DECOR_CLOSE)
 {
     // Buttons
-    FXHorizontalFrame* buttons = new FXHorizontalFrame(this, PACK_UNIFORM_WIDTH|LAYOUT_SIDE_BOTTOM|LAYOUT_FILL_X, 0, 0, 0, 0, 10, 10, 5, 5);
+    FXHorizontalFrame* buttons = new FXHorizontalFrame(this, PACK_UNIFORM_WIDTH | LAYOUT_SIDE_BOTTOM | LAYOUT_FILL_X, 0, 0, 0, 0, 10, 10, 5, 5);
 
     // Accept
-    new FXButton(buttons, _("&Accept"), NULL, this, ID_ACCEPT, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0, 0, 0, 0, 20, 20);
+    new FXButton(buttons, _("&Accept"), NULL, this, ID_ACCEPT, FRAME_RAISED | FRAME_THICK | LAYOUT_RIGHT, 0, 0, 0, 0, 20, 20);
 
     // Cancel
-    new FXButton(buttons, _("&Cancel"), NULL, this, ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT, 0, 0, 0, 0, 20, 20);
+    new FXButton(buttons, _("&Cancel"), NULL, this, ID_CANCEL, FRAME_RAISED | FRAME_THICK | LAYOUT_RIGHT, 0, 0, 0, 0, 20, 20);
 
     // Optional check box
-    checkbutton = new FXHorizontalFrame(this, JUSTIFY_RIGHT|LAYOUT_SIDE_BOTTOM|LAYOUT_FILL_X, 0, 0, 0, 0, 10, 10, 0, 0);
+    checkbutton = new FXHorizontalFrame(this, JUSTIFY_RIGHT | LAYOUT_SIDE_BOTTOM | LAYOUT_FILL_X, 0, 0, 0, 0, 10, 10, 0, 0);
 
     if (option)
     {
@@ -41,17 +41,17 @@ InputDialog::InputDialog(FXWindow* win, FXString inp, FXString message, FXString
     }
 
     // Vertical frame
-    FXVerticalFrame* contents = new FXVerticalFrame(this, LAYOUT_SIDE_TOP|FRAME_NONE|LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    FXVerticalFrame* contents = new FXVerticalFrame(this, LAYOUT_SIDE_TOP | FRAME_NONE | LAYOUT_FILL_X | LAYOUT_FILL_Y);
 
     // Icon and message line
-    FXMatrix* matrix = new FXMatrix(contents, 2, MATRIX_BY_COLUMNS|LAYOUT_SIDE_TOP|LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    FXMatrix* matrix = new FXMatrix(contents, 2, MATRIX_BY_COLUMNS | LAYOUT_SIDE_TOP | LAYOUT_FILL_X | LAYOUT_FILL_Y);
     new FXLabel(matrix, "", icon, LAYOUT_LEFT);
-	msg = new FXLabel(matrix,"",NULL,JUSTIFY_LEFT|LAYOUT_CENTER_Y|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
-	msg->setText(message);
+    msg = new FXLabel(matrix, "", NULL, JUSTIFY_LEFT | LAYOUT_CENTER_Y | LAYOUT_FILL_COLUMN | LAYOUT_FILL_ROW);
+    msg->setText(message);
 
     // Label and input field
-    new FXLabel(matrix, label, NULL, LAYOUT_RIGHT|LAYOUT_CENTER_Y|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
-    input = new FXTextField(matrix, 40, 0, 0, LAYOUT_CENTER_Y|LAYOUT_CENTER_X|FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW|LAYOUT_FILL_X);
+    new FXLabel(matrix, label, NULL, LAYOUT_RIGHT | LAYOUT_CENTER_Y | LAYOUT_FILL_COLUMN | LAYOUT_FILL_ROW);
+    input = new FXTextField(matrix, 40, 0, 0, LAYOUT_CENTER_Y | LAYOUT_CENTER_X | FRAME_SUNKEN | FRAME_THICK | LAYOUT_FILL_COLUMN | LAYOUT_FILL_ROW | LAYOUT_FILL_X);
     input->setText(inp);
 }
 

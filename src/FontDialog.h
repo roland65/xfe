@@ -27,11 +27,11 @@ protected:
     FXButton*      cancel;
     FXLabel*       preview;
     FXFont*        previewfont;
-    FXFontDesc     selected;
+    FXFontDesc selected;
 protected:
     FontSelector() : family(NULL), familylist(NULL), weight(NULL), weightlist(NULL), style(NULL), stylelist(NULL), size(NULL),
-                     sizelist(NULL), charset(NULL), setwidth(NULL), pitch(NULL), scalable(NULL), allfonts(NULL), accept(NULL),
-                     cancel(NULL), preview(NULL), previewfont(NULL), selected()
+        sizelist(NULL), charset(NULL), setwidth(NULL), pitch(NULL), scalable(NULL), allfonts(NULL), accept(NULL),
+        cancel(NULL), preview(NULL), previewfont(NULL), selected()
     {}
     void listFontFaces();
     void listWeights();

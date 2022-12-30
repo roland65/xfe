@@ -43,10 +43,10 @@ protected:
         FILEPANEL_FOCUS,
         DIRPANEL_FOCUS,
     };
-    int              panel_view;
-    int              RunHistSize;
-    char             RunHistory[RUN_HIST_SIZE][MAX_COMMAND_SIZE];
-    FXbool           vertpanels;
+    int panel_view;
+    int RunHistSize;
+    char RunHistory[RUN_HIST_SIZE][MAX_COMMAND_SIZE];
+    FXbool vertpanels;
     FXSplitter*      panelsplit;
     FXMenuBar*       menubar;
     FXMenuPane*      toolsmenu;
@@ -76,45 +76,45 @@ protected:
     DirPanel*        dirpanel;
     FilePanel*       lpanel;
     FilePanel*       rpanel;
-    FXString         trashfileslocation;
-    FXString         trashinfolocation;
-    FXString         startlocation;
-    FXuint           liststyle;
-    FXColor          listbackcolor;
-    FXColor          listforecolor;
-    FXColor          highlightcolor;
-    FXColor          pbarcolor;
-    FXColor          attentioncolor;
-    FXColor          scrollbarcolor;
+    FXString trashfileslocation;
+    FXString trashinfolocation;
+    FXString startlocation;
+    FXuint liststyle;
+    FXColor listbackcolor;
+    FXColor listforecolor;
+    FXColor highlightcolor;
+    FXColor pbarcolor;
+    FXColor attentioncolor;
+    FXColor scrollbarcolor;
     FXArrowButton*   btnbackhist;
     FXArrowButton*   btnforwardhist;
     HistInputDialog* rundialog;
     PreferencesBox*  prefsdialog;
     TextWindow*      helpwindow;
-    FXString         message;
-    FXuint           panelfocus;
-    FXString         startdir1;
-    FXString         startdir2;
-    vector_FXString  startURIs;
-    FXbool           starticonic;
-    FXbool           startmaximized;
-    FXbool           smoothscroll;
-    double           twopanels_lpanel_pct;      // Panel sizes, relatively to the window width (in percent)
-    double           treepanel_tree_pct;
-    double           treetwopanels_tree_pct;
-    double           treetwopanels_lpanel_pct;
-    FXString         prevdir;
-    int              prev_width;
-    FXuint           search_xpos;
-    FXuint           search_ypos;
-    FXuint           search_width;
-    FXuint           search_height;
+    FXString message;
+    FXuint panelfocus;
+    FXString startdir1;
+    FXString startdir2;
+    vector_FXString startURIs;
+    FXbool starticonic;
+    FXbool startmaximized;
+    FXbool smoothscroll;
+    double twopanels_lpanel_pct;                // Panel sizes, relatively to the window width (in percent)
+    double treepanel_tree_pct;
+    double treetwopanels_tree_pct;
+    double treetwopanels_lpanel_pct;
+    FXString prevdir;
+    int prev_width;
+    FXuint search_xpos;
+    FXuint search_ypos;
+    FXuint search_width;
+    FXuint search_height;
     SearchWindow*    searchwindow;
-    progsmap         progs;                     // Map between program string identifiers and integer indexes
-    FXbool           winshow;                   // If true, do not show the Xfe window
-    FXbool           stop;                      // If true, stop Xfe immediately
-    int              nbstartfiles;              // Number of files to open on startup
-
+    progsmap progs;                             // Map between program string identifiers and integer indexes
+    FXbool winshow;                             // If true, do not show the Xfe window
+    FXbool stop;                                // If true, stop Xfe immediately
+    int nbstartfiles;                           // Number of files to open on startup
+    FXMenuCommand*   cpnmenu;
 
 public:
     enum
@@ -132,6 +132,7 @@ public:
         ID_DIR_FORWARD_HIST,
         ID_FILE_PROPERTIES,
         ID_FILE_COPY,
+        ID_FILE_COPYNAME,
         ID_FILE_RENAME,
         ID_FILE_MOVETO,
         ID_FILE_COPYTO,
@@ -170,16 +171,17 @@ public:
     };
 protected:
     XFileExplorer() : panel_view(0), RunHistSize(0), vertpanels(false), panelsplit(NULL), menubar(NULL), toolsmenu(NULL), filemenu(NULL),
-                      trashmenu(NULL), editmenu(NULL), bookmarksmenu(NULL), viewmenu(NULL), lpanelmenu(NULL), rpanelmenu(NULL), helpmenu(NULL),
-                      toolsmenutitle(NULL), filemenutitle(NULL), trashmenutitle(NULL), editmenutitle(NULL), bookmarksmenutitle(NULL), viewmenutitle(NULL),
-                      lpanelmenutitle(NULL), rpanelmenutitle(NULL), helpmenutitle(NULL), bookmarks(NULL), generaltoolbar(NULL),
-                      toolstoolbar(NULL), paneltoolbar(NULL), locationbar(NULL), address(NULL), dirpanel(NULL), lpanel(NULL),
-                      rpanel(NULL), liststyle(0), listbackcolor(FXRGB(0, 0, 0)), listforecolor(FXRGB(0, 0, 0)),
-                      highlightcolor(FXRGB(0, 0, 0)), pbarcolor(FXRGB(0, 0, 0)), attentioncolor(FXRGB(0, 0, 0)),
-                      scrollbarcolor(FXRGB(0, 0, 0)), btnbackhist(NULL), btnforwardhist(NULL), rundialog(NULL), prefsdialog(NULL),
-                      helpwindow(NULL), panelfocus(0), starticonic(false), startmaximized(false), smoothscroll(false),
-                      twopanels_lpanel_pct(0.0), treepanel_tree_pct(0.0), treetwopanels_tree_pct(0.0), treetwopanels_lpanel_pct(0.0),
-                      prev_width(0), search_xpos(0), search_ypos(0), search_width(0), search_height(0), searchwindow(NULL), winshow(false), stop(false), nbstartfiles(0)
+        trashmenu(NULL), editmenu(NULL), bookmarksmenu(NULL), viewmenu(NULL), lpanelmenu(NULL), rpanelmenu(NULL), helpmenu(NULL),
+        toolsmenutitle(NULL), filemenutitle(NULL), trashmenutitle(NULL), editmenutitle(NULL), bookmarksmenutitle(NULL), viewmenutitle(NULL),
+        lpanelmenutitle(NULL), rpanelmenutitle(NULL), helpmenutitle(NULL), bookmarks(NULL), generaltoolbar(NULL),
+        toolstoolbar(NULL), paneltoolbar(NULL), locationbar(NULL), address(NULL), dirpanel(NULL), lpanel(NULL),
+        rpanel(NULL), liststyle(0), listbackcolor(FXRGB(0, 0, 0)), listforecolor(FXRGB(0, 0, 0)),
+        highlightcolor(FXRGB(0, 0, 0)), pbarcolor(FXRGB(0, 0, 0)), attentioncolor(FXRGB(0, 0, 0)),
+        scrollbarcolor(FXRGB(0, 0, 0)), btnbackhist(NULL), btnforwardhist(NULL), rundialog(NULL), prefsdialog(NULL),
+        helpwindow(NULL), panelfocus(0), starticonic(false), startmaximized(false), smoothscroll(false),
+        twopanels_lpanel_pct(0.0), treepanel_tree_pct(0.0), treetwopanels_tree_pct(0.0), treetwopanels_lpanel_pct(0.0),
+        prev_width(0), search_xpos(0), search_ypos(0), search_width(0), search_height(0), searchwindow(NULL), winshow(false), stop(false), nbstartfiles(0), cpnmenu(NULL)
+
     {}
 public:
     XFileExplorer(FXApp* app, vector_FXString URIs, const FXbool iconic = false, const FXbool maximized = false, const char* title = "X File Explorer", FXIcon* bigicon = NULL, FXIcon* miniicon = NULL);
@@ -235,6 +237,7 @@ public:
     long onCmdDirForwardHist(FXObject*, FXSelector, void*);
     long onUpdDirForwardHist(FXObject*, FXSelector, void*);
     long onCmdFileCopyClp(FXObject*, FXSelector, void*);
+    long onCmdFileCopyName(FXObject*, FXSelector, void*);
     long onCmdFileCutClp(FXObject*, FXSelector, void*);
     long onCmdFileAddCopyClp(FXObject*, FXSelector, void*);
     long onCmdFileAddCutClp(FXObject*, FXSelector, void*);
@@ -277,18 +280,18 @@ public:
         dirpanel->setDefaultCursor(cur);
     }
 
-	// Deselect all items
+    // Deselect all items
     void deselectAll(void)
     {
         lpanel->deselectAll();
         rpanel->deselectAll();
-        
+
         if (searchwindow)
         {
-			searchwindow->deselectAll();
-		}
+            searchwindow->deselectAll();
+        }
     }
-	 
+
     // Refresh file panels
     void refreshPanels(void)
     {

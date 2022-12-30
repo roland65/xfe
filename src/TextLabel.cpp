@@ -8,7 +8,7 @@
 
 #include "TextLabel.h"
 
-#define JUSTIFY_MASK    (JUSTIFY_HZ_APART|JUSTIFY_VT_APART)
+#define JUSTIFY_MASK    (JUSTIFY_HZ_APART | JUSTIFY_VT_APART)
 
 
 // Map
@@ -70,7 +70,7 @@ TextLabel::TextLabel(FXComposite* p, int ncols, FXObject* tgt, FXSelector sel, F
     flags |= FLAG_ENABLED;
     target = tgt;
     message = sel;
-    if (!(options&JUSTIFY_RIGHT))
+    if (!(options & JUSTIFY_RIGHT))
     {
         options |= JUSTIFY_LEFT;
     }
@@ -135,7 +135,7 @@ void TextLabel::setFont(FXFont* fnt)
 // Enable the window
 void TextLabel::enable()
 {
-    if (!(flags&FLAG_ENABLED))
+    if (!(flags & FLAG_ENABLED))
     {
         FXFrame::enable();
         update();
@@ -146,7 +146,7 @@ void TextLabel::enable()
 // Disable the window
 void TextLabel::disable()
 {
-    if (flags&FLAG_ENABLED)
+    if (flags & FLAG_ENABLED)
     {
         FXFrame::disable();
         update();
@@ -157,14 +157,14 @@ void TextLabel::disable()
 // Get default width
 int TextLabel::getDefaultWidth()
 {
-    return(padleft+padright+(border<<1)+columns*font->getTextWidth("8", 1));
+    return(padleft + padright + (border << 1) + columns * font->getTextWidth("8", 1));
 }
 
 
 // Get default height
 int TextLabel::getDefaultHeight()
 {
-    return(padtop+padbottom+(border<<1)+font->getFontHeight());
+    return(padtop + padbottom + (border << 1) + font->getFontHeight());
 }
 
 
@@ -173,7 +173,7 @@ long TextLabel::onUpdate(FXObject* sender, FXSelector sel, void* ptr)
 {
     if (!FXFrame::onUpdate(sender, sel, ptr))
     {
-        if (options&TEXTFIELD_AUTOHIDE)
+        if (options & TEXTFIELD_AUTOHIDE)
         {
             if (shown())
             {
@@ -181,7 +181,7 @@ long TextLabel::onUpdate(FXObject* sender, FXSelector sel, void* ptr)
                 recalc();
             }
         }
-        if (options&TEXTFIELD_AUTOGRAY)
+        if (options & TEXTFIELD_AUTOGRAY)
         {
             disable();
         }
@@ -213,8 +213,8 @@ long TextLabel::onSelectionRequest(FXObject* sender, FXSelector sel, void* ptr)
 {
     FXEvent* event = (FXEvent*)ptr;
     FXString string;
-    FXuint   start;
-    FXuint   len;
+    FXuint start;
+    FXuint len;
 
     // Make sure
     FXASSERT(0 <= anchor && anchor <= contents.length());
@@ -233,19 +233,19 @@ long TextLabel::onSelectionRequest(FXObject* sender, FXSelector sel, void* ptr)
         if (anchor < cursor)
         {
             start = anchor;
-            len = cursor-anchor;
+            len = cursor - anchor;
         }
         else
         {
             start = cursor;
-            len = anchor-cursor;
+            len = anchor - cursor;
         }
 
         // Get selected fragment
         string = contents.mid(start, len);
 
         // If password mode, replace by stars
-        if (options&TEXTFIELD_PASSWD)
+        if (options & TEXTFIELD_PASSWD)
         {
             string.assign('*', string.count());
         }
@@ -313,7 +313,7 @@ long TextLabel::onClipboardRequest(FXObject* sender, FXSelector sel, void* ptr)
         string = clipped;
 
         // If password mode, replace by stars
-        if (options&TEXTFIELD_PASSWD)
+        if (options & TEXTFIELD_PASSWD)
         {
             string.assign('*', string.count());
         }
@@ -351,7 +351,7 @@ long TextLabel::onFocusIn(FXObject* sender, FXSelector sel, void* ptr)
     FXFrame::onFocusIn(sender, sel, ptr);
     if (hasSelection())
     {
-        update(border, border, width-(border<<1), height-(border<<1));
+        update(border, border, width - (border << 1), height - (border << 1));
     }
     return(1);
 }
@@ -363,7 +363,7 @@ long TextLabel::onFocusOut(FXObject* sender, FXSelector sel, void* ptr)
     FXFrame::onFocusOut(sender, sel, ptr);
     if (hasSelection())
     {
-        update(border, border, width-(border<<1), height-(border<<1));
+        update(border, border, width - (border << 1), height - (border << 1));
     }
     return(1);
 }
@@ -411,10 +411,10 @@ void TextLabel::killFocus()
     FXFrame::killFocus();
     setDefault(MAYBE);
     flags |= FLAG_UPDATE;
-    if (flags&FLAG_CHANGED)
+    if (flags & FLAG_CHANGED)
     {
         flags &= ~FLAG_CHANGED;
-        if (!(options&TEXTFIELD_ENTER_ONLY))
+        if (!(options & TEXTFIELD_ENTER_ONLY))
         {
             if (target)
             {
@@ -446,7 +446,7 @@ long TextLabel::onLeftBtnPress(FXObject*, FXSelector, void* ptr)
         if (ev->click_count == 1)
         {
             setCursorPos(index(ev->win_x));
-            if (ev->state&SHIFTMASK)
+            if (ev->state & SHIFTMASK)
             {
                 extendSelection(cursor);
             }
@@ -491,11 +491,11 @@ long TextLabel::onLeftBtnRelease(FXObject*, FXSelector, void* ptr)
 long TextLabel::onMotion(FXObject*, FXSelector, void* ptr)
 {
     FXEvent* event = (FXEvent*)ptr;
-    int      t;
+    int t;
 
-    if (flags&FLAG_PRESSED)
+    if (flags & FLAG_PRESSED)
     {
-        if ((event->win_x < (border+padleft)) || ((width-border-padright) < event->win_x))
+        if ((event->win_x < (border + padleft)) || ((width - border - padright) < event->win_x))
         {
             if (!getApp()->hasTimeout(this, ID_AUTOSCROLL))
             {
@@ -521,19 +521,19 @@ long TextLabel::onMotion(FXObject*, FXSelector, void* ptr)
 // Automatic scroll
 long TextLabel::onAutoScroll(FXObject*, FXSelector, void* ptr)
 {
-    register FXEvent* event = (FXEvent*)ptr;
+    FXEvent* event = (FXEvent*)ptr;
 
-    if (flags&FLAG_PRESSED)
+    if (flags & FLAG_PRESSED)
     {
-        register int newcursor = cursor;
-        register int ll = border+padleft;
-        register int rr = width-border-padright;
-        register int ww = rr-ll;
-        register int tw;
+        int newcursor = cursor;
+        int ll = border + padleft;
+        int rr = width - border - padright;
+        int ww = rr - ll;
+        int tw;
 
-        if (options&TEXTFIELD_PASSWD)
+        if (options & TEXTFIELD_PASSWD)
         {
-            tw = font->getTextWidth("*", 1)*contents.count();
+            tw = font->getTextWidth("*", 1) * contents.count();
         }
         else
         {
@@ -541,17 +541,17 @@ long TextLabel::onAutoScroll(FXObject*, FXSelector, void* ptr)
         }
 
         // Text right-aligned
-        if (options&JUSTIFY_RIGHT)
+        if (options & JUSTIFY_RIGHT)
         {
             // Scroll left
             if (event->win_x < ll)
             {
                 if (tw > ww)
                 {
-                    shift += ll-event->win_x;
-                    if (ww > tw-shift)
+                    shift += ll - event->win_x;
+                    if (ww > tw - shift)
                     {
-                        shift = tw-ww;
+                        shift = tw - ww;
                     }
                     else
                     {
@@ -566,7 +566,7 @@ long TextLabel::onAutoScroll(FXObject*, FXSelector, void* ptr)
             {
                 if (tw > ww)
                 {
-                    shift += rr-event->win_x;
+                    shift += rr - event->win_x;
                     if (shift <= 0)
                     {
                         shift = 0;
@@ -581,14 +581,14 @@ long TextLabel::onAutoScroll(FXObject*, FXSelector, void* ptr)
         }
 
         // Text left-aligned
-        else if (options&JUSTIFY_LEFT)
+        else if (options & JUSTIFY_LEFT)
         {
             // Scroll left
             if (event->win_x < ll)
             {
                 if (tw > ww)
                 {
-                    shift += ll-event->win_x;
+                    shift += ll - event->win_x;
                     if (shift >= 0)
                     {
                         shift = 0;
@@ -606,10 +606,10 @@ long TextLabel::onAutoScroll(FXObject*, FXSelector, void* ptr)
             {
                 if (tw > ww)
                 {
-                    shift += rr-event->win_x;
-                    if (shift+tw < ww)
+                    shift += rr - event->win_x;
+                    if (shift + tw < ww)
                     {
-                        shift = ww-tw;
+                        shift = ww - tw;
                     }
                     else
                     {
@@ -628,10 +628,10 @@ long TextLabel::onAutoScroll(FXObject*, FXSelector, void* ptr)
             {
                 if (tw > ww)
                 {
-                    shift += ll-event->win_x;
-                    if (shift > tw/2-ww/2)
+                    shift += ll - event->win_x;
+                    if (shift > tw / 2 - ww / 2)
                     {
-                        shift = tw/2-ww/2;
+                        shift = tw / 2 - ww / 2;
                     }
                     else
                     {
@@ -646,10 +646,10 @@ long TextLabel::onAutoScroll(FXObject*, FXSelector, void* ptr)
             {
                 if (tw > ww)
                 {
-                    shift += rr-event->win_x;
-                    if (shift < (ww-ww/2)-tw/2)
+                    shift += rr - event->win_x;
+                    if (shift < (ww - ww / 2) - tw / 2)
                     {
-                        shift = (ww-ww/2)-tw/2;
+                        shift = (ww - ww / 2) - tw / 2;
                     }
                     else
                     {
@@ -708,10 +708,10 @@ void TextLabel::setAnchorPos(int pos)
 // Fix scroll amount after text changes or widget resize
 void TextLabel::layout()
 {
-    register int rr = width-border-padright;
-    register int ll = border+padleft;
-    register int ww = rr-ll;
-    register int tw;
+    int rr = width - border - padright;
+    int ll = border + padleft;
+    int ww = rr - ll;
+    int tw;
 
     if (!xid)
     {
@@ -719,9 +719,9 @@ void TextLabel::layout()
     }
 
     // Figure text width
-    if (options&TEXTFIELD_PASSWD)
+    if (options & TEXTFIELD_PASSWD)
     {
-        tw = font->getTextWidth("*", 1)*contents.count();
+        tw = font->getTextWidth("*", 1) * contents.count();
     }
     else
     {
@@ -729,7 +729,7 @@ void TextLabel::layout()
     }
 
     // Constrain shift
-    if (options&JUSTIFY_RIGHT)
+    if (options & JUSTIFY_RIGHT)
     {
         if (ww >= tw)
         {
@@ -739,12 +739,12 @@ void TextLabel::layout()
         {
             shift = 0;
         }
-        else if (shift > tw-ww)
+        else if (shift > tw - ww)
         {
-            shift = tw-ww;
+            shift = tw - ww;
         }
     }
-    else if (options&JUSTIFY_LEFT)
+    else if (options & JUSTIFY_LEFT)
     {
         if (ww >= tw)
         {
@@ -754,9 +754,9 @@ void TextLabel::layout()
         {
             shift = 0;
         }
-        else if (shift < ww-tw)
+        else if (shift < ww - tw)
         {
-            shift = ww-tw;
+            shift = ww - tw;
         }
     }
     else
@@ -765,13 +765,13 @@ void TextLabel::layout()
         {
             shift = 0;
         }
-        else if (shift > tw/2-ww/2)
+        else if (shift > tw / 2 - ww / 2)
         {
-            shift = tw/2-ww/2;
+            shift = tw / 2 - ww / 2;
         }
-        else if (shift < (ww-ww/2)-tw/2)
+        else if (shift < (ww - ww / 2) - tw / 2)
         {
-            shift = (ww-ww/2)-tw/2;
+            shift = (ww - ww / 2) - tw / 2;
         }
     }
 
@@ -788,77 +788,77 @@ void TextLabel::layout()
 // Force position to become fully visible; we assume layout is correct
 void TextLabel::makePositionVisible(int pos)
 {
-    register int rr = width-border-padright;
-    register int ll = border+padleft;
-    register int ww = rr-ll;
-    register int oldshift = shift;
-    register int xx;
+    int rr = width - border - padright;
+    int ll = border + padleft;
+    int ww = rr - ll;
+    int oldshift = shift;
+    int xx;
 
     if (!xid)
     {
         return;
     }
     pos = contents.validate(FXCLAMP(0, pos, contents.length()));
-    if (options&JUSTIFY_RIGHT)
+    if (options & JUSTIFY_RIGHT)
     {
-        if (options&TEXTFIELD_PASSWD)
+        if (options & TEXTFIELD_PASSWD)
         {
-            xx = font->getTextWidth("*", 1)*contents.count(pos, contents.length());
+            xx = font->getTextWidth("*", 1) * contents.count(pos, contents.length());
         }
         else
         {
-            xx = font->getTextWidth(&contents[pos], contents.length()-pos);
+            xx = font->getTextWidth(&contents[pos], contents.length() - pos);
         }
-        if (shift-xx > 0)
+        if (shift - xx > 0)
         {
             shift = xx;
         }
-        else if (shift-xx < -ww)
+        else if (shift - xx < -ww)
         {
-            shift = xx-ww;
+            shift = xx - ww;
         }
     }
-    else if (options&JUSTIFY_LEFT)
+    else if (options & JUSTIFY_LEFT)
     {
-        if (options&TEXTFIELD_PASSWD)
+        if (options & TEXTFIELD_PASSWD)
         {
-            xx = font->getTextWidth("*", 1)*contents.index(pos);
+            xx = font->getTextWidth("*", 1) * contents.index(pos);
         }
         else
         {
             xx = font->getTextWidth(contents.text(), pos);
         }
-        if (shift+xx < 0)
+        if (shift + xx < 0)
         {
             shift = -xx;
         }
-        else if (shift+xx >= ww)
+        else if (shift + xx >= ww)
         {
-            shift = ww-xx;
+            shift = ww - xx;
         }
     }
     else
     {
-        if (options&TEXTFIELD_PASSWD)
+        if (options & TEXTFIELD_PASSWD)
         {
-            xx = font->getTextWidth("*", 1)*contents.index(pos)-(font->getTextWidth("*", 1)*contents.count())/2;
+            xx = font->getTextWidth("*", 1) * contents.index(pos) - (font->getTextWidth("*", 1) * contents.count()) / 2;
         }
         else
         {
-            xx = font->getTextWidth(contents.text(), pos)-font->getTextWidth(contents.text(), contents.length())/2;
+            xx = font->getTextWidth(contents.text(), pos) - font->getTextWidth(contents.text(), contents.length()) / 2;
         }
-        if (shift+ww/2+xx < 0)
+        if (shift + ww / 2 + xx < 0)
         {
-            shift = -ww/2-xx;
+            shift = -ww / 2 - xx;
         }
-        else if (shift+ww/2+xx >= ww)
+        else if (shift + ww / 2 + xx >= ww)
         {
-            shift = ww-ww/2-xx;
+            shift = ww - ww / 2 - xx;
         }
     }
     if (shift != oldshift)
     {
-        update(border, border, width-(border<<1), height-(border<<1));
+        update(border, border, width - (border << 1), height - (border << 1));
     }
 }
 
@@ -866,49 +866,49 @@ void TextLabel::makePositionVisible(int pos)
 // Find index from coord
 int TextLabel::index(int x) const
 {
-    register int rr = width-border-padright;
-    register int ll = border+padleft;
-    register int mm = (ll+rr)/2;
-    register int pos, xx, cw;
+    int rr = width - border - padright;
+    int ll = border + padleft;
+    int mm = (ll + rr) / 2;
+    int pos, xx, cw;
 
-    if (options&TEXTFIELD_PASSWD)
+    if (options & TEXTFIELD_PASSWD)
     {
         cw = font->getTextWidth("*", 1);
-        if (options&JUSTIFY_RIGHT)
+        if (options & JUSTIFY_RIGHT)
         {
-            xx = rr-cw*contents.count();
+            xx = rr - cw * contents.count();
         }
-        else if (options&JUSTIFY_LEFT)
+        else if (options & JUSTIFY_LEFT)
         {
             xx = ll;
         }
         else
         {
-            xx = mm-(cw*contents.count())/2;
+            xx = mm - (cw * contents.count()) / 2;
         }
         xx += shift;
-        pos = contents.offset((x-xx+(cw>>1))/cw);
+        pos = contents.offset((x - xx + (cw >> 1)) / cw);
     }
     else
     {
-        if (options&JUSTIFY_RIGHT)
+        if (options & JUSTIFY_RIGHT)
         {
-            xx = rr-font->getTextWidth(contents.text(), contents.length());
+            xx = rr - font->getTextWidth(contents.text(), contents.length());
         }
         else if
-        (options&JUSTIFY_LEFT)
+        (options & JUSTIFY_LEFT)
         {
             xx = ll;
         }
         else
         {
-            xx = mm-font->getTextWidth(contents.text(), contents.length())/2;
+            xx = mm - font->getTextWidth(contents.text(), contents.length()) / 2;
         }
         xx += shift;
         for (pos = 0; pos < contents.length(); pos = contents.inc(pos))
         {
             cw = font->getTextWidth(&contents[pos], contents.extent(pos));
-            if (x < (xx+(cw>>1)))
+            if (x < (xx + (cw >> 1)))
             {
                 break;
             }
@@ -930,46 +930,46 @@ int TextLabel::index(int x) const
 // Find coordinate from index
 int TextLabel::coord(int i) const
 {
-    register int rr = width-border-padright;
-    register int ll = border+padleft;
-    register int mm = (ll+rr)/2;
-    register int pos;
+    int rr = width - border - padright;
+    int ll = border + padleft;
+    int mm = (ll + rr) / 2;
+    int pos;
 
     FXASSERT(0 <= i && i <= contents.length());
-    if (options&JUSTIFY_RIGHT)
+    if (options & JUSTIFY_RIGHT)
     {
-        if (options&TEXTFIELD_PASSWD)
+        if (options & TEXTFIELD_PASSWD)
         {
-            pos = rr-font->getTextWidth("*", 1)*(contents.count()-contents.index(i));
+            pos = rr - font->getTextWidth("*", 1) * (contents.count() - contents.index(i));
         }
         else
         {
-            pos = rr-font->getTextWidth(&contents[i], contents.length()-i);
+            pos = rr - font->getTextWidth(&contents[i], contents.length() - i);
         }
     }
-    else if (options&JUSTIFY_LEFT)
+    else if (options & JUSTIFY_LEFT)
     {
-        if (options&TEXTFIELD_PASSWD)
+        if (options & TEXTFIELD_PASSWD)
         {
-            pos = ll+font->getTextWidth("*", 1)*contents.index(i);
+            pos = ll + font->getTextWidth("*", 1) * contents.index(i);
         }
         else
         {
-            pos = ll+font->getTextWidth(contents.text(), i);
+            pos = ll + font->getTextWidth(contents.text(), i);
         }
     }
     else
     {
-        if (options&TEXTFIELD_PASSWD)
+        if (options & TEXTFIELD_PASSWD)
         {
-            pos = mm+font->getTextWidth("*", 1)*contents.index(i)-(font->getTextWidth("*", 1)*contents.count())/2;
+            pos = mm + font->getTextWidth("*", 1) * contents.index(i) - (font->getTextWidth("*", 1) * contents.count()) / 2;
         }
         else
         {
-            pos = mm+font->getTextWidth(contents.text(), i)-font->getTextWidth(contents.text(), contents.length())/2;
+            pos = mm + font->getTextWidth(contents.text(), i) - font->getTextWidth(contents.text(), contents.length()) / 2;
         }
     }
-    return(pos+shift);
+    return(pos + shift);
 }
 
 
@@ -978,8 +978,8 @@ FXbool TextLabel::isPosVisible(int pos) const
 {
     if ((0 <= pos) && (pos <= contents.length()))
     {
-        register int x = coord(contents.validate(pos));
-        return(border+padleft <= x && x <= width-border-padright);
+        int x = coord(contents.validate(pos));
+        return(border + padleft <= x && x <= width - border - padright);
     }
     return(false);
 }
@@ -997,17 +997,17 @@ void TextLabel::drawTextFragment(FXDCWindow& dc, int x, int y, int fm, int to)
 {
     x += font->getTextWidth(contents.text(), fm);
     y += font->getFontAscent();
-    dc.drawText(x, y, &contents[fm], to-fm);
+    dc.drawText(x, y, &contents[fm], to - fm);
 }
 
 
 // Draw range of text
 void TextLabel::drawTextRange(FXDCWindow& dc, int fm, int to)
 {
-    register int sx, ex, xx, yy, cw, hh, ww, si, ei, lx, rx, t;
-    register int rr = width-border-padright;
-    register int ll = border+padleft;
-    register int mm = (ll+rr)/2;
+    int sx, ex, xx, yy, cw, hh, ww, si, ei, lx, rx, t;
+    int rr = width - border - padright;
+    int ll = border + padleft;
+    int mm = (ll + rr) / 2;
 
     if (to <= fm)
     {
@@ -1023,21 +1023,21 @@ void TextLabel::drawTextRange(FXDCWindow& dc, int fm, int to)
     hh = font->getFontHeight();
 
     // Text sticks to top of field
-    if (options&JUSTIFY_TOP)
+    if (options & JUSTIFY_TOP)
     {
-        yy = padtop+border;
+        yy = padtop + border;
     }
 
     // Text sticks to bottom of field
-    else if (options&JUSTIFY_BOTTOM)
+    else if (options & JUSTIFY_BOTTOM)
     {
-        yy = height-padbottom-border-hh;
+        yy = height - padbottom - border - hh;
     }
 
     // Text centered in y
     else
     {
-        yy = border+padtop+(height-padbottom-padtop-(border<<1)-hh)/2;
+        yy = border + padtop + (height - padbottom - padtop - (border << 1) - hh) / 2;
     }
 
     if (anchor < cursor)
@@ -1056,31 +1056,31 @@ void TextLabel::drawTextRange(FXDCWindow& dc, int fm, int to)
     ww = font->getTextWidth(contents.text(), contents.length());
 
     // Text sticks to right of field
-    if (options&JUSTIFY_RIGHT)
+    if (options & JUSTIFY_RIGHT)
     {
-        xx = shift+rr-ww;
+        xx = shift + rr - ww;
     }
 
     // Text sticks on left of field
-    else if (options&JUSTIFY_LEFT)
+    else if (options & JUSTIFY_LEFT)
     {
-        xx = shift+ll;
+        xx = shift + ll;
     }
 
     // Text centered in field
     else
     {
-        xx = shift+mm-ww/2;
+        xx = shift + mm - ww / 2;
     }
 
     // Reduce to avoid drawing excessive amounts of text
-    lx = xx+font->getTextWidth(&contents[0], fm);
-    rx = lx+font->getTextWidth(&contents[fm], to-fm);
+    lx = xx + font->getTextWidth(&contents[0], fm);
+    rx = lx + font->getTextWidth(&contents[fm], to - fm);
     while (fm < to)
     {
         t = contents.inc(fm);
-        cw = font->getTextWidth(&contents[fm], t-fm);
-        if (lx+cw >= 0)
+        cw = font->getTextWidth(&contents[fm], t - fm);
+        if (lx + cw >= 0)
         {
             break;
         }
@@ -1090,8 +1090,8 @@ void TextLabel::drawTextRange(FXDCWindow& dc, int fm, int to)
     while (fm < to)
     {
         t = contents.dec(to);
-        cw = font->getTextWidth(&contents[t], to-t);
-        if (rx-cw < width)
+        cw = font->getTextWidth(&contents[t], to - t);
+        if (rx - cw < width)
         {
             break;
         }
@@ -1136,19 +1136,19 @@ void TextLabel::drawTextRange(FXDCWindow& dc, int fm, int to)
         }
         if (si < ei)
         {
-            sx = xx+font->getTextWidth(contents.text(), si);
-            ex = xx+font->getTextWidth(contents.text(), ei);
+            sx = xx + font->getTextWidth(contents.text(), si);
+            ex = xx + font->getTextWidth(contents.text(), ei);
             if (hasFocus())
             {
                 dc.setForeground(selbackColor);
-                dc.fillRectangle(sx, padtop+border, ex-sx, height-padtop-padbottom-(border<<1));
+                dc.fillRectangle(sx, padtop + border, ex - sx, height - padtop - padbottom - (border << 1));
                 dc.setForeground(seltextColor);
                 drawTextFragment(dc, xx, yy, si, ei);
             }
             else
             {
                 dc.setForeground(baseColor);
-                dc.fillRectangle(sx, padtop+border, ex-sx, height-padtop-padbottom-(border<<1));
+                dc.fillRectangle(sx, padtop + border, ex - sx, height - padtop - padbottom - (border << 1));
                 dc.setForeground(textColor);
                 drawTextFragment(dc, xx, yy, si, ei);
             }
@@ -1177,10 +1177,10 @@ long TextLabel::onPaint(FXObject*, FXSelector, void* ptr)
     }
 
     // Draw background
-    dc.fillRectangle(border, border, width-(border<<1), height-(border<<1));
+    dc.fillRectangle(border, border, width - (border << 1), height - (border << 1));
 
     // Draw text, clipped against frame interior
-    dc.setClipRectangle(border, border, width-(border<<1), height-(border<<1));
+    dc.setClipRectangle(border, border, width - (border << 1), height - (border << 1));
     drawTextRange(dc, 0, contents.length());
 
     return(1);
@@ -1233,7 +1233,7 @@ static FXbool isdelimiter(const char* delimiters, FXwchar w)
 // Find end of previous word
 int TextLabel::leftWord(int pos) const
 {
-    register int pp = pos, p;
+    int pp = pos, p;
 
     // Ensure input is valid
     FXASSERT(0 <= pos && pos <= contents.length());
@@ -1263,7 +1263,7 @@ int TextLabel::leftWord(int pos) const
 // Find begin of next word
 int TextLabel::rightWord(int pos) const
 {
-    register int pp = pos;
+    int pp = pos;
 
     // Ensure input is valid
     FXASSERT(0 <= pos && pos <= contents.length());
@@ -1293,7 +1293,7 @@ int TextLabel::rightWord(int pos) const
 // Find begin of a word
 int TextLabel::wordStart(int pos) const
 {
-    register int p;
+    int p;
 
     FXASSERT(0 <= pos && pos <= contents.length());
     if ((pos == contents.length()) || Unicode::isSpace(contents.wc(pos)))
@@ -1433,11 +1433,11 @@ long TextLabel::onCmdCopySel(FXObject*, FXSelector, void*)
         {
             if (anchor < cursor)
             {
-                clipped = contents.mid(anchor, cursor-anchor);
+                clipped = contents.mid(anchor, cursor - anchor);
             }
             else
             {
-                clipped = contents.mid(cursor, anchor-cursor);
+                clipped = contents.mid(cursor, anchor - cursor);
             }
         }
     }
@@ -1461,11 +1461,11 @@ long TextLabel::onKeyPress(FXObject*, FXSelector, void* ptr)
         {
         case KEY_Right:
         case KEY_KP_Right:
-            if (!(event->state&SHIFTMASK))
+            if (!(event->state & SHIFTMASK))
             {
                 handle(this, FXSEL(SEL_COMMAND, ID_DESELECT_ALL), NULL);
             }
-            if (event->state&CONTROLMASK)
+            if (event->state & CONTROLMASK)
             {
                 handle(this, FXSEL(SEL_COMMAND, ID_CURSOR_WORD_RIGHT), NULL);
             }
@@ -1473,7 +1473,7 @@ long TextLabel::onKeyPress(FXObject*, FXSelector, void* ptr)
             {
                 handle(this, FXSEL(SEL_COMMAND, ID_CURSOR_RIGHT), NULL);
             }
-            if (event->state&SHIFTMASK)
+            if (event->state & SHIFTMASK)
             {
                 handle(this, FXSEL(SEL_COMMAND, ID_EXTEND), NULL);
             }
@@ -1485,11 +1485,11 @@ long TextLabel::onKeyPress(FXObject*, FXSelector, void* ptr)
 
         case KEY_Left:
         case KEY_KP_Left:
-            if (!(event->state&SHIFTMASK))
+            if (!(event->state & SHIFTMASK))
             {
                 handle(this, FXSEL(SEL_COMMAND, ID_DESELECT_ALL), NULL);
             }
-            if (event->state&CONTROLMASK)
+            if (event->state & CONTROLMASK)
             {
                 handle(this, FXSEL(SEL_COMMAND, ID_CURSOR_WORD_LEFT), NULL);
             }
@@ -1497,7 +1497,7 @@ long TextLabel::onKeyPress(FXObject*, FXSelector, void* ptr)
             {
                 handle(this, FXSEL(SEL_COMMAND, ID_CURSOR_LEFT), NULL);
             }
-            if (event->state&SHIFTMASK)
+            if (event->state & SHIFTMASK)
             {
                 handle(this, FXSEL(SEL_COMMAND, ID_EXTEND), NULL);
             }
@@ -1509,12 +1509,12 @@ long TextLabel::onKeyPress(FXObject*, FXSelector, void* ptr)
 
         case KEY_Home:
         case KEY_KP_Home:
-            if (!(event->state&SHIFTMASK))
+            if (!(event->state & SHIFTMASK))
             {
                 handle(this, FXSEL(SEL_COMMAND, ID_DESELECT_ALL), NULL);
             }
             handle(this, FXSEL(SEL_COMMAND, ID_CURSOR_HOME), NULL);
-            if (event->state&SHIFTMASK)
+            if (event->state & SHIFTMASK)
             {
                 handle(this, FXSEL(SEL_COMMAND, ID_EXTEND), NULL);
             }
@@ -1526,12 +1526,12 @@ long TextLabel::onKeyPress(FXObject*, FXSelector, void* ptr)
 
         case KEY_End:
         case KEY_KP_End:
-            if (!(event->state&SHIFTMASK))
+            if (!(event->state & SHIFTMASK))
             {
                 handle(this, FXSEL(SEL_COMMAND, ID_DESELECT_ALL), NULL);
             }
             handle(this, FXSEL(SEL_COMMAND, ID_CURSOR_END), NULL);
-            if (event->state&SHIFTMASK)
+            if (event->state & SHIFTMASK)
             {
                 handle(this, FXSEL(SEL_COMMAND, ID_EXTEND), NULL);
             }
@@ -1547,7 +1547,7 @@ long TextLabel::onKeyPress(FXObject*, FXSelector, void* ptr)
             return(1);
 
         case KEY_a:
-            if (!(event->state&CONTROLMASK))
+            if (!(event->state & CONTROLMASK))
             {
                 goto ins;
             }
@@ -1555,7 +1555,7 @@ long TextLabel::onKeyPress(FXObject*, FXSelector, void* ptr)
             return(1);
 
         case KEY_c:
-            if (!(event->state&CONTROLMASK))
+            if (!(event->state & CONTROLMASK))
             {
                 goto ins;
             }
@@ -1567,7 +1567,7 @@ long TextLabel::onKeyPress(FXObject*, FXSelector, void* ptr)
 
         default:
 ins:
-            if ((event->state&(CONTROLMASK|ALTMASK)) || ((FXuchar)event->text[0] < 32))
+            if ((event->state & (CONTROLMASK | ALTMASK)) || ((FXuchar)event->text[0] < 32))
             {
                 return(0);
             }
@@ -1614,14 +1614,14 @@ long TextLabel::onKeyRelease(FXObject*, FXSelector, void* ptr)
         case KEY_x:
         case KEY_c:
         case KEY_v:
-            if (event->state&CONTROLMASK)
+            if (event->state & CONTROLMASK)
             {
                 return(1);
             }
             break;
 
         default:
-            if ((event->state&(CONTROLMASK|ALTMASK)) || ((FXuchar)event->text[0] < 32))
+            if ((event->state & (CONTROLMASK | ALTMASK)) || ((FXuchar)event->text[0] < 32))
             {
                 return(0);
             }
@@ -1638,7 +1638,7 @@ FXbool TextLabel::killSelection()
     if (hasSelection())
     {
         releaseSelection();
-        update(border, border, width-(border<<1), height-(border<<1));
+        update(border, border, width - (border << 1), height - (border << 1));
         return(true);
     }
     return(false);
@@ -1659,7 +1659,7 @@ FXbool TextLabel::selectAll()
 FXbool TextLabel::setSelection(int pos, int len)
 {
     setAnchorPos(pos);
-    setCursorPos(pos+len);
+    setCursorPos(pos + len);
     extendSelection(cursor);
     return(true);
 }
@@ -1699,7 +1699,7 @@ FXbool TextLabel::extendSelection(int pos)
         }
     }
 
-    update(border, border, width-(border<<1), height-(border<<1));
+    update(border, border, width - (border << 1), height - (border << 1));
     return(true);
 }
 
@@ -1790,7 +1790,7 @@ void TextLabel::setNumColumns(int ncols)
 // Set text justify style
 void TextLabel::setJustify(FXuint style)
 {
-    FXuint opts = (options&~JUSTIFY_MASK) | (style&JUSTIFY_MASK);
+    FXuint opts = (options & ~JUSTIFY_MASK) | (style & JUSTIFY_MASK);
 
     if (options != opts)
     {
@@ -1805,7 +1805,7 @@ void TextLabel::setJustify(FXuint style)
 // Get text justify style
 FXuint TextLabel::getJustify() const
 {
-    return(options&JUSTIFY_MASK);
+    return(options & JUSTIFY_MASK);
 }
 
 

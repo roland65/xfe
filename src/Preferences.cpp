@@ -55,9 +55,9 @@ static FXColor makeHiliteColorGradient(FXColor color)
     g = FXGREENVAL(color);
     b = FXBLUEVAL(color);
 
-    r = (FXuint)(FXMIN(1.2*r, 255));
-    g = (FXuint)(FXMIN(1.2*g, 255));
-    b = (FXuint)(FXMIN(1.2*b, 255));
+    r = (FXuint)(FXMIN(1.2 * r, 255));
+    g = (FXuint)(FXMIN(1.2 * g, 255));
+    b = (FXuint)(FXMIN(1.2 * b, 255));
 
     return(FXRGB(r, g, b));
 }
@@ -72,9 +72,9 @@ static FXColor makeShadowColorGradient(FXColor color)
     g = FXGREENVAL(color);
     b = FXBLUEVAL(color);
 
-    r = (FXuint)(0.7*r);
-    g = (FXuint)(0.7*g);
-    b = (FXuint)(0.7*b);
+    r = (FXuint)(0.7 * r);
+    g = (FXuint)(0.7 * g);
+    b = (FXuint)(0.7 * b);
 
     return(FXRGB(r, g, b));
 }
@@ -103,12 +103,14 @@ FXDEFMAP(PreferencesBox) PreferencesMap[] =
     FXMAPFUNC(SEL_COMMAND, PreferencesBox::ID_START_HOMEDIR, PreferencesBox::onCmdStartDir),
     FXMAPFUNC(SEL_COMMAND, PreferencesBox::ID_START_CURRENTDIR, PreferencesBox::onCmdStartDir),
     FXMAPFUNC(SEL_COMMAND, PreferencesBox::ID_START_LASTDIR, PreferencesBox::onCmdStartDir),
+    FXMAPFUNC(SEL_COMMAND, PreferencesBox::ID_PKEXEC_CMD, PreferencesBox::onCmdSuMode),
     FXMAPFUNC(SEL_COMMAND, PreferencesBox::ID_SU_CMD, PreferencesBox::onCmdSuMode),
     FXMAPFUNC(SEL_COMMAND, PreferencesBox::ID_SUDO_CMD, PreferencesBox::onCmdSuMode),
     FXMAPFUNC(SEL_COMMAND, PreferencesBox::ID_STANDARD_CONTROLS, PreferencesBox::onCmdControls),
     FXMAPFUNC(SEL_COMMAND, PreferencesBox::ID_CLEARLOOKS_CONTROLS, PreferencesBox::onCmdControls),
     FXMAPFUNC(SEL_COMMAND, PreferencesBox::ID_WHEELADJUST, PreferencesBox::onCmdWheelAdjust),
     FXMAPFUNC(SEL_COMMAND, PreferencesBox::ID_SCROLLBARSIZE, PreferencesBox::onCmdScrollBarSize),
+    FXMAPFUNC(SEL_COMMAND, PreferencesBox::ID_MOUNT_TIMEOUT, PreferencesBox::onCmdMountTimeout),
     FXMAPFUNC(SEL_COMMAND, PreferencesBox::ID_CHANGE_KEYBINDINGS, PreferencesBox::onCmdChangeKeyBindings),
     FXMAPFUNC(SEL_COMMAND, PreferencesBox::ID_RESTORE_KEYBINDINGS, PreferencesBox::onCmdRestoreKeyBindings),
     FXMAPFUNC(SEL_UPDATE, PreferencesBox::ID_STANDARD_CONTROLS, PreferencesBox::onUpdControls),
@@ -116,11 +118,13 @@ FXDEFMAP(PreferencesBox) PreferencesMap[] =
     FXMAPFUNC(SEL_UPDATE, PreferencesBox::ID_COLOR, PreferencesBox::onUpdColor),
     FXMAPFUNC(SEL_UPDATE, PreferencesBox::ID_WHEELADJUST, PreferencesBox::onUpdWheelAdjust),
     FXMAPFUNC(SEL_UPDATE, PreferencesBox::ID_SCROLLBARSIZE, PreferencesBox::onUpdScrollBarSize),
+    FXMAPFUNC(SEL_UPDATE, PreferencesBox::ID_MOUNT_TIMEOUT, PreferencesBox::onUpdMountTimeout),
     FXMAPFUNC(SEL_UPDATE, PreferencesBox::ID_SINGLE_CLICK_FILEOPEN, PreferencesBox::onUpdSingleClickFileopen),
     FXMAPFUNC(SEL_UPDATE, PreferencesBox::ID_EXEC_TEXT_FILES, PreferencesBox::onUpdExecTextFiles),
     FXMAPFUNC(SEL_UPDATE, PreferencesBox::ID_CONFIRM_TRASH, PreferencesBox::onUpdTrash),
     FXMAPFUNC(SEL_UPDATE, PreferencesBox::ID_TRASH_BYPASS, PreferencesBox::onUpdTrash),
     FXMAPFUNC(SEL_UPDATE, PreferencesBox::ID_CONFIRM_DEL_EMPTYDIR, PreferencesBox::onUpdConfirmDelEmptyDir),
+    FXMAPFUNC(SEL_UPDATE, PreferencesBox::ID_PKEXEC_CMD, PreferencesBox::onUpdSuMode),
     FXMAPFUNC(SEL_UPDATE, PreferencesBox::ID_SU_CMD, PreferencesBox::onUpdSuMode),
     FXMAPFUNC(SEL_UPDATE, PreferencesBox::ID_SUDO_CMD, PreferencesBox::onUpdSuMode),
     FXMAPFUNC(SEL_UPDATE, PreferencesBox::ID_START_HOMEDIR, PreferencesBox::onUpdStartDir),
@@ -132,7 +136,7 @@ FXDEFMAP(PreferencesBox) PreferencesMap[] =
 FXIMPLEMENT(PreferencesBox, DialogBox, PreferencesMap, ARRAYNUMBER(PreferencesMap))
 
 // Construct window
-PreferencesBox::PreferencesBox(FXWindow* win, FXColor listbackcolor, FXColor listforecolor, FXColor highlightcolor, FXColor pbarcolor, FXColor attentioncolor, FXColor scrollbarcolor) : DialogBox(win, _("Preferences"), DECOR_TITLE|DECOR_BORDER|DECOR_MAXIMIZE|DECOR_STRETCHABLE|DECOR_CLOSE)
+PreferencesBox::PreferencesBox(FXWindow* win, FXColor listbackcolor, FXColor listforecolor, FXColor highlightcolor, FXColor pbarcolor, FXColor attentioncolor, FXColor scrollbarcolor) : DialogBox(win, _("Preferences"), DECOR_TITLE | DECOR_BORDER | DECOR_MAXIMIZE | DECOR_STRETCHABLE | DECOR_CLOSE)
 {
     currTheme.name = _("Current Theme");
     currTheme.color[0] = getApp()->getBaseColor();
@@ -150,36 +154,37 @@ PreferencesBox::PreferencesBox(FXWindow* win, FXColor listbackcolor, FXColor lis
 
     Themes[0] = currTheme;
     Themes[1] = Theme("Clearlooks", FXRGB(237, 236, 235), FXRGB(0, 0, 0), FXRGB(255, 255, 255), FXRGB(0, 0, 0), FXRGB(139, 175, 220), FXRGB(255, 255, 255), FXRGB(255, 255, 255), FXRGB(0, 0, 0), FXRGB(238, 238, 238), FXRGB(121, 153, 192), FXRGB(255, 0, 0), FXRGB(149, 178, 215));
-    Themes[2] = Theme("Human", FXRGB(239, 235, 231), FXRGB(0, 0, 0), FXRGB(238, 238, 238), FXRGB(0, 0, 0), FXRGB(211, 170, 123), FXRGB(255, 255, 255), FXRGB(238, 238, 238), FXRGB(0, 0, 0), FXRGB(255, 255, 255), FXRGB(195, 158, 114), FXRGB(255, 0, 0), FXRGB(212, 172, 124));
-    Themes[3] = Theme("Sea Sky", FXRGB(165, 178, 198), FXRGB(0, 0, 0), FXRGB(255, 255, 255), FXRGB(0, 0, 0), FXRGB(49, 101, 156), FXRGB(255, 255, 255), FXRGB(255, 255, 255), FXRGB(0, 0, 0), FXRGB(238, 238, 238), FXRGB(49, 101, 156), FXRGB(255, 0, 0), FXRGB(68, 106, 146));
-    Themes[4] = Theme("Blue Slate", FXRGB(156, 186, 205), FXRGB(0, 0, 0), FXRGB(197, 194, 197), FXRGB(0, 0, 0), FXRGB(82, 129, 148), FXRGB(255, 255, 255), FXRGB(197, 194, 197), FXRGB(0, 0, 0), FXRGB(238, 238, 238), FXRGB(82, 129, 148), FXRGB(255, 0, 0), FXRGB(156, 186, 205));
-    Themes[5] = Theme("FOX", FXRGB(237, 233, 227), FXRGB(0, 0, 0), FXRGB(255, 255, 255), FXRGB(0, 0, 0), FXRGB(10, 36, 106), FXRGB(255, 255, 255), FXRGB(255, 255, 255), FXRGB(0, 0, 0), FXRGB(238, 238, 238), FXRGB(10, 36, 106), FXRGB(255, 0, 0), FXRGB(237, 233, 227));
-    Themes[6] = Theme("GNOME", FXRGB(220, 218, 213), FXRGB(0, 0, 0), FXRGB(255, 255, 255), FXRGB(0, 0, 0), FXRGB(75, 105, 131), FXRGB(255, 255, 255), FXRGB(255, 255, 255), FXRGB(0, 0, 0), FXRGB(238, 238, 238), FXRGB(75, 105, 131), FXRGB(255, 0, 0), FXRGB(134, 171, 217));
-    Themes[7] = Theme("KDE", FXRGB(238, 238, 230), FXRGB(0, 0, 0), FXRGB(255, 255, 255), FXRGB(0, 0, 0), FXRGB(255, 222, 118), FXRGB(0, 0, 0), FXRGB(255, 255, 255), FXRGB(0, 0, 0), FXRGB(238, 238, 238), FXRGB(255, 222, 118), FXRGB(255, 0, 0), FXRGB(238, 238, 230));
-    Themes[8] = Theme("XFCE", FXRGB(238, 238, 238), FXRGB(0, 0, 0), FXRGB(238, 238, 238), FXRGB(0, 0, 0), FXRGB(99, 119, 146), FXRGB(255, 255, 255), FXRGB(255, 255, 255), FXRGB(0, 0, 0), FXRGB(238, 238, 238), FXRGB(99, 119, 146), FXRGB(255, 0, 0), FXRGB(238, 238, 238));
+    Themes[2] = Theme("Dark", FXRGB(52, 52, 52), FXRGB(105, 105, 105), FXRGB(30, 30, 30), FXRGB(215, 215, 215), FXRGB(49, 86, 124), FXRGB(255, 255, 255), FXRGB(52, 52, 52), FXRGB(215, 215, 215), FXRGB(69, 69, 69), FXRGB(49, 86, 124), FXRGB(255, 0, 0), FXRGB(72, 72, 72));
+    Themes[3] = Theme("Human", FXRGB(239, 235, 231), FXRGB(0, 0, 0), FXRGB(238, 238, 238), FXRGB(0, 0, 0), FXRGB(211, 170, 123), FXRGB(255, 255, 255), FXRGB(238, 238, 238), FXRGB(0, 0, 0), FXRGB(255, 255, 255), FXRGB(195, 158, 114), FXRGB(255, 0, 0), FXRGB(212, 172, 124));
+    Themes[4] = Theme("Sea Sky", FXRGB(165, 178, 198), FXRGB(0, 0, 0), FXRGB(255, 255, 255), FXRGB(0, 0, 0), FXRGB(49, 101, 156), FXRGB(255, 255, 255), FXRGB(255, 255, 255), FXRGB(0, 0, 0), FXRGB(238, 238, 238), FXRGB(49, 101, 156), FXRGB(255, 0, 0), FXRGB(68, 106, 146));
+    Themes[5] = Theme("Blue Slate", FXRGB(156, 186, 205), FXRGB(0, 0, 0), FXRGB(197, 194, 197), FXRGB(0, 0, 0), FXRGB(82, 129, 148), FXRGB(255, 255, 255), FXRGB(197, 194, 197), FXRGB(0, 0, 0), FXRGB(238, 238, 238), FXRGB(82, 129, 148), FXRGB(255, 0, 0), FXRGB(156, 186, 205));
+    Themes[6] = Theme("FOX", FXRGB(237, 233, 227), FXRGB(0, 0, 0), FXRGB(255, 255, 255), FXRGB(0, 0, 0), FXRGB(10, 36, 106), FXRGB(255, 255, 255), FXRGB(255, 255, 255), FXRGB(0, 0, 0), FXRGB(238, 238, 238), FXRGB(10, 36, 106), FXRGB(255, 0, 0), FXRGB(237, 233, 227));
+    Themes[7] = Theme("GNOME", FXRGB(220, 218, 213), FXRGB(0, 0, 0), FXRGB(255, 255, 255), FXRGB(0, 0, 0), FXRGB(75, 105, 131), FXRGB(255, 255, 255), FXRGB(255, 255, 255), FXRGB(0, 0, 0), FXRGB(238, 238, 238), FXRGB(75, 105, 131), FXRGB(255, 0, 0), FXRGB(134, 171, 217));
+    Themes[8] = Theme("KDE", FXRGB(238, 238, 230), FXRGB(0, 0, 0), FXRGB(255, 255, 255), FXRGB(0, 0, 0), FXRGB(255, 222, 118), FXRGB(0, 0, 0), FXRGB(255, 255, 255), FXRGB(0, 0, 0), FXRGB(238, 238, 238), FXRGB(255, 222, 118), FXRGB(255, 0, 0), FXRGB(238, 238, 230));
+    Themes[9] = Theme("XFCE", FXRGB(238, 238, 238), FXRGB(0, 0, 0), FXRGB(238, 238, 238), FXRGB(0, 0, 0), FXRGB(99, 119, 146), FXRGB(255, 255, 255), FXRGB(255, 255, 255), FXRGB(0, 0, 0), FXRGB(238, 238, 238), FXRGB(99, 119, 146), FXRGB(255, 0, 0), FXRGB(238, 238, 238));
 
     // Buttons
-    FXHorizontalFrame* buttons = new FXHorizontalFrame(this, LAYOUT_SIDE_BOTTOM|LAYOUT_FILL_X, 0, 0, 0, 0, 10, 10, 5, 5);
+    FXHorizontalFrame* buttons = new FXHorizontalFrame(this, LAYOUT_SIDE_BOTTOM | LAYOUT_FILL_X, 0, 0, 0, 0, 10, 10, 5, 5);
 
     // Contents
-    FXHorizontalFrame* contents = new FXHorizontalFrame(this, LAYOUT_SIDE_TOP|FRAME_NONE|LAYOUT_FILL_X|LAYOUT_FILL_Y|PACK_UNIFORM_WIDTH);
+    FXHorizontalFrame* contents = new FXHorizontalFrame(this, LAYOUT_SIDE_TOP | FRAME_NONE | LAYOUT_FILL_X | LAYOUT_FILL_Y | PACK_UNIFORM_WIDTH);
 
     // Accept
-    FXButton* ok = new FXButton(buttons, _("&Accept"), NULL, this, PreferencesBox::ID_ACCEPT, BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT|LAYOUT_CENTER_Y, 0, 0, 0, 0, 20, 20);
+    FXButton* ok = new FXButton(buttons, _("&Accept"), NULL, this, PreferencesBox::ID_ACCEPT, BUTTON_INITIAL | BUTTON_DEFAULT | FRAME_RAISED | FRAME_THICK | LAYOUT_RIGHT | LAYOUT_CENTER_Y, 0, 0, 0, 0, 20, 20);
     ok->addHotKey(KEY_Return);
     ok->setFocus();
 
     // Cancel
-    new FXButton(buttons, _("&Cancel"), NULL, this, PreferencesBox::ID_CANCEL, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT|LAYOUT_CENTER_Y, 0, 0, 0, 0, 20, 20);
+    new FXButton(buttons, _("&Cancel"), NULL, this, PreferencesBox::ID_CANCEL, FRAME_RAISED | FRAME_THICK | LAYOUT_RIGHT | LAYOUT_CENTER_Y, 0, 0, 0, 0, 20, 20);
 
     // Switcher
-    FXTabBook* tabbook = new FXTabBook(contents, NULL, 0, LAYOUT_FILL_X|LAYOUT_FILL_Y|LAYOUT_RIGHT);
+    FXTabBook* tabbook = new FXTabBook(contents, NULL, 0, LAYOUT_FILL_X | LAYOUT_FILL_Y | LAYOUT_RIGHT);
 
     // First tab - General options
     new FXTabItem(tabbook, _("&General"), NULL);
     FXVerticalFrame* options = new FXVerticalFrame(tabbook, FRAME_RAISED);
 
-    FXGroupBox* group = new FXGroupBox(options, _("Options"), GROUPBOX_TITLE_LEFT|FRAME_GROOVE|LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    FXGroupBox* group = new FXGroupBox(options, _("Options"), GROUPBOX_TITLE_LEFT | FRAME_GROOVE | LAYOUT_FILL_X | LAYOUT_FILL_Y);
     trashcan = new FXCheckButton(group, _("Use trash can for file deletion (safe delete)") + FXString(" "));
     trashbypass = new FXCheckButton(group, _("Include a command to bypass the trash can (permanent delete)") + FXString(" "), this, ID_TRASH_BYPASS);
     autosave = new FXCheckButton(group, _("Auto save layout") + FXString(" "));
@@ -192,11 +197,11 @@ PreferencesBox::PreferencesBox(FXWindow* win, FXColor listbackcolor, FXColor lis
 #ifdef STARTUP_NOTIFICATION
     usesn = new FXCheckButton(group, _("Notify when applications start up") + FXString(" "));
 #endif
-    noscript = new FXCheckButton(group, _("Don't execute text files") + FXString(" "));
+    noscript = new FXCheckButton(group, _("Don't execute script files") + FXString(" "));
 
-    FXMatrix* matrix = new FXMatrix(group, 2, MATRIX_BY_COLUMNS|LAYOUT_SIDE_TOP|LAYOUT_FILL_X|LAYOUT_FILL_Y);
-    new FXLabel(matrix, _("Date format used in file and folder lists:\n(Type 'man strftime' in a terminal for help on the format)"), NULL, JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
-    timeformat = new FXTextField(matrix, 15, NULL, 0, FRAME_THICK|FRAME_SUNKEN|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW|LAYOUT_FILL_X);
+    FXMatrix* matrix = new FXMatrix(group, 2, MATRIX_BY_COLUMNS | LAYOUT_SIDE_TOP | LAYOUT_FILL_X | LAYOUT_FILL_Y);
+    new FXLabel(matrix, _("Date format used in file and folder lists:\n(Type 'man strftime' in a terminal for help on the format)"), NULL, JUSTIFY_LEFT | LAYOUT_FILL_COLUMN | LAYOUT_FILL_ROW);
+    timeformat = new FXTextField(matrix, 15, NULL, 0, FRAME_THICK | FRAME_SUNKEN | LAYOUT_FILL_COLUMN | LAYOUT_FILL_ROW | LAYOUT_FILL_X);
     oldtimeformat = getApp()->reg().readStringEntry("SETTINGS", "time_format", DEFAULT_TIME_FORMAT);
     timeformat->setText(oldtimeformat);
 
@@ -208,44 +213,46 @@ PreferencesBox::PreferencesBox(FXWindow* win, FXColor listbackcolor, FXColor lis
     oldstartdirmode = startdirmode;
     startdirtarget.connect(startdirmode);
 
-    group = new FXGroupBox(modes, _("Starting mode"), GROUPBOX_TITLE_LEFT|FRAME_GROOVE|LAYOUT_FILL_X|LAYOUT_FILL_Y);
- 
+    group = new FXGroupBox(modes, _("Starting mode"), GROUPBOX_TITLE_LEFT | FRAME_GROOVE | LAYOUT_FILL_X | LAYOUT_FILL_Y);
+
     new FXRadioButton(group, _("Start in home folder") + FXString(" "), this, PreferencesBox::ID_START_HOMEDIR);
     new FXRadioButton(group, _("Start in current folder") + FXString(" "), this, PreferencesBox::ID_START_CURRENTDIR);
     new FXRadioButton(group, _("Start in last visited folder") + FXString(" "), this, PreferencesBox::ID_START_LASTDIR);
 
-    group = new FXGroupBox(modes, _("Scrolling mode"), GROUPBOX_TITLE_LEFT|FRAME_GROOVE|LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    group = new FXGroupBox(modes, _("Scrolling mode"), GROUPBOX_TITLE_LEFT | FRAME_GROOVE | LAYOUT_FILL_X | LAYOUT_FILL_Y);
 
-    matrix = new FXMatrix(group, 2, MATRIX_BY_COLUMNS|LAYOUT_SIDE_TOP);
+    matrix = new FXMatrix(group, 2, MATRIX_BY_COLUMNS | LAYOUT_SIDE_TOP);
     scroll = new FXCheckButton(matrix, _("Smooth scrolling in file lists and text windows") + FXString(" "));
     FXbool smoothscroll = getApp()->reg().readUnsignedEntry("SETTINGS", "smooth_scroll", true);
     scroll->setCheck(smoothscroll);
-    new FXLabel(matrix, "", NULL, JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
-    new FXLabel(matrix, _("Mouse scrolling speed:"), NULL, JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
-    FXSpinner* spinner = new FXSpinner(matrix, 3, this, PreferencesBox::ID_WHEELADJUST, JUSTIFY_RIGHT|LAYOUT_FILL_X|LAYOUT_FILL_ROW, 0, 0, 0, 0, 2, 2, 1, 1);
+    new FXLabel(matrix, "", NULL, JUSTIFY_LEFT | LAYOUT_FILL_COLUMN | LAYOUT_FILL_ROW);
+    new FXLabel(matrix, _("Mouse scrolling speed:"), NULL, JUSTIFY_LEFT | LAYOUT_FILL_COLUMN | LAYOUT_FILL_ROW);
+    FXSpinner* spinner = new FXSpinner(matrix, 3, this, PreferencesBox::ID_WHEELADJUST, JUSTIFY_RIGHT | LAYOUT_FILL_X | LAYOUT_FILL_ROW, 0, 0, 0, 0, 2, 2, 1, 1);
     spinner->setRange(1, 100);
-    new FXLabel(matrix, _("Scrollbar width:"), NULL, JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
-    spinner = new FXSpinner(matrix, 3, this, PreferencesBox::ID_SCROLLBARSIZE, JUSTIFY_RIGHT|LAYOUT_FILL_X|LAYOUT_FILL_ROW, 0, 0, 0, 0, 2, 2, 1, 1);
+    new FXLabel(matrix, _("Scrollbar width:"), NULL, JUSTIFY_LEFT | LAYOUT_FILL_COLUMN | LAYOUT_FILL_ROW);
+    spinner = new FXSpinner(matrix, 3, this, PreferencesBox::ID_SCROLLBARSIZE, JUSTIFY_RIGHT | LAYOUT_FILL_X | LAYOUT_FILL_ROW, 0, 0, 0, 0, 2, 2, 1, 1);
     spinner->setRange(1, 100);
 
-    rootgroup = new FXGroupBox(modes, _("Root mode"), GROUPBOX_TITLE_LEFT|FRAME_GROOVE|LAYOUT_FILL_X|LAYOUT_FILL_Y);
-    rootmode = new FXCheckButton(rootgroup, _("Allow root mode") + FXString(" "));
-    FXRadioButton* sudobutton = new FXRadioButton(rootgroup, _("Authentication using sudo (uses user password)") + FXString(" "), this, ID_SUDO_CMD);
-    FXRadioButton* subutton = new FXRadioButton(rootgroup, _("Authentication using su (uses root password)") + FXString(" "), this, ID_SU_CMD);
+    rootgroup = new FXGroupBox(modes, _("Root mode"), GROUPBOX_TITLE_LEFT | FRAME_GROOVE | LAYOUT_FILL_X | LAYOUT_FILL_Y);
 
-	// Su et sudo commands
-    matrix = new FXMatrix(rootgroup, 2, MATRIX_BY_COLUMNS|LAYOUT_SIDE_TOP|LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    FXVerticalFrame* vframe = new FXVerticalFrame(rootgroup, LAYOUT_SIDE_TOP | FRAME_NONE | LAYOUT_FILL_X | LAYOUT_FILL_Y);
+    rootmode = new FXCheckButton(vframe, _("Allow root mode") + FXString(" "));
+    FXRadioButton* pkexecbutton = new FXRadioButton(vframe, _("Authentication using pkexec (requires the pkexec package)") + FXString(" "), this, ID_PKEXEC_CMD);
+    FXRadioButton* sudobutton = new FXRadioButton(vframe, _("Authentication using sudo (uses user password)") + FXString(" "), this, ID_SUDO_CMD);
+    matrix = new FXMatrix(vframe, 2, MATRIX_BY_COLUMNS | LAYOUT_SIDE_TOP | LAYOUT_FILL_X);
     sudolabel = new FXLabel(matrix, _("sudo command:"), NULL, JUSTIFY_LEFT);
-    sudocmd = new FXTextField(matrix, 40, NULL, 0, FRAME_THICK|FRAME_SUNKEN);
+    sudocmd = new FXTextField(matrix, 40, NULL, 0, FRAME_THICK | FRAME_SUNKEN);
+    FXRadioButton* subutton = new FXRadioButton(vframe, _("Authentication using su (uses root password)") + FXString(" "), this, ID_SU_CMD);
+    matrix = new FXMatrix(vframe, 2, MATRIX_BY_COLUMNS | LAYOUT_SIDE_TOP | LAYOUT_FILL_X);
     sulabel = new FXLabel(matrix, _("su command:"), NULL, JUSTIFY_LEFT);
-    sucmd = new FXTextField(matrix, 40, NULL, 0, FRAME_THICK|FRAME_SUNKEN);
+    sucmd = new FXTextField(matrix, 40, NULL, 0, FRAME_THICK | FRAME_SUNKEN);
 
     FXString sudo_cmd = getApp()->reg().readStringEntry("OPTIONS", "sudo_cmd", DEFAULT_SUDO_CMD);
     FXString su_cmd = getApp()->reg().readStringEntry("OPTIONS", "su_cmd", DEFAULT_SU_CMD);
-	sudocmd->setText(sudo_cmd);
-	sucmd->setText(su_cmd);
-	sudocmd_prev = sudo_cmd;
-	sucmd_prev = su_cmd;
+    sudocmd->setText(sudo_cmd);
+    sucmd->setText(su_cmd);
+    sudocmd_prev = sudo_cmd;
+    sucmd_prev = su_cmd;
 
     FXbool root_mode = getApp()->reg().readUnsignedEntry("OPTIONS", "root_mode", true);
     rootmode->setCheck(root_mode);
@@ -255,14 +262,15 @@ PreferencesBox::PreferencesBox(FXWindow* win, FXColor listbackcolor, FXColor lis
     {
         rootgroup->disable();
         rootmode->disable();
-        subutton->disable();
+        pkexecbutton->disable();
         sudobutton->disable();
+        subutton->disable();
         sulabel->disable();
         sucmd->hide();
         sudolabel->disable();
         sudocmd->hide();
     }
-    use_sudo = getApp()->reg().readUnsignedEntry("OPTIONS", "use_sudo", true);
+    root_auth = getApp()->reg().readUnsignedEntry("OPTIONS", "root_auth", 0);
 
     FXbool use_trash_can = getApp()->reg().readUnsignedEntry("OPTIONS", "use_trash_can", true);
     trashcan->setCheck(use_trash_can);
@@ -323,7 +331,7 @@ PreferencesBox::PreferencesBox(FXWindow* win, FXColor listbackcolor, FXColor lis
     // Third tab - Dialogs
     new FXTabItem(tabbook, _("&Dialogs"), NULL);
     FXVerticalFrame* dialogs = new FXVerticalFrame(tabbook, FRAME_RAISED);
-    group = new FXGroupBox(dialogs, _("Confirmations"), GROUPBOX_TITLE_LEFT|FRAME_GROOVE|LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    group = new FXGroupBox(dialogs, _("Confirmations"), GROUPBOX_TITLE_LEFT | FRAME_GROOVE | LAYOUT_FILL_X | LAYOUT_FILL_Y);
     ask = new FXCheckButton(group, _("Confirm copy/move/rename/symlink") + FXString(" "));
     dnd = new FXCheckButton(group, _("Confirm drag and drop") + FXString(" "));
     trashmv = new FXCheckButton(group, _("Confirm move to trash/restore from trash") + FXString(" "), this, ID_CONFIRM_TRASH);
@@ -333,12 +341,29 @@ PreferencesBox::PreferencesBox(FXWindow* win, FXColor listbackcolor, FXColor lis
     exec = new FXCheckButton(group, _("Confirm execute text files") + FXString(" "), this, ID_EXEC_TEXT_FILES);
     properties = new FXCheckButton(group, _("Confirm change properties") + FXString(" "));
 
-    group = new FXGroupBox(dialogs, _("Warnings"), GROUPBOX_TITLE_LEFT|FRAME_GROOVE|LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    group = new FXGroupBox(dialogs, _("Warnings"), GROUPBOX_TITLE_LEFT | FRAME_GROOVE | LAYOUT_FILL_X | LAYOUT_FILL_Y);
     folder_warning = new FXCheckButton(group, _("Warn when setting current folder in search window") + FXString(" "));
+
 #if defined(linux)
-    mount = new FXCheckButton(group, _("Warn when mount points are not responding") + FXString(" "));
+
+    matrix = new FXMatrix(group, 2, MATRIX_BY_COLUMNS | LAYOUT_SIDE_TOP);
+    mountwarn = new FXCheckButton(matrix, _("Warn when mount points are not responding") + FXString(" "));
+    FXbool mount_warn = getApp()->reg().readUnsignedEntry("OPTIONS", "mount_warn", true);
+    mountwarn->setCheck(mount_warn);
+    new FXLabel(matrix, "", NULL, JUSTIFY_LEFT | LAYOUT_FILL_COLUMN | LAYOUT_FILL_ROW);
+    new FXLabel(matrix, _("Delay before warning (seconds):"), NULL, JUSTIFY_LEFT | LAYOUT_FILL_COLUMN | LAYOUT_FILL_ROW);
+    spinner = new FXSpinner(matrix, 3, this, PreferencesBox::ID_MOUNT_TIMEOUT, JUSTIFY_RIGHT | LAYOUT_FILL_X | LAYOUT_FILL_ROW, 0, 0, 0, 0, 2, 2, 1, 1);
+    spinner->setRange(1, 300);
+
+    FXuint value = getApp()->reg().readUnsignedEntry("OPTIONS", "mount_timeout", MOUNT_TIMEOUT);
+    spinner->setValue(value);
+
     show_mount = new FXCheckButton(group, _("Display mount / unmount success messages") + FXString(" "));
+    FXbool mount_messages = getApp()->reg().readUnsignedEntry("OPTIONS", "mount_messages", true);
+    show_mount->setCheck(mount_messages);
+
 #endif
+
     preserve_date_warning = new FXCheckButton(group, _("Warn when date preservation failed") + FXString(" "));
     root_warning = new FXCheckButton(group, _("Warn if running as root") + FXString(" "));
 
@@ -359,13 +384,6 @@ PreferencesBox::PreferencesBox(FXWindow* win, FXColor listbackcolor, FXColor lis
     FXbool confirm_dnd = getApp()->reg().readUnsignedEntry("OPTIONS", "confirm_drag_and_drop", true);
     dnd->setCheck(confirm_dnd);
 
-#if defined(linux)
-    FXbool mount_warn = getApp()->reg().readUnsignedEntry("OPTIONS", "mount_warn", true);
-    FXbool mount_messages = getApp()->reg().readUnsignedEntry("OPTIONS", "mount_messages", true);
-    mount->setCheck(mount_warn);
-    show_mount->setCheck(mount_messages);
-#endif
-
     FXbool folder_warn = getApp()->reg().readUnsignedEntry("OPTIONS", "folderwarn", true);
     folder_warning->setCheck(folder_warn);
 
@@ -373,7 +391,7 @@ PreferencesBox::PreferencesBox(FXWindow* win, FXColor listbackcolor, FXColor lis
     preserve_date_warning->setCheck(preserve_date_warn);
 
     FXbool root_warn = getApp()->reg().readUnsignedEntry("OPTIONS", "root_warn", true);
-    
+
     // User is non root
     if (getuid())
     {
@@ -387,81 +405,81 @@ PreferencesBox::PreferencesBox(FXWindow* win, FXColor listbackcolor, FXColor lis
     // Fourth tab - Programs
     new FXTabItem(tabbook, _("&Programs"), NULL);
     FXVerticalFrame* programs = new FXVerticalFrame(tabbook, FRAME_RAISED);
-    group = new FXGroupBox(programs, _("Default programs"), GROUPBOX_TITLE_LEFT|FRAME_GROOVE|LAYOUT_FILL_X|LAYOUT_FILL_Y);
-    matrix = new FXMatrix(group, 3, MATRIX_BY_COLUMNS|LAYOUT_SIDE_TOP|LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    group = new FXGroupBox(programs, _("Default programs"), GROUPBOX_TITLE_LEFT | FRAME_GROOVE | LAYOUT_FILL_X | LAYOUT_FILL_Y);
+    matrix = new FXMatrix(group, 3, MATRIX_BY_COLUMNS | LAYOUT_SIDE_TOP | LAYOUT_FILL_X | LAYOUT_FILL_Y);
 
-    new FXLabel(matrix, _("Text viewer:"), NULL, JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
-    txtviewer = new FXTextField(matrix, 30, NULL, 0, FRAME_THICK|FRAME_SUNKEN|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW|LAYOUT_FILL_X);
-    new FXButton(matrix, _("\tSelect file..."), filedialogicon, this, ID_BROWSE_TXTVIEW, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT|LAYOUT_CENTER_Y, 0, 0, 0, 0, 20, 20);
+    new FXLabel(matrix, _("Text viewer:"), NULL, JUSTIFY_LEFT | LAYOUT_FILL_COLUMN | LAYOUT_FILL_ROW);
+    txtviewer = new FXTextField(matrix, 30, NULL, 0, FRAME_THICK | FRAME_SUNKEN | LAYOUT_FILL_COLUMN | LAYOUT_FILL_ROW | LAYOUT_FILL_X);
+    new FXButton(matrix, _("\tSelect file..."), filedialogicon, this, ID_BROWSE_TXTVIEW, FRAME_RAISED | FRAME_THICK | LAYOUT_RIGHT | LAYOUT_CENTER_Y, 0, 0, 0, 0, 20, 20);
     oldtxtviewer = getApp()->reg().readStringEntry("PROGS", "txtviewer", DEFAULT_TXTVIEWER);
     txtviewer->setText(oldtxtviewer);
 
-    new FXLabel(matrix, _("Text editor:"), NULL, JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
-    txteditor = new FXTextField(matrix, 30, NULL, 0, FRAME_THICK|FRAME_SUNKEN|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW|LAYOUT_FILL_X);
-    new FXButton(matrix, _("\tSelect file..."), filedialogicon, this, ID_BROWSE_TXTEDIT, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT|LAYOUT_CENTER_Y, 0, 0, 0, 0, 20, 20);
+    new FXLabel(matrix, _("Text editor:"), NULL, JUSTIFY_LEFT | LAYOUT_FILL_COLUMN | LAYOUT_FILL_ROW);
+    txteditor = new FXTextField(matrix, 30, NULL, 0, FRAME_THICK | FRAME_SUNKEN | LAYOUT_FILL_COLUMN | LAYOUT_FILL_ROW | LAYOUT_FILL_X);
+    new FXButton(matrix, _("\tSelect file..."), filedialogicon, this, ID_BROWSE_TXTEDIT, FRAME_RAISED | FRAME_THICK | LAYOUT_RIGHT | LAYOUT_CENTER_Y, 0, 0, 0, 0, 20, 20);
     oldtxteditor = getApp()->reg().readStringEntry("PROGS", "txteditor", DEFAULT_TXTEDITOR);
     txteditor->setText(oldtxteditor);
 
-    new FXLabel(matrix, _("File comparator:"), NULL, JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
-    filecomparator = new FXTextField(matrix, 30, NULL, 0, FRAME_THICK|FRAME_SUNKEN|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW|LAYOUT_FILL_X);
-    new FXButton(matrix, _("\tSelect file..."), filedialogicon, this, ID_BROWSE_TXTEDIT, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT|LAYOUT_CENTER_Y, 0, 0, 0, 0, 20, 20);
+    new FXLabel(matrix, _("File comparator:"), NULL, JUSTIFY_LEFT | LAYOUT_FILL_COLUMN | LAYOUT_FILL_ROW);
+    filecomparator = new FXTextField(matrix, 30, NULL, 0, FRAME_THICK | FRAME_SUNKEN | LAYOUT_FILL_COLUMN | LAYOUT_FILL_ROW | LAYOUT_FILL_X);
+    new FXButton(matrix, _("\tSelect file..."), filedialogicon, this, ID_BROWSE_TXTEDIT, FRAME_RAISED | FRAME_THICK | LAYOUT_RIGHT | LAYOUT_CENTER_Y, 0, 0, 0, 0, 20, 20);
     oldfilecomparator = getApp()->reg().readStringEntry("PROGS", "filecomparator", DEFAULT_FILECOMPARATOR);
     filecomparator->setText(oldfilecomparator);
 
-    new FXLabel(matrix, _("Image editor:"), NULL, JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
-    imgeditor = new FXTextField(matrix, 30, NULL, 0, FRAME_THICK|FRAME_SUNKEN|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW|LAYOUT_FILL_X);
-    new FXButton(matrix, _("\tSelect file..."), filedialogicon, this, ID_BROWSE_IMGVIEW, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT|LAYOUT_CENTER_Y, 0, 0, 0, 0, 20, 20);
+    new FXLabel(matrix, _("Image editor:"), NULL, JUSTIFY_LEFT | LAYOUT_FILL_COLUMN | LAYOUT_FILL_ROW);
+    imgeditor = new FXTextField(matrix, 30, NULL, 0, FRAME_THICK | FRAME_SUNKEN | LAYOUT_FILL_COLUMN | LAYOUT_FILL_ROW | LAYOUT_FILL_X);
+    new FXButton(matrix, _("\tSelect file..."), filedialogicon, this, ID_BROWSE_IMGVIEW, FRAME_RAISED | FRAME_THICK | LAYOUT_RIGHT | LAYOUT_CENTER_Y, 0, 0, 0, 0, 20, 20);
     oldimgeditor = getApp()->reg().readStringEntry("PROGS", "imgeditor", DEFAULT_IMGEDITOR);
     imgeditor->setText(oldimgeditor);
 
-    new FXLabel(matrix, _("Image viewer:"), NULL, JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
-    imgviewer = new FXTextField(matrix, 30, NULL, 0, FRAME_THICK|FRAME_SUNKEN|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW|LAYOUT_FILL_X);
-    new FXButton(matrix, _("\tSelect file..."), filedialogicon, this, ID_BROWSE_IMGVIEW, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT|LAYOUT_CENTER_Y, 0, 0, 0, 0, 20, 20);
+    new FXLabel(matrix, _("Image viewer:"), NULL, JUSTIFY_LEFT | LAYOUT_FILL_COLUMN | LAYOUT_FILL_ROW);
+    imgviewer = new FXTextField(matrix, 30, NULL, 0, FRAME_THICK | FRAME_SUNKEN | LAYOUT_FILL_COLUMN | LAYOUT_FILL_ROW | LAYOUT_FILL_X);
+    new FXButton(matrix, _("\tSelect file..."), filedialogicon, this, ID_BROWSE_IMGVIEW, FRAME_RAISED | FRAME_THICK | LAYOUT_RIGHT | LAYOUT_CENTER_Y, 0, 0, 0, 0, 20, 20);
     oldimgviewer = getApp()->reg().readStringEntry("PROGS", "imgviewer", DEFAULT_IMGVIEWER);
     imgviewer->setText(oldimgviewer);
 
-    new FXLabel(matrix, _("Archiver:"), NULL, JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
-    archiver = new FXTextField(matrix, 30, NULL, 0, FRAME_THICK|FRAME_SUNKEN|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW|LAYOUT_FILL_X);
-    new FXButton(matrix, _("\tSelect file..."), filedialogicon, this, ID_BROWSE_ARCHIVER, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT|LAYOUT_CENTER_Y, 0, 0, 0, 0, 20, 20);
+    new FXLabel(matrix, _("Archiver:"), NULL, JUSTIFY_LEFT | LAYOUT_FILL_COLUMN | LAYOUT_FILL_ROW);
+    archiver = new FXTextField(matrix, 30, NULL, 0, FRAME_THICK | FRAME_SUNKEN | LAYOUT_FILL_COLUMN | LAYOUT_FILL_ROW | LAYOUT_FILL_X);
+    new FXButton(matrix, _("\tSelect file..."), filedialogicon, this, ID_BROWSE_ARCHIVER, FRAME_RAISED | FRAME_THICK | LAYOUT_RIGHT | LAYOUT_CENTER_Y, 0, 0, 0, 0, 20, 20);
     oldarchiver = getApp()->reg().readStringEntry("PROGS", "archiver", DEFAULT_ARCHIVER);
     archiver->setText(oldarchiver);
 
-    new FXLabel(matrix, _("Pdf viewer:"), NULL, JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
-    pdfviewer = new FXTextField(matrix, 30, NULL, 0, FRAME_THICK|FRAME_SUNKEN|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW|LAYOUT_FILL_X);
-    new FXButton(matrix, _("\tSelect file..."), filedialogicon, this, ID_BROWSE_PDFVIEW, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT|LAYOUT_CENTER_Y, 0, 0, 0, 0, 20, 20);
+    new FXLabel(matrix, _("Pdf viewer:"), NULL, JUSTIFY_LEFT | LAYOUT_FILL_COLUMN | LAYOUT_FILL_ROW);
+    pdfviewer = new FXTextField(matrix, 30, NULL, 0, FRAME_THICK | FRAME_SUNKEN | LAYOUT_FILL_COLUMN | LAYOUT_FILL_ROW | LAYOUT_FILL_X);
+    new FXButton(matrix, _("\tSelect file..."), filedialogicon, this, ID_BROWSE_PDFVIEW, FRAME_RAISED | FRAME_THICK | LAYOUT_RIGHT | LAYOUT_CENTER_Y, 0, 0, 0, 0, 20, 20);
     oldpdfviewer = getApp()->reg().readStringEntry("PROGS", "pdfviewer", DEFAULT_PDFVIEWER);
     pdfviewer->setText(oldpdfviewer);
 
-    new FXLabel(matrix, _("Audio player:"), NULL, JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
-    audioplayer = new FXTextField(matrix, 30, NULL, 0, FRAME_THICK|FRAME_SUNKEN|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW|LAYOUT_FILL_X);
-    new FXButton(matrix, _("\tSelect file..."), filedialogicon, this, ID_BROWSE_AUDIOPLAY, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT|LAYOUT_CENTER_Y, 0, 0, 0, 0, 20, 20);
+    new FXLabel(matrix, _("Audio player:"), NULL, JUSTIFY_LEFT | LAYOUT_FILL_COLUMN | LAYOUT_FILL_ROW);
+    audioplayer = new FXTextField(matrix, 30, NULL, 0, FRAME_THICK | FRAME_SUNKEN | LAYOUT_FILL_COLUMN | LAYOUT_FILL_ROW | LAYOUT_FILL_X);
+    new FXButton(matrix, _("\tSelect file..."), filedialogicon, this, ID_BROWSE_AUDIOPLAY, FRAME_RAISED | FRAME_THICK | LAYOUT_RIGHT | LAYOUT_CENTER_Y, 0, 0, 0, 0, 20, 20);
     oldaudioplayer = getApp()->reg().readStringEntry("PROGS", "audioplayer", DEFAULT_AUDIOPLAYER);
     audioplayer->setText(oldaudioplayer);
 
-    new FXLabel(matrix, _("Video player:"), NULL, JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
-    videoplayer = new FXTextField(matrix, 30, NULL, 0, FRAME_THICK|FRAME_SUNKEN|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW|LAYOUT_FILL_X);
-    new FXButton(matrix, _("\tSelect file..."), filedialogicon, this, ID_BROWSE_VIDEOPLAY, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT|LAYOUT_CENTER_Y, 0, 0, 0, 0, 20, 20);
+    new FXLabel(matrix, _("Video player:"), NULL, JUSTIFY_LEFT | LAYOUT_FILL_COLUMN | LAYOUT_FILL_ROW);
+    videoplayer = new FXTextField(matrix, 30, NULL, 0, FRAME_THICK | FRAME_SUNKEN | LAYOUT_FILL_COLUMN | LAYOUT_FILL_ROW | LAYOUT_FILL_X);
+    new FXButton(matrix, _("\tSelect file..."), filedialogicon, this, ID_BROWSE_VIDEOPLAY, FRAME_RAISED | FRAME_THICK | LAYOUT_RIGHT | LAYOUT_CENTER_Y, 0, 0, 0, 0, 20, 20);
     oldvideoplayer = getApp()->reg().readStringEntry("PROGS", "videoplayer", DEFAULT_VIDEOPLAYER);
     videoplayer->setText(oldvideoplayer);
 
-    new FXLabel(matrix, _("Terminal:"), NULL, JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
-    xterm = new FXTextField(matrix, 30, NULL, 0, FRAME_THICK|FRAME_SUNKEN|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW|LAYOUT_FILL_X);
-    new FXButton(matrix, _("\tSelect file..."), filedialogicon, this, ID_BROWSE_XTERM, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT|LAYOUT_CENTER_Y, 0, 0, 0, 0, 20, 20);
+    new FXLabel(matrix, _("Terminal:"), NULL, JUSTIFY_LEFT | LAYOUT_FILL_COLUMN | LAYOUT_FILL_ROW);
+    xterm = new FXTextField(matrix, 30, NULL, 0, FRAME_THICK | FRAME_SUNKEN | LAYOUT_FILL_COLUMN | LAYOUT_FILL_ROW | LAYOUT_FILL_X);
+    new FXButton(matrix, _("\tSelect file..."), filedialogicon, this, ID_BROWSE_XTERM, FRAME_RAISED | FRAME_THICK | LAYOUT_RIGHT | LAYOUT_CENTER_Y, 0, 0, 0, 0, 20, 20);
     oldxterm = getApp()->reg().readStringEntry("PROGS", "xterm", DEFAULT_TERMINAL);
     xterm->setText(oldxterm);
 
-    group = new FXGroupBox(programs, _("Volume management"), GROUPBOX_TITLE_LEFT|FRAME_GROOVE|LAYOUT_FILL_X|LAYOUT_FILL_Y);
-    matrix = new FXMatrix(group, 3, MATRIX_BY_COLUMNS|LAYOUT_SIDE_TOP|LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    group = new FXGroupBox(programs, _("Volume management"), GROUPBOX_TITLE_LEFT | FRAME_GROOVE | LAYOUT_FILL_X | LAYOUT_FILL_Y);
+    matrix = new FXMatrix(group, 3, MATRIX_BY_COLUMNS | LAYOUT_SIDE_TOP | LAYOUT_FILL_X | LAYOUT_FILL_Y);
 
-    new FXLabel(matrix, _("Mount:"), NULL, JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
-    mountcmd = new FXTextField(matrix, 30, NULL, 0, FRAME_THICK|FRAME_SUNKEN|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW|LAYOUT_FILL_X);
-    new FXButton(matrix, _("\tSelect file..."), filedialogicon, this, ID_BROWSE_MOUNTCMD, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT|LAYOUT_CENTER_Y, 0, 0, 0, 0, 20, 20);
+    new FXLabel(matrix, _("Mount:"), NULL, JUSTIFY_LEFT | LAYOUT_FILL_COLUMN | LAYOUT_FILL_ROW);
+    mountcmd = new FXTextField(matrix, 30, NULL, 0, FRAME_THICK | FRAME_SUNKEN | LAYOUT_FILL_COLUMN | LAYOUT_FILL_ROW | LAYOUT_FILL_X);
+    new FXButton(matrix, _("\tSelect file..."), filedialogicon, this, ID_BROWSE_MOUNTCMD, FRAME_RAISED | FRAME_THICK | LAYOUT_RIGHT | LAYOUT_CENTER_Y, 0, 0, 0, 0, 20, 20);
     oldmountcmd = getApp()->reg().readStringEntry("PROGS", "mount", DEFAULT_MOUNTCMD);
     mountcmd->setText(oldmountcmd);
 
-    new FXLabel(matrix, _("Unmount:"), NULL, JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
-    umountcmd = new FXTextField(matrix, 30, NULL, 0, FRAME_THICK|FRAME_SUNKEN|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW|LAYOUT_FILL_X);
-    new FXButton(matrix, _("\tSelect file..."), filedialogicon, this, ID_BROWSE_UMOUNTCMD, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT|LAYOUT_CENTER_Y, 0, 0, 0, 0, 20, 20);
+    new FXLabel(matrix, _("Unmount:"), NULL, JUSTIFY_LEFT | LAYOUT_FILL_COLUMN | LAYOUT_FILL_ROW);
+    umountcmd = new FXTextField(matrix, 30, NULL, 0, FRAME_THICK | FRAME_SUNKEN | LAYOUT_FILL_COLUMN | LAYOUT_FILL_ROW | LAYOUT_FILL_X);
+    new FXButton(matrix, _("\tSelect file..."), filedialogicon, this, ID_BROWSE_UMOUNTCMD, FRAME_RAISED | FRAME_THICK | LAYOUT_RIGHT | LAYOUT_CENTER_Y, 0, 0, 0, 0, 20, 20);
     oldumountcmd = getApp()->reg().readStringEntry("PROGS", "unmount", DEFAULT_UMOUNTCMD);
     umountcmd->setText(oldumountcmd);
 
@@ -469,9 +487,9 @@ PreferencesBox::PreferencesBox(FXWindow* win, FXColor listbackcolor, FXColor lis
     // Fifth tab - Appearance
     new FXTabItem(tabbook, _("&Appearance"), NULL);
     FXVerticalFrame* visual = new FXVerticalFrame(tabbook, FRAME_RAISED);
-    FXGroupBox*      themes = new FXGroupBox(visual, _("Color theme"), GROUPBOX_TITLE_LEFT|FRAME_GROOVE|LAYOUT_FILL_X|LAYOUT_FILL_Y);
-    FXPacker*        pack = new FXPacker(themes, FRAME_THICK|FRAME_SUNKEN|LAYOUT_FILL_Y|LAYOUT_FILL_X, 0, 0, 0, 0, 0, 0, 0, 0);
-    themesList = new FXList(pack, this, ID_THEME, LIST_BROWSESELECT|FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    FXGroupBox*      themes = new FXGroupBox(visual, _("Color theme"), GROUPBOX_TITLE_LEFT | FRAME_GROOVE | LAYOUT_FILL_X | LAYOUT_FILL_Y);
+    FXPacker*        pack = new FXPacker(themes, FRAME_THICK | FRAME_SUNKEN | LAYOUT_FILL_Y | LAYOUT_FILL_X, 0, 0, 0, 0, 0, 0, 0, 0);
+    themesList = new FXList(pack, this, ID_THEME, LIST_BROWSESELECT | FRAME_SUNKEN | FRAME_THICK | LAYOUT_FILL_X | LAYOUT_FILL_Y);
     themesList->setNumVisible(7);
     for (int i = 0; i < NUM_THEMES; i++)
     {
@@ -479,11 +497,11 @@ PreferencesBox::PreferencesBox(FXWindow* win, FXColor listbackcolor, FXColor lis
     }
     themesList->setCurrentItem(0);
 
-    FXGroupBox* colors = new FXGroupBox(visual, _("Custom colors"), GROUPBOX_TITLE_LEFT|FRAME_GROOVE|LAYOUT_FILL_X);
-    FXMatrix*   matrix3 = new FXMatrix(colors, 2, MATRIX_BY_COLUMNS|LAYOUT_SIDE_TOP|LAYOUT_FILL_X|LAYOUT_FILL_Y);
-    colorsBox = new FXComboBox(matrix3, NUM_COLORS, NULL, 0, COMBOBOX_STATIC|LAYOUT_FILL_X|LAYOUT_SIDE_RIGHT|LAYOUT_CENTER_Y);
+    FXGroupBox* colors = new FXGroupBox(visual, _("Custom colors"), GROUPBOX_TITLE_LEFT | FRAME_GROOVE | LAYOUT_FILL_X);
+    FXMatrix*   matrix3 = new FXMatrix(colors, 2, MATRIX_BY_COLUMNS | LAYOUT_SIDE_TOP | LAYOUT_FILL_X | LAYOUT_FILL_Y);
+    colorsBox = new FXComboBox(matrix3, NUM_COLORS, NULL, 0, COMBOBOX_STATIC | LAYOUT_FILL_X | LAYOUT_SIDE_RIGHT | LAYOUT_CENTER_Y);
     colorsBox->setNumVisible(NUM_COLORS);
-    cwell = new FXColorWell(matrix3, FXRGB(0, 0, 0), this, ID_COLOR, LAYOUT_FILL_X|LAYOUT_FILL_COLUMN|LAYOUT_FILL_Y, 0, 0, 0, 0, 10, 10, 0, 0);
+    cwell = new FXColorWell(matrix3, FXRGB(0, 0, 0), this, ID_COLOR, LAYOUT_FILL_X | LAYOUT_FILL_COLUMN | LAYOUT_FILL_Y, 0, 0, 0, 0, 10, 10, 0, 0);
     cwell->setTipText(_("Double click to customize the color"));
 
     colorsBox->appendItem(_("Base color"));
@@ -501,55 +519,55 @@ PreferencesBox::PreferencesBox(FXWindow* win, FXColor listbackcolor, FXColor lis
     colorsBox->setCurrentItem(0);
 
     // Monitor resolution
-    FXGroupBox* ui = new FXGroupBox(visual, _("Screen resolution"), GROUPBOX_TITLE_LEFT|FRAME_GROOVE|LAYOUT_FILL_X|LAYOUT_FILL_Y);
-    matrix = new FXMatrix(ui, 2, MATRIX_BY_COLUMNS|LAYOUT_SIDE_TOP);
-    new FXLabel(matrix, _("DPI:") + FXString(" "), NULL, JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
-    spindpi = new FXSpinner(matrix, 4, this, ID_UIDPI, JUSTIFY_RIGHT|LAYOUT_FILL_X|LAYOUT_FILL_ROW, 0, 0, 0, 0, 2, 2, 1, 1);
+    FXGroupBox* ui = new FXGroupBox(visual, _("Screen resolution"), GROUPBOX_TITLE_LEFT | FRAME_GROOVE | LAYOUT_FILL_X | LAYOUT_FILL_Y);
+    matrix = new FXMatrix(ui, 2, MATRIX_BY_COLUMNS | LAYOUT_SIDE_TOP);
+    new FXLabel(matrix, _("DPI:") + FXString(" "), NULL, JUSTIFY_LEFT | LAYOUT_FILL_COLUMN | LAYOUT_FILL_ROW);
+    spindpi = new FXSpinner(matrix, 4, this, ID_UIDPI, JUSTIFY_RIGHT | LAYOUT_FILL_X | LAYOUT_FILL_ROW, 0, 0, 0, 0, 2, 2, 1, 1);
     spindpi->setRange(60, 800);
-	uidpi = getApp()->reg().readUnsignedEntry("SETTINGS", "screenres", 100);
-	spindpi->setValue(uidpi);
-	uidpi_prev = uidpi;
+    uidpi = getApp()->reg().readUnsignedEntry("SETTINGS", "screenres", 100);
+    spindpi->setValue(uidpi);
+    uidpi_prev = uidpi;
 
     // Controls theme
-    FXGroupBox* button = new FXGroupBox(visual, _("Controls"), GROUPBOX_TITLE_LEFT|FRAME_GROOVE|LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    FXGroupBox* button = new FXGroupBox(visual, _("Controls"), GROUPBOX_TITLE_LEFT | FRAME_GROOVE | LAYOUT_FILL_X | LAYOUT_FILL_Y);
     use_clearlooks = getApp()->reg().readUnsignedEntry("SETTINGS", "use_clearlooks", true);
     new FXRadioButton(button, _("Standard (classic controls)") + FXString(" "), this, ID_STANDARD_CONTROLS);
     new FXRadioButton(button, _("Clearlooks (modern looking controls)") + FXString(" "), this, ID_CLEARLOOKS_CONTROLS);
 
     // Find iconpath from the Xfe registry settings or set it to DEFAULTICONPATH
-    FXGroupBox* group2 = new FXGroupBox(visual, _("Icon theme path"), GROUPBOX_TITLE_LEFT|FRAME_GROOVE|LAYOUT_FILL_X);
-    FXMatrix*   matrix2 = new FXMatrix(group2, 2, MATRIX_BY_COLUMNS|LAYOUT_SIDE_TOP|LAYOUT_FILL_X|LAYOUT_FILL_Y);
-    iconpath = new FXTextField(matrix2, 40, NULL, 0, FRAME_THICK|FRAME_SUNKEN|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW|LAYOUT_FILL_X);
-    new FXButton(matrix2, _("\tSelect path..."), filedialogicon, this, ID_BROWSE_ICON_PATH, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT|LAYOUT_CENTER_Y, 0, 0, 0, 0, 20, 20);
+    FXGroupBox* group2 = new FXGroupBox(visual, _("Icon theme path"), GROUPBOX_TITLE_LEFT | FRAME_GROOVE | LAYOUT_FILL_X);
+    FXMatrix*   matrix2 = new FXMatrix(group2, 2, MATRIX_BY_COLUMNS | LAYOUT_SIDE_TOP | LAYOUT_FILL_X | LAYOUT_FILL_Y);
+    iconpath = new FXTextField(matrix2, 40, NULL, 0, FRAME_THICK | FRAME_SUNKEN | LAYOUT_FILL_COLUMN | LAYOUT_FILL_ROW | LAYOUT_FILL_X);
+    new FXButton(matrix2, _("\tSelect path..."), filedialogicon, this, ID_BROWSE_ICON_PATH, FRAME_RAISED | FRAME_THICK | LAYOUT_RIGHT | LAYOUT_CENTER_Y, 0, 0, 0, 0, 20, 20);
     oldiconpath = getApp()->reg().readStringEntry("SETTINGS", "iconpath", DEFAULTICONPATH);
     iconpath->setText(oldiconpath);
 
     // Sixth tab - Fonts
     new FXTabItem(tabbook, _("&Fonts"), NULL);
     FXVerticalFrame* fonts = new FXVerticalFrame(tabbook, FRAME_RAISED);
-    FXGroupBox*      fgroup = new FXGroupBox(fonts, _("Fonts"), GROUPBOX_TITLE_LEFT|FRAME_GROOVE|LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    FXGroupBox*      fgroup = new FXGroupBox(fonts, _("Fonts"), GROUPBOX_TITLE_LEFT | FRAME_GROOVE | LAYOUT_FILL_X | LAYOUT_FILL_Y);
 
-    FXMatrix* fmatrix = new FXMatrix(fgroup, 3, MATRIX_BY_COLUMNS|LAYOUT_SIDE_TOP|LAYOUT_FILL_X|LAYOUT_FILL_Y);
-    new FXLabel(fmatrix, _("Normal font:"), NULL, JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
-    normalfont = new FXTextField(fmatrix, 30, NULL, 0, FRAME_THICK|FRAME_SUNKEN|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW|LAYOUT_FILL_X);
-    new FXButton(fmatrix, _(" Select..."), NULL, this, ID_NORMALFONT, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT|LAYOUT_CENTER_Y); //,0,0,0,0,20,20);
+    FXMatrix* fmatrix = new FXMatrix(fgroup, 3, MATRIX_BY_COLUMNS | LAYOUT_SIDE_TOP | LAYOUT_FILL_X | LAYOUT_FILL_Y);
+    new FXLabel(fmatrix, _("Normal font:"), NULL, JUSTIFY_LEFT | LAYOUT_FILL_COLUMN | LAYOUT_FILL_ROW);
+    normalfont = new FXTextField(fmatrix, 30, NULL, 0, FRAME_THICK | FRAME_SUNKEN | LAYOUT_FILL_COLUMN | LAYOUT_FILL_ROW | LAYOUT_FILL_X);
+    new FXButton(fmatrix, _(" Select..."), NULL, this, ID_NORMALFONT, FRAME_RAISED | FRAME_THICK | LAYOUT_RIGHT | LAYOUT_CENTER_Y); //,0,0,0,0,20,20);
     oldnormalfont = getApp()->reg().readStringEntry("SETTINGS", "font", DEFAULT_NORMAL_FONT);
     normalfont->setText(oldnormalfont);
 
-    new FXLabel(fmatrix, _("Text font:"), NULL, JUSTIFY_LEFT|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW);
-    textfont = new FXTextField(fmatrix, 30, NULL, 0, FRAME_THICK|FRAME_SUNKEN|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW|LAYOUT_FILL_X);
-    new FXButton(fmatrix, _(" Select..."), NULL, this, ID_TEXTFONT, FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT|LAYOUT_CENTER_Y); //0,0,0,0,20,20);
+    new FXLabel(fmatrix, _("Text font:"), NULL, JUSTIFY_LEFT | LAYOUT_FILL_COLUMN | LAYOUT_FILL_ROW);
+    textfont = new FXTextField(fmatrix, 30, NULL, 0, FRAME_THICK | FRAME_SUNKEN | LAYOUT_FILL_COLUMN | LAYOUT_FILL_ROW | LAYOUT_FILL_X);
+    new FXButton(fmatrix, _(" Select..."), NULL, this, ID_TEXTFONT, FRAME_RAISED | FRAME_THICK | LAYOUT_RIGHT | LAYOUT_CENTER_Y); //0,0,0,0,20,20);
     oldtextfont = getApp()->reg().readStringEntry("SETTINGS", "textfont", DEFAULT_TEXT_FONT);
     textfont->setText(oldtextfont);
 
     // Seventh tab - Key bindings
     new FXTabItem(tabbook, _("&Key Bindings"), NULL);
     FXVerticalFrame* keybindings = new FXVerticalFrame(tabbook, FRAME_RAISED);
-    FXGroupBox*      kbgroup = new FXGroupBox(keybindings, _("Key Bindings"), GROUPBOX_TITLE_LEFT|FRAME_GROOVE|LAYOUT_FILL_X|LAYOUT_FILL_Y);
+    FXGroupBox*      kbgroup = new FXGroupBox(keybindings, _("Key Bindings"), GROUPBOX_TITLE_LEFT | FRAME_GROOVE | LAYOUT_FILL_X | LAYOUT_FILL_Y);
 
     FXPacker* kbpack = new FXPacker(kbgroup, LAYOUT_FILL_X);
-    new FXButton(kbpack, _("Modify key bindings..."), minikeybindingsicon, this, ID_CHANGE_KEYBINDINGS, FRAME_RAISED|FRAME_THICK|ICON_BEFORE_TEXT|LAYOUT_SIDE_TOP|LAYOUT_FILL_X);  //,0,0,0,0,20,20);
-    new FXButton(kbpack, _("Restore default key bindings..."), reloadicon, this, ID_RESTORE_KEYBINDINGS, FRAME_RAISED|FRAME_THICK|ICON_BEFORE_TEXT|LAYOUT_SIDE_TOP|LAYOUT_FILL_X); //,0,0,0,0,20,20);
+    new FXButton(kbpack, _("Modify key bindings..."), minikeybindingsicon, this, ID_CHANGE_KEYBINDINGS, FRAME_RAISED | FRAME_THICK | ICON_BEFORE_TEXT | LAYOUT_SIDE_TOP | LAYOUT_FILL_X);  //,0,0,0,0,20,20);
+    new FXButton(kbpack, _("Restore default key bindings..."), reloadicon, this, ID_RESTORE_KEYBINDINGS, FRAME_RAISED | FRAME_THICK | ICON_BEFORE_TEXT | LAYOUT_SIDE_TOP | LAYOUT_FILL_X); //,0,0,0,0,20,20);
 
     // Initializations
     bindingsbox = NULL;
@@ -587,7 +605,7 @@ PreferencesBox::PreferencesBox(FXWindow* win, FXColor listbackcolor, FXColor lis
 #endif
     noscript_prev = false;
 #if defined(linux)
-    mount_prev = false;
+    mountwarn_prev = false;
     show_mount_prev = false;
 #endif
     root_warning_prev = false;
@@ -595,7 +613,7 @@ PreferencesBox::PreferencesBox(FXWindow* win, FXColor listbackcolor, FXColor lis
     preserve_date_warning_prev = false;
     themelist_prev = false;
     smoothscroll_prev = false;
-    use_sudo_prev = false;
+    root_auth_prev = 0;
     trashcan_prev = false;
 }
 
@@ -653,7 +671,7 @@ long PreferencesBox::onCmdBrowsePath(FXObject* o, FXSelector s, void* p)
 
 long PreferencesBox::onCmdBrowse(FXObject* o, FXSelector s, void* p)
 {
-    FileDialog  browse(this, _("Select an executable file"));
+    FileDialog browse(this, _("Select an executable file"));
     const char* patterns[] =
     {
         _("All files"), "*", NULL
@@ -720,9 +738,9 @@ long PreferencesBox::onCmdBrowse(FXObject* o, FXSelector s, void* p)
 // Change normal font
 long PreferencesBox::onCmdNormalFont(FXObject*, FXSelector, void*)
 {
-    FontDialog fontdlg(this, _("Change Normal Font"), DECOR_BORDER|DECOR_TITLE);
+    FontDialog fontdlg(this, _("Change Normal Font"), DECOR_BORDER | DECOR_TITLE);
     FXFontDesc fontdesc;
-    FXString   fontspec;
+    FXString fontspec;
 
     fontspec = getApp()->reg().readStringEntry("SETTINGS", "font", DEFAULT_NORMAL_FONT);
     FXFont* nfont = new FXFont(getApp(), fontspec);
@@ -737,6 +755,8 @@ long PreferencesBox::onCmdNormalFont(FXObject*, FXSelector, void*)
         fontspec = nfont->getFont();
         normalfont->setText(fontspec);
     }
+    
+    delete nfont;
     return(1);
 }
 
@@ -744,9 +764,9 @@ long PreferencesBox::onCmdNormalFont(FXObject*, FXSelector, void*)
 // Change text font
 long PreferencesBox::onCmdTextFont(FXObject*, FXSelector, void*)
 {
-    FontDialog fontdlg(this, _("Change Text Font"), DECOR_BORDER|DECOR_TITLE);
+    FontDialog fontdlg(this, _("Change Text Font"), DECOR_BORDER | DECOR_TITLE);
     FXFontDesc fontdesc;
-    FXString   fontspec;
+    FXString fontspec;
 
     fontspec = getApp()->reg().readStringEntry("SETTINGS", "textfont", DEFAULT_TEXT_FONT);
     FXFont* tfont = new FXFont(getApp(), fontspec);
@@ -760,6 +780,8 @@ long PreferencesBox::onCmdTextFont(FXObject*, FXSelector, void*)
         fontspec = tfont->getFont();
         textfont->setText(fontspec);
     }
+
+    delete tfont;
     return(1);
 }
 
@@ -776,115 +798,115 @@ long PreferencesBox::onCmdChangeKeyBindings(FXObject*, FXSelector, void*)
     }
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "go_back", "Ctrl-Backspace");
-    str = _("Go to previous folder")+TAB+key;
+    str = _("Go to previous folder") + TAB + key;
     glbBindingsDict->insert("go_back", str.text());
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "go_forward", "Shift-Backspace");
-    str = _("Go to next folder")+TAB+key;
+    str = _("Go to next folder") + TAB + key;
     glbBindingsDict->insert("go_forward", str.text());
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "go_up", "Backspace");
-    str = _("Go to parent folder")+TAB+key;
+    str = _("Go to parent folder") + TAB + key;
     glbBindingsDict->insert("go_up", str.text());
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "go_home", "Ctrl-H");
-    str = _("Go to home folder")+TAB+key;
+    str = _("Go to home folder") + TAB + key;
     glbBindingsDict->insert("go_home", str.text());
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "new_file", "Ctrl-N");
-    str = _("Create new file")+TAB+key;
+    str = _("Create new file") + TAB + key;
     glbBindingsDict->insert("new_file", str.text());
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "new_folder", "F7");
-    str = _("Create new folder")+TAB+key;
+    str = _("Create new folder") + TAB + key;
     glbBindingsDict->insert("new_folder", str.text());
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "copy", "Ctrl-C");
-    str = _("Copy to clipboard")+TAB+key;
+    str = _("Copy to clipboard") + TAB + key;
     glbBindingsDict->insert("copy", str.text());
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "cut", "Ctrl-X");
-    str = _("Cut to clipboard")+TAB+key;
+    str = _("Cut to clipboard") + TAB + key;
     glbBindingsDict->insert("cut", str.text());
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "paste", "Ctrl-V");
-    str = _("Paste from clipboard")+TAB+key;
+    str = _("Paste from clipboard") + TAB + key;
     glbBindingsDict->insert("paste", str.text());
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "big_icons", "F10");
-    str = _("Big icon list")+TAB+key;
+    str = _("Big icon list") + TAB + key;
     glbBindingsDict->insert("big_icons", str.text());
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "small_icons", "F11");
-    str = _("Small icon list")+TAB+key;
+    str = _("Small icon list") + TAB + key;
     glbBindingsDict->insert("small_icons", str.text());
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "detailed_file_list", "F12");
-    str = _("Detailed file list")+TAB+key;
+    str = _("Detailed file list") + TAB + key;
     glbBindingsDict->insert("detailed_file_list", str.text());
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "open", "Ctrl-O");
-    str = _("Open file")+TAB+key;
+    str = _("Open file") + TAB + key;
     glbBindingsDict->insert("open", str.text());
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "quit", "Ctrl-Q");
-    str = _("Quit application")+TAB+key;
+    str = _("Quit application") + TAB + key;
     glbBindingsDict->insert("quit", str.text());
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "select_all", "Ctrl-A");
-    str = _("Select all")+TAB+key;
+    str = _("Select all") + TAB + key;
     glbBindingsDict->insert("select_all", str.text());
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "deselect_all", "Ctrl-Z");
-    str = _("Deselect all")+TAB+key;
+    str = _("Deselect all") + TAB + key;
     glbBindingsDict->insert("deselect_all", str.text());
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "invert_selection", "Ctrl-I");
-    str = _("Invert selection")+TAB+key;
+    str = _("Invert selection") + TAB + key;
     glbBindingsDict->insert("invert_selection", str.text());
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "help", "F1");
-    str = _("Display help")+TAB+key;
+    str = _("Display help") + TAB + key;
     glbBindingsDict->insert("help", str.text());
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "hidden_files", "Ctrl-F6");
-    str = _("Toggle display hidden files")+TAB+key;
+    str = _("Toggle display hidden files") + TAB + key;
     glbBindingsDict->insert("hidden_files", str.text());
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "thumbnails", "Ctrl-F7");
-    str = _("Toggle display thumbnails")+TAB+key;
+    str = _("Toggle display thumbnails") + TAB + key;
     glbBindingsDict->insert("thumbnails", str.text());
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "go_work", "Shift-F2");
-    str = _("Go to working folder")+TAB+key;
+    str = _("Go to working folder") + TAB + key;
     glbBindingsDict->insert("go_work", str.text());
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "close", "Ctrl-W");
-    str = _("Close window")+TAB+key;
+    str = _("Close window") + TAB + key;
     glbBindingsDict->insert("close", str.text());
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "print", "Ctrl-P");
-    str = _("Print file")+TAB+key;
+    str = _("Print file") + TAB + key;
     glbBindingsDict->insert("print", str.text());
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "search", "Ctrl-F");
-    str = _("Search")+TAB+key;
+    str = _("Search") + TAB + key;
     glbBindingsDict->insert("search", str.text());
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "search_prev", "Ctrl-Shift-G");
-    str = _("Search previous")+TAB+key;
+    str = _("Search previous") + TAB + key;
     glbBindingsDict->insert("search_prev", str.text());
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "search_next", "Ctrl-G");
-    str = _("Search next")+TAB+key;
+    str = _("Search next") + TAB + key;
     glbBindingsDict->insert("search_next", str.text());
 
-    key = getApp()->reg().readStringEntry("KEYBINDINGS", "vert_panels", "Ctrl-Shift-F1");
-    str = _("Vertical panels")+TAB+key;
+    key = getApp()->reg().readStringEntry("KEYBINDINGS", "vert_panels", "Ctrl-Ctrl-Shift-N");
+    str = _("Vertical panels") + TAB + key;
     glbBindingsDict->insert("vert_panels", str.text());
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "horz_panels", "Ctrl-Shift-F2");
-    str = _("Horizontal panels")+TAB+key;
+    str = _("Horizontal panels") + TAB + key;
     glbBindingsDict->insert("horz_panels", str.text());
 
     // Key bindings specific to X File Explorer (Xfe)
@@ -894,128 +916,132 @@ long PreferencesBox::onCmdChangeKeyBindings(FXObject*, FXSelector, void*)
     }
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "refresh", "Ctrl-R");
-    str = _("Refresh panels")+TAB+key;
+    str = _("Refresh panels") + TAB + key;
     xfeBindingsDict->insert("refresh", str.text());
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "new_symlink", "Ctrl-J");
-    str = _("Create new symbolic link")+TAB+key;
+    str = _("Create new symbolic link") + TAB + key;
     xfeBindingsDict->insert("new_symlink", str.text());
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "properties", "F9");
-    str = _("File properties")+TAB+key;
+    str = _("File properties") + TAB + key;
     xfeBindingsDict->insert("properties", str.text());
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "move_to_trash", "Del");
-    str = _("Move files to trash")+TAB+key;
+    str = _("Move files to trash") + TAB + key;
     xfeBindingsDict->insert("move_to_trash", str.text());
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "restore_from_trash", "Alt-Del");
-    str = _("Restore files from trash")+TAB+key;
+    str = _("Restore files from trash") + TAB + key;
     xfeBindingsDict->insert("restore_from_trash", str.text());
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "delete", "Shift-Del");
-    str = _("Delete files")+TAB+key;
+    str = _("Delete files") + TAB + key;
     xfeBindingsDict->insert("delete", str.text());
 
+    key = getApp()->reg().readStringEntry("KEYBINDINGS", "copy_names", "Ctrl-Shift-N");
+    str = _("Copy file names to clipboard") + TAB + key;
+    xfeBindingsDict->insert("copy_names", str.text());
+
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "new_window", "F3");
-    str = _("Create new window")+TAB+key;
+    str = _("Create new window") + TAB + key;
     xfeBindingsDict->insert("new_window", str.text());
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "new_root_window", "Shift-F3");
-    str = _("Create new root window")+TAB+key;
+    str = _("Create new root window") + TAB + key;
     xfeBindingsDict->insert("new_root_window", str.text());
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "execute_command", "Ctrl-E");
-    str = _("Execute command")+TAB+key;
+    str = _("Execute command") + TAB + key;
     xfeBindingsDict->insert("execute_command", str.text());
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "terminal", "Ctrl-T");
-    str = _("Launch terminal")+TAB+key;
+    str = _("Launch terminal") + TAB + key;
     xfeBindingsDict->insert("terminal", str.text());
 
 #if defined(linux)
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "mount", "Ctrl-M");
-    str = _("Mount file system (Linux only)")+TAB+key;
+    str = _("Mount file system (Linux only)") + TAB + key;
     xfeBindingsDict->insert("mount", str.text());
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "unmount", "Ctrl-U");
-    str = _("Unmount file system (Linux only)")+TAB+key;
+    str = _("Unmount file system (Linux only)") + TAB + key;
     xfeBindingsDict->insert("unmount", str.text());
 #endif
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "one_panel", "Ctrl-F1");
-    str = _("One panel mode")+TAB+key;
+    str = _("One panel mode") + TAB + key;
     xfeBindingsDict->insert("one_panel", str.text());
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "tree_panel", "Ctrl-F2");
-    str = _("Tree and panel mode")+TAB+key;
+    str = _("Tree and panel mode") + TAB + key;
     xfeBindingsDict->insert("tree_panel", str.text());
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "two_panels", "Ctrl-F3");
-    str = _("Two panels mode")+TAB+key;
+    str = _("Two panels mode") + TAB + key;
     xfeBindingsDict->insert("two_panels", str.text());
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "tree_two_panels", "Ctrl-F4");
-    str = _("Tree and two panels mode")+TAB+key;
+    str = _("Tree and two panels mode") + TAB + key;
     xfeBindingsDict->insert("tree_two_panels", str.text());
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "clear_location", "Ctrl-L");
-    str = _("Clear location bar")+TAB+key;
+    str = _("Clear location bar") + TAB + key;
     xfeBindingsDict->insert("clear_location", str.text());
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "rename", "F2");
-    str = _("Rename file")+TAB+key;
+    str = _("Rename file") + TAB + key;
     xfeBindingsDict->insert("rename", str.text());
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "copy_to", "F5");
-    str = _("Copy files to location")+TAB+key;
+    str = _("Copy files to location") + TAB + key;
     xfeBindingsDict->insert("copy_to", str.text());
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "move_to", "F6");
-    str = _("Move files to location")+TAB+key;
+    str = _("Move files to location") + TAB + key;
     xfeBindingsDict->insert("move_to", str.text());
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "symlink_to", "Ctrl-S");
-    str = _("Symlink files to location")+TAB+key;
+    str = _("Symlink files to location") + TAB + key;
     xfeBindingsDict->insert("symlink_to", str.text());
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "add_bookmark", "Ctrl-B");
-    str = _("Add bookmark")+TAB+key;
+    str = _("Add bookmark") + TAB + key;
     xfeBindingsDict->insert("add_bookmark", str.text());
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "synchronize_panels", "Ctrl-Y");
-    str = _("Synchronize panels")+TAB+key;
+    str = _("Synchronize panels") + TAB + key;
     xfeBindingsDict->insert("synchronize_panels", str.text());
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "switch_panels", "Ctrl-K");
-    str = _("Switch panels")+TAB+key;
+    str = _("Switch panels") + TAB + key;
     xfeBindingsDict->insert("switch_panels", str.text());
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "go_to_trash", "Ctrl-F8");
-    str = _("Go to trash can")+TAB+key;
+    str = _("Go to trash can") + TAB + key;
     xfeBindingsDict->insert("go_to_trash", str.text());
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "empty_trash_can", "Ctrl-Del");
-    str = _("Empty trash can")+TAB+key;
+    str = _("Empty trash can") + TAB + key;
     xfeBindingsDict->insert("empty_trash_can", str.text());
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "view", "Shift-F4");
-    str = _("View")+TAB+key;
+    str = _("View") + TAB + key;
     xfeBindingsDict->insert("view", str.text());
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "edit", "F4");
-    str = _("Edit")+TAB+key;
+    str = _("Edit") + TAB + key;
     xfeBindingsDict->insert("edit", str.text());
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "compare", "F8");
-    str = _("Compare")+TAB+key;
+    str = _("Compare") + TAB + key;
     xfeBindingsDict->insert("compare", str.text());
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "hidden_dirs", "Ctrl-F5");
-    str = _("Toggle display hidden folders")+TAB+key;
+    str = _("Toggle display hidden folders") + TAB + key;
     xfeBindingsDict->insert("hidden_dirs", str.text());
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "filter", "Ctrl-D");
-    str = _("Filter files")+TAB+key;
+    str = _("Filter files") + TAB + key;
     xfeBindingsDict->insert("filter", str.text());
 
 
@@ -1026,27 +1052,27 @@ long PreferencesBox::onCmdChangeKeyBindings(FXObject*, FXSelector, void*)
     }
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "zoom_100", "Ctrl-I");
-    str = _("Zoom image to 100%")+TAB+key;
+    str = _("Zoom image to 100%") + TAB + key;
     xfiBindingsDict->insert("zoom_100", str.text());
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "zoom_win", "Ctrl-F");
-    str = _("Zoom to fit window")+TAB+key;
+    str = _("Zoom to fit window") + TAB + key;
     xfiBindingsDict->insert("zoom_win", str.text());
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "rotate_left", "Ctrl-L");
-    str = _("Rotate image to left")+TAB+key;
+    str = _("Rotate image to left") + TAB + key;
     xfiBindingsDict->insert("rotate_left", str.text());
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "rotate_right", "Ctrl-R");
-    str = _("Rotate image to right")+TAB+key;
+    str = _("Rotate image to right") + TAB + key;
     xfiBindingsDict->insert("rotate_right", str.text());
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "mirror_horizontally", "Ctrl-Shift-H");
-    str = _("Mirror image horizontally")+TAB+key;
+    str = _("Mirror image horizontally") + TAB + key;
     xfiBindingsDict->insert("mirror_horizontally", str.text());
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "mirror_vertically", "Ctrl-Shift-V");
-    str = _("Mirror image vertically")+TAB+key;
+    str = _("Mirror image vertically") + TAB + key;
     xfiBindingsDict->insert("mirror_vertically", str.text());
 
     // Key bindings specific to X File Write (Xfw)
@@ -1056,43 +1082,43 @@ long PreferencesBox::onCmdChangeKeyBindings(FXObject*, FXSelector, void*)
     }
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "new", "Ctrl-N");
-    str = _("Create new document")+TAB+key;
+    str = _("Create new document") + TAB + key;
     xfwBindingsDict->insert("new", str.text());
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "save", "Ctrl-S");
-    str = _("Save changes to file")+TAB+key;
+    str = _("Save changes to file") + TAB + key;
     xfwBindingsDict->insert("save", str.text());
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "goto_line", "Ctrl-L");
-    str = _("Goto line")+TAB+key;
+    str = _("Goto line") + TAB + key;
     xfwBindingsDict->insert("goto_line", str.text());
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "undo", "Ctrl-Z");
-    str = _("Undo last change")+TAB+key;
+    str = _("Undo last change") + TAB + key;
     xfwBindingsDict->insert("undo", str.text());
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "redo", "Ctrl-Y");
-    str = _("Redo last change")+TAB+key;
+    str = _("Redo last change") + TAB + key;
     xfwBindingsDict->insert("redo", str.text());
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "replace", "Ctrl-R");
-    str = _("Replace string")+TAB+key;
+    str = _("Replace string") + TAB + key;
     xfwBindingsDict->insert("replace", str.text());
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "word_wrap", "Ctrl-K");
-    str = _("Toggle word wrap mode")+TAB+key;
+    str = _("Toggle word wrap mode") + TAB + key;
     xfwBindingsDict->insert("word_wrap", str.text());
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "line_numbers", "Ctrl-T");
-    str = _("Toggle line numbers mode")+TAB+key;
+    str = _("Toggle line numbers mode") + TAB + key;
     xfwBindingsDict->insert("line_numbers", str.text());
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "lower_case", "Ctrl-U");
-    str = _("Toggle lower case mode")+TAB+key;
+    str = _("Toggle lower case mode") + TAB + key;
     xfwBindingsDict->insert("lower_case", str.text());
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "upper_case", "Ctrl-Shift-U");
-    str = _("Toggle upper case mode")+TAB+key;
+    str = _("Toggle upper case mode") + TAB + key;
     xfwBindingsDict->insert("upper_case", str.text());
 
     // Display the key bindings dialog box
@@ -1111,8 +1137,8 @@ long PreferencesBox::onCmdChangeKeyBindings(FXObject*, FXSelector, void*)
 long PreferencesBox::onCmdRestoreKeyBindings(FXObject*, FXSelector, void*)
 {
     // Confirmation message
-    FXString   message = _("Do you really want to restore the default key bindings?\n\nAll your customizations will be lost!");
-    MessageBox box(this, _("Restore default key bindings"), message, keybindingsicon, BOX_OK_CANCEL|DECOR_TITLE|DECOR_BORDER);
+    FXString message = _("Do you really want to restore the default key bindings?\n\nAll your customizations will be lost!");
+    MessageBox box(this, _("Restore default key bindings"), message, keybindingsicon, BOX_OK_CANCEL | DECOR_TITLE | DECOR_BORDER);
 
     if (box.execute(PLACEMENT_CURSOR) != BOX_CLICKED_OK)
     {
@@ -1148,7 +1174,7 @@ long PreferencesBox::onCmdRestoreKeyBindings(FXObject*, FXSelector, void*)
     getApp()->reg().writeStringEntry("KEYBINDINGS", "search", "Ctrl-F");
     getApp()->reg().writeStringEntry("KEYBINDINGS", "search_prev", "Ctrl-Shift-G");
     getApp()->reg().writeStringEntry("KEYBINDINGS", "search_next", "Ctrl-G");
-    getApp()->reg().writeStringEntry("KEYBINDINGS", "vert_panels", "Ctrl-Shift-F1");
+    getApp()->reg().writeStringEntry("KEYBINDINGS", "vert_panels", "Ctrl-Ctrl-Shift-N");
     getApp()->reg().writeStringEntry("KEYBINDINGS", "horz_panels", "Ctrl-Shift-F2");
 
     // Key bindings specific to X File Explorer (Xfe)
@@ -1173,6 +1199,7 @@ long PreferencesBox::onCmdRestoreKeyBindings(FXObject*, FXSelector, void*)
     getApp()->reg().writeStringEntry("KEYBINDINGS", "clear_location", "Ctrl-L");
     getApp()->reg().writeStringEntry("KEYBINDINGS", "rename", "F2");
     getApp()->reg().writeStringEntry("KEYBINDINGS", "copy_to", "F5");
+    getApp()->reg().writeStringEntry("KEYBINDINGS", "copy_names", "Ctrl-Shift-N");
     getApp()->reg().writeStringEntry("KEYBINDINGS", "move_to", "F6");
     getApp()->reg().writeStringEntry("KEYBINDINGS", "symlink_to", "Ctrl-S");
     getApp()->reg().writeStringEntry("KEYBINDINGS", "add_bookmark", "Ctrl-B");
@@ -1303,6 +1330,7 @@ long PreferencesBox::onCmdAccept(FXObject* o, FXSelector s, void* p)
                 assoc->replace(key.text(), value.text());
             }
         }
+        delete assoc;
     }
 
     // Text editor has changed
@@ -1354,6 +1382,7 @@ long PreferencesBox::onCmdAccept(FXObject* o, FXSelector s, void* p)
                 assoc->replace(key.text(), value.text());
             }
         }
+        delete assoc;
     }
 
     // File comparator has changed
@@ -1413,6 +1442,7 @@ long PreferencesBox::onCmdAccept(FXObject* o, FXSelector s, void* p)
                 assoc->replace(key.text(), value.text());
             }
         }
+        delete assoc;
     }
 
     // Image viewer has changed
@@ -1464,6 +1494,7 @@ long PreferencesBox::onCmdAccept(FXObject* o, FXSelector s, void* p)
                 assoc->replace(key.text(), value.text());
             }
         }
+        delete assoc;
     }
 
     // Archiver has changed
@@ -1520,6 +1551,7 @@ long PreferencesBox::onCmdAccept(FXObject* o, FXSelector s, void* p)
                 assoc->replace(key.text(), value.text());
             }
         }
+        delete assoc;
     }
 
     // PDF viewer has changed
@@ -1571,7 +1603,8 @@ long PreferencesBox::onCmdAccept(FXObject* o, FXSelector s, void* p)
                 assoc->replace(key.text(), value.text());
             }
         }
-    }
+        delete assoc;
+   }
 
     // Audio player has changed
     if (oldaudioplayer != audioplayer->getText())
@@ -1622,6 +1655,7 @@ long PreferencesBox::onCmdAccept(FXObject* o, FXSelector s, void* p)
                 assoc->replace(key.text(), value.text());
             }
         }
+        delete assoc;
     }
 
     // Video player has changed
@@ -1673,6 +1707,7 @@ long PreferencesBox::onCmdAccept(FXObject* o, FXSelector s, void* p)
                 assoc->replace(key.text(), value.text());
             }
         }
+        delete assoc;
     }
 
     // Terminal has changed
@@ -1709,7 +1744,7 @@ long PreferencesBox::onCmdAccept(FXObject* o, FXSelector s, void* p)
     getApp()->reg().writeUnsignedEntry("OPTIONS", "confirm_drag_and_drop", dnd->getCheck());
     getApp()->reg().writeUnsignedEntry("OPTIONS", "folder_warn", folder_warning->getCheck());
     getApp()->reg().writeUnsignedEntry("OPTIONS", "preserve_date_warn", preserve_date_warning->getCheck());
-    getApp()->reg().writeUnsignedEntry("OPTIONS", "startdir_mode", startdirmode-ID_START_HOMEDIR);
+    getApp()->reg().writeUnsignedEntry("OPTIONS", "startdir_mode", startdirmode - ID_START_HOMEDIR);
     getApp()->reg().writeUnsignedEntry("OPTIONS", "root_warn", root_warning->getCheck());
     getApp()->reg().writeUnsignedEntry("OPTIONS", "root_mode", rootmode->getCheck());
     getApp()->reg().writeStringEntry("OPTIONS", "sudo_cmd", sudocmd->getText().text());
@@ -1719,7 +1754,7 @@ long PreferencesBox::onCmdAccept(FXObject* o, FXSelector s, void* p)
 #endif
     getApp()->reg().writeUnsignedEntry("OPTIONS", "no_script", noscript->getCheck());
 #if defined(linux)
-    getApp()->reg().writeUnsignedEntry("OPTIONS", "mount_warn", mount->getCheck());
+    getApp()->reg().writeUnsignedEntry("OPTIONS", "mount_warn", mountwarn->getCheck());
     getApp()->reg().writeUnsignedEntry("OPTIONS", "mount_messages", show_mount->getCheck());
 #endif
 
@@ -1853,18 +1888,18 @@ long PreferencesBox::onCmdAccept(FXObject* o, FXSelector s, void* p)
         getApp()->reg().write();
         restart_theme = true;
     }
-    
+
     // UI DPI
-	uidpi = spindpi->getValue();
+    uidpi = spindpi->getValue();
     if (uidpi != uidpi_prev)
     {
-		getApp()->reg().writeUnsignedEntry("SETTINGS", "screenres", uidpi);
+        getApp()->reg().writeUnsignedEntry("SETTINGS", "screenres", uidpi);
         getApp()->reg().write();
-		restart_uidpi = true;
-	}
+        restart_uidpi = true;
+    }
 
     // Restart application if necessary
-    if (restart_smoothscroll | restart_scrollbarsize|restart_theme|restart_pathlink|restart_controls|restart_normalfont|restart_textfont|restart_uidpi)
+    if (restart_smoothscroll | restart_scrollbarsize | restart_theme | restart_pathlink | restart_controls | restart_normalfont | restart_textfont | restart_uidpi)
     {
         if (BOX_CLICKED_CANCEL != MessageBox::question(this, BOX_OK_CANCEL, _("Restart"), _("Preferences will be changed after restart.\nRestart X File Explorer now?")))
         {
@@ -1909,8 +1944,8 @@ long PreferencesBox::onCmdCancel(FXObject* o, FXSelector s, void* p)
     getApp()->setWheelLines(wheellines_prev);
     getApp()->setScrollBarSize(scrollbarsize_prev);
     rootmode->setCheck(rootmode_prev);
-    use_sudo = use_sudo_prev;
-    getApp()->reg().writeUnsignedEntry("OPTIONS", "use_sudo", use_sudo);
+    root_auth = root_auth_prev;
+    getApp()->reg().writeUnsignedEntry("OPTIONS", "root_auth", root_auth);
     sudocmd->setText(sudocmd_prev);
     sucmd->setText(sucmd_prev);
 
@@ -1924,7 +1959,7 @@ long PreferencesBox::onCmdCancel(FXObject* o, FXSelector s, void* p)
     overwrite->setCheck(overwrite_prev);
     exec->setCheck(exec_prev);
 #if defined(linux)
-    mount->setCheck(mount_prev);
+    mountwarn->setCheck(mountwarn_prev);
     show_mount->setCheck(show_mount_prev);
 #endif
     folder_warning->setCheck(folder_warning_prev);
@@ -1951,7 +1986,7 @@ long PreferencesBox::onCmdCancel(FXObject* o, FXSelector s, void* p)
     iconpath->setText(oldiconpath);
     use_clearlooks = use_clearlooks_prev;
     getApp()->reg().writeUnsignedEntry("SETTINGS", "use_clearlooks", use_clearlooks);
-	spindpi->setValue(uidpi_prev);
+    spindpi->setValue(uidpi_prev);
 
     // Sixth tab - Fonts
     normalfont->setText(oldnormalfont);
@@ -1985,15 +2020,15 @@ FXuint PreferencesBox::execute(FXuint placement)
 #endif
     noscript_prev = noscript->getCheck();
 
-	// Second tab - Modes
+    // Second tab - Modes
     wheellines_prev = getApp()->getWheelLines();
     scrollbarsize_prev = getApp()->getScrollBarSize();
-    use_sudo_prev = use_sudo;
+    root_auth_prev = root_auth;
     smoothscroll_prev = scroll->getCheck();
     rootmode_prev = rootmode->getCheck();
-	sudocmd_prev = sudocmd->getText();
-	sucmd_prev = sucmd->getText();
-	
+    sudocmd_prev = sudocmd->getText();
+    sucmd_prev = sucmd->getText();
+
     // Third tab - Dialogs
     ask_prev = ask->getCheck();
     dnd_prev = dnd->getCheck();
@@ -2004,7 +2039,7 @@ FXuint PreferencesBox::execute(FXuint placement)
     overwrite_prev = overwrite->getCheck();
     exec_prev = exec->getCheck();
 #if defined(linux)
-    mount_prev = mount->getCheck();
+    mountwarn_prev = mountwarn->getCheck();
     show_mount_prev = show_mount->getCheck();
 #endif
     folder_warning_prev = folder_warning->getCheck();
@@ -2075,17 +2110,24 @@ long PreferencesBox::onUpdConfirmDelEmptyDir(FXObject* o, FXSelector, void*)
 // Set root mode
 long PreferencesBox::onCmdSuMode(FXObject*, FXSelector sel, void*)
 {
-    if (FXSELID(sel) == ID_SU_CMD)
+    if (FXSELID(sel) == ID_PKEXEC_CMD)
     {
-        use_sudo = false;
+        root_auth = 0;
     }
-
     else if (FXSELID(sel) == ID_SUDO_CMD)
     {
-        use_sudo = true;
+        root_auth = 1;
+    }
+    else if (FXSELID(sel) == ID_SU_CMD)
+    {
+        root_auth = 2;
+    }
+    else
+    {
+        // Should not happen
     }
 
-    getApp()->reg().writeUnsignedEntry("OPTIONS", "use_sudo", use_sudo);
+    getApp()->reg().writeUnsignedEntry("OPTIONS", "root_auth", root_auth);
     getApp()->reg().write();
 
     return(1);
@@ -2105,32 +2147,54 @@ long PreferencesBox::onUpdSuMode(FXObject* sender, FXSelector sel, void*)
     }
     else
     {
-		// Non root user
+        // Non root user
         if (getuid())
         {
             sender->handle(this, FXSEL(SEL_COMMAND, ID_ENABLE), NULL);
-			sudolabel->enable();
-			sudocmd->show();
-			sulabel->enable();
-			sucmd->show();
+
+            if (root_auth == 0)
+            {
+                sudolabel->disable();
+                sudocmd->hide();
+                sulabel->disable();
+                sucmd->hide();
+            }
+            else if (root_auth == 1)
+            {
+                sudolabel->enable();
+                sudocmd->show();
+                sulabel->disable();
+                sucmd->hide();
+            }
+            else if (root_auth == 2)
+            {
+                sudolabel->disable();
+                sudocmd->hide();
+                sulabel->enable();
+                sucmd->show();
+            }
+            else
+            {
+                // Should not happen
+            }
         }
 
         FXSelector updatemessage = FXSEL(SEL_COMMAND, ID_UNCHECK);
 
-        if (FXSELID(sel) == ID_SU_CMD)
+        if (FXSELID(sel) == ID_PKEXEC_CMD)
         {
-            if (use_sudo)
+            if (root_auth == 0)
             {
-                updatemessage = FXSEL(SEL_COMMAND, ID_UNCHECK);
+                updatemessage = FXSEL(SEL_COMMAND, ID_CHECK);
             }
             else
             {
-                updatemessage = FXSEL(SEL_COMMAND, ID_CHECK);
+                updatemessage = FXSEL(SEL_COMMAND, ID_UNCHECK);
             }
         }
         else if (FXSELID(sel) == ID_SUDO_CMD)
         {
-            if (use_sudo)
+            if (root_auth == 1)
             {
                 updatemessage = FXSEL(SEL_COMMAND, ID_CHECK);
             }
@@ -2139,6 +2203,22 @@ long PreferencesBox::onUpdSuMode(FXObject* sender, FXSelector sel, void*)
                 updatemessage = FXSEL(SEL_COMMAND, ID_UNCHECK);
             }
         }
+        else if (FXSELID(sel) == ID_SU_CMD)
+        {
+            if (root_auth == 2)
+            {
+                updatemessage = FXSEL(SEL_COMMAND, ID_CHECK);
+            }
+            else
+            {
+                updatemessage = FXSEL(SEL_COMMAND, ID_UNCHECK);
+            }
+        }
+        else
+        {
+            // Should not happen
+        }
+
         sender->handle(this, updatemessage, NULL);
     }
     return(1);
@@ -2241,32 +2321,63 @@ long PreferencesBox::onUpdScrollBarSize(FXObject* sender, FXSelector, void*)
 }
 
 
+// Set mount timeout
+long PreferencesBox::onCmdMountTimeout(FXObject* sender, FXSelector, void*)
+{
+    FXuint value;
+
+    sender->handle(this, FXSEL(SEL_COMMAND, ID_GETINTVALUE), (void*)&value);
+
+    getApp()->reg().writeUnsignedEntry("OPTIONS", "mount_timeout", value);
+
+    getApp()->reg().write();
+
+    return(1);
+}
+
+
+// Update mount timeout button
+long PreferencesBox::onUpdMountTimeout(FXObject* sender, FXSelector, void*)
+{
+    if (mountwarn->getCheck())
+    {
+        sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_ENABLE), NULL);
+    }
+    else
+    {
+        sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_DISABLE), NULL);
+    }
+
+    return(1);
+}
+
+
 // Update single click file open button
-long PreferencesBox::onUpdSingleClickFileopen(FXObject* o, FXSelector, void*)
+long PreferencesBox::onUpdSingleClickFileopen(FXObject* sender, FXSelector, void*)
 {
     if (diropen->getCheck())
     {
-        o->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_ENABLE), NULL);
+        sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_ENABLE), NULL);
     }
     else
     {
         fileopen->setCheck(false);
-        o->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_DISABLE), NULL);
+        sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_DISABLE), NULL);
     }
     return(1);
 }
 
 
 // Update exec text files button
-long PreferencesBox::onUpdExecTextFiles(FXObject* o, FXSelector, void*)
+long PreferencesBox::onUpdExecTextFiles(FXObject* sender, FXSelector, void*)
 {
     if (!noscript->getCheck())
     {
-        o->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_ENABLE), NULL);
+        sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_ENABLE), NULL);
     }
     else
     {
-        o->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_DISABLE), NULL);
+        sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_DISABLE), NULL);
     }
     return(1);
 }

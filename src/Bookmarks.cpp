@@ -35,14 +35,12 @@ FXIMPLEMENT(Bookmarks, FXObject, BookmarksMap, ARRAYNUMBER(BookmarksMap))
 
 // Make new Bookmarks group with default group
 Bookmarks::Bookmarks() : group("Bookmarks"), target(NULL), message(0), maxbookmarks(MAX_BOOKMARKS)
-{
-}
+{}
 
 
 // Make new Bookmarks group
 Bookmarks::Bookmarks(const FXString& gp, FXObject* tgt, FXSelector sel) : group(gp), target(tgt), message(sel), maxbookmarks(MAX_BOOKMARKS)
-{
-}
+{}
 
 
 // Obtain the bookmark at index
@@ -50,7 +48,7 @@ FXString Bookmarks::getBookmark(int index) const
 {
     char key[20];
 
-    snprintf(key, sizeof(key)-1, "BOOKMARK%d", index);
+    snprintf(key, sizeof(key) - 1, "BOOKMARK%d", index);
     return(FXApp::instance()->reg().readStringEntry(group.text(), key, FXString::null));
 }
 
@@ -60,7 +58,7 @@ void Bookmarks::setBookmark(int index, const FXString& bookname)
 {
     char key[20];
 
-    snprintf(key, sizeof(key)-1, "BOOKMARK%d", index);
+    snprintf(key, sizeof(key) - 1, "BOOKMARK%d", index);
     FXApp::instance()->reg().writeStringEntry(group.text(), key, bookname.text());
 }
 
@@ -71,18 +69,18 @@ void Bookmarks::appendBookmark(const FXString& bookname)
 {
     FXString newname = bookname;
     FXString oldname;
-    char     key[20];
-    int      i = 1, j = 1;
+    char key[20];
+    int i = 1, j = 1;
 
     FXApp::instance()->reg().read();
     do
     {
         do
         {
-            snprintf(key, sizeof(key)-1, "BOOKMARK%d", j++);
+            snprintf(key, sizeof(key) - 1, "BOOKMARK%d", j++);
             oldname = FXApp::instance()->reg().readStringEntry(group.text(), key, NULL);
         } while (oldname == bookname);
-        snprintf(key, sizeof(key)-1, "BOOKMARK%d", i++);
+        snprintf(key, sizeof(key) - 1, "BOOKMARK%d", i++);
         FXApp::instance()->reg().writeStringEntry(group.text(), key, newname.text());
         newname = oldname;
         if (i > MAX_BOOKMARKS)
@@ -99,13 +97,13 @@ void Bookmarks::appendBookmark(const FXString& bookname)
 // Remove a bookmark
 void Bookmarks::removeBookmark(const FXString& bookname)
 {
-    char     key[20];
+    char key[20];
     FXString name;
-    int      i = 1, j = 1;
+    int i = 1, j = 1;
 
     do
     {
-        snprintf(key, sizeof(key)-1, "BOOKMARK%d", i++);
+        snprintf(key, sizeof(key) - 1, "BOOKMARK%d", i++);
         name = FXApp::instance()->reg().readStringEntry(group.text(), key, NULL);
         FXApp::instance()->reg().deleteEntry(group.text(), key);
         if (name.empty())
@@ -114,7 +112,7 @@ void Bookmarks::removeBookmark(const FXString& bookname)
         }
         if (name != bookname)
         {
-            snprintf(key, sizeof(key)-1, "BOOKMARK%d", j++);
+            snprintf(key, sizeof(key) - 1, "BOOKMARK%d", j++);
             FXApp::instance()->reg().writeStringEntry(group.text(), key, name.text());
         }
     } while (i <= maxbookmarks);
@@ -151,11 +149,11 @@ long Bookmarks::onCmdClear(FXObject*, FXSelector, void*)
 long Bookmarks::onCmdBookmark(FXObject*, FXSelector sel, void*)
 {
     const char* bookname;
-    char        key[20];
+    char key[20];
 
     if (target)
     {
-        snprintf(key, sizeof(key)-1, "BOOKMARK%d", (FXSELID(sel)-ID_BOOKMARK_1+1));
+        snprintf(key, sizeof(key) - 1, "BOOKMARK%d", (FXSELID(sel) - ID_BOOKMARK_1 + 1));
         bookname = FXApp::instance()->reg().readStringEntry(group.text(), key, NULL);
         if (bookname)
         {
@@ -169,13 +167,13 @@ long Bookmarks::onCmdBookmark(FXObject*, FXSelector sel, void*)
 // Update handler for same
 long Bookmarks::onUpdBookmark(FXObject* sender, FXSelector sel, void*)
 {
-    int         which = FXSELID(sel)-ID_BOOKMARK_1+1;
+    int which = FXSELID(sel) - ID_BOOKMARK_1 + 1;
     const char* bookname = NULL;
-    FXString    string;
-    char        key[20];
-    char        _char[11] = { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k' };
+    FXString string;
+    char key[20];
+    char _char[11] = { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k' };
 
-    snprintf(key, sizeof(key)-1, "BOOKMARK%d", which);
+    snprintf(key, sizeof(key) - 1, "BOOKMARK%d", which);
     bookname = FXApp::instance()->reg().readStringEntry(group.text(), key, NULL);
     if (bookname)
     {
@@ -190,7 +188,7 @@ long Bookmarks::onUpdBookmark(FXObject* sender, FXSelector sel, void*)
         // Keyboard shortcut is a, b, c...
         else if (which < MAX_BOOKMARKS)
         {
-            string.format("&%c %s", _char[which-10], bookname);
+            string.format("&%c %s", _char[which - 10], bookname);
         }
 
         // Should not be used

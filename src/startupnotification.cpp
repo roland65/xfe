@@ -50,9 +50,9 @@ void startup_completed(void)
 // Code snippet borrowed from the Internet
 Time gettimestamp(Display *display)
 {
-    Window   window;
-    XEvent   event;
-    Atom     atom_name, atom_type;
+    Window window;
+    XEvent event;
+    Atom atom_name, atom_type;
 
     window = XCreateWindow(display, DefaultRootWindow(display), 0, 0, 1, 1, 0, 0, InputOnly, 0, 0, NULL);
     XSelectInput(display, window, PropertyChangeMask);
@@ -117,7 +117,7 @@ int runcmd(FXString cmd, FXString cmdname, FXString dir, FXString startdir, FXbo
         Display*           xdisplay;
         SnDisplay*         display;
         SnLauncherContext* context;
-        Time               timestamp;
+        Time timestamp;
 
         // Open display
         xdisplay = XOpenDisplay(NULL);

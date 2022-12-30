@@ -29,17 +29,17 @@ FXint scaleint;
 double scalefrac;
 
 
-// Get available space on the file system where the file is located 
+// Get available space on the file system where the file is located
 FXlong GetAvailableSpace(const FXString& filepath)
 {
     struct statvfs stat;
-  
-    if (statvfs(filepath.text(), &stat) != 0)
+
+    if (statvfs(FXPath::directory(filepath).text(), &stat) != 0)
     {
         // An error has occurred
         return -1;
     }
-    
+
     // The available size is f_bsize * f_bavail
     return stat.f_bsize * stat.f_bavail;
 }
@@ -51,13 +51,13 @@ FXString FXPath::dequote(const FXString& file)
 
     if (0 < result.length())
     {
-        register int e = result.length();
-        register int b = 0;
-        register int r = 0;
-        register int q = 0;
+        int e = result.length();
+        int b = 0;
+        int r = 0;
+        int q = 0;
 
         // Trim tail
-        while (0 < e && Ascii::isSpace(result[e-1]))
+        while (0 < e && Ascii::isSpace(result[e - 1]))
         {
             --e;
         }
@@ -77,7 +77,7 @@ FXString FXPath::dequote(const FXString& file)
                 b++;
                 continue;
             }
-            if ((result[b] == '\\') && (result[b+1] == '\'') && !q)
+            if ((result[b] == '\\') && (result[b + 1] == '\'') && !q)
             {
                 b++;
             }
@@ -95,8 +95,8 @@ FXString FXPath::dequote(const FXString& file)
 // Parse accelerator from string
 FXHotKey _parseAccel(const FXString& string)
 {
-    register FXuint code = 0, mods = 0;
-    register int    pos = 0;
+    FXuint code = 0, mods = 0;
+    int pos = 0;
 
     // Parse leading space
     while (pos < string.length() && Ascii::isSpace(string[pos]))
@@ -216,35 +216,35 @@ FXHotKey _parseAccel(const FXString& string)
     }
 
     // Test for function keys
-    else if ((Ascii::toLower(string[pos]) == 'f') && Ascii::isDigit(string[pos+1]))
+    else if ((Ascii::toLower(string[pos]) == 'f') && Ascii::isDigit(string[pos + 1]))
     {
-        if (Ascii::isDigit(string[pos+2]))
+        if (Ascii::isDigit(string[pos + 2]))
         {
             // !!!! Hack to fix a bug in FOX !!!!
-            code = KEY_F1+10*(string[pos+1]-'0')+(string[pos+2]-'0')-1;
+            code = KEY_F1 + 10 * (string[pos + 1] - '0') + (string[pos + 2] - '0') - 1;
             // !!!! End of hack !!!!
         }
         else
         {
-            code = KEY_F1+string[pos+1]-'1';
+            code = KEY_F1 + string[pos + 1] - '1';
         }
     }
     // Test if hexadecimal code designator
     else if (string[pos] == '#')
     {
-        code = strtoul(&string[pos+1], NULL, 16);
+        code = strtoul(&string[pos + 1], NULL, 16);
     }
 
     // Test if its a single character accelerator
     else if (Ascii::isPrint(string[pos]))
     {
-        if (mods&SHIFTMASK)
+        if (mods & SHIFTMASK)
         {
-            code = Ascii::toUpper(string[pos])+KEY_space-' ';
+            code = Ascii::toUpper(string[pos]) + KEY_space - ' ';
         }
         else
         {
-            code = Ascii::toLower(string[pos])+KEY_space-' ';
+            code = Ascii::toLower(string[pos]) + KEY_space - ' ';
         }
     }
     return(MKUINT(code, mods));
@@ -290,8 +290,8 @@ FXbool existCommand(const FXString cmd)
 
         if (execpath != "")
         {
-			// Number of delimiters
-			int nbseps = execpath.contains(':');
+            // Number of delimiters
+            int nbseps = execpath.contains(':');
 
             // Loop over path components
             for (int i = 0; i <= nbseps; i++)
@@ -323,23 +323,23 @@ FXString getKeybinding(FXEvent* event)
     int mods = event->state;
     int code = event->code;
 
-    char     buffer[64];
+    char buffer[64];
     FXString s;
 
     // Handle modifier keys
-    if (mods&CONTROLMASK)
+    if (mods & CONTROLMASK)
     {
         s += "Ctrl-";
     }
-    if (mods&ALTMASK)
+    if (mods & ALTMASK)
     {
         s += "Alt-";
     }
-    if (mods&SHIFTMASK)
+    if (mods & SHIFTMASK)
     {
         s += "Shift-";
     }
-    if (mods&METAMASK)
+    if (mods & METAMASK)
     {
         s += "Meta-";
     }
@@ -442,7 +442,7 @@ FXString getKeybinding(FXEvent* event)
     case KEY_F33:
     case KEY_F34:
     case KEY_F35:
-        snprintf(buffer, sizeof(buffer)-1, "F%d", code-KEY_F1+1);
+        snprintf(buffer, sizeof(buffer) - 1, "F%d", code - KEY_F1 + 1);
         s += buffer;
         break;
 
@@ -469,9 +469,8 @@ FXString getKeybinding(FXEvent* event)
 int mkpath(const char* s, mode_t mode)
 {
     char* q, *r = NULL, *path = NULL, *up = NULL;
-    int   rv;
+    int rv = -1;
 
-    rv = -1;
     if ((strcmp(s, ".") == 0) || (strcmp(s, "/") == 0))
     {
         return(0);
@@ -502,11 +501,7 @@ int mkpath(const char* s, mode_t mode)
         goto out;
     }
 
-    if ((mkdir(path, mode) == -1) && (errno != EEXIST))
-    {
-        rv = -1;
-    }
-    else
+    if ((mkdir(path, mode) == 0) || (errno == EEXIST))
     {
         rv = 0;
     }
@@ -526,7 +521,7 @@ out:
 FXString createTrashpathname(FXString pathname, FXString trashfileslocation)
 {
     // Initial trash files path name
-    FXString trashpathname = trashfileslocation+PATHSEPSTRING+FXPath::name(pathname);
+    FXString trashpathname = trashfileslocation + PATHSEPSTRING + FXPath::name(pathname);
 
     // Eventually modify the trash files path name by adding a suffix like '_1', '_2', etc.,
     // if the file already exists in the trash can files directory
@@ -535,13 +530,13 @@ FXString createTrashpathname(FXString pathname, FXString trashfileslocation)
         if (existFile(trashpathname))
         {
             char suffix[32];
-            snprintf(suffix, sizeof(suffix)-1, "_%d", i);
+            snprintf(suffix, sizeof(suffix) - 1, "_%d", i);
             FXString prefix = trashpathname.rbefore('_');
             if (prefix == "")
             {
                 prefix = trashpathname;
             }
-            trashpathname = prefix+suffix;
+            trashpathname = prefix + suffix;
         }
         else
         {
@@ -580,11 +575,11 @@ int createTrashinfo(FXString pathname, FXString trashpathname, FXString trashfil
     FXString deldate = FXSystem::time("%FT%T", tv.tv_sec);
 
     // Trash info path name
-    FXString trashinfopathname = trashinfolocation+PATHSEPSTRING+FXPath::name(trashpathname)+".trashinfo";
+    FXString trashinfopathname = trashinfolocation + PATHSEPSTRING + FXPath::name(trashpathname) + ".trashinfo";
 
     // Create trash info file
     FILE* fp;
-    int   ret;
+    int ret;
     if ((fp = fopen(trashinfopathname.text(), "w")) != NULL)
     {
         fprintf(fp, "[Trash Info]\n");
@@ -614,7 +609,7 @@ FXString mimetype(FXString pathname)
         perror("popen");
         exit(EXIT_FAILURE);
     }
-    char     text[128] = { 0 };
+    char text[128] = { 0 };
     FXString buf;
     while (fgets(text, sizeof(text), filecmd))
     {
@@ -630,7 +625,7 @@ FXString mimetype(FXString pathname)
 // Thanks to Glynn Clements <glynnc@users.sourceforge.net>
 FXString quote(FXString str)
 {
-    FXString    result = "'";
+    FXString result = "'";
     const char* p;
 
     for (p = str.text(); *p; p++)
@@ -708,16 +703,6 @@ FXbool isUtf8(const char* string, FXuint length)
     }
     return(true);
 }
-
-
-#if defined(linux)
-// Stat function used to test if a mount point is up or down
-// Actually, this is simply the lstat() function
-int lstatmt(const char* filename, struct stat* buf)
-{
-    return(lstat(filename, buf));
-}
-#endif
 
 
 #if !defined (__OpenBSD__)
@@ -800,11 +785,11 @@ FXulong dirsize(const char* path)
 
         if (streq(path, ROOTDIR))
         {
-            snprintf(buf, sizeof(buf)-1, "%s%s", path, dirp->d_name);
+            snprintf(buf, sizeof(buf) - 1, "%s%s", path, dirp->d_name);
         }
         else
         {
-            snprintf(buf, sizeof(buf)-1, "%s/%s", path, dirp->d_name);
+            snprintf(buf, sizeof(buf) - 1, "%s/%s", path, dirp->d_name);
         }
 
 #if defined(linux)
@@ -846,8 +831,8 @@ FXulong pathsize(char* path, FXuint* nbfiles, FXuint* nbsubdirs, FXulong *totals
     DIR* dp;
     FXulong dsize;
     int ret;
-	
-	char buf[256];
+
+    char buf[256];
 
     ret = lstatrep(path, &statbuf);
     if (ret < 0)
@@ -855,32 +840,32 @@ FXulong pathsize(char* path, FXuint* nbfiles, FXuint* nbsubdirs, FXulong *totals
         return(0);
     }
     dsize = (FXulong)statbuf.st_size;
-	(*totalsize) += dsize;
+    (*totalsize) += dsize;
     (*nbfiles)++;
 
-	// Write to pipe, if requested
-	if (pipes != NULL)
-	{
+    // Write to pipe, if requested
+    if (pipes != NULL)
+    {
 #if __WORDSIZE == 64
-    {
-		snprintf(buf,sizeof(buf),"%lu %u %u/", *totalsize, *nbfiles, *nbsubdirs);
-    }
+        {
+            snprintf(buf, sizeof(buf), "%lu %u %u/", *totalsize, *nbfiles, *nbsubdirs);
+        }
 #else
-    {
-		snprintf(buf,sizeof(buf),"%llu %u %u/", *totalsize, *nbfiles, *nbsubdirs);
-    }
+        {
+            snprintf(buf, sizeof(buf), "%llu %u %u/", *totalsize, *nbfiles, *nbsubdirs);
+        }
 #endif
-		if (write(pipes[1], buf, strlen(buf)) == -1)
-		{
-			perror("write");
-			exit(EXIT_FAILURE);
-		};
-	}
+        if (write(pipes[1], buf, strlen(buf)) == -1)
+        {
+            perror("write");
+            exit(EXIT_FAILURE);
+        };
+    }
 
     // Not a directory
     if (!S_ISDIR(statbuf.st_mode))
     {
-       return(dsize);
+        return(dsize);
     }
 
     // Directory
@@ -904,7 +889,7 @@ FXulong pathsize(char* path, FXuint* nbfiles, FXuint* nbsubdirs, FXulong *totals
         {
             continue;
         }
-        strlcpy(ptr, dirp->d_name, strlen(dirp->d_name)+1);
+        strlcpy(ptr, dirp->d_name, strlen(dirp->d_name) + 1);
 
         // Recursive call
         dsize += pathsize(path, nbfiles, nbsubdirs, totalsize, pipes);
@@ -936,19 +921,19 @@ FXString hSize(char* size)
     strlcpy(suf, _("bytes"), sizeof(suf));
     if (lsize > 1e9)
     {
-        fsize = lsize/1e9;
+        fsize = lsize / 1e9;
         strlcpy(suf, _("GB"), sizeof(suf));
         flag = 1;
     }
     else if (lsize > 1e6)
     {
-        fsize = lsize/1e6;
+        fsize = lsize / 1e6;
         strlcpy(suf, _("MB"), sizeof(suf));
         flag = 1;
     }
     else if (lsize > 1e3)
     {
-        fsize = lsize/1e3;
+        fsize = lsize / 1e3;
         strlcpy(suf, _("kB"), sizeof(suf));
         flag = 1;
     }
@@ -990,9 +975,9 @@ FXString cleanPath(const FXString path)
 
     while (1)
     {
-        if ((in[in.length()-1] == '/') && (in.length() != 1))
+        if ((in[in.length() - 1] == '/') && (in.length() != 1))
         {
-            out = in.trunc(in.length()-1);
+            out = in.trunc(in.length() - 1);
             in = out;
         }
         else
@@ -1014,9 +999,9 @@ FXString filePath(const FXString path)
 
     while (1)
     {
-        if ((in[in.length()-1] == '/') && (in.length() != 1))
+        if ((in[in.length() - 1] == '/') && (in.length() != 1))
         {
-            out = in.trunc(in.length()-1);
+            out = in.trunc(in.length() - 1);
             in = out;
         }
         else
@@ -1033,7 +1018,7 @@ FXString filePath(const FXString path)
     }
     else
     {
-        return(dir+PATHSEPSTRING+out);
+        return(dir + PATHSEPSTRING + out);
     }
 }
 
@@ -1048,9 +1033,9 @@ FXString filePath(const FXString path, const FXString dir)
 
     while (1)
     {
-        if ((in[in.length()-1] == '/') && (in.length() != 1))
+        if ((in[in.length() - 1] == '/') && (in.length() != 1))
         {
-            out = in.trunc(in.length()-1);
+            out = in.trunc(in.length() - 1);
             in = out;
         }
         else
@@ -1065,7 +1050,7 @@ FXString filePath(const FXString path, const FXString dir)
     }
     else
     {
-        return(dir+PATHSEPSTRING+out);
+        return(dir + PATHSEPSTRING + out);
     }
 }
 
@@ -1078,9 +1063,9 @@ FXString fileFromURI(FXString uri)
     {
         if ((uri[5] == PATHSEPCHAR) && (uri[6] == PATHSEPCHAR))
         {
-            return(uri.mid(7, uri.length()-7));
+            return(uri.mid(7, uri.length() - 7));
         }
-        return(uri.mid(5, uri.length()-5));
+        return(uri.mid(5, uri.length() - 5));
     }
 
     return(uri);
@@ -1090,7 +1075,7 @@ FXString fileFromURI(FXString uri)
 // Return URI of filename
 FXString fileToURI(const FXString& file)
 {
-    return("file://"+file);
+    return("file://" + file);
 }
 
 
@@ -1108,28 +1093,28 @@ FXString buildCopyName(const FXString& target, const FXbool isDir)
     FXString ext2 = name.rafter('.', 2);
     FXString ext3 = ext2.before('.');
     FXString ext4 = name.before('.');
-    
+
     // Case of folder or dot file names (hidden files or folders)
     if (isDir || name.before('.') == "")
     {
-		int pos = target.rfind(copystr);
+        int pos = target.rfind(copystr);
 
-		// First copy
-		if (pos < 0)
-		{
-			copytarget = target + copystr + ")";
-		}
+        // First copy
+        if (pos < 0)
+        {
+            copytarget = target + copystr + ")";
+        }
 
-		// Add a number to the suffix for next copies
-		else
-		{
-			FXString strnum = target.mid(pos+copystr.length(), target.length()-pos-copystr.length());
-			FXuint num = FXUIntVal(strnum);
-			num = (num == 0 ? num +2 : num +1);
-			copytarget = target.left(pos) + copystr + " " + FXStringVal(num) + ")";
-		}
-	}
-    
+        // Add a number to the suffix for next copies
+        else
+        {
+            FXString strnum = target.mid(pos + copystr.length(), target.length() - pos - copystr.length());
+            FXuint num = FXUIntVal(strnum);
+            num = (num == 0 ? num + 2 : num + 1);
+            copytarget = target.left(pos) + copystr + " " + FXStringVal(num) + ")";
+        }
+    }
+
     // Case of compressed tar archive names
     else if (ext3.lower() == "tar")
     {
@@ -1144,9 +1129,9 @@ FXString buildCopyName(const FXString& target, const FXbool isDir)
         else
         {
             // Add a number if it's not the first copy
-            FXString strnum = target.mid(pos+copystr.length(), target.length()-pos-copystr.length()-ext2.length()-1);
+            FXString strnum = target.mid(pos + copystr.length(), target.length() - pos - copystr.length() - ext2.length() - 1);
             FXuint num = FXUIntVal(strnum);
-            num = (num == 0 ? num +2 : num +1);
+            num = (num == 0 ? num + 2 : num + 1);
 
             copytarget = target.left(pos) + copystr + " " + FXStringVal(num) + ")." + ext2;
         }
@@ -1169,9 +1154,9 @@ FXString buildCopyName(const FXString& target, const FXbool isDir)
             // Add a number to the suffix for next copies
             else
             {
-                FXString strnum = target.mid(pos+copystr.length(), target.length()-pos-copystr.length());
+                FXString strnum = target.mid(pos + copystr.length(), target.length() - pos - copystr.length());
                 FXuint num = FXUIntVal(strnum);
-                num = (num == 0 ? num +2 : num +1);
+                num = (num == 0 ? num + 2 : num + 1);
                 copytarget = target.left(pos) + copystr + " " + FXStringVal(num) + ")";
             }
         }
@@ -1191,9 +1176,9 @@ FXString buildCopyName(const FXString& target, const FXbool isDir)
             // Add a number to the suffix for next copies
             else
             {
-                FXString strnum = target.mid(pos+copystr.length(), target.length()-pos-copystr.length()-ext1.length()-1);
+                FXString strnum = target.mid(pos + copystr.length(), target.length() - pos - copystr.length() - ext1.length() - 1);
                 FXuint num = FXUIntVal(strnum);
-                num = (num == 0 ? 2 : num +1);
+                num = (num == 0 ? 2 : num + 1);
                 copytarget = target.left(pos) + copystr + " " + FXStringVal(num) + ")." + ext1;
             }
         }
@@ -1226,10 +1211,10 @@ FXlong deltime(FXString delstr)
 
     tmval.tm_sec = atoi(sec.text());
     tmval.tm_min = atoi(min.text());
-    tmval.tm_hour = atoi(hour.text())-1;
+    tmval.tm_hour = atoi(hour.text()) - 1;
     tmval.tm_mday = atoi(mday.text());
-    tmval.tm_mon = atoi(mon.text())-1;
-    tmval.tm_year = atoi(year.text())-1900;
+    tmval.tm_mon = atoi(mon.text()) - 1;
+    tmval.tm_year = atoi(year.text()) - 1900;
     tmval.tm_isdst = 0;
     FXlong t = (FXlong)mktime(&tmval);
 
@@ -1249,7 +1234,7 @@ int isEmptyDir(const FXString directory)
 {
     int ret = -1;
     DIR* dir;
-    struct dirent* entry;
+    struct dirent* entry=NULL;
     int n = 0;
 
     if ((dir = opendir(directory.text())) != NULL)
@@ -1431,7 +1416,7 @@ FXbool isReadExecutable(const FXString& file)
     // File exists and can be stated
     if (!file.empty() && (statrep(file.text(), &info) == 0))
     {
-        int ret = access(file.text(), R_OK|X_OK);
+        int ret = access(file.text(), R_OK | X_OK);
         if (ret == 0)
         {
             return(true);
@@ -1527,15 +1512,15 @@ FXString permissions(FXuint mode)
     char result[11];
 
     result[0] = S_ISLNK(mode) ? 'l' : S_ISREG(mode) ? '-' : S_ISDIR(mode) ? 'd' : S_ISCHR(mode) ? 'c' : S_ISBLK(mode) ? 'b' : S_ISFIFO(mode) ? 'p' : S_ISSOCK(mode) ? 's' : '?';
-    result[1] = (mode&S_IRUSR) ? 'r' : '-';
-    result[2] = (mode&S_IWUSR) ? 'w' : '-';
-    result[3] = (mode&S_ISUID) ? 's' : (mode&S_IXUSR) ? 'x' : '-';
-    result[4] = (mode&S_IRGRP) ? 'r' : '-';
-    result[5] = (mode&S_IWGRP) ? 'w' : '-';
-    result[6] = (mode&S_ISGID) ? 's' : (mode&S_IXGRP) ? 'x' : '-';
-    result[7] = (mode&S_IROTH) ? 'r' : '-';
-    result[8] = (mode&S_IWOTH) ? 'w' : '-';
-    result[9] = (mode&S_ISVTX) ? 't' : (mode&S_IXOTH) ? 'x' : '-';
+    result[1] = (mode & S_IRUSR) ? 'r' : '-';
+    result[2] = (mode & S_IWUSR) ? 'w' : '-';
+    result[3] = (mode & S_ISUID) ? 's' : (mode & S_IXUSR) ? 'x' : '-';
+    result[4] = (mode & S_IRGRP) ? 'r' : '-';
+    result[5] = (mode & S_IWGRP) ? 'w' : '-';
+    result[6] = (mode & S_ISGID) ? 's' : (mode & S_IXGRP) ? 'x' : '-';
+    result[7] = (mode & S_IROTH) ? 'r' : '-';
+    result[8] = (mode & S_IWOTH) ? 'w' : '-';
+    result[9] = (mode & S_ISVTX) ? 't' : (mode & S_IXOTH) ? 'x' : '-';
     result[10] = 0;
     return(result);
 }
@@ -1544,7 +1529,7 @@ FXString permissions(FXuint mode)
 // Read symbolic link
 FXString readLink(const FXString& file)
 {
-    char lnk[MAXPATHLEN+1];
+    char lnk[MAXPATHLEN + 1];
     int len = readlink(file.text(), lnk, MAXPATHLEN);
 
     if (0 <= len)
@@ -1601,8 +1586,7 @@ int setWaitCursor(FXApp* app, FXuint type)
 
     // Other cases : do nothing
     else
-    {
-    }
+    {}
 
     return(waitcount);
 }
@@ -1645,7 +1629,7 @@ int runst(FXString cmd)
     nbargs--;
 
     // Second pass to allocate the argument strings
-    char** args = (char**)malloc((nbargs + 1)*sizeof(char*));
+    char** args = (char**)malloc((nbargs + 1) * sizeof(char*));
     nbargs = 0;
     i = 0;
     j = 1;
@@ -1657,14 +1641,14 @@ int runst(FXString cmd)
             str2 = cmd.section('\'', j);
             j += 2;
             i += str2.contains(' ');
-            args[nbargs] = (char*)malloc(str2.length()+1);
-            strlcpy(args[nbargs], str2.text(), str2.length()+1);
+            args[nbargs] = (char*)malloc(str2.length() + 1);
+            strlcpy(args[nbargs], str2.text(), str2.length() + 1);
             nbargs++;
         }
         else
         {
-            args[nbargs] = (char*)malloc(str1.length()+1);
-            strlcpy(args[nbargs], str1.text(), str1.length()+1);
+            args[nbargs] = (char*)malloc(str1.length() + 1);
+            strlcpy(args[nbargs], str1.text(), str1.length() + 1);
             nbargs++;
         }
 
@@ -1718,7 +1702,7 @@ int runst(FXString cmd)
         free(args[i]);
     }
     free(args);
-    
+
     return(res);
 }
 
@@ -1779,8 +1763,8 @@ FXIcon* loadiconfile(FXApp* app, const FXString iconpath, const FXString iconnam
                 // Load it
                 icon->loadPixels(str);
 
-				// Scale it
-				icon->scale(scalefrac*icon->getWidth(), scalefrac*icon->getHeight());
+                // Scale it
+                icon->scale(scalefrac * icon->getWidth(), scalefrac * icon->getHeight());
 
                 // Create it
                 icon->create();
@@ -1828,10 +1812,10 @@ FXString multiLines(FXString str, FXuint maxlinesize)
             int nbc = str.count(pos1, str.length());
             if (nbc > (int)maxlinesize)
             {
-                int nbl = nbc/maxlinesize;
+                int nbl = nbc / maxlinesize;
                 for (int n = 1; n <= nbl; n++)
                 {
-                    str.insert(str.validate(pos1+n*maxlinesize), '\n'); // Use a valid UTF-8 position
+                    str.insert(str.validate(pos1 + n * maxlinesize), '\n'); // Use a valid UTF-8 position
                 }
             }
 
@@ -1844,10 +1828,10 @@ FXString multiLines(FXString str, FXuint maxlinesize)
             int nbc = str.count(pos1, pos2);
             if (nbc > (int)maxlinesize)
             {
-                int nbl = nbc/maxlinesize;
+                int nbl = nbc / maxlinesize;
                 for (int n = 1; n <= nbl; n++)
                 {
-                    str.insert(str.validate(pos1+n*maxlinesize), '\n'); // Use a valid UTF-8 position
+                    str.insert(str.validate(pos1 + n * maxlinesize), '\n'); // Use a valid UTF-8 position
                     pos2++;
                 }
             }
@@ -1856,4 +1840,22 @@ FXString multiLines(FXString str, FXuint maxlinesize)
     }
 
     return(str);
+}
+
+// Helper function to filter out some file systems from the mounts check
+FXbool keepMount(FXString mntdir, FXString mntname)
+{
+    FXbool ret = false;
+
+    if ( (mntdir.left(4) != "/sys") &&
+         (mntdir.left(4) != "/dev") &&
+         (mntdir.left(5) != "/proc") &&
+         (mntdir.left(4) != "/run") &&
+         (mntname.left(5) != "gvfsd") &&   // gvfsd mounts
+         (mntname.left(6) != "portal") )   // Some fuse mounts
+    {
+        ret = true;
+    }
+
+    return ret;
 }

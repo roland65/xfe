@@ -63,12 +63,12 @@ public:
 
     // Construct message box with given caption, icon, and message text
     MessageBox(FXWindow* owner, const FXString& caption, const FXString& text, FXIcon* ic = NULL, FXuint opts = 0,
-               FXuint textopts = JUSTIFY_LEFT|ICON_BEFORE_TEXT|LAYOUT_TOP|LAYOUT_LEFT|LAYOUT_FILL_X|LAYOUT_FILL_Y,
+               FXuint textopts = JUSTIFY_LEFT | ICON_BEFORE_TEXT | LAYOUT_TOP | LAYOUT_LEFT | LAYOUT_FILL_X | LAYOUT_FILL_Y,
                int x = 0, int y = 0);
 
     // Construct free floating message box with given caption, icon, and message text
     MessageBox(FXApp* a, const FXString& caption, const FXString& text, FXIcon* ic = NULL, FXuint opts = 0,
-               FXuint textopts = JUSTIFY_LEFT|ICON_BEFORE_TEXT|LAYOUT_TOP|LAYOUT_LEFT|LAYOUT_FILL_X|LAYOUT_FILL_Y,
+               FXuint textopts = JUSTIFY_LEFT | ICON_BEFORE_TEXT | LAYOUT_TOP | LAYOUT_LEFT | LAYOUT_FILL_X | LAYOUT_FILL_Y,
                int x = 0, int y = 0);
 
     // Show a modal error message.

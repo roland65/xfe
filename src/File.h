@@ -31,7 +31,7 @@ enum
 // To search visited inodes
 struct inodelist
 {
-    ino_t      st_ino;
+    ino_t st_ino;
     inodelist* next;
 };
 
@@ -78,25 +78,25 @@ protected:
 
     FXLabel*       uplabel;
     FXLabel*       downlabel;
-    FXString       datatext;
+    FXString datatext;
     FXLabel*       datalabel;
     FXProgressBar* progressbar;
     FXButton*      cancelButton;
-    FXbool         overwrite;
-    FXbool         overwrite_all;
-    FXbool         skip_all;
-    FXbool         cancelled;
+    FXbool overwrite;
+    FXbool overwrite_all;
+    FXbool skip_all;
+    FXbool cancelled;
     MessageBox*    mbox;
-    FXlong         totaldata;
-    FXuint		   numsel;
+    FXlong totaldata;
+    FXuint numsel = 0;
 public:
     File() : uplabel(NULL), downlabel(NULL), datalabel(NULL), progressbar(NULL), cancelButton(NULL), overwrite(false),
-             overwrite_all(false), skip_all(false), cancelled(false), mbox(NULL), totaldata(0)
+        overwrite_all(false), skip_all(false), cancelled(false), mbox(NULL), totaldata(0)
     {}
     ~File();
     void create();
 
-    File(FXWindow* owner, FXString title, const FXuint operation, const FXuint num=1);
+    File(FXWindow* owner, FXString title, const FXuint operation, const FXuint num = 1);
 
     enum
     {

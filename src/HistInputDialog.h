@@ -19,8 +19,7 @@ class ComboBox : public FXComboBox
     FXDECLARE(ComboBox)
 private:
     ComboBox()
-    {
-    }
+    {}
 
 public:
     FXTextField* getTextEntry()
@@ -45,8 +44,8 @@ protected:
     FXHorizontalFrame* buttons;
     FXHorizontalFrame* checkbutton;
     ComboBox*          input;
-    FXuint             browsetype;
-    FXString           initialdir;
+    FXuint browsetype;
+    FXString initialdir;
 private:
     HistInputDialog() : buttons(NULL), checkbutton(NULL), input(NULL), browsetype(0)
     {}
