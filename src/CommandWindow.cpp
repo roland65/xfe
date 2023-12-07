@@ -276,17 +276,25 @@ long CommandWindow::onWatchProcess(FXObject*, FXSelector, void*)
     {
         // Child has finished.
         // Read data from the finished child
-        while ((nread = read(pipes[0], buf, sizeof(buf) - 1)) > 0)
+        int pflags;
+        if ((pflags = fcntl(pipes[0], F_GETFL)) >= 0)
         {
-            buf[nread] = '\0';
-            // Remove backspace characters, if any
-            FXString strbuf = buf;
-            strbuf = strbuf.substitute("\b", ".");
-            text->appendText(strbuf.text(), strlen(strbuf.text()));
-            scrollToLastLine();
-            if (nread < (int)(sizeof(buf) - 1))
+            pflags |= O_NONBLOCK;
+            if (fcntl(pipes[0], F_SETFL, pflags) >= 0)
             {
-                break;
+                while ((nread = read(pipes[0], buf, sizeof(buf) - 1)) > 0)
+                {
+                    buf[nread] = '\0';
+                    // Remove backspace characters, if any
+                    FXString strbuf = buf;
+                    strbuf = strbuf.substitute("\b", ".");
+                    text->appendText(strbuf.text(), strlen(strbuf.text()));
+                    scrollToLastLine();
+                    if (nread < (int)(sizeof(buf) - 1))
+                    {
+                       break;
+                    }
+                }
             }
         }
         if (killed)
