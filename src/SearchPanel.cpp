@@ -1294,26 +1294,6 @@ long SearchPanel::onCmdEdit(FXObject*, FXSelector s, void*)
     FXbool same = true;
     FXbool first = true;
 
-    // At most one item selected, select item under cursor
-    if (list->getNumSelectedItems() <= 1)
-    {
-        int x, y;
-        FXuint state;
-        list->getCursorPosition(x, y, state);
-
-        int item = list->getItemAt(x, y);
-
-        if (list->getCurrentItem() >= 0)
-        {
-            list->deselectItem(list->getCurrentItem());
-        }
-        if (item >= 0)
-        {
-            list->setCurrentItem(item);
-            list->selectItem(item);
-        }
-    }
-
     FXString txtviewer = getApp()->reg().readStringEntry("PROGS", "txtviewer", DEFAULT_TXTVIEWER);
     FXString txteditor = getApp()->reg().readStringEntry("PROGS", "txteditor", DEFAULT_TXTEDITOR);
     FXString imgviewer = getApp()->reg().readStringEntry("PROGS", "imgviewer", DEFAULT_IMGVIEWER);
