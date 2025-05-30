@@ -22,8 +22,8 @@
 void startup_completed(void)
 {
     SnLauncheeContext* launchee;
-    Display*           xdisplay;
-    SnDisplay*         display;
+    Display* xdisplay;
+    SnDisplay* display;
 
     // Open display
     xdisplay = XOpenDisplay(NULL);
@@ -48,7 +48,7 @@ void startup_completed(void)
 // Hack to obtain a timestamp for startup notification
 // Create a fake window and set up a property change event
 // Code snippet borrowed from the Internet
-Time gettimestamp(Display *display)
+Time gettimestamp(Display* display)
 {
     Window window;
     XEvent event;
@@ -62,12 +62,13 @@ Time gettimestamp(Display *display)
     XNextEvent(display, &event);
     assert(event.type == PropertyNotify);
 
-    return(((XPropertyEvent*)&event)->time);
+    return ((XPropertyEvent*)&event)->time;
 }
 
 
 // Launch a command and initiate a startup notification
-int runcmd(FXString cmd, FXString cmdname, FXString dir, FXString startdir, FXbool usesn = true, FXString snexcepts = "")
+int runcmd(FXString cmd, FXString cmdname, FXString dir, FXString startdir, FXbool usesn = true,
+           FXString snexcepts = "")
 {
     int ret;
 
@@ -85,7 +86,7 @@ int runcmd(FXString cmd, FXString cmdname, FXString dir, FXString startdir, FXbo
             fprintf(stderr, _("Error: Can't enter folder %s"), dir.text());
         }
 
-        return(-1);
+        return -1;
     }
 
     // Get rid of possible command options
@@ -99,11 +100,11 @@ int runcmd(FXString cmd, FXString cmdname, FXString dir, FXString startdir, FXbo
         for (int i = 0; ; i++)
         {
             entry = snexcepts.section(':', i);
-            if (streq(entry.text(), ""))
+            if (xf_strequal(entry.text(), ""))
             {
                 break;
             }
-            if (streq(entry.text(), cmdname.text()))
+            if (xf_strequal(entry.text(), cmdname.text()))
             {
                 startup_notify = false;
                 break;
@@ -114,8 +115,8 @@ int runcmd(FXString cmd, FXString cmdname, FXString dir, FXString startdir, FXbo
     // Run command with startup notification
     if (usesn && startup_notify)
     {
-        Display*           xdisplay;
-        SnDisplay*         display;
+        Display* xdisplay;
+        SnDisplay* display;
         SnLauncherContext* context;
         Time timestamp;
 
@@ -137,7 +138,7 @@ int runcmd(FXString cmd, FXString cmdname, FXString dir, FXString startdir, FXbo
                     fprintf(stderr, _("Error: Can't enter folder %s"), startdir.text());
                 }
             }
-            return(-1);
+            return -1;
         }
 
         // Message displayed in the task bar (if any)
@@ -173,7 +174,6 @@ int runcmd(FXString cmd, FXString cmdname, FXString dir, FXString startdir, FXbo
         sn_launcher_context_unref(context);
         XCloseDisplay(xdisplay);
     }
-
     // Run command without startup notification
     else
     {
@@ -183,7 +183,7 @@ int runcmd(FXString cmd, FXString cmdname, FXString dir, FXString startdir, FXbo
         if (ret < 0)
         {
             fprintf(stderr, _("Error: Can't execute command %s"), cmd.text());
-            return(-1);
+            return -1;
         }
 
         // Just display the wait cursor during a second
@@ -204,10 +204,10 @@ int runcmd(FXString cmd, FXString cmdname, FXString dir, FXString startdir, FXbo
             fprintf(stderr, _("Error: Can't enter folder %s"), startdir.text());
         }
 
-        return(-1);
+        return -1;
     }
 
-    return(0);
+    return 0;
 }
 
 
@@ -232,7 +232,7 @@ int runcmd(FXString cmd, FXString dir, FXString startdir)
             fprintf(stderr, _("Error: Can't enter folder %s"), dir.text());
         }
 
-        return(-1);
+        return -1;
     }
 
     // Run the command in background
@@ -241,7 +241,7 @@ int runcmd(FXString cmd, FXString dir, FXString startdir)
     if (ret < 0)
     {
         fprintf(stderr, _("Error: Can't execute command %s"), cmd.text());
-        return(-1);
+        return -1;
     }
 
     // Very ugly simulation of a startup time!!!
@@ -261,10 +261,10 @@ int runcmd(FXString cmd, FXString dir, FXString startdir)
             fprintf(stderr, _("Error: Can't enter folder %s"), startdir.text());
         }
 
-        return(-1);
+        return -1;
     }
 
-    return(0);
+    return 0;
 }
 
 

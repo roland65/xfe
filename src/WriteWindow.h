@@ -12,14 +12,15 @@ class FXTextCommand : public FXCommand
 {
     FXDECLARE_ABSTRACT(FXTextCommand)
 protected:
-    FXText* text;   // Text widget
-    char*   buffer; // Character buffer
-    int pos;        // Character position
-    int ndel;       // Deleted characters
-    int nins;       // Inserted characters
+    FXText* text = NULL;                        // Text widget
+    char* buffer = NULL;                        // Character buffer
+    int pos = 0;                                // Character position
+    int ndel = 0;                               // Deleted characters
+    int nins = 0;                               // Inserted characters
 public:
     FXTextCommand(FXText* txt, int p, int nd, int ni) : text(txt), buffer(NULL), pos(p), ndel(nd), nins(ni)
-    {}
+    {
+    }
     virtual FXuint size() const;
 
     virtual ~FXTextCommand()
@@ -37,12 +38,12 @@ public:
     FXTextInsert(FXText* txt, int p, int ni, const char* ins);
     virtual FXString undoName() const
     {
-        return("Undo insert");
+        return "Undo insert";
     }
 
     virtual FXString redoName() const
     {
-        return("Redo insert");
+        return "Redo insert";
     }
 
     virtual void undo();
@@ -58,12 +59,12 @@ public:
     FXTextDelete(FXText* txt, int p, int nd, const char* del);
     virtual FXString undoName() const
     {
-        return("Undo delete");
+        return "Undo delete";
     }
 
     virtual FXString redoName() const
     {
-        return("Redo delete");
+        return "Redo delete";
     }
 
     virtual void undo();
@@ -79,12 +80,12 @@ public:
     FXTextReplace(FXText* txt, int p, int nd, int ni, const char* del, const char* ins);
     virtual FXString undoName() const
     {
-        return("Undo replace");
+        return "Undo replace";
     }
 
     virtual FXString redoName() const
     {
-        return("Redo replace");
+        return "Redo replace";
     }
 
     virtual void undo();
@@ -96,29 +97,27 @@ class Preferences : public DialogBox
 {
     FXDECLARE(Preferences)
 protected:
-    FXTextField*   wrapmargin;
+    FXTextField* wrapmargin = NULL;
     FXString wrapmargin_prev;
-    FXTextField*   tabsize;
+    FXTextField* tabsize = NULL;
     FXString tabsize_prev;
-    FXCheckButton* stripcr;
-    FXbool stripcr_prev;
-    FXText*        editor;
-    WriteWindow*   editwin;
-    FXColor textcolor_prev;
-    FXColor backcolor_prev;
-    FXColor seltextcolor_prev;
-    FXColor selbackcolor_prev;
-    FXColor hilitetextcolor_prev;
-    FXColor hilitebackcolor_prev;
-    FXColor cursorcolor_prev;
-    FXColor barcolor_prev;
-    FXColor numbercolor_prev;
+    FXCheckButton* stripcr = NULL;
+    FXbool stripcr_prev = false;
+    FXText* editor = NULL;
+    WriteWindow* editwin = NULL;
+    FXColor textcolor_prev = FXRGB(0, 0, 0);
+    FXColor backcolor_prev = FXRGB(0, 0, 0);
+    FXColor seltextcolor_prev = FXRGB(0, 0, 0);
+    FXColor selbackcolor_prev = FXRGB(0, 0, 0);
+    FXColor hilitetextcolor_prev = FXRGB(0, 0, 0);
+    FXColor hilitebackcolor_prev = FXRGB(0, 0, 0);
+    FXColor cursorcolor_prev = FXRGB(0, 0, 0);
+    FXColor barcolor_prev = FXRGB(0, 0, 0);
+    FXColor numbercolor_prev = FXRGB(0, 0, 0);
 private:
-    Preferences() : wrapmargin(NULL), tabsize(NULL), stripcr(NULL), stripcr_prev(false), editor(NULL), editwin(NULL),
-        textcolor_prev(FXRGB(0, 0, 0)), backcolor_prev(FXRGB(0, 0, 0)), seltextcolor_prev(FXRGB(0, 0, 0)), selbackcolor_prev(FXRGB(0, 0, 0)),
-        hilitetextcolor_prev(FXRGB(0, 0, 0)), hilitebackcolor_prev(FXRGB(0, 0, 0)), cursorcolor_prev(FXRGB(0, 0, 0)), barcolor_prev(FXRGB(0, 0, 0)),
-        numbercolor_prev(FXRGB(0, 0, 0))
-    {}
+    Preferences()
+    {
+    }
     Preferences(const Preferences&);
     Preferences& operator=(const Preferences&);
 
@@ -146,30 +145,30 @@ public:
     // Owner is text window
     XFileWrite* getApp() const
     {
-        return((XFileWrite*)DialogBox::getApp());
+        return (XFileWrite*)DialogBox::getApp();
     }
 
     FXuint execute(FXuint);
-    long   onCmdCancel(FXObject*, FXSelector, void*);
-    long   onCmdAccept(FXObject*, FXSelector, void*);
-    long   onCmdTextBackColor(FXObject*, FXSelector, void*);
-    long   onUpdTextBackColor(FXObject*, FXSelector, void*);
-    long   onCmdTextForeColor(FXObject*, FXSelector, void*);
-    long   onUpdTextForeColor(FXObject*, FXSelector, void*);
-    long   onCmdTextSelBackColor(FXObject*, FXSelector, void*);
-    long   onUpdTextSelBackColor(FXObject*, FXSelector, void*);
-    long   onCmdTextSelForeColor(FXObject*, FXSelector, void*);
-    long   onUpdTextSelForeColor(FXObject*, FXSelector, void*);
-    long   onCmdTextHiliteBackColor(FXObject*, FXSelector, void*);
-    long   onUpdTextHiliteBackColor(FXObject*, FXSelector, void*);
-    long   onCmdTextHiliteForeColor(FXObject*, FXSelector, void*);
-    long   onUpdTextHiliteForeColor(FXObject*, FXSelector, void*);
-    long   onCmdTextCursorColor(FXObject*, FXSelector, void*);
-    long   onUpdTextCursorColor(FXObject*, FXSelector, void*);
-    long   onCmdTextBarColor(FXObject*, FXSelector, void*);
-    long   onUpdTextBarColor(FXObject*, FXSelector, void*);
-    long   onCmdTextNumberColor(FXObject*, FXSelector, void*);
-    long   onUpdTextNumberColor(FXObject*, FXSelector, void*);
+  long onCmdCancel(FXObject*, FXSelector, void*);
+  long onCmdAccept(FXObject*, FXSelector, void*);
+  long onCmdTextBackColor(FXObject*, FXSelector, void*);
+  long onUpdTextBackColor(FXObject*, FXSelector, void*);
+  long onCmdTextForeColor(FXObject*, FXSelector, void*);
+  long onUpdTextForeColor(FXObject*, FXSelector, void*);
+  long onCmdTextSelBackColor(FXObject*, FXSelector, void*);
+  long onUpdTextSelBackColor(FXObject*, FXSelector, void*);
+  long onCmdTextSelForeColor(FXObject*, FXSelector, void*);
+  long onUpdTextSelForeColor(FXObject*, FXSelector, void*);
+  long onCmdTextHiliteBackColor(FXObject*, FXSelector, void*);
+  long onUpdTextHiliteBackColor(FXObject*, FXSelector, void*);
+  long onCmdTextHiliteForeColor(FXObject*, FXSelector, void*);
+  long onUpdTextHiliteForeColor(FXObject*, FXSelector, void*);
+  long onCmdTextCursorColor(FXObject*, FXSelector, void*);
+  long onUpdTextCursorColor(FXObject*, FXSelector, void*);
+  long onCmdTextBarColor(FXObject*, FXSelector, void*);
+  long onUpdTextBarColor(FXObject*, FXSelector, void*);
+  long onCmdTextNumberColor(FXObject*, FXSelector, void*);
+  long onUpdTextNumberColor(FXObject*, FXSelector, void*);
 };
 
 // Editor main window
@@ -177,44 +176,46 @@ class WriteWindow : public FXMainWindow
 {
     FXDECLARE(WriteWindow)
 protected:
-    FXToolBarShell*    dragshell;                 // Shell for floating toolbar
-    FXMenuPane*        filemenu;                  // File menu
-    FXMenuPane*        editmenu;                  // Edit menu
-    FXMenuPane*        searchmenu;                // Search menu
-    FXMenuPane*        prefsmenu;                 // Preferences menu
-    FXMenuPane*        viewmenu;                  // View menu
-    FXMenuPane*        windowmenu;                // Window menu
-    FXMenuPane*        helpmenu;                  // Help menu
-    FXMenuPane*        popupmenu;                 // Popup menu
-    FXHorizontalFrame* undoredoblock;             // Undo/redo block on status line
-    FXText*            editor;                    // Multiline text widget
-    FXMenuBar*         menubar;                   // Menu bar
-    FXToolBar*         toolbar;                   // Tool bar
-    FXStatusBar*       statusbar;                 // Status bar
-    FXFont*            font;                      // Text window font
-    FXUndoList undolist;                          // Undo list
-    FXRecentFiles mrufiles;                       // Recent files list
-    FXString filename;                            // File being edited
-    FXTime filetime;                              // Original modtime of file
-    FXbool filenameset;                           // Filename is set
-    FXString searchpath;                          // To search for files
-    FXbool stripcr;                               // Strip carriage returns
-    FXbool linesnum;                              // Lines numbering
-    FXbool readonly;                              // Text is read only
-    InputDialog*       printdialog;
-    Preferences*       prefsdialog;
-    FXSearchDialog*    searchdialog;
-    FXReplaceDialog*   replacedialog;
-    FXbool smoothscroll;
-    FXbool fromreg;                         // Read window size and position from the regsitry
-    FXuint ww;                              // Window width
-    FXuint hh;                              // Window height
-    FXuint xx;                              // Window x position
-    FXuint yy;                              // Window y position
-    FXButton*          cut;                 // Cut button
-    FXButton*          paste;               // Paste button
-    FXMenuCommand*     cutmc;               // Cut menu item
-    FXMenuCommand*     pastemc;             // Paste menu item
+    FXToolBarShell* dragshell = NULL;                     // Shell for floating toolbar
+    FXMenuPane* filemenu = NULL;                          // File menu
+    FXMenuPane* editmenu = NULL;                          // Edit menu
+    FXMenuPane* searchmenu = NULL;                        // Search menu
+    FXMenuPane* prefsmenu = NULL;                         // Preferences menu
+    FXMenuPane* viewmenu = NULL;                          // View menu
+    FXMenuPane* windowmenu = NULL;                        // Window menu
+    FXMenuPane* helpmenu = NULL;                          // Help menu
+    FXMenuPane* popupmenu = NULL;                         // Popup menu
+    FXHorizontalFrame* undoredoblock = NULL;              // Undo/redo block on status line
+    FXText* editor = NULL;                                // Multiline text widget
+    FXMenuBar* menubar = NULL;                            // Menu bar
+    FXToolBar* toolbar = NULL;                            // Tool bar
+    FXStatusBar* statusbar = NULL;                        // Status bar
+    FXFont* font = NULL;                                  // Text window font
+    FXUndoList undolist;                                  // Undo list
+    FXRecentFiles mrufiles;                               // Recent files list
+    FXString filename;                                    // File being edited
+    FXTime filetime = 0;                                  // Original modtime of file
+    FXbool filenameset = false;                           // Filename is set
+    FXString searchpath;                                  // To search for files
+    FXbool stripcr = false;                               // Strip carriage returns
+    FXbool linesnum = false;                              // Lines numbering
+    FXbool readonly = false;                              // Text is read only
+    InputDialog* printdialog = NULL;
+    Preferences* prefsdialog = NULL;
+    FXSearchDialog* searchdialog = NULL;
+    FXReplaceDialog* replacedialog = NULL;
+    FXbool smoothscroll = false;
+    FXbool fromreg = false;                               // Read window size and position from the regsitry
+    FXuint ww = 0;                                        // Window width
+    FXuint hh = 0;                                        // Window height
+    FXuint xx = 0;                                        // Window x position
+    FXuint yy = 0;                                        // Window y position
+    FXButton* cut = NULL;                                 // Cut button
+    FXButton* paste = NULL;                               // Paste button
+    FXMenuCommand* cutmc = NULL;                          // Cut menu item
+    FXMenuCommand* pastemc = NULL;                        // Paste menu item
+
+    FXbool save_win_pos = false;                          // Save window position
 
 protected:
     void loadConfig();
@@ -228,16 +229,13 @@ protected:
 protected:
     enum
     {
-        MAXUNDOSIZE    = 1000000,               // Don't let the undo buffer get out of hand
-        KEEPUNDOSIZE   = 500000                 // When MAXUNDOSIZE was exceeded, trim down to this size
+        MAXUNDOSIZE    = 1000000,                         // Don't let the undo buffer get out of hand
+        KEEPUNDOSIZE   = 500000                           // When MAXUNDOSIZE was exceeded, trim down to this size
     };
 private:
-    WriteWindow() : dragshell(NULL), filemenu(NULL), editmenu(NULL), searchmenu(NULL), prefsmenu(NULL), viewmenu(NULL), windowmenu(NULL), helpmenu(NULL),
-        popupmenu(NULL), undoredoblock(NULL), editor(NULL), menubar(NULL), toolbar(NULL), statusbar(NULL), font(NULL),
-        filetime(0), filenameset(false), stripcr(false), linesnum(false), readonly(false), printdialog(NULL),
-        prefsdialog(NULL), searchdialog(NULL), replacedialog(NULL), smoothscroll(false), fromreg(false),
-        ww(0), hh(0), xx(0), yy(0), cut(NULL), paste(NULL), cutmc(NULL), pastemc(NULL)
-    {}
+    WriteWindow()
+    {
+    }
     WriteWindow(const WriteWindow&);
     WriteWindow& operator=(const WriteWindow&);
 
@@ -384,13 +382,13 @@ public:
     // Return XFileWrite application
     XFileWrite* getApp() const
     {
-        return((XFileWrite*)FXMainWindow::getApp());
+        return (XFileWrite*)FXMainWindow::getApp();
     }
 
     // Return this window's filename
     const FXString& getFilename() const
     {
-        return(filename);
+        return filename;
     }
 
     // Change this window's filename
@@ -402,19 +400,19 @@ public:
     // Has a filename been set or is it a new window
     FXbool isFilenameSet() const
     {
-        return(filenameset);
+        return filenameset;
     }
 
     // Obtain a pointer on the text widget
     FXText* getEditor() const
     {
-        return(editor);
+        return editor;
     }
 
     // Get the value of the stripcr flag
     FXbool getStripcr() const
     {
-        return(stripcr);
+        return stripcr;
     }
 
     // Set the value of the stripcr flag

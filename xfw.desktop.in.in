@@ -1,7 +1,7 @@
 [Desktop Entry]
-_Name=Xfw
-_GenericName=Text Editor
-_Comment=A simple text editor for Xfe
+Name=Xfw
+GenericName=Text Editor
+Comment=A simple text editor for Xfe
 Exec=xfw %F
 Terminal=false
 Type=Application

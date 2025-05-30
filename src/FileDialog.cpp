@@ -16,15 +16,15 @@
 #include "MessageBox.h"
 #include "FileDialog.h"
 
-#define FILELISTMASK     (_ICONLIST_EXTENDEDSELECT | _ICONLIST_SINGLESELECT | _ICONLIST_BROWSESELECT | _ICONLIST_MULTIPLESELECT)
-#define FILESTYLEMASK    (_ICONLIST_DETAILED | _ICONLIST_MINI_ICONS | _ICONLIST_BIG_ICONS | _ICONLIST_ROWS | _ICONLIST_COLUMNS | _ICONLIST_AUTOSIZE)
+#define FILELISTMASK     (ICONLIST_EXTENDEDSELECT | ICONLIST_SINGLESELECT | ICONLIST_BROWSESELECT | \
+                          ICONLIST_MULTIPLESELECT)
+#define FILESTYLEMASK    (ICONLIST_DETAILED | ICONLIST_MINI_ICONS | ICONLIST_BIG_ICONS | ICONLIST_ROWS | \
+                          ICONLIST_COLUMNS | ICONLIST_AUTOSIZE)
 
-// Single click navigation
-extern FXuint single_click;
 
-// To allow keyboard scrolling in popup dialogs
-extern FXbool allowPopupScroll;
-
+// Filter history
+extern char FilterHistory[FILTER_HIST_SIZE][MAX_PATTERN_SIZE];
+extern int FilterNum;
 
 
 // Map
@@ -52,6 +52,8 @@ FXDEFMAP(FileSelector) FileSelectorMap[] =
     FXMAPFUNC(SEL_COMMAND, FileSelector::ID_WORK, FileSelector::onCmdWork),
     FXMAPFUNC(SEL_RIGHTBUTTONRELEASE, FileSelector::ID_FILELIST, FileSelector::onCmdPopupMenu),
     FXMAPFUNC(SEL_COMMAND, FileSelector::ID_POPUP_MENU, FileSelector::onCmdPopupMenu),
+    FXMAPFUNC(SEL_COMMAND, FileSelector::ID_FILTER, FileSelector::onCmdItemFilter),
+    FXMAPFUNC(SEL_UPDATE, FileSelector::ID_FILTER, FileSelector::onUpdItemFilter),
     FXMAPFUNC(SEL_KEYPRESS, 0, FileSelector::onCmdKeyPress),
     FXMAPFUNC(SEL_KEYRELEASE, 0, FileSelector::onCmdKeyRelease),
 };
@@ -64,7 +66,7 @@ FXIMPLEMENT(FileSelector, FXPacker, FileSelectorMap, ARRAYNUMBER(FileSelectorMap
 // Default pattern
 static const char allfiles[] = "All Files (*)";
 
-// File selector object
+// Construct
 FileSelector::FileSelector(FXComposite* p, FXObject* tgt, FXSelector sel, FXuint opts, int x, int y, int w, int h) :
     FXPacker(p, opts, x, y, w, h, 0, 0, 0, 0, 0, 0)
 {
@@ -74,126 +76,274 @@ FileSelector::FileSelector(FXComposite* p, FXObject* tgt, FXSelector sel, FXuint
     message = sel;
 
     // Global container
-    FXVerticalFrame* cont = new FXVerticalFrame(this, LAYOUT_FILL_Y | LAYOUT_FILL_X | FRAME_NONE, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+    FXVerticalFrame* cont = new FXVerticalFrame(this, LAYOUT_FILL_Y | LAYOUT_FILL_X | FRAME_NONE,
+                                                0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 
     // Container for the action buttons
-    FXHorizontalFrame* buttons = new FXHorizontalFrame(cont, LAYOUT_SIDE_TOP | LAYOUT_FILL_X | FRAME_RAISED, 0, 0, 0, 0, 5, 5, 5, 5, 0, 0);
+    FXHorizontalFrame* buttons = new FXHorizontalFrame(cont, LAYOUT_SIDE_TOP | LAYOUT_FILL_X | FRAME_NONE,
+                                                       0, 0, 0, 0, 5, 5, 5, 5, 0, 0);
 
     // Container for the path linker
-    FXHorizontalFrame* pathframe = new FXHorizontalFrame(cont, LAYOUT_FILL_X | FRAME_RAISED, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+    FXHorizontalFrame* pathframe = new FXHorizontalFrame(cont, LAYOUT_FILL_X | FRAME_NONE,
+                                                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 
     // File list
     FXuint options;
     FXbool smoothscroll = getApp()->reg().readUnsignedEntry("SETTINGS", "smooth_scroll", true);
     if (smoothscroll)
     {
-        options = _ICONLIST_MINI_ICONS | _ICONLIST_BROWSESELECT | LAYOUT_FILL_X | LAYOUT_FILL_Y;
+        options = ICONLIST_MINI_ICONS | ICONLIST_BROWSESELECT | LAYOUT_FILL_X | LAYOUT_FILL_Y;
     }
     else
     {
-        options = _ICONLIST_MINI_ICONS | _ICONLIST_BROWSESELECT | LAYOUT_FILL_X | LAYOUT_FILL_Y | SCROLLERS_DONT_TRACK;
+        options = ICONLIST_MINI_ICONS | ICONLIST_BROWSESELECT | LAYOUT_FILL_X | LAYOUT_FILL_Y | SCROLLERS_DONT_TRACK;
     }
     FXbool showthumbnails = getApp()->reg().readUnsignedEntry("FILEDIALOG", "showthumbnails", false);
 
-    list = new FileList(this, cont, this, ID_FILELIST, showthumbnails, options);
+
+    // Read file list columns order and shown status
+    FXuint idCol[NMAX_COLS] = { 0 };
+    FXbool colShown[FileList::ID_COL_NAME + NMAX_COLS] = { 0 };
+    FXuint nbCols = 0;
+
+    FXuint i = FileList::ID_COL_NAME;
+    colShown[i++] = getApp()->reg().readUnsignedEntry("SETTINGS", "view_col_name", 1);
+    colShown[i++] = getApp()->reg().readUnsignedEntry("SETTINGS", "view_col_size", 1);
+    colShown[i++] = getApp()->reg().readUnsignedEntry("SETTINGS", "view_col_type", 1);
+    colShown[i++] = getApp()->reg().readUnsignedEntry("SETTINGS", "view_col_ext", 1);
+    colShown[i++] = getApp()->reg().readUnsignedEntry("SETTINGS", "view_col_date", 1);
+    colShown[i++] = getApp()->reg().readUnsignedEntry("SETTINGS", "view_col_user", 1);
+    colShown[i++] = getApp()->reg().readUnsignedEntry("SETTINGS", "view_col_group", 1);
+    colShown[i++] = getApp()->reg().readUnsignedEntry("SETTINGS", "view_col_perms", 1);
+    colShown[i++] = getApp()->reg().readUnsignedEntry("SETTINGS", "view_col_link", 1);
+
+    FXuint id = 0;
+    i = 0;
+
+    id = getApp()->reg().readUnsignedEntry("SETTINGS", "id_col_0", FileList::ID_COL_NAME);
+    if (id > 0 && colShown[id])
+    {
+        idCol[i++] = id;
+    }
+    id = getApp()->reg().readUnsignedEntry("SETTINGS", "id_col_1", FileList::ID_COL_SIZE);
+    if (id > 0 && colShown[id])
+    {
+        idCol[i++] = id;
+    }
+    id = getApp()->reg().readUnsignedEntry("SETTINGS", "id_col_2", FileList::ID_COL_TYPE);
+    if (id > 0 && colShown[id])
+    {
+        idCol[i++] = id;
+    }
+    id = getApp()->reg().readUnsignedEntry("SETTINGS", "id_col_3", FileList::ID_COL_EXT);
+    if (id > 0 && colShown[id])
+    {
+        idCol[i++] = id;
+    }
+    id = getApp()->reg().readUnsignedEntry("SETTINGS", "id_col_4", FileList::ID_COL_DATE);
+    if (id > 0 && colShown[id])
+    {
+        idCol[i++] = id;
+    }
+    id = getApp()->reg().readUnsignedEntry("SETTINGS", "id_col_5", FileList::ID_COL_USER);
+    if (id > 0 && colShown[id])
+    {
+        idCol[i++] = id;
+    }
+    id = getApp()->reg().readUnsignedEntry("SETTINGS", "id_col_6", FileList::ID_COL_GROUP);
+    if (id > 0 && colShown[id])
+    {
+        idCol[i++] = id;
+    }
+    id = getApp()->reg().readUnsignedEntry("SETTINGS", "id_col_7", FileList::ID_COL_PERMS);
+    if (id > 0 && colShown[id])
+    {
+        idCol[i++] = id;
+    }
+    id = getApp()->reg().readUnsignedEntry("SETTINGS", "id_col_8", FileList::ID_COL_LINK);
+    if (id > 0 && colShown[id])
+    {
+        idCol[i++] = id;
+    }
+    nbCols = i;
+
+    list = new FileList(this, cont, idCol, nbCols, this, ID_FILELIST, showthumbnails, 0, 0, options);
 
     // Set list colors and columns size for detailed mode
     list->setTextColor(getApp()->reg().readColorEntry("SETTINGS", "listforecolor", FXRGB(0, 0, 0)));
     list->setBackColor(getApp()->reg().readColorEntry("SETTINGS", "listbackcolor", FXRGB(255, 255, 255)));
-    list->setHeaderSize(0, getApp()->reg().readUnsignedEntry("FILEDIALOG", "name_size", 200));
-    list->setHeaderSize(1, getApp()->reg().readUnsignedEntry("FILEDIALOG", "size_size", 60));
-    list->setHeaderSize(2, getApp()->reg().readUnsignedEntry("FILEDIALOG", "type_size", 100));
-    list->setHeaderSize(3, getApp()->reg().readUnsignedEntry("FILEDIALOG", "ext_size", 100));
-    list->setHeaderSize(4, getApp()->reg().readUnsignedEntry("FILEDIALOG", "modd_size", 150));
-    list->setHeaderSize(5, getApp()->reg().readUnsignedEntry("FILEDIALOG", "user_size", 50));
-    list->setHeaderSize(6, getApp()->reg().readUnsignedEntry("FILEDIALOG", "grou_size", 50));
-    list->setHeaderSize(7, getApp()->reg().readUnsignedEntry("FILEDIALOG", "attr_size", 100));
+
+    // Set list headers size
+    for (FXuint i = 0; i < nbCols; i++)
+    {
+        FXuint size = 0;
+        FXuint id = list->getHeaderId(i);
+
+        switch (id)
+        {
+        case FileList::ID_COL_NAME:
+            size = getApp()->reg().readUnsignedEntry("FILEDIALOG", "name_size", MIN_NAME_SIZE);
+            break;
+
+        case FileList::ID_COL_SIZE:
+            size = getApp()->reg().readUnsignedEntry("FILEDIALOG", "size_size", 60);
+            break;
+
+        case FileList::ID_COL_TYPE:
+            size = getApp()->reg().readUnsignedEntry("FILEDIALOG", "type_size", 100);
+            break;
+
+        case FileList::ID_COL_EXT:
+            size = getApp()->reg().readUnsignedEntry("FILEDIALOG", "ext_size", 100);
+            break;
+
+        case FileList::ID_COL_DATE:
+            size = getApp()->reg().readUnsignedEntry("FILEDIALOG", "date_size", 150);
+            break;
+
+        case FileList::ID_COL_USER:
+            size = getApp()->reg().readUnsignedEntry("FILEDIALOG", "user_size", 50);
+            break;
+
+        case FileList::ID_COL_GROUP:
+            size = getApp()->reg().readUnsignedEntry("FILEDIALOG", "group_size", 50);
+            break;
+
+        case FileList::ID_COL_PERMS:
+            size = getApp()->reg().readUnsignedEntry("FILEDIALOG", "perms_size", 100);
+            break;
+
+        case FileList::ID_COL_LINK:
+            size = getApp()->reg().readUnsignedEntry("FILEDIALOG", "link_size", 100);
+            break;
+        }
+
+        list->setHeaderSize(i, size);
+    }
 
     // Set file selector options
-    FXuint liststyle = getApp()->reg().readUnsignedEntry("FILEDIALOG", "liststyle", _ICONLIST_MINI_ICONS);
+    FXuint liststyle = getApp()->reg().readUnsignedEntry("FILEDIALOG", "liststyle",
+                                                         ICONLIST_MINI_ICONS | ICONLIST_AUTOSIZE);
     FXbool hiddenfiles = getApp()->reg().readUnsignedEntry("FILEDIALOG", "hiddenfiles", false);
     showHiddenFiles(hiddenfiles);
     setFileBoxStyle(liststyle);
+    attentioncolor = getApp()->reg().readColorEntry("SETTINGS", "attentioncolor", FXRGB(255, 0, 0));
 
     // Entry buttons
     FXMatrix* fields = new FXMatrix(cont, 3, MATRIX_BY_COLUMNS | LAYOUT_SIDE_BOTTOM | LAYOUT_FILL_X);
-    new FXLabel(fields, _("&File Name:"), NULL, JUSTIFY_LEFT | LAYOUT_CENTER_Y);
-    filename = new FXTextField(fields, 25, this, ID_ACCEPT, TEXTFIELD_ENTER_ONLY | LAYOUT_FILL_COLUMN | LAYOUT_FILL_X | FRAME_SUNKEN | FRAME_THICK);
-    new FXButton(fields, _("&OK"), NULL, this, ID_ACCEPT, BUTTON_DEFAULT | FRAME_RAISED | FRAME_THICK | LAYOUT_FILL_X, 0, 0, 0, 0, 20, 20);
-    accept = new FXButton(buttons, FXString::null, NULL, NULL, 0, LAYOUT_FIX_X | LAYOUT_FIX_Y | LAYOUT_FIX_WIDTH | LAYOUT_FIX_HEIGHT, 0, 0, 0, 0, 0, 0, 0, 0);
+    namelabel = new FXLabel(fields, _("&File Name:"), NULL, JUSTIFY_LEFT | LAYOUT_CENTER_Y);
+
+    filename = new FXTextField(fields, 25, this, ID_ACCEPT, TEXTFIELD_ENTER_ONLY |
+                               LAYOUT_FILL_COLUMN | LAYOUT_FILL_X | FRAME_GROOVE);
+    new FXButton(fields, _("&OK"), NULL, this, ID_ACCEPT, BUTTON_DEFAULT | FRAME_GROOVE |
+                 LAYOUT_FILL_X, 0, 0, 0, 0, 20, 20);
+    accept = new FXButton(buttons, FXString::null, NULL, NULL, 0, LAYOUT_FIX_X | LAYOUT_FIX_Y |
+                          LAYOUT_FIX_WIDTH | LAYOUT_FIX_HEIGHT, 0, 0, 0, 0, 0, 0, 0, 0);
     new FXLabel(fields, _("File F&ilter:"), NULL, JUSTIFY_LEFT | LAYOUT_CENTER_Y);
-    FXHorizontalFrame* filterframe = new FXHorizontalFrame(fields, LAYOUT_FILL_COLUMN | LAYOUT_FILL_X | LAYOUT_FILL_Y);
-    filefilter = new FXComboBox(filterframe, 10, this, ID_FILEFILTER, COMBOBOX_STATIC | LAYOUT_FILL_X);
+    FXHorizontalFrame* filterframe = new FXHorizontalFrame(fields, LAYOUT_FILL_COLUMN |
+                                                           LAYOUT_FILL_X | LAYOUT_FILL_Y);
+    filefilter = new ComboBox(filterframe, 10, false, false, this, ID_FILEFILTER, COMBOBOX_STATIC | LAYOUT_FILL_X);
     filefilter->setNumVisible(4);
 
-    readonly = new FXCheckButton(filterframe, _("Read Only") + FXString(" "), NULL, 0, ICON_BEFORE_TEXT | JUSTIFY_LEFT | LAYOUT_CENTER_Y);
-    cancel = new FXButton(fields, _("&Cancel"), NULL, NULL, 0, BUTTON_INITIAL | BUTTON_DEFAULT | FRAME_RAISED | FRAME_THICK | LAYOUT_FILL_X, 0, 0, 0, 0, 20, 20);
+    readonly = new FXCheckButton(filterframe, _("Read Only") + FXString(" "), NULL, 0, ICON_BEFORE_TEXT |
+                                 JUSTIFY_LEFT | LAYOUT_CENTER_Y);
+    cancel = new FXButton(fields, _("&Cancel"), NULL, NULL, 0, BUTTON_INITIAL | BUTTON_DEFAULT | FRAME_GROOVE |
+                          LAYOUT_FILL_X, 0, 0, 0, 0, 20, 20);
 
     // Action buttons
     FXString key;
     FXHotKey hotkey;
-    FXButton*       btn;
+    FXButton* btn;
     FXToggleButton* tglbtn;
 
     new FXFrame(buttons, LAYOUT_FIX_WIDTH, 0, 0, 4, 1);
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "go_back", "Ctrl-Backspace");
-    btn = new FXButton(buttons, TAB + _("Go to previous folder") + PARS(key), dirbackicon, this, ID_DIR_BACK, BUTTON_TOOLBAR | FRAME_RAISED, 0, 0, 0, 0, 3, 3, 3, 3);
-    hotkey = _parseAccel(key);
+    btn = new FXButton(buttons, TAB + _("Go to Previous Folder") + PARS(key), minidirbackicon, this, ID_DIR_BACK,
+                       BUTTON_TOOLBAR | FRAME_GROOVE, 0, 0, 0, 0, 3, 3, 3, 3);
+    hotkey = xf_parseaccel(key);
     btn->addHotKey(hotkey);
 
-    btnbackhist = new FXArrowButton(buttons, this, ID_DIR_BACK_HIST, LAYOUT_FILL_Y | FRAME_RAISED | FRAME_THICK | ARROW_DOWN | ARROW_TOOLBAR);
+    btnbackhist = new FXArrowButton(buttons, this, ID_DIR_BACK_HIST,
+                                    LAYOUT_FILL_Y | FRAME_GROOVE | ARROW_DOWN | ARROW_TOOLBAR);
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "go_forward", "Shift-Backspace");
-    btn = new FXButton(buttons, TAB + _("Go to next folder") + PARS(key), dirforwardicon, this, ID_DIR_FORWARD, BUTTON_TOOLBAR | FRAME_RAISED, 0, 0, 0, 0, 3, 3, 3, 3);
-    hotkey = _parseAccel(key);
+    btn = new FXButton(buttons, TAB + _("Go to Next Folder") + PARS(key), minidirforwardicon, this, ID_DIR_FORWARD,
+                       BUTTON_TOOLBAR | LAYOUT_CENTER_Y | FRAME_GROOVE, 0, 0, 0, 0, 3, 3, 3, 3);
+    hotkey = xf_parseaccel(key);
     btn->addHotKey(hotkey);
 
-    btnforwardhist = new FXArrowButton(buttons, this, ID_DIR_FORWARD_HIST, LAYOUT_FILL_Y | FRAME_RAISED | FRAME_THICK | ARROW_DOWN | ARROW_TOOLBAR);
+    btnforwardhist = new FXArrowButton(buttons, this, ID_DIR_FORWARD_HIST,
+                                       LAYOUT_FILL_Y | FRAME_GROOVE | ARROW_DOWN | ARROW_TOOLBAR);
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "go_up", "Backspace");
-    btn = new FXButton(buttons, TAB + _("Go to parent folder") + PARS(key), dirupicon, this, ID_DIR_UP, BUTTON_TOOLBAR | FRAME_RAISED, 0, 0, 0, 0, 3, 3, 3, 3);
-    hotkey = _parseAccel(key);
+    btn = new FXButton(buttons, TAB + _("Go to Parent Folder") + PARS(key), minidirupicon, this, ID_DIR_UP,
+                       BUTTON_TOOLBAR | LAYOUT_CENTER_Y | FRAME_GROOVE, 0, 0, 0, 0, 3, 3, 3, 3);
+    hotkey = xf_parseaccel(key);
     btn->addHotKey(hotkey);
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "go_home", "Ctrl-H");
-    btn = new FXButton(buttons, TAB + _("Go to home folder") + PARS(key), homeicon, this, ID_HOME, BUTTON_TOOLBAR | FRAME_RAISED, 0, 0, 0, 0, 3, 3, 3, 3);
-    hotkey = _parseAccel(key);
+    btn = new FXButton(buttons, TAB + _("Go to Home Folder") + PARS(key), minihomeicon, this, ID_HOME,
+                       BUTTON_TOOLBAR | LAYOUT_CENTER_Y | FRAME_GROOVE, 0, 0, 0, 0, 3, 3, 3, 3);
+    hotkey = xf_parseaccel(key);
     btn->addHotKey(hotkey);
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "go_work", "Shift-F2");
-    btn = new FXButton(buttons, TAB + _("Go to working folder") + PARS(key), workicon, this, ID_WORK, BUTTON_TOOLBAR | FRAME_RAISED, 0, 0, 0, 0, 3, 3, 3, 3);
-    hotkey = _parseAccel(key);
+    btn = new FXButton(buttons, TAB + _("Go to Working Folder") + PARS(key), miniworkicon, this, ID_WORK,
+                       BUTTON_TOOLBAR | LAYOUT_CENTER_Y | FRAME_GROOVE, 0, 0, 0, 0, 3, 3, 3, 3);
+    hotkey = xf_parseaccel(key);
     btn->addHotKey(hotkey);
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "new_folder", "F7");
-    btn = new FXButton(buttons, TAB + _("New folder") + PARS(key), newfoldericon, this, ID_NEWDIR, BUTTON_TOOLBAR | FRAME_RAISED, 0, 0, 0, 0, 3, 3, 3, 3);
-    hotkey = _parseAccel(key);
+    btn = new FXButton(buttons, TAB + _("New Folder") + PARS(key), minifoldernewicon, this, ID_NEWDIR,
+                       BUTTON_TOOLBAR | LAYOUT_CENTER_Y | FRAME_GROOVE, 0, 0, 0, 0, 3, 3, 3, 3);
+    hotkey = xf_parseaccel(key);
     btn->addHotKey(hotkey);
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "big_icons", "F10");
-    btn = new FXButton(buttons, TAB + _("Big icon list") + PARS(key), bigiconsicon, list, FileList::ID_SHOW_BIG_ICONS, BUTTON_TOOLBAR | FRAME_RAISED, 0, 0, 0, 0, 3, 3, 3, 3);
-    hotkey = _parseAccel(key);
+    btn = new FXButton(buttons, TAB + _("Big Icon List") + PARS(key), minibigiconsicon, list,
+                       FileList::ID_SHOW_BIG_ICONS, BUTTON_TOOLBAR | LAYOUT_CENTER_Y | FRAME_GROOVE, 0, 0, 0, 0, 3, 3,
+                       3, 3);
+    hotkey = xf_parseaccel(key);
     btn->addHotKey(hotkey);
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "small_icons", "F11");
-    btn = new FXButton(buttons, TAB + _("Small icon list") + PARS(key), smalliconsicon, list, FileList::ID_SHOW_MINI_ICONS, BUTTON_TOOLBAR | FRAME_RAISED, 0, 0, 0, 0, 3, 3, 3, 3);
-    hotkey = _parseAccel(key);
+    btn = new FXButton(buttons, TAB + _("Small Icon List") + PARS(key), minismalliconsicon, list,
+                       FileList::ID_SHOW_MINI_ICONS, BUTTON_TOOLBAR | LAYOUT_CENTER_Y | FRAME_GROOVE, 0, 0, 0, 0, 3, 3,
+                       3, 3);
+    hotkey = xf_parseaccel(key);
     btn->addHotKey(hotkey);
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "detailed_file_list", "F12");
-    btn = new FXButton(buttons, TAB + _("Detailed file list") + PARS(key), detailsicon, list, FileList::ID_SHOW_DETAILS, BUTTON_TOOLBAR | FRAME_RAISED, 0, 0, 0, 0, 3, 3, 3, 3);
-    hotkey = _parseAccel(key);
+    btn = new FXButton(buttons, TAB + _("Detailed File List") + PARS(key), minidetailsicon, list,
+                       FileList::ID_SHOW_DETAILS, BUTTON_TOOLBAR | LAYOUT_CENTER_Y | FRAME_GROOVE, 0, 0, 0, 0, 3, 3, 3,
+                       3);
+    hotkey = xf_parseaccel(key);
     btn->addHotKey(hotkey);
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "hidden_files", "Ctrl-F6");
-    tglbtn = new FXToggleButton(buttons, TAB + _("Show hidden files") + PARS(key), TAB + _("Hide hidden files") + PARS(key), showhiddenicon, hidehiddenicon, list, FileList::ID_TOGGLE_HIDDEN, TOGGLEBUTTON_TOOLBAR | FRAME_RAISED, 0, 0, 0, 0, 3, 3, 3, 3);
-    hotkey = _parseAccel(key);
+    tglbtn = new FXToggleButton(buttons, TAB + _("Show hidden files") + PARS(key),
+                                TAB + _("Hide Hidden Files") + PARS(key),
+                                minishowhiddenicon, minihidehiddenicon, list, FileList::ID_TOGGLE_HIDDEN,
+                                TOGGLEBUTTON_TOOLBAR | LAYOUT_CENTER_Y | FRAME_GROOVE, 0, 0, 0, 0, 3, 3, 3, 3);
+    hotkey = xf_parseaccel(key);
     tglbtn->addHotKey(hotkey);
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "thumbnails", "Ctrl-F7");
-    tglbtn = new FXToggleButton(buttons, TAB + _("Show thumbnails") + PARS(key), TAB + _("Hide thumbnails") + PARS(key), showthumbicon, hidethumbicon, list, FileList::ID_TOGGLE_THUMBNAILS, TOGGLEBUTTON_TOOLBAR | FRAME_RAISED, 0, 0, 0, 0, 3, 3, 3, 3);
-    hotkey = _parseAccel(key);
+    tglbtn = new FXToggleButton(buttons, TAB + _("Show Thumbnails") + PARS(key), TAB + _("Hide thumbnails") + PARS(key),
+                                minishowthumbicon, minihidethumbicon, list, FileList::ID_TOGGLE_THUMBNAILS,
+                                TOGGLEBUTTON_TOOLBAR | LAYOUT_CENTER_Y | FRAME_GROOVE, 0, 0, 0, 0, 3, 3, 3, 3);
+    hotkey = xf_parseaccel(key);
     tglbtn->addHotKey(hotkey);
+
+    key = getApp()->reg().readStringEntry("KEYBINDINGS", "filter", "Ctrl-D");
+    btn = new FXButton(buttons, TAB + _("Filter") + PARS(key), minifiltericon, this,
+                       FileSelector::ID_FILTER,
+                       BUTTON_TOOLBAR | LAYOUT_LEFT | LAYOUT_CENTER_Y | ICON_BEFORE_TEXT | FRAME_NONE);
+
+    filterlabel = new FXLabel(buttons, "", NULL, JUSTIFY_LEFT | LAYOUT_LEFT);
+    closefilter = new FXButton(buttons, TAB + _("Close Filter"), miniclosefiltericon, this->list,
+                               FileList::ID_CLOSE_FILTER,
+                               BUTTON_TOOLBAR | LAYOUT_LEFT | LAYOUT_CENTER_Y | ICON_BEFORE_TEXT | FRAME_NONE);
 
     // Path text
     pathtext = new TextLabel(pathframe, 0, this, 0, LAYOUT_FILL_X | LAYOUT_FILL_Y);
@@ -209,30 +359,33 @@ FileSelector::FileSelector(FXComposite* p, FXObject* tgt, FXSelector sel, FXuint
         FXHotKey hotkey;
 
         key = getApp()->reg().readStringEntry("KEYBINDINGS", "select_all", "Ctrl-A");
-        hotkey = _parseAccel(key);
+        hotkey = xf_parseaccel(key);
         table->addAccel(hotkey, list, FXSEL(SEL_COMMAND, FileList::ID_SELECT_ALL));
 
         key = getApp()->reg().readStringEntry("KEYBINDINGS", "deselect_all", "Ctrl-Z");
-        hotkey = _parseAccel(key);
+        hotkey = xf_parseaccel(key);
         table->addAccel(hotkey, list, FXSEL(SEL_COMMAND, FileList::ID_DESELECT_ALL));
 
         key = getApp()->reg().readStringEntry("KEYBINDINGS", "invert_selection", "Ctrl-I");
-        hotkey = _parseAccel(key);
+        hotkey = xf_parseaccel(key);
         table->addAccel(hotkey, list, FXSEL(SEL_COMMAND, FileList::ID_SELECT_INVERSE));
 
         key = getApp()->reg().readStringEntry("KEYBINDINGS", "new_file", "Ctrl-N");
-        hotkey = _parseAccel(key);
+        hotkey = xf_parseaccel(key);
         table->addAccel(hotkey, this, FXSEL(SEL_COMMAND, ID_NEWFILE));
     }
 
-    setSelectMode(SELECT_FILE_ANY);                          // For backward compatibility, this HAS to be the default!
+    setSelectMode(SELECT_FILE_ANY);                             // For backward compatibility, this HAS to be the default!
     setPatternList(allfiles);
-    setDirectory(FXSystem::getCurrentDirectory());           // Update file list
-    pathlink->setPath(FXSystem::getCurrentDirectory());      // Update path linker
-    pathtext->setText(FXSystem::getCurrentDirectory());      // Update path text
+    setDirectory(FXSystem::getCurrentDirectory());              // Update file list
+    pathlink->setPath(FXSystem::getCurrentDirectory());         // Update path linker
+    pathtext->setText(FXSystem::getCurrentDirectory());         // Update path text
 
     list->setFocus();
     accept->hide();
+
+    // Single click navigation
+    single_click = getApp()->reg().readUnsignedEntry("SETTINGS", "single_click", SINGLE_CLICK_NONE);
 
     // Change default cursor if single click navigation
     if (single_click == SINGLE_CLICK_DIR_FILE)
@@ -269,7 +422,7 @@ long FileSelector::onCmdItemDoubleClicked(FXObject*, FXSelector, void* ptr)
 
     if (index < 0)
     {
-        return(1);
+        return 1;
     }
 
     // If directory, open the directory
@@ -278,16 +431,16 @@ long FileSelector::onCmdItemDoubleClicked(FXObject*, FXSelector, void* ptr)
         FXString pathname = list->getItemPathname(index);
 
         // Does not have access
-        if (!::isReadExecutable(pathname))
+        if (!xf_isreadexecutable(pathname))
         {
             MessageBox::error(this, BOX_OK, _("Error"), _(" Permission to: %s denied."), pathname.text());
-            return(0);
+            return 0;
         }
 
         setDirectory(pathname);
         pathlink->setPath(pathname);
         pathtext->setText(pathname);
-        return(1);
+        return 1;
     }
 
     // Only return if we wanted a file
@@ -295,7 +448,7 @@ long FileSelector::onCmdItemDoubleClicked(FXObject*, FXSelector, void* ptr)
     {
         if (list->isItemFile(index))
         {
-            FXObject*  tgt = accept->getTarget();
+            FXObject* tgt = accept->getTarget();
             FXSelector sel = accept->getSelector();
             if (tgt)
             {
@@ -303,7 +456,7 @@ long FileSelector::onCmdItemDoubleClicked(FXObject*, FXSelector, void* ptr)
             }
         }
     }
-    return(1);
+    return 1;
 }
 
 
@@ -315,7 +468,7 @@ long FileSelector::onCmdItemClicked(FXObject*, FXSelector, void* ptr)
         FXlong index = (FXlong)ptr;
         if (index < 0)
         {
-            return(1);
+            return 1;
         }
 
         // In detailed mode, avoid single click when mouse cursor is not over the first column
@@ -323,7 +476,8 @@ long FileSelector::onCmdItemClicked(FXObject*, FXSelector, void* ptr)
         FXuint state;
         getCursorPosition(x, y, state);
         FXbool allow = true;
-        if (!(list->getListStyle() & (_ICONLIST_BIG_ICONS | _ICONLIST_MINI_ICONS)) && ((x - list->getXPosition()) > list->getHeaderSize(0)))
+        if (!(list->getListStyle() & (ICONLIST_BIG_ICONS | ICONLIST_MINI_ICONS)) &&
+            ((x - list->getXPosition()) > list->getHeaderSize(0)))
         {
             allow = false;
         }
@@ -331,9 +485,8 @@ long FileSelector::onCmdItemClicked(FXObject*, FXSelector, void* ptr)
         // Single click with control or shift
         if (state & (CONTROLMASK | SHIFTMASK))
         {
-            return(1);
+            return 1;
         }
-
         // Single click without control or shift
         else
         {
@@ -343,19 +496,19 @@ long FileSelector::onCmdItemClicked(FXObject*, FXSelector, void* ptr)
                 FXString pathname = list->getItemPathname(index);
 
                 // Does not have access
-                if (!::isReadExecutable(pathname))
+                if (!xf_isreadexecutable(pathname))
                 {
                     MessageBox::error(this, BOX_OK, _("Error"), _(" Permission to: %s denied."), pathname.text());
-                    return(0);
+                    return 0;
                 }
                 setDirectory(pathname);
                 pathlink->setPath(pathname);
                 pathtext->setText(pathname);
-                return(1);
+                return 1;
             }
             else if ((single_click == SINGLE_CLICK_DIR_FILE) && list->isItemFile(index) && allow)
             {
-                FXObject*  tgt = accept->getTarget();
+                FXObject* tgt = accept->getTarget();
                 FXSelector sel = accept->getSelector();
                 if (tgt)
                 {
@@ -364,7 +517,7 @@ long FileSelector::onCmdItemClicked(FXObject*, FXSelector, void* ptr)
             }
         }
     }
-    return(1);
+    return 1;
 }
 
 
@@ -384,7 +537,7 @@ long FileSelector::onCmdItemSelected(FXObject*, FXSelector, void* ptr)
                 {
                     text += ' ';
                 }
-                text += ::quote(list->getItemFilename(i));
+                text += xf_quote(list->getItemFilename(i));
             }
         }
         filename->setText(text);
@@ -399,7 +552,7 @@ long FileSelector::onCmdItemSelected(FXObject*, FXSelector, void* ptr)
                 {
                     text += ' ';
                 }
-                text += ::quote(list->getItemFilename(i));
+                text += xf_quote(list->getItemFilename(i));
             }
         }
         filename->setText(text);
@@ -432,7 +585,7 @@ long FileSelector::onCmdItemSelected(FXObject*, FXSelector, void* ptr)
             filename->setText(text);
         }
     }
-    return(1);
+    return 1;
 }
 
 
@@ -451,7 +604,7 @@ long FileSelector::onCmdItemDeselected(FXObject*, FXSelector, void*)
                 {
                     text += ' ';
                 }
-                text += ::quote(list->getItemFilename(i));
+                text += xf_quote(list->getItemFilename(i));
             }
         }
         filename->setText(text);
@@ -466,12 +619,12 @@ long FileSelector::onCmdItemDeselected(FXObject*, FXSelector, void*)
                 {
                     text += ' ';
                 }
-                text += ::quote(list->getItemFilename(i));
+                text += xf_quote(list->getItemFilename(i));
             }
         }
         filename->setText(text);
     }
-    return(1);
+    return 1;
 }
 
 
@@ -479,7 +632,7 @@ long FileSelector::onCmdItemDeselected(FXObject*, FXSelector, void*)
 long FileSelector::onCmdAccept(FXObject*, FXSelector, void*)
 {
     FXSelector sel = accept->getSelector();
-    FXObject*  tgt = accept->getTarget();
+    FXObject* tgt = accept->getTarget();
 
     // Get (first) filename
     FXString path = getFilename();
@@ -495,16 +648,17 @@ long FileSelector::onCmdAccept(FXObject*, FXSelector, void*)
     if (!path.empty())
     {
         // Is directory?
-        if (::isDirectory(path))
+        if (xf_isdirectory(path))
         {
             // In directory mode:- we got our answer!
-            if ((selectmode == SELECT_FILE_DIRECTORY) || (selectmode == SELECT_FILE_MULTIPLE_ALL) || (selectmode == SELECT_FILE_MIXED))
+            if ((selectmode == SELECT_FILE_DIRECTORY) || (selectmode == SELECT_FILE_MULTIPLE_ALL) ||
+                (selectmode == SELECT_FILE_MIXED))
             {
                 if (tgt)
                 {
                     tgt->handle(accept, FXSEL(SEL_COMMAND, sel), (void*)1);
                 }
-                return(1);
+                return 1;
             }
 
             // Hop over to that directory
@@ -512,14 +666,14 @@ long FileSelector::onCmdAccept(FXObject*, FXSelector, void*)
             pathlink->setPath(list->getDirectory());
             pathtext->setText(list->getDirectory());
             filename->setText(FXString::null);
-            return(1);
+            return 1;
         }
 
         // Get directory part of path
         FXString dir = FXPath::directory(path);
 
         // In file mode, directory part of path should exist
-        if (::isDirectory(dir))
+        if (xf_isdirectory(dir))
         {
             // In any mode, existing directory part is good enough
             if (selectmode == SELECT_FILE_ANY)
@@ -528,22 +682,20 @@ long FileSelector::onCmdAccept(FXObject*, FXSelector, void*)
                 {
                     tgt->handle(accept, FXSEL(SEL_COMMAND, sel), (void*)1);
                 }
-                return(1);
+                return 1;
             }
-
             // In existing mode, the whole filename must exist and be a file
             else if (selectmode == SELECT_FILE_EXISTING)
             {
-                if (::isFile(path))
+                if (xf_isfile(path))
                 {
                     if (tgt)
                     {
                         tgt->handle(accept, FXSEL(SEL_COMMAND, sel), (void*)1);
                     }
-                    return(1);
+                    return 1;
                 }
             }
-
             // In multiple mode, return if all selected files exist
             else if (selectmode == SELECT_FILE_MULTIPLE)
             {
@@ -555,11 +707,10 @@ long FileSelector::onCmdAccept(FXObject*, FXSelector, void*)
                         {
                             tgt->handle(accept, FXSEL(SEL_COMMAND, sel), (void*)1);
                         }
-                        return(1);
+                        return 1;
                     }
                 }
             }
-
             // Multiple files and/or directories
             else
             {
@@ -571,14 +722,14 @@ long FileSelector::onCmdAccept(FXObject*, FXSelector, void*)
                         {
                             tgt->handle(accept, FXSEL(SEL_COMMAND, sel), (void*)1);
                         }
-                        return(1);
+                        return 1;
                     }
                 }
             }
         }
 
         // Go up to the lowest directory which still exists
-        while (!FXPath::isTopDirectory(dir) && !::isDirectory(dir))
+        while (!FXPath::isTopDirectory(dir) && !xf_isdirectory(dir))
         {
             dir = FXPath::upLevel(dir);
         }
@@ -603,7 +754,7 @@ long FileSelector::onCmdAccept(FXObject*, FXSelector, void*)
         filename->selectAll();
     }
 
-    return(1);
+    return 1;
 }
 
 
@@ -613,7 +764,7 @@ long FileSelector::onCmdDirUp(FXObject*, FXSelector, void*)
     setDirectory(FXPath::upLevel(list->getDirectory()));
     pathlink->setPath(list->getDirectory());
     pathtext->setText(list->getDirectory());
-    return(1);
+    return 1;
 }
 
 
@@ -628,14 +779,14 @@ long FileSelector::onUpdDirUp(FXObject* sender, FXSelector, void*)
     {
         sender->handle(this, FXSEL(SEL_COMMAND, ID_ENABLE), NULL);
     }
-    return(1);
+    return 1;
 }
 
 
 // Directory back
-long FileSelector::onCmdDirBack(FXObject*, FXSelector s, void* p)
+long FileSelector::onCmdDirBack(FXObject*, FXSelector sel, void* ptr)
 {
-    StringList* backhist, *forwardhist;
+    StringList* backhist, * forwardhist;
     StringItem* item;
     FXString pathname;
 
@@ -659,7 +810,7 @@ long FileSelector::onCmdDirBack(FXObject*, FXSelector s, void* p)
     pathlink->setPath(list->getDirectory());
     pathtext->setText(list->getDirectory());
 
-    return(1);
+    return 1;
 }
 
 
@@ -682,14 +833,14 @@ long FileSelector::onUpdDirBack(FXObject* sender, FXSelector sel, void* ptr)
         sender->handle(this, FXSEL(SEL_COMMAND, ID_ENABLE), ptr);
     }
 
-    return(1);
+    return 1;
 }
 
 
 // Directory forward
-long FileSelector::onCmdDirForward(FXObject*, FXSelector s, void* p)
+long FileSelector::onCmdDirForward(FXObject*, FXSelector sel, void* ptr)
 {
-    StringList* backhist, *forwardhist;
+    StringList* backhist, * forwardhist;
     StringItem* item;
     FXString pathname;
 
@@ -713,7 +864,7 @@ long FileSelector::onCmdDirForward(FXObject*, FXSelector s, void* p)
     pathlink->setPath(list->getDirectory());
     pathtext->setText(list->getDirectory());
 
-    return(1);
+    return 1;
 }
 
 
@@ -736,14 +887,14 @@ long FileSelector::onUpdDirForward(FXObject* sender, FXSelector sel, void* ptr)
         sender->handle(this, FXSEL(SEL_COMMAND, ID_ENABLE), ptr);
     }
 
-    return(1);
+    return 1;
 }
 
 
 // Directory back history
 long FileSelector::onCmdDirBackHist(FXObject* sender, FXSelector sel, void* ptr)
 {
-    StringList* backhist, *forwardhist;
+    StringList* backhist, * forwardhist;
     StringItem* item;
     FXString pathname;
 
@@ -808,7 +959,7 @@ long FileSelector::onCmdDirBackHist(FXObject* sender, FXSelector sel, void* ptr)
         delete[]dirs;
     }
 
-    return(1);
+    return 1;
 }
 
 
@@ -831,14 +982,14 @@ long FileSelector::onUpdDirBackHist(FXObject* sender, FXSelector sel, void* ptr)
         sender->handle(this, FXSEL(SEL_COMMAND, ID_ENABLE), ptr);
     }
 
-    return(1);
+    return 1;
 }
 
 
 // Directory forward history
 long FileSelector::onCmdDirForwardHist(FXObject* sender, FXSelector sel, void* ptr)
 {
-    StringList* backhist, *forwardhist;
+    StringList* backhist, * forwardhist;
     StringItem* item;
     FXString pathname;
 
@@ -903,7 +1054,7 @@ long FileSelector::onCmdDirForwardHist(FXObject* sender, FXSelector sel, void* p
         delete[]dirs;
     }
 
-    return(1);
+    return 1;
 }
 
 
@@ -926,7 +1077,7 @@ long FileSelector::onUpdDirForwardHist(FXObject* sender, FXSelector sel, void* p
         sender->handle(this, FXSEL(SEL_COMMAND, ID_ENABLE), ptr);
     }
 
-    return(1);
+    return 1;
 }
 
 
@@ -936,7 +1087,7 @@ long FileSelector::onCmdHome(FXObject*, FXSelector, void*)
     setDirectory(FXSystem::getHomeDirectory());
     pathlink->setPath(list->getDirectory());
     pathtext->setText(list->getDirectory());
-    return(1);
+    return 1;
 }
 
 
@@ -953,7 +1104,8 @@ long FileSelector::onCmdNewDir(FXObject*, FXSelector, void*)
         dirpath += PATHSEPSTRING;
     }
 
-    InputDialog* dialog = new InputDialog(this, dirname, _("Create new folder..."), _("New Folder"), "", bignewfoldericon);
+    InputDialog* dialog = new InputDialog(this, dirname, _("Create new folder..."), _("New Folder"), "",
+                                          bigfoldernewicon);
     dialog->CursorEnd();
     if (dialog->execute(PLACEMENT_CURSOR))
     {
@@ -961,15 +1113,16 @@ long FileSelector::onCmdNewDir(FXObject*, FXSelector, void*)
         {
             MessageBox::warning(this, BOX_OK, _("Warning"), _("Folder name is empty, operation cancelled"));
             delete dialog;
-            return(0);
+            return 0;
         }
 
         // Directory name contains '/'
         if (dialog->getText().contains(PATHSEPCHAR))
         {
-            MessageBox::warning(this, BOX_OK, _("Warning"), _("The / character is not allowed in folder names, operation cancelled"));
+            MessageBox::warning(this, BOX_OK, _("Warning"),
+                                _("The / character is not allowed in folder names, operation cancelled"));
             delete dialog;
-            return(0);
+            return 0;
         }
 
         dirname = dirpath + dialog->getText();
@@ -988,20 +1141,21 @@ long FileSelector::onCmdNewDir(FXObject*, FXSelector, void*)
             {
                 if (errcode)
                 {
-                    MessageBox::error(getApp(), BOX_OK_SU, _("Error"), "Can't create folder %s: %s", dirname.text(), strerror(errcode));
+                    MessageBox::error(getApp(), BOX_OK_SU, _("Error"), "Can't create folder %s: %s", dirname.text(),
+                                      strerror(errcode));
                 }
                 else
                 {
                     MessageBox::error(getApp(), BOX_OK_SU, _("Error"), "Can't create folder %s", dirname.text());
                 }
-	            delete dialog;
-                return(0);
+                delete dialog;
+                return 0;
             }
         }
     }
     delete dialog;
 
-    return(1);
+    return 1;
 }
 
 
@@ -1029,15 +1183,16 @@ long FileSelector::onCmdNewFile(FXObject*, FXSelector, void*)
         {
             MessageBox::warning(this, BOX_OK, _("Warning"), _("File name is empty, operation cancelled"));
             delete dialog;
-            return(0);
+            return 0;
         }
 
         // File name contains '/'
         if (dialog->getText().contains(PATHSEPCHAR))
         {
-            MessageBox::warning(this, BOX_OK, _("Warning"), _("The / character is not allowed in file names, operation cancelled"));
+            MessageBox::warning(this, BOX_OK, _("Warning"),
+                                _("The / character is not allowed in file names, operation cancelled"));
             delete dialog;
-            return(0);
+            return 0;
         }
 
         filename = pathname + dialog->getText();
@@ -1045,11 +1200,11 @@ long FileSelector::onCmdNewFile(FXObject*, FXSelector, void*)
         if (filename != pathname)
         {
             // Test some error conditions
-            if (existFile(filename))
+            if (xf_existfile(filename))
             {
                 MessageBox::error(this, BOX_OK, _("Error"), _("File or folder %s already exists"), filename.text());
-            	delete dialog;
-                return(0);
+                delete dialog;
+                return 0;
             }
             // Create the new file
             errno = 0;
@@ -1057,14 +1212,15 @@ long FileSelector::onCmdNewFile(FXObject*, FXSelector, void*)
             {
                 if (errno)
                 {
-                    MessageBox::error(getApp(), BOX_OK_SU, _("Error"), "Can't create file %s: %s", filename.text(), strerror(errno));
+                    MessageBox::error(getApp(), BOX_OK_SU, _("Error"), "Can't create file %s: %s", filename.text(),
+                                      strerror(errno));
                 }
                 else
                 {
                     MessageBox::error(getApp(), BOX_OK_SU, _("Error"), "Can't create file %s", filename.text());
                 }
-            	delete dialog;
-                return(0);
+                delete dialog;
+                return 0;
             }
             // Change the file permissions according to the current umask
             int mask;
@@ -1075,20 +1231,21 @@ long FileSelector::onCmdNewFile(FXObject*, FXSelector, void*)
             {
                 if (errno)
                 {
-                    MessageBox::error(getApp(), BOX_OK_SU, _("Error"), "Can't set permissions in %s: %s", filename.text(), strerror(errno));
+                    MessageBox::error(getApp(), BOX_OK_SU, _("Error"), "Can't set permissions in %s: %s",
+                                      filename.text(), strerror(errno));
                 }
                 else
                 {
                     MessageBox::error(getApp(), BOX_OK_SU, _("Error"), "Can't set permissions in %s", filename.text());
                 }
-            	delete dialog;
-                return(0);
+                delete dialog;
+                return 0;
             }
         }
     }
 
     delete dialog;
-    return(1);
+    return 1;
 }
 
 
@@ -1098,7 +1255,7 @@ long FileSelector::onCmdWork(FXObject*, FXSelector, void*)
     setDirectory(FXSystem::getCurrentDirectory());
     pathlink->setPath(list->getDirectory());
     pathtext->setText(list->getDirectory());
-    return(1);
+    return 1;
 }
 
 
@@ -1107,13 +1264,13 @@ FXString FileSelector::patternFromText(const FXString& pattern)
 {
     int beg, end;
 
-    end = pattern.rfind(')');         // Search from the end so we can allow ( ) in the pattern name itself
+    end = pattern.rfind(')');     // Search from the end so we can allow ( ) in the pattern name itself
     beg = pattern.rfind('(', end - 1);
     if ((0 <= beg) && (beg < end))
     {
-        return(pattern.mid(beg + 1, end - beg - 1));
+        return pattern.mid(beg + 1, end - beg - 1);
     }
-    return(pattern);
+    return pattern;
 }
 
 
@@ -1136,14 +1293,111 @@ FXString FileSelector::extensionFromPattern(const FXString& pattern)
             {
                 if ((c == '*') || (c == '?') || (c == '[') || (c == ']') || (c == '^') || (c == '!'))
                 {
-                    return(FXString::null);
+                    return FXString::null;
                 }
                 end++;
             }
-            return(pattern.mid(beg, end - beg));
+            return pattern.mid(beg, end - beg);
         }
     }
-    return(FXString::null);
+    return FXString::null;
+}
+
+
+// Filter dialog
+long FileSelector::onCmdItemFilter(FXObject* sender, FXSelector sel, void*)
+{
+    if (FilterNum == 0)
+    {
+        xf_strlcpy(FilterHistory[FilterNum], "*", 2);
+        FilterNum++;
+    }
+
+    int i;
+    FXString pat = list->getPattern();
+
+    if (filterdialog == NULL)
+    {
+        filterdialog = new HistInputDialog(this, pat, _("Show:"), _("Filter"), "", bigfiltericon, false, true,
+                                           HIST_INPUT_FILE, true, _("Also apply to folders"));
+    }
+
+    filterdialog->clearItems();
+    filterdialog->CursorEnd();
+
+    for (int i = 0; i < FilterNum; i++)
+    {
+        filterdialog->appendItem(FilterHistory[i]);
+    }
+
+    filterdialog->sortItems();
+    filterdialog->setText(pat);
+
+    // Set filter type
+    if (filterdialog->execute() && ((pat = filterdialog->getText()) != ""))
+    {
+        // Set filter folders option
+        list->setFilterFolders(filterdialog->getOption());
+
+        // Change file list pattern
+        list->setPattern(pat);
+
+        FXbool newstr = true;
+        for (i = 0; i < FilterNum; i++)
+        {
+            if (xf_strequal(FilterHistory[i], pat.text()))
+            {
+                newstr = false;
+                break;
+            }
+        }
+        // Append new string to the list bottom
+        if (newstr && (FilterNum < FILTER_HIST_SIZE))
+        {
+            xf_strlcpy(FilterHistory[FilterNum], pat.text(), pat.length() + 1);
+            FilterNum++;
+        }
+    }
+
+    list->onCmdRefresh(0, 0, 0);
+    list->setFocus();
+
+    // If list has been cleared, set history size to zero
+    if (filterdialog->getHistorySize() == 0)
+    {
+        FilterNum = 0;
+    }
+
+    return 1;
+}
+
+
+// Update item filter
+long FileSelector::onUpdItemFilter(FXObject* sender, FXSelector sel, void* ptr)
+{
+    if ((list->getPattern() != "*") && (list->getPattern() != "*.*"))
+    {
+        closefilter->show();
+
+        FXString str;
+        if (list->getFilterFolders())
+        {
+            str.format(_(" - Filter: %s (files / folders)"), list->getPattern().text());
+        }
+        else
+        {
+            str.format(_(" - Filter: %s"), list->getPattern().text());
+        }
+        filterlabel->setText(str);
+        filterlabel->setTextColor(attentioncolor);
+    }
+    else
+    {
+        closefilter->hide();
+        filterlabel->setText("");
+    }
+
+    return 1;
 }
 
 
@@ -1165,7 +1419,7 @@ long FileSelector::onCmdFilter(FXObject*, FXSelector, void* ptr)
             }
         }
     }
-    return(1);
+    return 1;
 }
 
 
@@ -1188,7 +1442,7 @@ void FileSelector::setDirectory(const FXString& path)
 // Get directory
 FXString FileSelector::getDirectory() const
 {
-    return(list->getDirectory());
+    return list->getDirectory();
 }
 
 
@@ -1215,7 +1469,7 @@ FXString FileSelector::getFilename() const
         {
             if (list->isItemSelected(i) && (list->getItemFilename(i) != ".."))
             {
-                return(FXPath::absolute(list->getDirectory(), list->getItemFilename(i)));
+                return FXPath::absolute(list->getDirectory(), list->getItemFilename(i));
             }
         }
     }
@@ -1225,7 +1479,7 @@ FXString FileSelector::getFilename() const
         {
             if (list->isItemSelected(i) && list->isItemFile(i))
             {
-                return(FXPath::absolute(list->getDirectory(), list->getItemFilename(i)));
+                return FXPath::absolute(list->getDirectory(), list->getItemFilename(i));
             }
         }
     }
@@ -1233,10 +1487,10 @@ FXString FileSelector::getFilename() const
     {
         if (!filename->getText().empty())
         {
-            return(FXPath::absolute(list->getDirectory(), filename->getText()));
+            return FXPath::absolute(list->getDirectory(), filename->getText());
         }
     }
-    return(FXString::null);
+    return FXString::null;
 }
 
 
@@ -1257,8 +1511,11 @@ FXString* FileSelector::getFilenames() const
                     n++;
                 }
             }
-            if (n)
+            if (n > 0)
             {
+                // Limit the number of files to open
+                n = FXMAX(n, MAX_OPEN_FILES);
+
                 files = new FXString [n + 1];
                 for (i = n = 0; i < list->getNumItems(); i++)
                 {
@@ -1279,8 +1536,11 @@ FXString* FileSelector::getFilenames() const
                     n++;
                 }
             }
-            if (n)
+            if (n > 0)
             {
+                // Limit the number of files to open
+                n = FXMAX(n, MAX_OPEN_FILES);
+
                 files = new FXString [n + 1];
                 for (i = n = 0; i < list->getNumItems(); i++)
                 {
@@ -1293,7 +1553,8 @@ FXString* FileSelector::getFilenames() const
             }
         }
     }
-    return(files);
+
+    return files;
 }
 
 
@@ -1350,7 +1611,7 @@ FXString FileSelector::getPatternList() const
         }
         pat += filefilter->getItemText(i);
     }
-    return(pat);
+    return pat;
 }
 
 
@@ -1365,7 +1626,7 @@ void FileSelector::setPattern(const FXString& ptrn)
 // Get current filter pattern
 FXString FileSelector::getPattern() const
 {
-    return(list->getPattern());
+    return list->getPattern();
 }
 
 
@@ -1385,7 +1646,7 @@ void FileSelector::setCurrentPattern(int patno)
 // Return current pattern
 int FileSelector::getCurrentPattern() const
 {
-    return(filefilter->getCurrentItem());
+    return filefilter->getCurrentItem();
 }
 
 
@@ -1413,7 +1674,7 @@ FXString FileSelector::getPatternText(int patno) const
         fprintf(stderr, "%s::getPatternText: index out of range.\n", getClassName());
         exit(EXIT_FAILURE);
     }
-    return(filefilter->getItemText(patno));
+    return filefilter->getItemText(patno);
 }
 
 
@@ -1427,7 +1688,7 @@ void FileSelector::setItemSpace(int s)
 // Get space for item
 int FileSelector::getItemSpace() const
 {
-    return(list->getItemSpace());
+    return list->getItemSpace();
 }
 
 
@@ -1441,7 +1702,7 @@ void FileSelector::setFileBoxStyle(FXuint style)
 // Return File List style
 FXuint FileSelector::getFileBoxStyle() const
 {
-    return(list->getListStyle() & FILESTYLEMASK);
+    return list->getListStyle() & FILESTYLEMASK;
 }
 
 
@@ -1452,27 +1713,29 @@ void FileSelector::setSelectMode(FXuint mode)
     {
     case SELECT_FILE_EXISTING:
         list->showOnlyDirectories(false);
-        list->setListStyle((list->getListStyle() & ~FILELISTMASK) | _ICONLIST_BROWSESELECT);
+        list->setListStyle((list->getListStyle() & ~FILELISTMASK) | ICONLIST_BROWSESELECT);
         break;
 
     case SELECT_FILE_MULTIPLE:
     case SELECT_FILE_MULTIPLE_ALL:
         list->showOnlyDirectories(false);
-        list->setListStyle((list->getListStyle() & ~FILELISTMASK) | _ICONLIST_EXTENDEDSELECT);
+        list->setListStyle((list->getListStyle() & ~FILELISTMASK) | ICONLIST_EXTENDEDSELECT);
         break;
 
     case SELECT_FILE_DIRECTORY:
         list->showOnlyDirectories(true);
-        list->setListStyle((list->getListStyle() & ~FILELISTMASK) | _ICONLIST_BROWSESELECT);
+        list->setListStyle((list->getListStyle() & ~FILELISTMASK) | ICONLIST_BROWSESELECT);
+        setNameLabel(_("Folder Name:"));
+        filefilter->disable();
         break;
 
     case SELECT_FILE_MIXED:
-        list->setListStyle((list->getListStyle() & ~FILELISTMASK) | _ICONLIST_BROWSESELECT);
+        list->setListStyle((list->getListStyle() & ~FILELISTMASK) | ICONLIST_BROWSESELECT);
         break;
 
     default:
         list->showOnlyDirectories(false);
-        list->setListStyle((list->getListStyle() & ~FILELISTMASK) | _ICONLIST_BROWSESELECT);
+        list->setListStyle((list->getListStyle() & ~FILELISTMASK) | ICONLIST_BROWSESELECT);
         break;
     }
     selectmode = mode;
@@ -1489,7 +1752,7 @@ void FileSelector::showReadOnly(FXbool show)
 // Return true if readonly is shown
 FXbool FileSelector::shownReadOnly() const
 {
-    return(readonly->shown());
+    return readonly->shown();
 }
 
 
@@ -1503,21 +1766,21 @@ void FileSelector::setReadOnly(FXbool state)
 // Get readonly state
 FXbool FileSelector::getReadOnly() const
 {
-    return(readonly->getCheck());
+    return readonly->getCheck();
 }
 
 
 // Return true if hidden files are displayed
 FXbool FileSelector::shownHiddenFiles() const
 {
-    return(list->shownHiddenFiles());
+    return list->shownHiddenFiles();
 }
 
 
 // Return true if thumbnails are displayed
 FXbool FileSelector::shownThumbnails() const
 {
-    return(list->shownThumbnails());
+    return list->shownThumbnails();
 }
 
 
@@ -1539,14 +1802,58 @@ void FileSelector::showThumbnails(FXbool shown)
 FileSelector::~FileSelector()
 {
     // Write options to the registry
-    getApp()->reg().writeUnsignedEntry("FILEDIALOG", "name_size", list->getHeaderSize(0));
-    getApp()->reg().writeUnsignedEntry("FILEDIALOG", "size_size", list->getHeaderSize(1));
-    getApp()->reg().writeUnsignedEntry("FILEDIALOG", "type_size", list->getHeaderSize(2));
-    getApp()->reg().writeUnsignedEntry("FILEDIALOG", "ext_size", list->getHeaderSize(3));
-    getApp()->reg().writeUnsignedEntry("FILEDIALOG", "modd_size", list->getHeaderSize(4));
-    getApp()->reg().writeUnsignedEntry("FILEDIALOG", "user_size", list->getHeaderSize(5));
-    getApp()->reg().writeUnsignedEntry("FILEDIALOG", "grou_size", list->getHeaderSize(6));
-    getApp()->reg().writeUnsignedEntry("FILEDIALOG", "attr_size", list->getHeaderSize(7));
+    getApp()->reg().writeUnsignedEntry("FILEDIALOG", "name_size", list->getHeaderSize(0)); // Name is at position 0
+
+    FXbool isShown;
+    isShown = getApp()->reg().readUnsignedEntry("SETTINGS", "view_col_size", 1);
+    if (isShown)
+    {
+        getApp()->reg().writeUnsignedEntry("FILEDIALOG", "size_size",
+                                           (FXuint)list->getHeaderSize((FXuint)list->getHeaderIndex(FileList::ID_COL_SIZE)));
+    }
+    isShown = getApp()->reg().readUnsignedEntry("SETTINGS", "view_col_type", 1);
+    if (isShown)
+    {
+        getApp()->reg().writeUnsignedEntry("FILEDIALOG", "type_size",
+                                           (FXuint)list->getHeaderSize((FXuint)list->getHeaderIndex(FileList::ID_COL_TYPE)));
+    }
+    isShown = getApp()->reg().readUnsignedEntry("SETTINGS", "view_col_ext", 1);
+    if (isShown)
+    {
+        getApp()->reg().writeUnsignedEntry("FILEDIALOG", "ext_size",
+                                           (FXuint)list->getHeaderSize((FXuint)list->getHeaderIndex(FileList::ID_COL_EXT)));
+    }
+    isShown = getApp()->reg().readUnsignedEntry("SETTINGS", "view_col_date", 1);
+    if (isShown)
+    {
+        getApp()->reg().writeUnsignedEntry("FILEDIALOG", "date_size",
+                                           (FXuint)list->getHeaderSize((FXuint)list->getHeaderIndex(FileList::ID_COL_DATE)));
+    }
+    isShown = getApp()->reg().readUnsignedEntry("SETTINGS", "view_col_user", 1);
+    if (isShown)
+    {
+        getApp()->reg().writeUnsignedEntry("FILEDIALOG", "user_size",
+                                           (FXuint)list->getHeaderSize((FXuint)list->getHeaderIndex(FileList::ID_COL_USER)));
+    }
+    isShown = getApp()->reg().readUnsignedEntry("SETTINGS", "view_col_group", 1);
+    if (isShown)
+    {
+        getApp()->reg().writeUnsignedEntry("FILEDIALOG", "group_size",
+                                           (FXuint)list->getHeaderSize((FXuint)list->getHeaderIndex(FileList::ID_COL_GROUP)));
+    }
+    isShown = getApp()->reg().readUnsignedEntry("SETTINGS", "view_col_perms", 1);
+    if (isShown)
+    {
+        getApp()->reg().writeUnsignedEntry("FILEDIALOG", "perms_size",
+                                           (FXuint)list->getHeaderSize((FXuint)list->getHeaderIndex(FileList::ID_COL_PERMS)));
+    }
+    isShown = getApp()->reg().readUnsignedEntry("SETTINGS", "view_col_link", 1);
+    if (isShown)
+    {
+        getApp()->reg().writeUnsignedEntry("FILEDIALOG", "link_size",
+                                           (FXuint)list->getHeaderSize((FXuint)list->getHeaderIndex(FileList::ID_COL_LINK)));
+    }
+
     getApp()->reg().writeUnsignedEntry("FILEDIALOG", "liststyle", getFileBoxStyle());
     getApp()->reg().writeUnsignedEntry("FILEDIALOG", "hiddenfiles", shownHiddenFiles());
     getApp()->reg().writeUnsignedEntry("FILEDIALOG", "showthumbnails", shownThumbnails());
@@ -1564,6 +1871,7 @@ FileSelector::~FileSelector()
     delete list;
     delete pathlink;
     delete pathtext;
+    delete namelabel;
     delete filename;
     delete filefilter;
     delete readonly;
@@ -1571,11 +1879,14 @@ FileSelector::~FileSelector()
     delete cancel;
     delete btnbackhist;
     delete btnforwardhist;
+    delete filterdialog;
+    delete filterlabel;
+    delete closefilter;
 }
 
 
 // File selector context menu
-long FileSelector::onCmdPopupMenu(FXObject* o, FXSelector s, void* p)
+long FileSelector::onCmdPopupMenu(FXObject* sender, FXSelector sel, void* ptr)
 {
     // Popup menu pane
     FXMenuPane menu(this);
@@ -1584,41 +1895,40 @@ long FileSelector::onCmdPopupMenu(FXObject* o, FXSelector s, void* p)
 
     getRoot()->getCursorPosition(x, y, state);
 
-    new FXMenuCommand(&menu, _("Go ho&me"), homeicon, this, ID_HOME);
-    new FXMenuCommand(&menu, _("Go &work"), workicon, this, ID_WORK);
-    new FXMenuCommand(&menu, _("New &file..."), newfileicon, this, ID_NEWFILE);
-    new FXMenuCommand(&menu, _("New f&older..."), newfoldericon, this, ID_NEWDIR);
+    new FXMenuCommand(&menu, _("Go Ho&me"), minihomeicon, this, ID_HOME);
+    new FXMenuCommand(&menu, _("Go &Work"), miniworkicon, this, ID_WORK);
+    new FXMenuCommand(&menu, _("New &File..."), mininewfileicon, this, ID_NEWFILE);
+    new FXMenuCommand(&menu, _("New F&older..."), minifoldernewicon, this, ID_NEWDIR);
     new FXMenuSeparator(&menu);
-    new FXMenuCheck(&menu, _("&Hidden files"), list, FileList::ID_TOGGLE_HIDDEN);
+    new FXMenuCheck(&menu, _("&Hidden Files"), list, FileList::ID_TOGGLE_HIDDEN);
     new FXMenuCheck(&menu, _("Thum&bnails"), list, FileList::ID_TOGGLE_THUMBNAILS);
     new FXMenuSeparator(&menu);
-    new FXMenuRadio(&menu, _("B&ig icons"), list, IconList::ID_SHOW_BIG_ICONS);
-    new FXMenuRadio(&menu, _("&Small icons"), list, IconList::ID_SHOW_MINI_ICONS);
-    new FXMenuRadio(&menu, _("Fu&ll file list"), list, IconList::ID_SHOW_DETAILS);
+    new FXMenuRadio(&menu, _("B&ig Icons"), list, IconList::ID_SHOW_BIG_ICONS);
+    new FXMenuRadio(&menu, _("&Small Icons"), list, IconList::ID_SHOW_MINI_ICONS);
+    new FXMenuRadio(&menu, _("&Detailed File List"), list, IconList::ID_SHOW_DETAILS);
     new FXMenuSeparator(&menu);
+    new FXMenuCheck(&menu, _("Autos&ize"), list, FileList::ID_AUTOSIZE);
     new FXMenuRadio(&menu, _("&Rows"), list, FileList::ID_ARRANGE_BY_ROWS);
     new FXMenuRadio(&menu, _("&Columns"), list, FileList::ID_ARRANGE_BY_COLUMNS);
-    new FXMenuCheck(&menu, _("Autosize"), list, FileList::ID_AUTOSIZE);
     new FXMenuSeparator(&menu);
-    new FXMenuRadio(&menu, _("&Name"), list, FileList::ID_SORT_BY_NAME);
-    new FXMenuRadio(&menu, _("Si&ze"), list, FileList::ID_SORT_BY_SIZE);
-    new FXMenuRadio(&menu, _("&Type"), list, FileList::ID_SORT_BY_TYPE);
-    new FXMenuRadio(&menu, _("E&xtension"), list, FileList::ID_SORT_BY_EXT);
-    new FXMenuRadio(&menu, _("&Date"), list, FileList::ID_SORT_BY_TIME);
-    new FXMenuRadio(&menu, _("&User"), list, FileList::ID_SORT_BY_USER);
-    new FXMenuRadio(&menu, _("&Group"), list, FileList::ID_SORT_BY_GROUP);
-    new FXMenuRadio(&menu, _("&Permissions"), list, FileList::ID_SORT_BY_PERM);
+    new FXMenuRadio(&menu, _("&Name"), list, FileList::ID_COL_NAME);
+    new FXMenuRadio(&menu, _("Si&ze"), list, FileList::ID_COL_SIZE);
+    new FXMenuRadio(&menu, _("&Type"), list, FileList::ID_COL_TYPE);
+    new FXMenuRadio(&menu, _("E&xtension"), list, FileList::ID_COL_EXT);
+    new FXMenuRadio(&menu, _("&Date"), list, FileList::ID_COL_DATE);
+    new FXMenuRadio(&menu, _("&User"), list, FileList::ID_COL_USER);
+    new FXMenuRadio(&menu, _("&Group"), list, FileList::ID_COL_GROUP);
+    new FXMenuRadio(&menu, _("&Permissions"), list, FileList::ID_COL_PERMS);
+    new FXMenuRadio(&menu, _("&Link"), list, FileList::ID_COL_LINK);
     new FXMenuSeparator(&menu);
-    new FXMenuCheck(&menu, _("Ignore c&ase"), list, FileList::ID_SORT_CASE);
-    new FXMenuCheck(&menu, _("Fold&ers first"), list, FileList::ID_DIRS_FIRST);
-    new FXMenuCheck(&menu, _("Re&verse order"), list, FileList::ID_SORT_REVERSE);
+    new FXMenuCheck(&menu, _("Ignore C&ase"), list, FileList::ID_SORT_CASE);
+    new FXMenuCheck(&menu, _("Fold&ers First"), list, FileList::ID_DIRS_FIRST);
+    new FXMenuCheck(&menu, _("Re&verse Order"), list, FileList::ID_SORT_REVERSE);
 
     menu.create();
-    allowPopupScroll = true;  // Allow keyboard scrolling
     menu.popup(NULL, x, y);
     getApp()->runModalWhileShown(&menu);
-    allowPopupScroll = false;
-    return(1);
+    return 1;
 }
 
 // If Shift-F10 or Menu is pressed, opens the popup menu
@@ -1630,29 +1940,28 @@ long FileSelector::onCmdKeyPress(FXObject* sender, FXSelector sel, void* ptr)
     if ((event->state & SHIFTMASK && event->code == KEY_F10) || event->code == KEY_Menu)
     {
         this->handle(sender, FXSEL(SEL_COMMAND, FileSelector::ID_POPUP_MENU), ptr);
-        return(1);
+        return 1;
     }
-
     // Any other key was pressed : handle the pressed key in the usual way
     else
     {
         if (this->onKeyPress(sender, sel, ptr))
         {
-            return(1);
+            return 1;
         }
     }
 
-    return(0);
+    return 0;
 }
 
 long FileSelector::onCmdKeyRelease(FXObject* sender, FXSelector sel, void* ptr)
 {
     if (this->onKeyRelease(sender, sel, ptr))
     {
-        return(1);
+        return 1;
     }
 
-    return(0);
+    return 0;
 }
 
 
@@ -1662,7 +1971,8 @@ FXIMPLEMENT(FileDialog, DialogBox, NULL, 0)
 
 // File Dialog object
 FileDialog::FileDialog(FXWindow* owner, const FXString& name, FXuint opts, int x, int y, int w, int h) :
-    DialogBox(owner, name, opts | DECOR_TITLE | DECOR_BORDER | DECOR_RESIZE | DECOR_MAXIMIZE | DECOR_CLOSE, x, y, w, h, 0, 0, 0, 0, 4, 4)
+    DialogBox(owner, name, opts | DECOR_TITLE | DECOR_BORDER | DECOR_STRETCHABLE | DECOR_MAXIMIZE | DECOR_CLOSE,
+              x, y, w, h, 0, 0, 0, 0, 4, 4)
 {
     list = new FileSelector(this, NULL, 0, LAYOUT_FILL_X | LAYOUT_FILL_Y);
     list->acceptButton()->setTarget(this);
@@ -1688,14 +1998,14 @@ void FileDialog::setFilename(const FXString& path)
 // Get filename, if any
 FXString FileDialog::getFilename() const
 {
-    return(list->getFilename());
+    return list->getFilename();
 }
 
 
 // Return empty-string terminated list of selected file names,
 FXString* FileDialog::getFilenames() const
 {
-    return(list->getFilenames());
+    return list->getFilenames();
 }
 
 
@@ -1709,7 +2019,7 @@ void FileDialog::setPattern(const FXString& ptrn)
 // Get pattern
 FXString FileDialog::getPattern() const
 {
-    return(list->getPattern());
+    return list->getPattern();
 }
 
 
@@ -1723,7 +2033,7 @@ void FileDialog::setPatternList(const FXString& patterns)
 // Return list of patterns
 FXString FileDialog::getPatternList() const
 {
-    return(list->getPatternList());
+    return list->getPatternList();
 }
 
 
@@ -1737,7 +2047,7 @@ void FileDialog::setDirectory(const FXString& path)
 // Get directory
 FXString FileDialog::getDirectory() const
 {
-    return(list->getDirectory());
+    return list->getDirectory();
 }
 
 
@@ -1751,13 +2061,13 @@ void FileDialog::setCurrentPattern(int n)
 // Return current pattern
 int FileDialog::getCurrentPattern() const
 {
-    return(list->getCurrentPattern());
+    return list->getCurrentPattern();
 }
 
 
 FXString FileDialog::getPatternText(int patno) const
 {
-    return(list->getPatternText(patno));
+    return list->getPatternText(patno);
 }
 
 
@@ -1784,7 +2094,7 @@ void FileDialog::setItemSpace(int s)
 // Get space for item
 int FileDialog::getItemSpace() const
 {
-    return(list->getItemSpace());
+    return list->getItemSpace();
 }
 
 
@@ -1798,7 +2108,7 @@ void FileDialog::setFileBoxStyle(FXuint style)
 // Return File List style
 FXuint FileDialog::getFileBoxStyle() const
 {
-    return(list->getFileBoxStyle());
+    return list->getFileBoxStyle();
 }
 
 
@@ -1812,7 +2122,7 @@ void FileDialog::setSelectMode(FXuint mode)
 // Return file selection mode
 FXuint FileDialog::getSelectMode() const
 {
-    return(list->getSelectMode());
+    return list->getSelectMode();
 }
 
 
@@ -1826,7 +2136,7 @@ void FileDialog::showReadOnly(FXbool show)
 // Return true if readonly is shown
 FXbool FileDialog::shownReadOnly() const
 {
-    return(list->shownReadOnly());
+    return list->shownReadOnly();
 }
 
 
@@ -1840,21 +2150,21 @@ void FileDialog::setReadOnly(FXbool state)
 // Get readonly state
 FXbool FileDialog::getReadOnly() const
 {
-    return(list->getReadOnly());
+    return list->getReadOnly();
 }
 
 
 // Return true if thumbnails are displayed
 FXbool FileDialog::shownThumbnails() const
 {
-    return(list->shownThumbnails());
+    return list->shownThumbnails();
 }
 
 
 // Return true if hidden files are displayed
 FXbool FileDialog::shownHiddenFiles() const
 {
-    return(list->shownHiddenFiles());
+    return list->shownHiddenFiles();
 }
 
 
@@ -1885,7 +2195,8 @@ FileDialog::~FileDialog()
 
 
 // Open existing filename
-FXString FileDialog::getOpenFilename(FXWindow* owner, const FXString& caption, const FXString& path, const FXString& patterns, int initial)
+FXString FileDialog::getOpenFilename(FXWindow* owner, const FXString& caption, const FXString& path,
+                                     const FXString& patterns, int initial)
 {
     FileDialog opendialog(owner, caption);
     FXString filename;
@@ -1897,17 +2208,18 @@ FXString FileDialog::getOpenFilename(FXWindow* owner, const FXString& caption, c
     if (opendialog.execute())
     {
         filename = opendialog.getFilename();
-        if (::isFile(filename))
+        if (xf_isfile(filename))
         {
-            return(filename);
+            return filename;
         }
     }
-    return(FXString::null);
+    return FXString::null;
 }
 
 
 // Save to filename
-FXString FileDialog::getSaveFilename(FXWindow* owner, const FXString& caption, const FXString& path, const FXString& patterns, int initial)
+FXString FileDialog::getSaveFilename(FXWindow* owner, const FXString& caption, const FXString& path,
+                                     const FXString& patterns, int initial)
 {
     FileDialog savedialog(owner, caption);
 
@@ -1917,14 +2229,15 @@ FXString FileDialog::getSaveFilename(FXWindow* owner, const FXString& caption, c
     savedialog.setFilename(path);
     if (savedialog.execute())
     {
-        return(savedialog.getFilename());
+        return savedialog.getFilename();
     }
-    return(FXString::null);
+    return FXString::null;
 }
 
 
 // Open multiple existing files
-FXString* FileDialog::getOpenFilenames(FXWindow* owner, const FXString& caption, const FXString& path, const FXString& patterns, int initial)
+FXString* FileDialog::getOpenFilenames(FXWindow* owner, const FXString& caption, const FXString& path,
+                                       const FXString& patterns, int initial)
 {
     FileDialog opendialog(owner, caption);
 
@@ -1934,9 +2247,9 @@ FXString* FileDialog::getOpenFilenames(FXWindow* owner, const FXString& caption,
     opendialog.setFilename(path);
     if (opendialog.execute())
     {
-        return(opendialog.getFilenames());
+        return opendialog.getFilenames();
     }
-    return(NULL);
+    return NULL;
 }
 
 
@@ -1951,10 +2264,10 @@ FXString FileDialog::getOpenDirectory(FXWindow* owner, const FXString& caption, 
     if (dirdialog.execute())
     {
         dirname = dirdialog.getFilename();
-        if (::isDirectory(dirname))
+        if (xf_isdirectory(dirname))
         {
-            return(dirname);
+            return dirname;
         }
     }
-    return(FXString::null);
+    return FXString::null;
 }

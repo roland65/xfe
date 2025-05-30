@@ -7,10 +7,11 @@ class TextWindow : public DialogBox
 {
     FXDECLARE(TextWindow)
 protected:
-    FXText* text;
+    FXText* text = NULL;
 private:
-    TextWindow() : text(NULL)
-    {}
+    TextWindow()
+    {
+    }
     TextWindow(const TextWindow&);
 public:
     enum

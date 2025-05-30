@@ -6,22 +6,22 @@ class FXAPI TextLabel : public FXFrame
 {
     FXDECLARE(TextLabel)
 protected:
-    FXString contents;          // Edited text
-    const char* delimiters;     // Set of delimiters
-    FXFont*     font;           // Text font
-    FXColor textColor;          // Text color
-    FXColor selbackColor;       // Selected background color
-    FXColor seltextColor;       // Selected text color
-    FXColor cursorColor;        // Color of the Cursor
-    int cursor;                 // Cursor position
-    int anchor;                 // Anchor position
-    int columns;                // Number of columns visible
-    int shift;                  // Shift amount
-    FXString clipped;           // Clipped text
-protected:
-    TextLabel() : delimiters(NULL), font(NULL), textColor(FXRGB(0, 0, 0)), selbackColor(FXRGB(0, 0, 0)), seltextColor(FXRGB(0, 0, 0)),
-        cursorColor(FXRGB(0, 0, 0)), cursor(0), anchor(0), columns(0), shift(0)
-    {}
+    FXString contents;                                                  
+    const char* delimiters = NULL;                 // Edited text                     
+    FXFont* font = NULL;                           // Set of delimiters                     
+    FXColor textColor = FXRGB(0, 0, 0);            // Text font                     
+    FXColor selbackColor = FXRGB(0, 0, 0);         // Text color                     
+    FXColor seltextColor = FXRGB(0, 0, 0);         // Selected background color                     
+    FXColor cursorColor = FXRGB(0, 0, 0);          // Selected text color                     
+    int cursor = 0;                                // Color of the Cursor                     
+    int anchor = 0;                                // Cursor position                     
+    int columns = 0;                               // Anchor position                     
+    int shift = 0;                                 // Number of columns visible                     
+    FXString clipped;                              // Shift amount                     
+protected:                                         // Clipped text
+    TextLabel()
+    {
+    }
     int index(int x) const;
     int coord(int i) const;
     void drawTextRange(FXDCWindow& dc, int fm, int to);
@@ -45,7 +45,7 @@ public:
     long onMotion(FXObject*, FXSelector, void*);
     long onSelectionLost(FXObject*, FXSelector, void*);
     long onSelectionGained(FXObject*, FXSelector, void*);
-    long onSelectionRequest(FXObject*, FXSelector, void* ptr);
+    long onSelectionRequest(FXObject*, FXSelector, void*);
     long onClipboardLost(FXObject*, FXSelector, void*);
     long onClipboardGained(FXObject*, FXSelector, void*);
     long onClipboardRequest(FXObject*, FXSelector, void*);
@@ -96,7 +96,9 @@ public:
 public:
 
     // Construct text field wide enough to display ncols columns
-    TextLabel(FXComposite* p, int ncols, FXObject* tgt = NULL, FXSelector sel = 0, FXuint opts = TEXTFIELD_NORMAL, int x = 0, int y = 0, int w = 0, int h = 0, int pl = DEFAULT_PAD, int pr = DEFAULT_PAD, int pt = DEFAULT_PAD, int pb = DEFAULT_PAD);
+    TextLabel(FXComposite* p, int ncols, FXObject* tgt = NULL, FXSelector sel = 0, FXuint opts = TEXTFIELD_NORMAL,
+              int x = 0, int y = 0, int w = 0, int h = 0, int pl = DEFAULT_PAD, int pr = DEFAULT_PAD,
+              int pt = DEFAULT_PAD, int pb = DEFAULT_PAD);
 
     // Create server-side resources
     virtual void create();
@@ -131,7 +133,7 @@ public:
     // Return cursor position
     int getCursorPos() const
     {
-        return(cursor);
+        return cursor;
     }
 
     // Change anchor position
@@ -140,7 +142,7 @@ public:
     // Return anchor position
     int getAnchorPos() const
     {
-        return(anchor);
+        return anchor;
     }
 
     // Change the text and move cursor to end
@@ -149,7 +151,7 @@ public:
     // Get the text for this label
     FXString getText() const
     {
-        return(contents);
+        return contents;
     }
 
     // Set the text font
@@ -158,7 +160,7 @@ public:
     // Get the text font
     FXFont* getFont() const
     {
-        return(font);
+        return font;
     }
 
     // Change text color
@@ -167,7 +169,7 @@ public:
     // Return text color
     FXColor getTextColor() const
     {
-        return(textColor);
+        return textColor;
     }
 
     // Change selected background color
@@ -176,7 +178,7 @@ public:
     // Return selected background color
     FXColor getSelBackColor() const
     {
-        return(selbackColor);
+        return selbackColor;
     }
 
     // Change selected text color
@@ -185,7 +187,7 @@ public:
     // Return selected text color
     FXColor getSelTextColor() const
     {
-        return(seltextColor);
+        return seltextColor;
     }
 
     // Changes the cursor color
@@ -194,28 +196,28 @@ public:
     // Return the cursor color
     FXColor getCursorColor() const
     {
-        return(cursorColor);
+        return cursorColor;
     }
 
-    /*
-     * Change the default width of the text field in terms of a number
-     * of columns times the width of the numeral '8'.
-     */
+/*
+ * Change the default width of the text field in terms of a number
+ * of columns times the width of the numeral '8'.
+ */
     void setNumColumns(int cols);
 
     // Return number of columns
     int getNumColumns() const
     {
-        return(columns);
+        return columns;
     }
 
-    /*
-     * Change text justification mode. The justify mode is a combination of
-     * horizontal justification (JUSTIFY_LEFT, JUSTIFY_RIGHT, or JUSTIFY_CENTER_X),
-     * and vertical justification (JUSTIFY_TOP, JUSTIFY_BOTTOM, JUSTIFY_CENTER_Y).
-     * Note that JUSTIFY_CENTER_X can not be set from the constructor since by
-     * default text fields are left-justified.
-     */
+/*
+ * Change text justification mode. The justify mode is a combination of
+ * horizontal justification (JUSTIFY_LEFT, JUSTIFY_RIGHT, or JUSTIFY_CENTER_X),
+ * and vertical justification (JUSTIFY_TOP, JUSTIFY_BOTTOM, JUSTIFY_CENTER_Y).
+ * Note that JUSTIFY_CENTER_X can not be set from the constructor since by
+ * default text fields are left-justified.
+ */
     void setJustify(FXuint mode);
 
     // Return text justification mode
@@ -230,7 +232,7 @@ public:
     // Return word delimiters
     const char* getDelimiters() const
     {
-        return(delimiters);
+        return delimiters;
     }
 
     // Select all text

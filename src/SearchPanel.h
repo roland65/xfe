@@ -3,13 +3,15 @@
 
 #include <map>
 
+#include "InputDialog.h"
+#include "ArchInputDialog.h"
 #include "HistInputDialog.h"
 #include "BrowseInputDialog.h"
 
 
 
 // Typedef for the map between program string identifiers and integer indexes
-typedef std::map<FXString, int>   progsmap;
+typedef std::map<FXString, int> progsmap;
 
 
 // Search panel
@@ -17,46 +19,50 @@ class FXAPI SearchPanel : public FXVerticalFrame
 {
     FXDECLARE(SearchPanel)
 protected:
-    FileDict*          associations;
-    FileList*          list;                // File list
-    ArchInputDialog*   archdialog;
-    HistInputDialog*   opendialog;
-    BrowseInputDialog* operationdialogsingle;
-    InputDialog*       operationdialogrename;
-    BrowseInputDialog* operationdialogmultiple;
-    BrowseInputDialog* comparedialog;
+    FileDict* associations = NULL;
+    FileList* list = NULL;                              // File list
+    ArchInputDialog* archdialog = NULL;
+    HistInputDialog* opendialog = NULL;
+    BrowseInputDialog* operationdialogsingle = NULL;
+    InputDialog* operationdialogrename = NULL;
+    BrowseInputDialog* operationdialogmultiple = NULL;
+    BrowseInputDialog* comparedialog = NULL;
     FXString searchdir;
-    FXbool ctrlflag;                    // Flag to select the right click control menu
-    FXbool shiftf10;                    // Flag indicating that Shift-F10 was pressed
-    FXPacker*          statusbar;
-    FXLabel*           status;
-    FXDragCorner*      corner;
+    FXbool ctrlflag = false;                            // Flag to select the right click control menu
+    FXbool shiftf10 = false;                            // Flag indicating that Shift-F10 was pressed
+    FXPacker* statusbar = NULL;
+    FXLabel* statuslabel = NULL;
+    FXDragCorner* corner = NULL;
+    FXString trashlocation;
     FXString trashfileslocation;
     FXString trashinfolocation;
-    FXDragType urilistType;             // Standard uri-list type
-    FXDragType xfelistType;             // Xfe, Gnome and XFCE list type
-    FXDragType kdelistType;             // KDE list type
-    FXDragType utf8Type;                // UTF-8 text type
-    FXButton*          refreshbtn;
-    FXButton*          gotodirbtn;
-    FXButton*          copybtn;
-    FXButton*          cutbtn;
-    FXButton*          propbtn;
-    FXButton*          copynamebtn;
-    FXButton*          trashbtn;
-    FXButton*          delbtn;
-    FXButton*          bigiconsbtn;
-    FXButton*          smalliconsbtn;
-    FXButton*          detailsbtn;
-    FXToggleButton*    thumbbtn;
-    progsmap progs;                     // Map between program string identifiers and integer indexes
+    FXDragType urilistType = 0;                         // Standard uri-list type
+    FXDragType xfelistType = 0;                         // Xfe, Gnome and XFCE list type
+    FXDragType kdelistType = 0;                         // KDE list type
+    FXDragType utf8Type = 0;                            // UTF-8 text type
+    FXButton* refreshbtn = NULL;
+    FXButton* gotodirbtn = NULL;
+    FXButton* copybtn = NULL;
+    FXButton* cutbtn = NULL;
+    FXButton* propbtn = NULL;
+    FXButton* copynamebtn = NULL;
+    FXButton* trashbtn = NULL;
+    FXButton* delbtn = NULL;
+    FXButton* bigiconsbtn = NULL;
+    FXButton* smalliconsbtn = NULL;
+    FXButton* detailsbtn = NULL;
+    FXToggleButton* thumbbtn = NULL;
+    progsmap progs;                                     // Map between program string identifiers and integer indexes
+
+    FXuint single_click = SINGLE_CLICK_NONE;
+
+    FXuint idCol[NMAX_COLS + 1] = { 0 };
+    FXuint nbCols = 0;
+
 protected:
-    SearchPanel() : associations(NULL), list(NULL), archdialog(NULL), opendialog(NULL), operationdialogsingle(NULL),
-        operationdialogrename(NULL), operationdialogmultiple(NULL), comparedialog(NULL),
-        ctrlflag(false), shiftf10(false), statusbar(NULL), status(NULL), corner(NULL), urilistType(0), xfelistType(0),
-        kdelistType(0), utf8Type(0), refreshbtn(NULL), gotodirbtn(NULL), copybtn(NULL), cutbtn(NULL), propbtn(NULL),
-        trashbtn(NULL), delbtn(NULL), bigiconsbtn(NULL), smalliconsbtn(NULL), detailsbtn(NULL), thumbbtn(NULL)
-    {}
+    SearchPanel()
+    {
+    }
 public:
     enum
     {
@@ -75,6 +81,7 @@ public:
         ID_EXTRACT,
         ID_ADD_TO_ARCH,
         ID_DIR_USAGE,
+        ID_KEY_RETURN,
 #if defined(linux)
         ID_PKG_QUERY,
         ID_PKG_INSTALL,
@@ -95,8 +102,9 @@ public:
         ID_FILE_TRASH,
         ID_LAST
     };
-    SearchPanel(FXComposite*, FXuint name_size = 200, FXuint dir_size = 150, FXuint size_size = 60, FXuint type_size = 100, FXuint ext_size = 100,
-                FXuint modd_size = 150, FXuint user_size = 50, FXuint grou_size = 50, FXuint attr_size = 100,
+    SearchPanel(FXComposite*, FXuint*, FXuint, FXuint name_size = 200, FXuint dir_size = 150, FXuint size_size = 60,
+                FXuint type_size = 100, FXuint ext_size = 100, FXuint date_size = 150,
+                FXuint user_size = 50, FXuint group_size = 50, FXuint perms_size = 100, FXuint link_size = 100,
                 FXColor listbackcolor = FXRGB(255, 255, 255), FXColor listforecolor = FXRGB(0, 0, 0),
                 FXuint opts = 0, int x = 0, int y = 0, int w = 0, int h = 0);
 
@@ -104,7 +112,7 @@ public:
 
     virtual ~SearchPanel();
     void execFile(FXString);
-    int  readScriptDir(FXMenuPane*, FXString);
+    int readScriptDir(FXMenuPane*, FXString);
     long appendItem(FXString&);
 
     long onClipboardGained(FXObject*, FXSelector, void*);
@@ -120,7 +128,7 @@ public:
     long onCmdEdit(FXObject*, FXSelector, void*);
     long onCmdCompare(FXObject*, FXSelector, void*);
     long onCmdRefresh(FXObject*, FXSelector, void*);
-    long onCmdProperties(FXObject* sender, FXSelector, void*);
+    long onCmdProperties(FXObject*, FXSelector, void*);
     long onCmdPopupMenu(FXObject*, FXSelector, void*);
     long onCmdCopyCut(FXObject*, FXSelector, void*);
     long onCmdCopyName(FXObject*, FXSelector, void*);
@@ -135,16 +143,27 @@ public:
     long onUpdSelMult(FXObject*, FXSelector, void*);
     long onUpdCompare(FXObject*, FXSelector, void*);
     long onUpdMenu(FXObject*, FXSelector, void*);
+    long onUpdFileDelete(FXObject*, FXSelector, void*);
+    long onUpdFileTrash(FXObject*, FXSelector, void*);
     long onUpdDirUsage(FXObject*, FXSelector, void*);
+
 #if defined(linux)
     long onCmdPkgQuery(FXObject*, FXSelector, void*);
     long onUpdPkgQuery(FXObject*, FXSelector, void*);
 #endif
+
 public:
+
     // Get header size given its index
-    int getHeaderSize(int index) const
+    int getHeaderSize(FXuint index) const
     {
-        return(list->getHeaderSize(index));
+        return list->getHeaderSize(index);
+    }
+
+    // Get header index given its column id
+    int getHeaderIndex(FXuint id) const
+    {
+        return list->getHeaderIndex(id);
     }
 
     // Change show thumbnails mode
@@ -156,7 +175,7 @@ public:
     // Thumbnails shown?
     FXbool shownThumbnails(void) const
     {
-        return(list->shownThumbnails());
+        return list->shownThumbnails();
     }
 
     // Enable toolbar and status bar buttons
@@ -190,7 +209,7 @@ public:
     // Return sort function
     IconListSortFunc getSortFunc() const
     {
-        return(list->getSortFunc());
+        return list->getSortFunc();
     }
 
     // Set ignore case
@@ -202,7 +221,7 @@ public:
     // Get ignore case
     FXbool getIgnoreCase(void)
     {
-        return(list->getIgnoreCase());
+        return list->getIgnoreCase();
     }
 
     // Set directory first
@@ -214,13 +233,13 @@ public:
     // Set directory first
     FXbool getDirsFirst(void)
     {
-        return(list->getDirsFirst());
+        return list->getDirsFirst();
     }
 
     // Get the current icon list style
     FXuint getListStyle(void) const
     {
-        return(list->getListStyle());
+        return list->getListStyle();
     }
 
     // Get the current icon list style
@@ -232,13 +251,13 @@ public:
     // Return number of items
     int getNumItems() const
     {
-        return(list->getNumItems());
+        return list->getNumItems();
     }
 
     // Get current item
     int getCurrentItem(void) const
     {
-        return(list->getCurrentItem());
+        return list->getCurrentItem();
     }
 
     // Set current item
@@ -251,7 +270,7 @@ public:
     // Set status text
     void setStatusText(FXString text)
     {
-        status->setText(text);
+        statuslabel->setText(text);
     }
 
     // Clear list items and reset panel status

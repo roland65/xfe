@@ -17,8 +17,10 @@ FXDEFMAP(ArchInputDialog) ArchInputDialogMap[] =
 {
     FXMAPFUNC(SEL_KEYPRESS, 0, ArchInputDialog::onCmdKeyPress),
     FXMAPFUNC(SEL_COMMAND, ArchInputDialog::ID_BROWSE_PATH, ArchInputDialog::onCmdBrowsePath),
-    FXMAPFUNCS(SEL_COMMAND, ArchInputDialog::ID_FORMAT_TAR_GZ, ArchInputDialog::ID_FORMAT_Z, ArchInputDialog::onCmdOption),
-    FXMAPFUNCS(SEL_UPDATE, ArchInputDialog::ID_FORMAT_TAR_GZ, ArchInputDialog::ID_FORMAT_Z, ArchInputDialog::onUpdOption),
+    FXMAPFUNCS(SEL_COMMAND, ArchInputDialog::ID_FORMAT_TAR_GZ, ArchInputDialog::ID_FORMAT_Z,
+               ArchInputDialog::onCmdOption),
+    FXMAPFUNCS(SEL_UPDATE, ArchInputDialog::ID_FORMAT_TAR_GZ, ArchInputDialog::ID_FORMAT_Z,
+               ArchInputDialog::onUpdOption),
 };
 
 
@@ -30,13 +32,14 @@ ArchInputDialog::ArchInputDialog(FXWindow* win, FXString inp) :
     DialogBox(win, _("Add To Archive"), DECOR_TITLE | DECOR_BORDER | DECOR_STRETCHABLE | DECOR_MAXIMIZE | DECOR_CLOSE)
 {
     // Buttons
-    FXHorizontalFrame* buttons = new FXHorizontalFrame(this, PACK_UNIFORM_WIDTH | LAYOUT_SIDE_BOTTOM | LAYOUT_FILL_X, 0, 0, 0, 0, 10, 10, 5, 5);
+    FXHorizontalFrame* buttons = new FXHorizontalFrame(this, PACK_UNIFORM_WIDTH | LAYOUT_SIDE_BOTTOM | LAYOUT_FILL_X,
+                                                       0, 0, 0, 0, 10, 10, 5, 5);
 
     // Accept
-    new FXButton(buttons, _("&Accept"), NULL, this, ID_ACCEPT, FRAME_RAISED | FRAME_THICK | LAYOUT_RIGHT, 0, 0, 0, 0, 20, 20);
+    new FXButton(buttons, _("&Accept"), NULL, this, ID_ACCEPT, FRAME_GROOVE | LAYOUT_RIGHT, 0, 0, 0, 0, 20, 20);
 
     // Cancel
-    new FXButton(buttons, _("&Cancel"), NULL, this, ID_CANCEL, FRAME_RAISED | FRAME_THICK | LAYOUT_RIGHT, 0, 0, 0, 0, 20, 20);
+    new FXButton(buttons, _("&Cancel"), NULL, this, ID_CANCEL, FRAME_GROOVE | LAYOUT_RIGHT, 0, 0, 0, 0, 20, 20);
 
     // Vertical frame
     FXVerticalFrame* contents = new FXVerticalFrame(this, LAYOUT_SIDE_TOP | FRAME_NONE | LAYOUT_FILL_X | LAYOUT_FILL_Y);
@@ -44,34 +47,53 @@ ArchInputDialog::ArchInputDialog(FXWindow* win, FXString inp) :
     // Icon and message line
     FXMatrix* matrix = new FXMatrix(contents, 2, MATRIX_BY_COLUMNS | LAYOUT_SIDE_TOP | LAYOUT_FILL_X | LAYOUT_FILL_Y);
     new FXLabel(matrix, "", bigarchaddicon, LAYOUT_LEFT);
-    new FXLabel(matrix, _("New archive name:"), NULL, JUSTIFY_LEFT | LAYOUT_CENTER_Y | LAYOUT_FILL_COLUMN | LAYOUT_FILL_ROW);
+    new FXLabel(matrix, _("New archive name:"), NULL,
+                JUSTIFY_LEFT | LAYOUT_CENTER_Y | LAYOUT_FILL_COLUMN | LAYOUT_FILL_ROW);
 
     // Label and input field
     FXMatrix* matrix3 = new FXMatrix(contents, 2, MATRIX_BY_COLUMNS | LAYOUT_SIDE_TOP | LAYOUT_FILL_X | LAYOUT_FILL_Y);
-    input = new FXTextField(matrix3, 40, 0, 0, LAYOUT_CENTER_Y | LAYOUT_CENTER_X | FRAME_SUNKEN | FRAME_THICK | LAYOUT_FILL_COLUMN | LAYOUT_FILL_ROW | LAYOUT_FILL_X);
+    input = new FXTextField(matrix3, 40, 0, 0,
+                            LAYOUT_CENTER_Y | LAYOUT_CENTER_X | TEXTFIELD_NORMAL | LAYOUT_FILL_COLUMN |
+                            LAYOUT_FILL_ROW | LAYOUT_FILL_X);
     input->setText(inp);
-    if (!isUtf8(inp.text(), inp.length()))
+    if (!xf_isutf8(inp.text(), inp.length()))
     {
-        new FXLabel(contents, _("=> Warning: file name is not UTF-8 encoded!"), NULL, LAYOUT_LEFT | LAYOUT_CENTER_Y | LAYOUT_FILL_ROW);
+        new FXLabel(contents, _("=> Warning: file name is not UTF-8 encoded!"), NULL,
+                    LAYOUT_LEFT | LAYOUT_CENTER_Y | LAYOUT_FILL_ROW);
     }
-    new FXButton(matrix3, _("\tSelect destination..."), filedialogicon, this, ID_BROWSE_PATH, FRAME_RAISED | FRAME_THICK | LAYOUT_RIGHT | LAYOUT_CENTER_Y, 0, 0, 0, 0, 20, 20);
+    new FXButton(matrix3, _("\tSelect Destination..."), minifiledialogicon, this, ID_BROWSE_PATH,
+                 FRAME_GROOVE | LAYOUT_RIGHT |
+                 LAYOUT_CENTER_Y, 0, 0, 0, 0, 20, 20);
 
     // Select archive format
     FXMatrix* matrix4 = new FXMatrix(contents, 2, MATRIX_BY_COLUMNS | LAYOUT_SIDE_TOP | LAYOUT_FILL_X | LAYOUT_FILL_Y);
     new FXLabel(matrix4, _("Format:"), NULL, LAYOUT_LEFT | LAYOUT_CENTER_Y | LAYOUT_FILL_ROW);
     popup = new FXPopup(this);
-    option_tgz = new FXOption(popup, _("tar.gz\tArchive format is tar.gz"), NULL, this, ID_FORMAT_TAR_GZ, JUSTIFY_HZ_APART | ICON_AFTER_TEXT);
-    option_zip = new FXOption(popup, _("zip\tArchive format is zip"), NULL, this, ID_FORMAT_ZIP, JUSTIFY_HZ_APART | ICON_AFTER_TEXT);
-    option_7zip = new FXOption(popup, _("7z\tArchive format is 7z"), NULL, this, ID_FORMAT_7ZIP, JUSTIFY_HZ_APART | ICON_AFTER_TEXT);
-    option_tbz2 = new FXOption(popup, _("tar.bz2\tArchive format is tar.bz2"), NULL, this, ID_FORMAT_TAR_BZ2, JUSTIFY_HZ_APART | ICON_AFTER_TEXT);
-    option_txz = new FXOption(popup, _("tar.xz\tArchive format is tar.xz"), NULL, this, ID_FORMAT_TAR_XZ, JUSTIFY_HZ_APART | ICON_AFTER_TEXT);
-    option_tar = new FXOption(popup, _("tar\tArchive format is tar"), NULL, this, ID_FORMAT_TAR, JUSTIFY_HZ_APART | ICON_AFTER_TEXT);
-    option_taz = new FXOption(popup, _("tar.Z\tArchive format is tar.Z"), NULL, this, ID_FORMAT_TAR_Z, JUSTIFY_HZ_APART | ICON_AFTER_TEXT);
-    option_gz = new FXOption(popup, _("gz\tArchive format is gz"), NULL, this, ID_FORMAT_GZ, JUSTIFY_HZ_APART | ICON_AFTER_TEXT);
-    option_bz2 = new FXOption(popup, _("bz2\tArchive format is bz2"), NULL, this, ID_FORMAT_BZ2, JUSTIFY_HZ_APART | ICON_AFTER_TEXT);
-    option_xz = new FXOption(popup, _("xz\tArchive format is xz"), NULL, this, ID_FORMAT_XZ, JUSTIFY_HZ_APART | ICON_AFTER_TEXT);
-    option_z = new FXOption(popup, _("Z\tArchive format is Z"), NULL, this, ID_FORMAT_Z, JUSTIFY_HZ_APART | ICON_AFTER_TEXT);
-    optionmenu = new FXOptionMenu(matrix4, popup, LAYOUT_TOP | FRAME_RAISED | FRAME_THICK | JUSTIFY_HZ_APART | ICON_AFTER_TEXT);
+    option_tgz = new FXOption(popup, _("tar.gz\tArchive format tar.gz"), NULL, this, ID_FORMAT_TAR_GZ,
+                              JUSTIFY_HZ_APART | ICON_AFTER_TEXT);
+    option_zip = new FXOption(popup, _("zip\tArchive format zip"), NULL, this, ID_FORMAT_ZIP,
+                              JUSTIFY_HZ_APART | ICON_AFTER_TEXT);
+    option_7zip = new FXOption(popup, _("7z\tArchive format 7z"), NULL, this, ID_FORMAT_7ZIP,
+                               JUSTIFY_HZ_APART | ICON_AFTER_TEXT);
+    option_rar = new FXOption(popup, _("rar\tArchive format rar"), NULL, this, ID_FORMAT_RAR,
+                              JUSTIFY_HZ_APART | ICON_AFTER_TEXT);
+    option_tbz2 = new FXOption(popup, _("tar.bz2\tArchive format tar.bz2"), NULL, this, ID_FORMAT_TAR_BZ2,
+                               JUSTIFY_HZ_APART | ICON_AFTER_TEXT);
+    option_txz = new FXOption(popup, _("tar.xz\tArchive format tar.xz"), NULL, this, ID_FORMAT_TAR_XZ,
+                              JUSTIFY_HZ_APART | ICON_AFTER_TEXT);
+    option_tzst = new FXOption(popup, _("tar.zst\tArchive format tar.zst"), NULL, this, ID_FORMAT_TAR_ZST,
+                               JUSTIFY_HZ_APART | ICON_AFTER_TEXT);
+    option_tar = new FXOption(popup, _("tar\tArchive format tar"), NULL, this, ID_FORMAT_TAR,
+                              JUSTIFY_HZ_APART | ICON_AFTER_TEXT);
+    option_gz = new FXOption(popup, _("gz\tArchive format gz"), NULL, this, ID_FORMAT_GZ,
+                             JUSTIFY_HZ_APART | ICON_AFTER_TEXT);
+    option_bz2 = new FXOption(popup, _("bz2\tArchive format bz2"), NULL, this, ID_FORMAT_BZ2,
+                              JUSTIFY_HZ_APART | ICON_AFTER_TEXT);
+    option_xz = new FXOption(popup, _("xz\tArchive format xz"), NULL, this, ID_FORMAT_XZ,
+                             JUSTIFY_HZ_APART | ICON_AFTER_TEXT);
+    option_zst = new FXOption(popup, _("zst\tArchive format zst"), NULL, this, ID_FORMAT_ZST,
+                              JUSTIFY_HZ_APART | ICON_AFTER_TEXT);
+    optionmenu = new FXOptionMenu(matrix4, popup, LAYOUT_TOP | FRAME_GROOVE | JUSTIFY_HZ_APART | ICON_AFTER_TEXT);
 }
 
 
@@ -96,25 +118,25 @@ long ArchInputDialog::onCmdKeyPress(FXObject* sender, FXSelector sel, void* ptr)
     {
     case KEY_Escape:
         handle(this, FXSEL(SEL_COMMAND, ID_CANCEL), NULL);
-        return(1);
+        return 1;
 
     case KEY_KP_Enter:
     case KEY_Return:
         handle(this, FXSEL(SEL_COMMAND, ID_ACCEPT), NULL);
-        return(1);
+        return 1;
 
     default:
         FXTopWindow::onKeyPress(sender, sel, ptr);
-        return(1);
+        return 1;
     }
-    return(0);
+    return 0;
 }
 
 
-long ArchInputDialog::onCmdBrowsePath(FXObject* o, FXSelector s, void* p)
+long ArchInputDialog::onCmdBrowsePath(FXObject* sender, FXSelector sel, void* ptr)
 {
     // File dialog
-    FileDialog browse(this, _("Select a destination folder"));
+    FileDialog browse(this, _("Select a Destination Folder"));
 
     const char* patterns[] =
     {
@@ -132,7 +154,7 @@ long ArchInputDialog::onCmdBrowsePath(FXObject* o, FXSelector s, void* p)
         input->setText(path + PATHSEPSTRING + archname);
     }
 
-    return(1);
+    return 1;
 }
 
 
@@ -151,7 +173,7 @@ long ArchInputDialog::onCmdOption(FXObject*, FXSelector sel, void*)
         {
             input->setText(str);
         }
-        else if (ext2 == "tar.bz2")
+        else if (ext2 == "tar.bz2" || ext2 == "tar.zst")
         {
             str = str.left(str.length() - 8);
             str = str + ".tar.gz";
@@ -169,19 +191,20 @@ long ArchInputDialog::onCmdOption(FXObject*, FXSelector sel, void*)
             str = str + ".tar.gz";
             input->setText(str);
         }
-        else if ((ext1 == "tbz2") || (ext1 == "tbz"))
+        else if ((ext1 == "tbz2") || (ext1 == "tzst"))
         {
             str = str.left(str.length() - 5);
             str = str + ".tar.gz";
             input->setText(str);
         }
-        else if ((ext1 == "txz") || (ext1 == "taz") || (ext1 == "bz2") || (ext1 == "tar") || (ext1 == "zip"))
+        else if ((ext1 == "tbz") || (ext1 == "txz") || (ext1 == "taz") || (ext1 == "bz2") || (ext1 == "zst")
+                 || (ext1 == "tar") || (ext1 == "zip") || (ext1 == "rar"))
         {
             str = str.left(str.length() - 4);
             str = str + ".tar.gz";
             input->setText(str);
         }
-        else if ((ext1 == "xz") || (ext1 == "7z") || (ext1 == "gz"))
+        else if ((ext1 == "gz") || (ext1 == "7z") || (ext1 == "xz"))
         {
             str = str.left(str.length() - 3);
             str = str + ".tar.gz";
@@ -199,12 +222,17 @@ long ArchInputDialog::onCmdOption(FXObject*, FXSelector sel, void*)
             input->setText(str);
         }
     }
-
     else if (FXSELID(sel) == ID_FORMAT_TAR_BZ2)
     {
         // Handle different archive formats
         if ((ext2 == "tar.bz2") || (ext1 == "tbz2") || (ext1 == "tbz"))
         {
+            input->setText(str);
+        }
+        else if (ext2 == "tar.zst")
+        {
+            str = str.left(str.length() - 8);
+            str = str + ".tar.bz2";
             input->setText(str);
         }
         else if ((ext2 == "tar.gz") || (ext2 == "tar.xz"))
@@ -219,7 +247,14 @@ long ArchInputDialog::onCmdOption(FXObject*, FXSelector sel, void*)
             str = str + ".tar.bz2";
             input->setText(str);
         }
-        else if ((ext1 == "tgz") || (ext1 == "txz") || (ext1 == "taz") || (ext1 == "bz2") || (ext1 == "tar") || (ext1 == "zip"))
+        else if (ext1 == "tzst")
+        {
+            str = str.left(str.length() - 5);
+            str = str + ".tar.bz2";
+            input->setText(str);
+        }
+        else if ((ext1 == "tgz") || (ext1 == "txz") || (ext1 == "taz") || (ext1 == "bz2") || (ext1 == "zst")
+                 || (ext1 == "tar") || (ext1 == "zip") || (ext1 == "rar"))
         {
             str = str.left(str.length() - 4);
             str = str + ".tar.bz2";
@@ -243,7 +278,6 @@ long ArchInputDialog::onCmdOption(FXObject*, FXSelector sel, void*)
             input->setText(str);
         }
     }
-
     else if (FXSELID(sel) == ID_FORMAT_TAR_XZ)
     {
         // Handle different archive formats
@@ -251,7 +285,7 @@ long ArchInputDialog::onCmdOption(FXObject*, FXSelector sel, void*)
         {
             input->setText(str);
         }
-        else if (ext2 == "tar.bz2")
+        else if (ext2 == "tar.bz2" || ext2 == "tar.zst")
         {
             str = str.left(str.length() - 8);
             str = str + ".tar.xz";
@@ -269,7 +303,14 @@ long ArchInputDialog::onCmdOption(FXObject*, FXSelector sel, void*)
             str = str + ".tar.xz";
             input->setText(str);
         }
-        else if ((ext1 == "tgz") || (ext1 == "bz2") || (ext1 == "taz") || (ext1 == "tar") || (ext1 == "zip"))
+        else if ((ext1 == "tbz2") || (ext1 == "tzst"))
+        {
+            str = str.left(str.length() - 5);
+            str = str + ".tar.xz";
+            input->setText(str);
+        }
+        else if ((ext1 == "tgz") || (ext1 == "tbz") || (ext1 == "taz") || (ext1 == "bz2") || (ext1 == "zst")
+                 || (ext1 == "tar") || (ext1 == "zip") || (ext1 == "rar"))
         {
             str = str.left(str.length() - 4);
             str = str + ".tar.xz";
@@ -293,15 +334,71 @@ long ArchInputDialog::onCmdOption(FXObject*, FXSelector sel, void*)
             input->setText(str);
         }
     }
-
-    else if (FXSELID(sel) == ID_FORMAT_TAR)
+    else if (FXSELID(sel) == ID_FORMAT_TAR_ZST)
     {
         // Handle different archive formats
-        if ((ext1 == "tar") && (ext2 != "tar.gz") && (ext2 != "tar.bz2") && (ext2 != "tar.z") && (ext2 != "tar.xz"))
+        if ((ext2 == "tar.zst") || (ext1 == "tzst"))
         {
             input->setText(str);
         }
         else if (ext2 == "tar.bz2")
+        {
+            str = str.left(str.length() - 8);
+            str = str + ".tar.zst";
+            input->setText(str);
+        }
+        else if (ext2 == "tar.gz")
+        {
+            str = str.left(str.length() - 7);
+            str = str + ".tar.zst";
+            input->setText(str);
+        }
+        else if (ext2 == "tar.z")
+        {
+            str = str.left(str.length() - 6);
+            str = str + ".tar.zst";
+            input->setText(str);
+        }
+        else if (ext1 == "tbz2")
+        {
+            str = str.left(str.length() - 5);
+            str = str + ".tar.zst";
+            input->setText(str);
+        }
+        else if ((ext1 == "tgz") || (ext1 == "tbz") || (ext1 == "txz") || (ext1 == "taz") || (ext1 == "bz2")
+                 || (ext1 == "zst") || (ext1 == "tar") || (ext1 == "zip") || (ext1 == "rar"))
+        {
+            str = str.left(str.length() - 4);
+            str = str + ".tar.zst";
+            input->setText(str);
+        }
+        else if ((ext1 == "gz") || (ext1 == "7z") || (ext1 == "xz"))
+        {
+            str = str.left(str.length() - 3);
+            str = str + ".tar.zst";
+            input->setText(str);
+        }
+        else if (ext1 == "z")
+        {
+            str = str.left(str.length() - 2);
+            str = str + ".tar.zst";
+            input->setText(str);
+        }
+        else
+        {
+            str = str + ".tar.zst";
+            input->setText(str);
+        }
+    }
+    else if (FXSELID(sel) == ID_FORMAT_TAR)
+    {
+        // Handle different archive formats
+        if ((ext1 == "tar") && (ext2 != "tar.gz") && (ext2 != "tar.bz2") && (ext2 != "tar.z")
+            && (ext2 != "tar.xz") && (ext2 != "tar.zst"))
+        {
+            input->setText(str);
+        }
+        else if ((ext2 == "tar.bz2") || (ext2 == "tar.zst"))
         {
             str = str.left(str.length() - 8);
             str = str + ".tar";
@@ -319,13 +416,14 @@ long ArchInputDialog::onCmdOption(FXObject*, FXSelector sel, void*)
             str = str + ".tar";
             input->setText(str);
         }
-        else if ((ext1 == "tbz2") || (ext1 == "tbz"))
+        else if ((ext1 == "tbz2") || (ext1 == "tzst"))
         {
             str = str.left(str.length() - 5);
             str = str + ".tar";
             input->setText(str);
         }
-        else if ((ext1 == "tgz") || (ext1 == "txz") || (ext1 == "taz") || (ext1 == "bz2") || (ext1 == "zip"))
+        else if ((ext1 == "tgz") || (ext1 == "tbz") || (ext1 == "txz") || (ext1 == "taz") || (ext1 == "bz2")
+                 || (ext1 == "zst") || (ext1 == "zip") || (ext1 == "rar"))
         {
             str = str.left(str.length() - 4);
             str = str + ".tar";
@@ -349,7 +447,6 @@ long ArchInputDialog::onCmdOption(FXObject*, FXSelector sel, void*)
             input->setText(str);
         }
     }
-
     else if (FXSELID(sel) == ID_FORMAT_TAR_Z)
     {
         // Handle different archive formats
@@ -357,7 +454,7 @@ long ArchInputDialog::onCmdOption(FXObject*, FXSelector sel, void*)
         {
             input->setText(str);
         }
-        else if (ext2 == "tar.bz2")
+        else if ((ext2 == "tar.bz2") || (ext2 == "tar.zst"))
         {
             str = str.left(str.length() - 8);
             str = str + ".tar.Z";
@@ -369,13 +466,14 @@ long ArchInputDialog::onCmdOption(FXObject*, FXSelector sel, void*)
             str = str + ".tar.Z";
             input->setText(str);
         }
-        else if ((ext1 == "tbz2") || (ext1 == "tbz"))
+        else if ((ext1 == "tbz2") || (ext1 == "tzst"))
         {
             str = str.left(str.length() - 5);
             str = str + ".tar.Z";
             input->setText(str);
         }
-        else if ((ext1 == "tgz") || (ext1 == "txz") || (ext1 == "bz2") || (ext1 == "tar") || (ext1 == "zip"))
+        else if ((ext1 == "tgz") || (ext1 == "tbz") || (ext1 == "txz") || (ext1 == "bz2") || (ext1 == "zst")
+                 || (ext1 == "tar") || (ext1 == "zip") || (ext1 == "rar"))
         {
             str = str.left(str.length() - 4);
             str = str + ".tar.Z";
@@ -399,7 +497,6 @@ long ArchInputDialog::onCmdOption(FXObject*, FXSelector sel, void*)
             input->setText(str);
         }
     }
-
     else if (FXSELID(sel) == ID_FORMAT_GZ)
     {
         // Handle different archive formats
@@ -407,7 +504,7 @@ long ArchInputDialog::onCmdOption(FXObject*, FXSelector sel, void*)
         {
             input->setText(str);
         }
-        else if (ext2 == "tar.bz2")
+        else if ((ext2 == "tar.bz2") || (ext2 == "tar.zst"))
         {
             str = str.left(str.length() - 8);
             str = str + ".gz";
@@ -425,19 +522,20 @@ long ArchInputDialog::onCmdOption(FXObject*, FXSelector sel, void*)
             str = str + ".gz";
             input->setText(str);
         }
-        else if ((ext1 == "tbz2") || (ext1 == "tbz"))
+        else if ((ext1 == "tbz2") || (ext1 == "tzst"))
         {
             str = str.left(str.length() - 5);
             str = str + ".gz";
             input->setText(str);
         }
-        else if ((ext1 == "tgz") || (ext1 == "txz") || (ext1 == "taz") || (ext1 == "bz2") || (ext1 == "tar") || (ext1 == "zip"))
+        else if ((ext1 == "tgz") || (ext1 == "tbz") || (ext1 == "txz") || (ext1 == "taz") || (ext1 == "bz2")
+                 || (ext1 == "zst") || (ext1 == "tar") || (ext1 == "zip") || (ext1 == "rar"))
         {
             str = str.left(str.length() - 4);
             str = str + ".gz";
             input->setText(str);
         }
-        else if ((ext1 == "xz") || (ext1 == "7z"))
+        else if ((ext1 == "7z") || (ext1 == "xz"))
         {
             str = str.left(str.length() - 3);
             str = str + ".gz";
@@ -455,7 +553,6 @@ long ArchInputDialog::onCmdOption(FXObject*, FXSelector sel, void*)
             input->setText(str);
         }
     }
-
     else if (FXSELID(sel) == ID_FORMAT_XZ)
     {
         // Handle different archive formats
@@ -463,7 +560,7 @@ long ArchInputDialog::onCmdOption(FXObject*, FXSelector sel, void*)
         {
             input->setText(str);
         }
-        else if (ext2 == "tar.bz2")
+        else if ((ext2 == "tar.bz2") || (ext2 == "tar.zst"))
         {
             str = str.left(str.length() - 8);
             str = str + ".xz";
@@ -481,19 +578,20 @@ long ArchInputDialog::onCmdOption(FXObject*, FXSelector sel, void*)
             str = str + ".xz";
             input->setText(str);
         }
-        else if ((ext1 == "tbz2") || (ext1 == "tbz"))
+        else if ((ext1 == "tbz2") || (ext1 == "tzst"))
         {
             str = str.left(str.length() - 5);
             str = str + ".xz";
             input->setText(str);
         }
-        else if ((ext1 == "tgz") || (ext1 == "txz") || (ext1 == "taz") || (ext1 == "bz2") || (ext1 == "tar") || (ext1 == "zip"))
+        else if ((ext1 == "tgz") || (ext1 == "tbz") || (ext1 == "txz") || (ext1 == "taz") || (ext1 == "bz2")
+                 || (ext1 == "zst") || (ext1 == "tar") || (ext1 == "zip") || (ext1 == "rar"))
         {
             str = str.left(str.length() - 4);
             str = str + ".xz";
             input->setText(str);
         }
-        else if (ext1 == "7z")
+        else if ((ext1 == "gz") || (ext1 == "7z"))
         {
             str = str.left(str.length() - 3);
             str = str + ".xz";
@@ -511,7 +609,6 @@ long ArchInputDialog::onCmdOption(FXObject*, FXSelector sel, void*)
             input->setText(str);
         }
     }
-
     else if (FXSELID(sel) == ID_FORMAT_BZ2)
     {
         // Handle different archive formats
@@ -520,7 +617,7 @@ long ArchInputDialog::onCmdOption(FXObject*, FXSelector sel, void*)
             str = str.left(str.length() - 8);
             input->setText(str);
         }
-        if (ext2 == "tar.bz2")
+        else if ((ext2 == "tar.bz2") || (ext2 == "tar.zst"))
         {
             str = str.left(str.length() - 8);
             str = str + ".bz2";
@@ -538,19 +635,20 @@ long ArchInputDialog::onCmdOption(FXObject*, FXSelector sel, void*)
             str = str + ".bz2";
             input->setText(str);
         }
-        else if ((ext1 == "tbz2") || (ext1 == "tbz"))
+        else if ((ext1 == "tbz2") || (ext1 == "tzst"))
         {
             str = str.left(str.length() - 5);
             str = str + ".bz2";
             input->setText(str);
         }
-        else if ((ext1 == "tgz") || (ext1 == "txz") || (ext1 == "taz") || (ext1 == "tar") || (ext1 == "zip"))
+        else if ((ext1 == "tgz") || (ext1 == "tbz") || (ext1 == "txz") || (ext1 == "taz") || (ext1 == "zst")
+                 || (ext1 == "tar") || (ext1 == "zip") || (ext1 == "rar"))
         {
             str = str.left(str.length() - 4);
             str = str + ".bz2";
             input->setText(str);
         }
-        else if ((ext1 == "gz") || (ext1 == "xz") || (ext1 == "7z"))
+        else if ((ext1 == "gz") || (ext1 == "7z") || (ext1 == "xz"))
         {
             str = str.left(str.length() - 3);
             str = str + ".bz2";
@@ -568,7 +666,63 @@ long ArchInputDialog::onCmdOption(FXObject*, FXSelector sel, void*)
             input->setText(str);
         }
     }
-
+    else if (FXSELID(sel) == ID_FORMAT_ZST)
+    {
+        // Handle different archive formats
+        if ((ext1 == "zst") && (ext2 != "tar.zst"))
+        {
+            str = str.left(str.length() - 8);
+            input->setText(str);
+        }
+        else if ((ext2 == "tar.bz2") || (ext2 == "tar.zst"))
+        {
+            str = str.left(str.length() - 8);
+            str = str + ".zst";
+            input->setText(str);
+        }
+        else if ((ext2 == "tar.gz") || (ext2 == "tar.xz"))
+        {
+            str = str.left(str.length() - 7);
+            str = str + ".zst";
+            input->setText(str);
+        }
+        else if (ext2 == "tar.z")
+        {
+            str = str.left(str.length() - 6);
+            str = str + ".zst";
+            input->setText(str);
+        }
+        else if ((ext1 == "tbz2") || (ext1 == "tzst"))
+        {
+            str = str.left(str.length() - 5);
+            str = str + ".zst";
+            input->setText(str);
+        }
+        else if ((ext1 == "tgz") || (ext1 == "tbz") || (ext1 == "txz") || (ext1 == "taz") || (ext1 == "bz2")
+                 || (ext1 == "tar") || (ext1 == "zip") || (ext1 == "rar"))
+        {
+            str = str.left(str.length() - 4);
+            str = str + ".zst";
+            input->setText(str);
+        }
+        else if ((ext1 == "gz") || (ext1 == "7z") || (ext1 == "xz"))
+        {
+            str = str.left(str.length() - 3);
+            str = str + ".zst";
+            input->setText(str);
+        }
+        else if (ext1 == "z")
+        {
+            str = str.left(str.length() - 2);
+            str = str + ".zst";
+            input->setText(str);
+        }
+        else
+        {
+            str = str + ".zst";
+            input->setText(str);
+        }
+    }
     else if (FXSELID(sel) == ID_FORMAT_Z)
     {
         // Handle different archive formats
@@ -576,7 +730,7 @@ long ArchInputDialog::onCmdOption(FXObject*, FXSelector sel, void*)
         {
             input->setText(str);
         }
-        else if (ext2 == "tar.bz2")
+        else if ((ext2 == "tar.bz2") || (ext2 == "tar.zst"))
         {
             str = str.left(str.length() - 8);
             str = str + ".Z";
@@ -594,13 +748,14 @@ long ArchInputDialog::onCmdOption(FXObject*, FXSelector sel, void*)
             str = str + ".Z";
             input->setText(str);
         }
-        else if ((ext1 == "tbz2") || (ext1 == "tbz"))
+        else if ((ext1 == "tbz2") || (ext1 == "tzst"))
         {
             str = str.left(str.length() - 5);
             str = str + ".Z";
             input->setText(str);
         }
-        else if ((ext1 == "tgz") || (ext1 == "bz2") || (ext1 == "taz") || (ext1 == "txz") || (ext1 == "tar") || (ext1 == "zip"))
+        else if ((ext1 == "tgz") || (ext1 == "tbz") || (ext1 == "txz") || (ext1 == "taz") || (ext1 == "bz2")
+                 || (ext1 == "zst") || (ext1 == "tar") || (ext1 == "zip") || (ext1 == "rar"))
         {
             str = str.left(str.length() - 4);
             str = str + ".Z";
@@ -618,7 +773,6 @@ long ArchInputDialog::onCmdOption(FXObject*, FXSelector sel, void*)
             input->setText(str);
         }
     }
-
     else if (FXSELID(sel) == ID_FORMAT_ZIP)
     {
         // Handle different archive formats
@@ -626,7 +780,7 @@ long ArchInputDialog::onCmdOption(FXObject*, FXSelector sel, void*)
         {
             input->setText(str);
         }
-        else if (ext2 == "tar.bz2")
+        else if ((ext2 == "tar.bz2") || (ext2 == "tar.zst"))
         {
             str = str.left(str.length() - 8);
             str = str + ".zip";
@@ -644,13 +798,14 @@ long ArchInputDialog::onCmdOption(FXObject*, FXSelector sel, void*)
             str = str + ".zip";
             input->setText(str);
         }
-        else if ((ext1 == "tbz2") || (ext1 == "tbz"))
+        else if ((ext1 == "tbz2") || (ext1 == "tzst"))
         {
             str = str.left(str.length() - 5);
             str = str + ".zip";
             input->setText(str);
         }
-        else if ((ext1 == "tgz") || (ext1 == "bz2") || (ext1 == "taz") || (ext1 == "txz") || (ext1 == "tar"))
+        else if ((ext1 == "tgz") || (ext1 == "tbz") || (ext1 == "txz") || (ext1 == "taz") || (ext1 == "bz2")
+                 || (ext1 == "zst") || (ext1 == "tar") || (ext1 == "rar"))
         {
             str = str.left(str.length() - 4);
             str = str + ".zip";
@@ -674,7 +829,6 @@ long ArchInputDialog::onCmdOption(FXObject*, FXSelector sel, void*)
             input->setText(str);
         }
     }
-
     else if (FXSELID(sel) == ID_FORMAT_7ZIP)
     {
         // Handle different archive formats
@@ -682,7 +836,7 @@ long ArchInputDialog::onCmdOption(FXObject*, FXSelector sel, void*)
         {
             input->setText(str);
         }
-        else if (ext2 == "tar.bz2")
+        else if ((ext2 == "tar.bz2") || (ext2 == "tar.zst"))
         {
             str = str.left(str.length() - 8);
             str = str + ".7z";
@@ -700,13 +854,14 @@ long ArchInputDialog::onCmdOption(FXObject*, FXSelector sel, void*)
             str = str + ".7z";
             input->setText(str);
         }
-        else if ((ext1 == "tbz2") || (ext1 == "tbz"))
+        else if ((ext1 == "tbz2") || (ext1 == "tzst"))
         {
             str = str.left(str.length() - 5);
             str = str + ".7z";
             input->setText(str);
         }
-        else if ((ext1 == "tgz") || (ext1 == "bz2") || (ext1 == "taz") || (ext1 == "txz") || (ext1 == "tar") || (ext1 == "zip"))
+        else if ((ext1 == "tgz") || (ext1 == "tbz") || (ext1 == "txz") || (ext1 == "taz") || (ext1 == "bz2")
+                 || (ext1 == "zst") || (ext1 == "tar") || (ext1 == "zip") || (ext1 == "rar"))
         {
             str = str.left(str.length() - 4);
             str = str + ".7z";
@@ -730,8 +885,64 @@ long ArchInputDialog::onCmdOption(FXObject*, FXSelector sel, void*)
             input->setText(str);
         }
     }
+    else if (FXSELID(sel) == ID_FORMAT_RAR)
+    {
+        // Handle different archive formats
+        if (ext1 == "rar")
+        {
+            input->setText(str);
+        }
+        else if ((ext2 == "tar.bz2") || (ext2 == "tar.zst"))
+        {
+            str = str.left(str.length() - 8);
+            str = str + ".rar";
+            input->setText(str);
+        }
+        else if ((ext2 == "tar.gz") || (ext2 == "tar.xz"))
+        {
+            str = str.left(str.length() - 7);
+            str = str + ".rar";
+            input->setText(str);
+        }
+        else if (ext2 == "tar.z")
+        {
+            str = str.left(str.length() - 6);
+            str = str + ".rar";
+            input->setText(str);
+        }
+        else if ((ext1 == "tbz2") || (ext1 == "tzst"))
+        {
+            str = str.left(str.length() - 5);
+            str = str + ".rar";
+            input->setText(str);
+        }
+        else if ((ext1 == "tgz") || (ext1 == "tbz") || (ext1 == "txz") || (ext1 == "taz") || (ext1 == "bz2")
+                 || (ext1 == "zst") || (ext1 == "tar") || (ext1 == "zip"))
+        {
+            str = str.left(str.length() - 4);
+            str = str + ".rar";
+            input->setText(str);
+        }
+        else if ((ext1 == "gz") || (ext1 == "xz"))
+        {
+            str = str.left(str.length() - 3);
+            str = str + ".rar";
+            input->setText(str);
+        }
+        else if (ext1 == "z")
+        {
+            str = str.left(str.length() - 2);
+            str = str + ".rar";
+            input->setText(str);
+        }
+        else
+        {
+            str = str + ".rar";
+            input->setText(str);
+        }
+    }
 
-    return(1);
+    return 1;
 }
 
 
@@ -756,6 +967,10 @@ long ArchInputDialog::onUpdOption(FXObject*, FXSelector sel, void*)
     {
         optionmenu->setCurrent(option_txz);
     }
+    else if ((ext2 == "tar.zst") || (ext1 == "tzst"))
+    {
+        optionmenu->setCurrent(option_tzst);
+    }
     else if ((ext2 == "tar.z") || (ext1 == "taz"))
     {
         optionmenu->setCurrent(option_taz);
@@ -771,6 +986,10 @@ long ArchInputDialog::onUpdOption(FXObject*, FXSelector sel, void*)
     else if (ext1 == "bz2")
     {
         optionmenu->setCurrent(option_bz2);
+    }
+    else if (ext1 == "zst")
+    {
+        optionmenu->setCurrent(option_zst);
     }
     else if (ext1 == "xz")
     {
@@ -788,10 +1007,14 @@ long ArchInputDialog::onUpdOption(FXObject*, FXSelector sel, void*)
     {
         optionmenu->setCurrent(option_7zip);
     }
+    else if (ext1 == "rar")
+    {
+        optionmenu->setCurrent(option_rar);
+    }
     else
     {
         optionmenu->setCurrent(option_tgz);
     }
 
-    return(1);
+    return 1;
 }

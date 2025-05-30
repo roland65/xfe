@@ -32,28 +32,27 @@
 
 // Add FOX hacks
 #include "foxhacks.cpp"
-#include "clearlooks.cpp"
+#include "moderncontrols.cpp"
+
 
 // Global variables
-char**   args;
-FXColor listbackcolor, listforecolor;
-FXColor highlightcolor;
-FXbool allowPopupScroll = false;
-FXuint single_click;
-FXbool file_tooltips;
-FXbool relative_resize;
-FXbool show_pathlink;
-FXbool save_win_pos;
+char** args;
 FXString homedir;
 FXString xdgconfighome;
 FXString xdgdatahome;
-FXbool xim_used = false;
+FXString execpath;
+
+// Filter history
+char FilterHistory[FILTER_HIST_SIZE][MAX_PATTERN_SIZE];
+int FilterNum = 0;
+
+// Integer UI scaling factor
+FXint scaleint = 1;
+
 
 // Main window (not used but necessary for compilation)
 FXMainWindow* mainWindow = NULL;
 
-// Scaling factors for the UI
-extern double scalefrac;
 
 // Hand cursor replacement (integer scaling factor = 1)
 #define hand1_width     32
@@ -172,6 +171,7 @@ double zoomtab[NB_ZOOM] =
 };
 #define ZOOM_100       10
 
+
 // Maximum image size (in pixels) for zooming in
 #define MAX_IMGSIZE    5120
 
@@ -231,7 +231,7 @@ FXDEFMAP(XFileImage) XFileImageMap[] =
     FXMAPFUNC(SEL_SIGNAL, XFileImage::ID_QUIT, XFileImage::onCmdQuit),
     FXMAPFUNC(SEL_CLOSE, XFileImage::ID_TITLE, XFileImage::onCmdQuit),
     FXMAPFUNC(SEL_COMMAND, XFileImage::ID_RESTART, XFileImage::onCmdRestart),
-    FXMAPFUNC(SEL_COMMAND, XFileImage::ID_TOGGLE_FILELIST_BEFORE, XFileImage::onCmdToggleFileListBefore),
+    FXMAPFUNC(SEL_COMMAND, XFileImage::ID_TOGGLEFILELIST_BEFORE, XFileImage::onCmdToggleFileListBefore),
     FXMAPFUNC(SEL_COMMAND, XFileImage::ID_HORZ_PANELS, XFileImage::onCmdHorzVertPanels),
     FXMAPFUNC(SEL_COMMAND, XFileImage::ID_VERT_PANELS, XFileImage::onCmdHorzVertPanels),
     FXMAPFUNC(SEL_DOUBLECLICKED, XFileImage::ID_FILELIST, XFileImage::onCmdItemDoubleClicked),
@@ -269,6 +269,8 @@ FXDEFMAP(XFileImage) XFileImageMap[] =
     FXMAPFUNC(SEL_UPDATE, XFileImage::ID_ROTATE_270, XFileImage::onUpdImage),
     FXMAPFUNC(SEL_UPDATE, XFileImage::ID_MIRROR_HOR, XFileImage::onUpdImage),
     FXMAPFUNC(SEL_UPDATE, XFileImage::ID_MIRROR_VER, XFileImage::onUpdImage),
+    FXMAPFUNC(SEL_UPDATE, XFileImage::ID_VIEW_PREV, XFileImage::onUpdImage),
+    FXMAPFUNC(SEL_UPDATE, XFileImage::ID_VIEW_NEXT, XFileImage::onUpdImage),
     FXMAPFUNC(SEL_UPDATE, XFileImage::ID_ZOOM_IN, XFileImage::onUpdImage),
     FXMAPFUNC(SEL_UPDATE, XFileImage::ID_ZOOM_OUT, XFileImage::onUpdImage),
     FXMAPFUNC(SEL_UPDATE, XFileImage::ID_ZOOM_100, XFileImage::onUpdImage),
@@ -277,7 +279,7 @@ FXDEFMAP(XFileImage) XFileImageMap[] =
     FXMAPFUNC(SEL_UPDATE, XFileImage::ID_SHOW_MINI_ICONS, XFileImage::onUpdFileView),
     FXMAPFUNC(SEL_UPDATE, XFileImage::ID_SHOW_DETAILS, XFileImage::onUpdFileView),
     FXMAPFUNC(SEL_UPDATE, XFileImage::ID_TOGGLE_HIDDEN, XFileImage::onUpdToggleHidden),
-    FXMAPFUNC(SEL_UPDATE, XFileImage::ID_TOGGLE_FILELIST_BEFORE, XFileImage::onUpdToggleFileListBefore),
+    FXMAPFUNC(SEL_UPDATE, XFileImage::ID_TOGGLEFILELIST_BEFORE, XFileImage::onUpdToggleFileListBefore),
     FXMAPFUNC(SEL_UPDATE, XFileImage::ID_TOGGLE_THUMBNAILS, XFileImage::onUpdToggleThumbnails),
     FXMAPFUNC(SEL_COMMAND, XFileImage::ID_TOGGLE_FIT_WIN, XFileImage::onCmdToggleFitWin),
     FXMAPFUNC(SEL_COMMAND, XFileImage::ID_TOGGLE_FILTER_IMAGES, XFileImage::onCmdToggleFilterImages),
@@ -289,6 +291,8 @@ FXDEFMAP(XFileImage) XFileImageMap[] =
     FXMAPFUNC(SEL_COMMAND, XFileImage::ID_GO_WORK, XFileImage::onCmdWork),
     FXMAPFUNC(SEL_RIGHTBUTTONRELEASE, XFileImage::ID_FILELIST, XFileImage::onCmdPopupMenu),
     FXMAPFUNC(SEL_COMMAND, XFileImage::ID_POPUP_MENU, XFileImage::onCmdPopupMenu),
+    FXMAPFUNC(SEL_COMMAND, XFileImage::ID_VIEW_PREV, XFileImage::onCmdViewPrev),
+    FXMAPFUNC(SEL_COMMAND, XFileImage::ID_VIEW_NEXT, XFileImage::onCmdViewNext),
 };
 
 
@@ -296,8 +300,11 @@ FXDEFMAP(XFileImage) XFileImageMap[] =
 FXIMPLEMENT(XFileImage, FXMainWindow, XFileImageMap, ARRAYNUMBER(XFileImageMap))
 
 
-// Make some windows
-XFileImage::XFileImage(FXApp* a, FXbool smoothscroll) : FXMainWindow(a, "Xfi ", NULL, NULL, DECOR_ALL)
+// Construct
+XFileImage::XFileImage(FXApp* a, FXbool smoothscroll, FXColor listbackcolor,
+                       FXColor listforecolor, FXColor highlightcolor) :
+                       FXMainWindow(a, "Xfi ", NULL, NULL, DECOR_TITLE | DECOR_MINIMIZE | DECOR_MAXIMIZE |
+                                    DECOR_CLOSE | DECOR_BORDER | DECOR_STRETCHABLE)
 {
     setIcon(xfiicon);
 
@@ -309,7 +316,7 @@ XFileImage::XFileImage(FXApp* a, FXbool smoothscroll) : FXMainWindow(a, "Xfi ", 
     setSelector(ID_TITLE);
 
     // Make menu bar
-    menubar = new FXMenuBar(this, LAYOUT_DOCK_NEXT | LAYOUT_SIDE_TOP | LAYOUT_FILL_X | FRAME_RAISED);
+    menubar = new FXMenuBar(this, LAYOUT_DOCK_NEXT | LAYOUT_SIDE_TOP | LAYOUT_FILL_X | FRAME_NONE);
 
     // Sites where to dock
     FXDockSite* topdock = new FXDockSite(this, LAYOUT_SIDE_TOP | LAYOUT_FILL_X);
@@ -318,8 +325,9 @@ XFileImage::XFileImage(FXApp* a, FXbool smoothscroll) : FXMainWindow(a, "Xfi ", 
     new FXDockSite(this, LAYOUT_SIDE_RIGHT | LAYOUT_FILL_Y);
 
     // Tool bar
-    FXToolBarShell* dragshell1 = new FXToolBarShell(this, FRAME_RAISED);
-    toolbar = new FXToolBar(topdock, dragshell1, LAYOUT_DOCK_NEXT | LAYOUT_SIDE_TOP | LAYOUT_FILL_X | LAYOUT_FILL_Y | FRAME_RAISED);
+    FXToolBarShell* dragshell1 = new FXToolBarShell(this, FRAME_NONE);
+    toolbar = new FXToolBar(topdock, dragshell1,
+                            LAYOUT_DOCK_NEXT | LAYOUT_SIDE_TOP | LAYOUT_FILL_X | LAYOUT_FILL_Y | FRAME_NONE);
     new FXToolBarGrip(toolbar, toolbar, FXToolBar::ID_TOOLBARGRIP, TOOLBARGRIP_DOUBLE);
 
     // File menu
@@ -349,19 +357,25 @@ XFileImage::XFileImage(FXApp* a, FXbool smoothscroll) : FXMainWindow(a, "Xfi ", 
     filelistbefore = getApp()->reg().readUnsignedEntry("OPTIONS", "filelist_before", false);
     if (filelistbefore)
     {
-        splitter = new FXSplitter(vframe, LAYOUT_SIDE_TOP | LAYOUT_FILL_X | LAYOUT_FILL_Y | SPLITTER_TRACKING | SPLITTER_VERTICAL);
-        filebox = new FXVerticalFrame(splitter, LAYOUT_FILL_X | LAYOUT_FILL_Y | FRAME_NONE, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-        imageview = new FXImageView(splitter, NULL, NULL, 0, LAYOUT_FILL_X | LAYOUT_FILL_Y | FRAME_SUNKEN);
+        splitter = new FXSplitter(vframe,
+                                  LAYOUT_SIDE_TOP | LAYOUT_FILL_X | LAYOUT_FILL_Y | SPLITTER_TRACKING |
+                                  SPLITTER_VERTICAL);
+        filebox = new FXVerticalFrame(splitter, LAYOUT_FILL_X | LAYOUT_FILL_Y | FRAME_NONE, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                      0);
+        imageview = new FXImageView(splitter, NULL, NULL, 0, LAYOUT_FILL_X | LAYOUT_FILL_Y | FRAME_NONE);
     }
     else
     {
-        splitter = new FXSplitter(vframe, LAYOUT_SIDE_TOP | LAYOUT_FILL_X | LAYOUT_FILL_Y | SPLITTER_TRACKING | SPLITTER_VERTICAL | SPLITTER_REVERSED);
-        imageview = new FXImageView(splitter, NULL, NULL, 0, LAYOUT_FILL_X | LAYOUT_FILL_Y | FRAME_SUNKEN);
-        filebox = new FXVerticalFrame(splitter, LAYOUT_FILL_X | LAYOUT_FILL_Y | FRAME_NONE, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        splitter = new FXSplitter(vframe,
+                                  LAYOUT_SIDE_TOP | LAYOUT_FILL_X | LAYOUT_FILL_Y | SPLITTER_TRACKING |
+                                  SPLITTER_VERTICAL | SPLITTER_REVERSED);
+        imageview = new FXImageView(splitter, NULL, NULL, 0, LAYOUT_FILL_X | LAYOUT_FILL_Y | FRAME_NONE);
+        filebox = new FXVerticalFrame(splitter, LAYOUT_FILL_X | LAYOUT_FILL_Y | FRAME_NONE, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                      0);
     }
 
     // Stack panels horizontally or vertically
-    vertpanels = getApp()->reg().readUnsignedEntry("OPTIONS", "vert_panels", false);
+    vertpanels = getApp()->reg().readUnsignedEntry("OPTIONS", "vertical_panels", false);
     if (vertpanels)
     {
         splitter->setSplitterStyle(splitter->getSplitterStyle() & ~SPLITTER_VERTICAL);
@@ -372,66 +386,183 @@ XFileImage::XFileImage(FXApp* a, FXbool smoothscroll) : FXMainWindow(a, "Xfi ", 
     }
 
     // Container for the action buttons
-    FXHorizontalFrame* buttons = new FXHorizontalFrame(filebox, LAYOUT_SIDE_TOP | LAYOUT_FILL_X | FRAME_RAISED, 0, 0, 0, 0, 5, 5, 5, 5, 0, 0);
+    FXHorizontalFrame* buttons = new FXHorizontalFrame(filebox, LAYOUT_SIDE_TOP | LAYOUT_FILL_X | FRAME_NONE, 0, 0, 0,
+                                                       0, 5, 5, 5, 5, 0, 0);
 
     // Container for the path linker
-    FXHorizontalFrame* pathframe = new FXHorizontalFrame(filebox, LAYOUT_FILL_X | FRAME_RAISED, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+    FXHorizontalFrame* pathframe = new FXHorizontalFrame(filebox, LAYOUT_FILL_X | FRAME_NONE, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                                         0);
 
     // File list
     FXuint options;
     if (smoothscroll)
     {
-        options = LAYOUT_FILL_X | LAYOUT_FILL_Y | _ICONLIST_MINI_ICONS | _ICONLIST_BROWSESELECT;
+        options = LAYOUT_FILL_X | LAYOUT_FILL_Y | ICONLIST_MINI_ICONS | ICONLIST_BROWSESELECT;
     }
     else
     {
-        options = LAYOUT_FILL_X | LAYOUT_FILL_Y | _ICONLIST_MINI_ICONS | _ICONLIST_BROWSESELECT | SCROLLERS_DONT_TRACK;
+        options = LAYOUT_FILL_X | LAYOUT_FILL_Y | ICONLIST_MINI_ICONS | ICONLIST_BROWSESELECT | SCROLLERS_DONT_TRACK;
     }
 
     thumbnails = getApp()->reg().readUnsignedEntry("OPTIONS", "thumbnails", 0);
-    filelist = new FileList(this, filebox, this, ID_FILELIST, thumbnails, options);
+
+    // Read file list columns order and shown status
+    FXuint idCol[NMAX_COLS] = { 0 };
+    FXbool colShown[FileList::ID_COL_NAME + NMAX_COLS] = { 0 };
+    FXuint nbCols = 0;
+
+    FXuint i = FileList::ID_COL_NAME;
+    colShown[i++] = getApp()->reg().readUnsignedEntry("SETTINGS", "view_col_name", 1);
+    colShown[i++] = getApp()->reg().readUnsignedEntry("SETTINGS", "view_col_size", 1);
+    colShown[i++] = getApp()->reg().readUnsignedEntry("SETTINGS", "view_col_type", 1);
+    colShown[i++] = getApp()->reg().readUnsignedEntry("SETTINGS", "view_col_ext", 1);
+    colShown[i++] = getApp()->reg().readUnsignedEntry("SETTINGS", "view_col_date", 1);
+    colShown[i++] = getApp()->reg().readUnsignedEntry("SETTINGS", "view_col_user", 1);
+    colShown[i++] = getApp()->reg().readUnsignedEntry("SETTINGS", "view_col_group", 1);
+    colShown[i++] = getApp()->reg().readUnsignedEntry("SETTINGS", "view_col_perms", 1);
+    colShown[i++] = getApp()->reg().readUnsignedEntry("SETTINGS", "view_col_link", 1);
+
+    FXuint id = 0;
+    i = 0;
+
+    id = getApp()->reg().readUnsignedEntry("SETTINGS", "id_col_0", FileList::ID_COL_NAME);
+    if (id > 0 && colShown[id])
+    {
+        idCol[i++] = id;
+    }
+    id = getApp()->reg().readUnsignedEntry("SETTINGS", "id_col_1", FileList::ID_COL_SIZE);
+    if (id > 0 && colShown[id])
+    {
+        idCol[i++] = id;
+    }
+    id = getApp()->reg().readUnsignedEntry("SETTINGS", "id_col_2", FileList::ID_COL_TYPE);
+    if (id > 0 && colShown[id])
+    {
+        idCol[i++] = id;
+    }
+    id = getApp()->reg().readUnsignedEntry("SETTINGS", "id_col_3", FileList::ID_COL_EXT);
+    if (id > 0 && colShown[id])
+    {
+        idCol[i++] = id;
+    }
+    id = getApp()->reg().readUnsignedEntry("SETTINGS", "id_col_4", FileList::ID_COL_DATE);
+    if (id > 0 && colShown[id])
+    {
+        idCol[i++] = id;
+    }
+    id = getApp()->reg().readUnsignedEntry("SETTINGS", "id_col_5", FileList::ID_COL_USER);
+    if (id > 0 && colShown[id])
+    {
+        idCol[i++] = id;
+    }
+    id = getApp()->reg().readUnsignedEntry("SETTINGS", "id_col_6", FileList::ID_COL_GROUP);
+    if (id > 0 && colShown[id])
+    {
+        idCol[i++] = id;
+    }
+    id = getApp()->reg().readUnsignedEntry("SETTINGS", "id_col_7", FileList::ID_COL_PERMS);
+    if (id > 0 && colShown[id])
+    {
+        idCol[i++] = id;
+    }
+    id = getApp()->reg().readUnsignedEntry("SETTINGS", "id_col_8", FileList::ID_COL_LINK);
+    if (id > 0 && colShown[id])
+    {
+        idCol[i++] = id;
+    }
+    nbCols = i;
+
+    // File list
+    filelist = new FileList(this, filebox, idCol, nbCols, this, ID_FILELIST, thumbnails, 0, 0, options);
     filelist->setTextColor(listforecolor);
     filelist->setBackColor(listbackcolor);
-    filelist->setHeaderSize(0, getApp()->reg().readUnsignedEntry("OPTIONS", "name_size", 200));
-    filelist->setHeaderSize(1, getApp()->reg().readUnsignedEntry("OPTIONS", "size_size", 60));
-    filelist->setHeaderSize(2, getApp()->reg().readUnsignedEntry("OPTIONS", "type_size", 100));
-    filelist->setHeaderSize(3, getApp()->reg().readUnsignedEntry("OPTIONS", "ext_size", 100));
-    filelist->setHeaderSize(4, getApp()->reg().readUnsignedEntry("OPTIONS", "modd_size", 150));
-    filelist->setHeaderSize(5, getApp()->reg().readUnsignedEntry("OPTIONS", "user_size", 50));
-    filelist->setHeaderSize(6, getApp()->reg().readUnsignedEntry("OPTIONS", "grou_size", 50));
-    filelist->setHeaderSize(7, getApp()->reg().readUnsignedEntry("OPTIONS", "attr_size", 100));
+
+    // Set list headers size
+    for (FXuint i = 0; i < nbCols; i++)
+    {
+        FXuint size = 0;
+        FXuint id = filelist->getHeaderId(i);
+
+        switch (id)
+        {
+        case FileList::ID_COL_NAME:
+            size = getApp()->reg().readUnsignedEntry("OPTIONS", "name_size", MIN_NAME_SIZE);
+            break;
+
+        case FileList::ID_COL_SIZE:
+            size = getApp()->reg().readUnsignedEntry("OPTIONS", "size_size", 60);
+            break;
+
+        case FileList::ID_COL_TYPE:
+            size = getApp()->reg().readUnsignedEntry("OPTIONS", "type_size", 100);
+            break;
+
+        case FileList::ID_COL_EXT:
+            size = getApp()->reg().readUnsignedEntry("OPTIONS", "ext_size", 100);
+            break;
+
+        case FileList::ID_COL_DATE:
+            size = getApp()->reg().readUnsignedEntry("OPTIONS", "date_size", 150);
+            break;
+
+        case FileList::ID_COL_USER:
+            size = getApp()->reg().readUnsignedEntry("OPTIONS", "user_size", 50);
+            break;
+
+        case FileList::ID_COL_GROUP:
+            size = getApp()->reg().readUnsignedEntry("OPTIONS", "group_size", 50);
+            break;
+
+        case FileList::ID_COL_PERMS:
+            size = getApp()->reg().readUnsignedEntry("OPTIONS", "perms_size", 100);
+            break;
+
+        case FileList::ID_COL_LINK:
+            size = getApp()->reg().readUnsignedEntry("OPTIONS", "link_size", 100);
+            break;
+        }
+
+        filelist->setHeaderSize(i, size);
+    }
 
     // Action buttons
     new FXFrame(buttons, LAYOUT_FIX_WIDTH, 0, 0, 4, 1);
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "go_back", "Ctrl-Backspace");
-    btn = new FXButton(buttons, TAB + _("Go to previous folder") + PARS(key), dirbackicon, this, ID_DIR_BACK, BUTTON_TOOLBAR | FRAME_RAISED | LAYOUT_CENTER_Y | LAYOUT_LEFT);
-    hotkey = _parseAccel(key);
+    btn = new FXButton(buttons, TAB + _("Go to Previous Folder") + PARS(key), minidirbackicon, this, ID_DIR_BACK,
+                       BUTTON_TOOLBAR | FRAME_GROOVE | LAYOUT_CENTER_Y | LAYOUT_LEFT);
+    hotkey = xf_parseaccel(key);
     btn->addHotKey(hotkey);
-    btnbackhist = new FXArrowButton(buttons, this, ID_DIR_BACK_HIST, LAYOUT_FILL_Y | FRAME_RAISED | FRAME_THICK | ARROW_DOWN | ARROW_TOOLBAR);
+    btnbackhist = new FXArrowButton(buttons, this, ID_DIR_BACK_HIST,
+                                    LAYOUT_FILL_Y | FRAME_GROOVE | ARROW_DOWN | ARROW_TOOLBAR);
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "go_forward", "Shift-Backspace");
-    btn = new FXButton(buttons, TAB + _("Go to next folder") + PARS(key), dirforwardicon, this, ID_DIR_FORWARD, BUTTON_TOOLBAR | FRAME_RAISED | LAYOUT_CENTER_Y | LAYOUT_LEFT);
-    hotkey = _parseAccel(key);
+    btn = new FXButton(buttons, TAB + _("Go to Next Folder") + PARS(key), minidirforwardicon, this, ID_DIR_FORWARD,
+                       BUTTON_TOOLBAR | FRAME_GROOVE | LAYOUT_CENTER_Y | LAYOUT_LEFT);
+    hotkey = xf_parseaccel(key);
     btn->addHotKey(hotkey);
-    btnforwardhist = new FXArrowButton(buttons, this, ID_DIR_FORWARD_HIST, LAYOUT_FILL_Y | FRAME_RAISED | FRAME_THICK | ARROW_DOWN | ARROW_TOOLBAR);
+    btnforwardhist = new FXArrowButton(buttons, this, ID_DIR_FORWARD_HIST,
+                                       LAYOUT_FILL_Y | FRAME_GROOVE | ARROW_DOWN | ARROW_TOOLBAR);
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "go_up", "Backspace");
-    btn = new FXButton(buttons, TAB + _("Go to parent folder") + PARS(key), dirupicon, this, ID_DIR_UP, BUTTON_TOOLBAR | FRAME_RAISED | LAYOUT_CENTER_Y | LAYOUT_LEFT);
-    hotkey = _parseAccel(key);
+    btn = new FXButton(buttons, TAB + _("Go to Parent Folder") + PARS(key), minidirupicon, this, ID_DIR_UP,
+                       BUTTON_TOOLBAR | FRAME_GROOVE | LAYOUT_CENTER_Y | LAYOUT_LEFT);
+    hotkey = xf_parseaccel(key);
     btn->addHotKey(hotkey);
 
     // Separator
     hframeSeparator(buttons);
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "go_home", "Ctrl-H");
-    new FXButton(buttons, TAB + _("Go to home folder") + PARS(key), homeicon, this, ID_GO_HOME, BUTTON_TOOLBAR | FRAME_RAISED | LAYOUT_CENTER_Y | LAYOUT_LEFT);
-    hotkey = _parseAccel(key);
+    new FXButton(buttons, TAB + _("Go to Home Folder") + PARS(key), minihomeicon, this, ID_GO_HOME,
+                 BUTTON_TOOLBAR | FRAME_GROOVE | LAYOUT_CENTER_Y | LAYOUT_LEFT);
+    hotkey = xf_parseaccel(key);
     btn->addHotKey(hotkey);
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "go_work", "Shift-F2");
-    new FXButton(buttons, TAB + _("Go to working folder") + PARS(key), workicon, this, ID_GO_WORK, BUTTON_TOOLBAR | FRAME_RAISED | LAYOUT_CENTER_Y | LAYOUT_LEFT);
-    hotkey = _parseAccel(key);
+    new FXButton(buttons, TAB + _("Go to Working Folder") + PARS(key), miniworkicon, this, ID_GO_WORK,
+                 BUTTON_TOOLBAR | FRAME_GROOVE | LAYOUT_CENTER_Y | LAYOUT_LEFT);
+    hotkey = xf_parseaccel(key);
     btn->addHotKey(hotkey);
 
     // Separator
@@ -439,18 +570,21 @@ XFileImage::XFileImage(FXApp* a, FXbool smoothscroll) : FXMainWindow(a, "Xfi ", 
 
     // Switch display modes
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "big_icons", "F10");
-    btn = new FXButton(buttons, TAB + _("Big icon list") + PARS(key), bigiconsicon, this, ID_SHOW_BIG_ICONS, BUTTON_TOOLBAR | LAYOUT_CENTER_Y | LAYOUT_LEFT | ICON_BEFORE_TEXT | FRAME_RAISED);
-    hotkey = _parseAccel(key);
+    btn = new FXButton(buttons, TAB + _("Big Icon List") + PARS(key), minibigiconsicon, this, ID_SHOW_BIG_ICONS,
+                       BUTTON_TOOLBAR | LAYOUT_CENTER_Y | LAYOUT_LEFT | ICON_BEFORE_TEXT | FRAME_GROOVE);
+    hotkey = xf_parseaccel(key);
     btn->addHotKey(hotkey);
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "small_icons", "F11");
-    btn = new FXButton(buttons, TAB + _("Small icon list") + PARS(key), smalliconsicon, this, ID_SHOW_MINI_ICONS, BUTTON_TOOLBAR | LAYOUT_CENTER_Y | LAYOUT_LEFT | ICON_BEFORE_TEXT | FRAME_RAISED);
-    hotkey = _parseAccel(key);
+    btn = new FXButton(buttons, TAB + _("Small Icon List") + PARS(key), minismalliconsicon, this, ID_SHOW_MINI_ICONS,
+                       BUTTON_TOOLBAR | LAYOUT_CENTER_Y | LAYOUT_LEFT | ICON_BEFORE_TEXT | FRAME_GROOVE);
+    hotkey = xf_parseaccel(key);
     btn->addHotKey(hotkey);
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "detailed_file_list", "F12");
-    btn = new FXButton(buttons, TAB + _("Detailed file list") + PARS(key), detailsicon, this, ID_SHOW_DETAILS, BUTTON_TOOLBAR | LAYOUT_CENTER_Y | LAYOUT_LEFT | ICON_BEFORE_TEXT | FRAME_RAISED);
-    hotkey = _parseAccel(key);
+    btn = new FXButton(buttons, TAB + _("Detailed File List") + PARS(key), minidetailsicon, this, ID_SHOW_DETAILS,
+                       BUTTON_TOOLBAR | LAYOUT_CENTER_Y | LAYOUT_LEFT | ICON_BEFORE_TEXT | FRAME_GROOVE);
+    hotkey = xf_parseaccel(key);
     btn->addHotKey(hotkey);
 
     // Separator
@@ -458,14 +592,18 @@ XFileImage::XFileImage(FXApp* a, FXbool smoothscroll) : FXMainWindow(a, "Xfi ", 
 
     // Vertical panels
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "vert_panels", "Ctrl-Shift-F1");
-    btn = new FXButton(buttons, TAB + _("Vertical panels") + PARS(key), vertpanelsicon, this, XFileImage::ID_VERT_PANELS, BUTTON_TOOLBAR | FRAME_RAISED | LAYOUT_CENTER_Y | LAYOUT_LEFT | ICON_BEFORE_TEXT);
-    hotkey = _parseAccel(key);
+    btn = new FXButton(buttons, TAB + _("Vertical Panels") + PARS(key), minivertpanelsicon, this,
+                       XFileImage::ID_VERT_PANELS,
+                       BUTTON_TOOLBAR | FRAME_GROOVE | LAYOUT_CENTER_Y | LAYOUT_LEFT | ICON_BEFORE_TEXT);
+    hotkey = xf_parseaccel(key);
     btn->addHotKey(hotkey);
 
     // Horizontal panels
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "horz_panels", "Ctrl-Shift-F2");
-    btn = new FXButton(buttons, TAB + _("Horizontal panels") + PARS(key), horzpanelsicon, this, XFileImage::ID_HORZ_PANELS, BUTTON_TOOLBAR | FRAME_RAISED | LAYOUT_CENTER_Y | LAYOUT_LEFT | ICON_BEFORE_TEXT);
-    hotkey = _parseAccel(key);
+    btn = new FXButton(buttons, TAB + _("Horizontal Panels") + PARS(key), minihorzpanelsicon, this,
+                       XFileImage::ID_HORZ_PANELS,
+                       BUTTON_TOOLBAR | FRAME_GROOVE | LAYOUT_CENTER_Y | LAYOUT_LEFT | ICON_BEFORE_TEXT);
+    hotkey = xf_parseaccel(key);
     btn->addHotKey(hotkey);
 
     // Panel title
@@ -476,7 +614,7 @@ XFileImage::XFileImage(FXApp* a, FXbool smoothscroll) : FXMainWindow(a, "Xfi ", 
     pathlink = new PathLinker(pathframe, filelist, NULL, LAYOUT_FILL_X);
 
     // Status bar
-    statusbar = new FXHorizontalFrame(vframe, JUSTIFY_LEFT | LAYOUT_FILL_X | FRAME_RAISED, 0, 0, 0, 0, 3, 3, 0, 0);
+    statusbar = new FXHorizontalFrame(vframe, JUSTIFY_LEFT | LAYOUT_FILL_X | FRAME_NONE, 0, 0, 0, 0, 3, 3, 0, 0);
 
     // Read and set sort function for file list
     FXString sort_func = getApp()->reg().readStringEntry("OPTIONS", "sort_func", "ascendingCase");
@@ -560,21 +698,21 @@ XFileImage::XFileImage(FXApp* a, FXbool smoothscroll) : FXMainWindow(a, "Xfi ", 
     {
         filelist->setSortFunc(filelist->descendingExtMix);
     }
-    else if (sort_func == "ascendingTime")
+    else if (sort_func == "ascendingDate")
     {
-        filelist->setSortFunc(filelist->ascendingTime);
+        filelist->setSortFunc(filelist->ascendingDate);
     }
-    else if (sort_func == "ascendingTimeMix")
+    else if (sort_func == "ascendingDateMix")
     {
-        filelist->setSortFunc(filelist->ascendingTimeMix);
+        filelist->setSortFunc(filelist->ascendingDateMix);
     }
-    else if (sort_func == "descendingTime")
+    else if (sort_func == "descendingDate")
     {
-        filelist->setSortFunc(filelist->descendingTime);
+        filelist->setSortFunc(filelist->descendingDate);
     }
-    else if (sort_func == "descendingTimeMix")
+    else if (sort_func == "descendingDateMix")
     {
-        filelist->setSortFunc(filelist->descendingTimeMix);
+        filelist->setSortFunc(filelist->descendingDateMix);
     }
     else if (sort_func == "ascendingUser")
     {
@@ -608,24 +746,41 @@ XFileImage::XFileImage(FXApp* a, FXbool smoothscroll) : FXMainWindow(a, "Xfi ", 
     {
         filelist->setSortFunc(filelist->descendingGroupMix);
     }
-    else if (sort_func == "ascendingPerm")
+    else if (sort_func == "ascendingPerms")
     {
-        filelist->setSortFunc(filelist->ascendingPerm);
+        filelist->setSortFunc(filelist->ascendingPerms);
     }
-    else if (sort_func == "ascendingPermMix")
+    else if (sort_func == "ascendingPermsMix")
     {
-        filelist->setSortFunc(filelist->ascendingPermMix);
+        filelist->setSortFunc(filelist->ascendingPermsMix);
     }
-    else if (sort_func == "descendingPerm")
+    else if (sort_func == "descendingPerms")
     {
-        filelist->setSortFunc(filelist->descendingPerm);
+        filelist->setSortFunc(filelist->descendingPerms);
     }
-    else if (sort_func == "descendingPermMix")
+    else if (sort_func == "descendingPermsMix")
     {
-        filelist->setSortFunc(filelist->descendingPermMix);
+        filelist->setSortFunc(filelist->descendingPermsMix);
+    }
+    else if (sort_func == "ascendingLink")
+    {
+        filelist->setSortFunc(filelist->ascendingLink);
+    }
+    else if (sort_func == "ascendingLinkMix")
+    {
+        filelist->setSortFunc(filelist->ascendingLinkMix);
+    }
+    else if (sort_func == "descendingLink")
+    {
+        filelist->setSortFunc(filelist->descendingLink);
+    }
+    else if (sort_func == "descendingLinkMix")
+    {
+        filelist->setSortFunc(filelist->descendingLinkMix);
     }
 
     // Single click navigation
+    single_click = getApp()->reg().readUnsignedEntry("SETTINGS", "single_click", SINGLE_CLICK_NONE);
     if (single_click == SINGLE_CLICK_DIR_FILE)
     {
         filelist->setDefaultCursor(getApp()->getDefaultCursor(DEF_HAND_CURSOR));
@@ -633,11 +788,13 @@ XFileImage::XFileImage(FXApp* a, FXbool smoothscroll) : FXMainWindow(a, "Xfi ", 
 
     // Status bar buttons
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "hidden_files", "Ctrl-F6");
-    new FXToggleButton(statusbar, TAB + _("Show hidden files") + PARS(key), TAB + _("Hide hidden files") + PARS(key), showhiddenicon, hidehiddenicon, this->filelist,
+    new FXToggleButton(statusbar, TAB + _("Show Hidden Files") + PARS(key), TAB + _("Hide Hidden Files") + PARS(key),
+                       minishowhiddenicon, minihidehiddenicon, this->filelist,
                        FileList::ID_TOGGLE_HIDDEN, BUTTON_TOOLBAR | LAYOUT_LEFT | ICON_BEFORE_TEXT);
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "thumbnails", "Ctrl-F7");
-    new FXToggleButton(statusbar, TAB + _("Show thumbnails") + PARS(key), TAB + _("Hide thumbnails") + PARS(key), showthumbicon, hidethumbicon, this->filelist,
+    new FXToggleButton(statusbar, TAB + _("Show Thumbnails") + PARS(key), TAB + _("Hide Thumbnails") + PARS(key),
+                       minishowthumbicon, minihidethumbicon, this->filelist,
                        FileList::ID_TOGGLE_THUMBNAILS, BUTTON_TOOLBAR | LAYOUT_LEFT | ICON_BEFORE_TEXT);
 
     new FXStatusBar(statusbar, LAYOUT_SIDE_BOTTOM | LAYOUT_FILL_X);
@@ -645,11 +802,26 @@ XFileImage::XFileImage(FXApp* a, FXbool smoothscroll) : FXMainWindow(a, "Xfi ", 
 
     // Toolbar button: Open file
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "open", "Ctrl-O");
-    new FXButton(toolbar, TAB + _("Open") + PARS(key) + TAB + _("Open image file.") + PARS(key), fileopenicon, this, ID_OPEN, ICON_ABOVE_TEXT | BUTTON_TOOLBAR | FRAME_RAISED);
+    new FXButton(toolbar, TAB + _("Open") + PARS(key) + TAB + _("Open image file.") + PARS(key), minifileopenicon, this,
+                 ID_OPEN, ICON_ABOVE_TEXT | BUTTON_TOOLBAR | FRAME_GROOVE);
 
     // Toolbar button: Print
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "print", "Ctrl-P");
-    new FXButton(toolbar, TAB + _("Print") + PARS(key) + TAB + _("Print image file.") + PARS(key), printicon, this, ID_PRINT, BUTTON_TOOLBAR | FRAME_RAISED);
+    new FXButton(toolbar, TAB + _("Print") + PARS(key) + TAB + _("Print image file.") + PARS(key), miniprinticon, this,
+                 ID_PRINT, BUTTON_TOOLBAR | FRAME_GROOVE);
+
+    // Separator
+    toolbarSeparator(toolbar);
+
+    // Previous and next
+    key = getApp()->reg().readStringEntry("KEYBINDINGS", "view_prev", "Ctrl-J");
+    new FXButton(toolbar, TAB + _("Previous") + PARS(key) + TAB + _("View previous image.") + PARS(key),
+                 minidirbackicon,
+                 this, ID_VIEW_PREV, BUTTON_TOOLBAR | LAYOUT_CENTER_Y | LAYOUT_LEFT | ICON_BEFORE_TEXT | FRAME_GROOVE);
+
+    key = getApp()->reg().readStringEntry("KEYBINDINGS", "view_next", "Ctrl-K");
+    new FXButton(toolbar, TAB + _("Next") + PARS(key) + TAB + _("View next image.") + PARS(key), minidirforwardicon,
+                 this, ID_VIEW_NEXT, BUTTON_TOOLBAR | LAYOUT_CENTER_Y | LAYOUT_LEFT | ICON_BEFORE_TEXT | FRAME_GROOVE);
 
     // Separator
     toolbarSeparator(toolbar);
@@ -657,41 +829,50 @@ XFileImage::XFileImage(FXApp* a, FXbool smoothscroll) : FXMainWindow(a, "Xfi ", 
     // Note : Ctrl+ and Ctrl- cannot be changed from the registry!
 
     // Toolbar button: Zoom in
-    btn = new FXButton(toolbar, TAB + _("Zoom in") + PARS("Ctrl+") + TAB + _("Zoom in image.") + PARS("Ctrl+"), zoominicon, this, ID_ZOOM_IN, ICON_ABOVE_TEXT | BUTTON_TOOLBAR | FRAME_RAISED);
+    btn = new FXButton(toolbar, TAB + _("Zoom in") + PARS("Ctrl+") + TAB + _("Zoom in image.") + PARS("Ctrl+"),
+                       minizoominicon, this, ID_ZOOM_IN, ICON_ABOVE_TEXT | BUTTON_TOOLBAR | FRAME_GROOVE);
     hotkey = (CONTROLMASK << 16) | KEY_KP_Add;
     btn->addHotKey(hotkey);
 
     // Toolbar button: Zoom out
-    btn = new FXButton(toolbar, TAB + _("Zoom out") + PARS("Ctrl-") + TAB + _("Zoom out image.") + PARS("Ctrl-"), zoomouticon, this, ID_ZOOM_OUT, ICON_ABOVE_TEXT | BUTTON_TOOLBAR | FRAME_RAISED);
+    btn = new FXButton(toolbar, TAB + _("Zoom out") + PARS("Ctrl-") + TAB + _("Zoom out image.") + PARS("Ctrl-"),
+                       minizoomouticon, this, ID_ZOOM_OUT, ICON_ABOVE_TEXT | BUTTON_TOOLBAR | FRAME_GROOVE);
     hotkey = (CONTROLMASK << 16) | KEY_KP_Subtract;
     btn->addHotKey(hotkey);
 
     // Toolbar button: Zoom 100%
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "zoom_100", "Ctrl-I");
-    new FXButton(toolbar, TAB + _("Zoom 100%") + PARS(key) + TAB + _("Zoom image to 100%.") + PARS(key), zoom100icon, this, ID_ZOOM_100, ICON_ABOVE_TEXT | BUTTON_TOOLBAR | FRAME_RAISED);
+    new FXButton(toolbar, TAB + _("Zoom 100%") + PARS(key) + TAB + _("Zoom image to 100%.") + PARS(key),
+                 minizoom100icon, this, ID_ZOOM_100, ICON_ABOVE_TEXT | BUTTON_TOOLBAR | FRAME_GROOVE);
 
     // Toolbar button: Zoom to fit window
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "zoom_win", "Ctrl-F");
-    new FXButton(toolbar, TAB + _("Zoom to fit") + PARS(key) + TAB + _("Zoom to fit window.") + PARS(key), zoomwinicon, this, ID_ZOOM_WIN, ICON_ABOVE_TEXT | BUTTON_TOOLBAR | FRAME_RAISED);
+    new FXButton(toolbar, TAB + _("Zoom to Fit") + PARS(key) + TAB + _("Zoom to fit window.") + PARS(key),
+                 minizoomwinicon, this, ID_ZOOM_WIN, ICON_ABOVE_TEXT | BUTTON_TOOLBAR | FRAME_GROOVE);
 
     // Separator
     toolbarSeparator(toolbar);
 
     // Toolbar button: Rotate left
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "rotate_left", "Ctrl-L");
-    new FXButton(toolbar, TAB + _("Rotate left") + PARS(key) + TAB + _("Rotate left image.") + PARS(key), rotatelefticon, this, ID_ROTATE_90, ICON_ABOVE_TEXT | BUTTON_TOOLBAR | FRAME_RAISED);
+    new FXButton(toolbar, TAB + _("Rotate Left") + PARS(key) + TAB + _("Rotate left image.") + PARS(key),
+                 minirotatelefticon, this, ID_ROTATE_90, ICON_ABOVE_TEXT | BUTTON_TOOLBAR | FRAME_GROOVE);
 
     // Toolbar button: Rotate right
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "rotate_right", "Ctrl-R");
-    new FXButton(toolbar, TAB + _("Rotate right") + PARS(key) + TAB + _("Rotate right image.") + PARS(key), rotaterighticon, this, ID_ROTATE_270, ICON_ABOVE_TEXT | BUTTON_TOOLBAR | FRAME_RAISED);
+    new FXButton(toolbar, TAB + _("Rotate Right") + PARS(key) + TAB + _("Rotate right image.") + PARS(key),
+                 minirotaterighticon, this, ID_ROTATE_270, ICON_ABOVE_TEXT | BUTTON_TOOLBAR | FRAME_GROOVE);
 
     // Toolbar button: mirror horizontally
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "mirror_horizontally", "Ctrl-Shift-H");
-    new FXButton(toolbar, TAB + _("Mirror horizontally") + PARS(key) + TAB + _("Mirror image horizontally.") + PARS(key), fliplricon, this, ID_MIRROR_HOR, ICON_ABOVE_TEXT | BUTTON_TOOLBAR | FRAME_RAISED);
+    new FXButton(toolbar,
+                 TAB + _("Mirror Horizontally") + PARS(key) + TAB + _("Mirror image horizontally.") + PARS(key),
+                 minifliplricon, this, ID_MIRROR_HOR, ICON_ABOVE_TEXT | BUTTON_TOOLBAR | FRAME_GROOVE);
 
     // Toolbar button: mirror vertically
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "mirror_vertically", "Ctrl-Shift-V");
-    new FXButton(toolbar, TAB + _("Mirror vertically") + PARS(key) + TAB + _("Mirror image vertically.") + PARS(key), flipudicon, this, ID_MIRROR_VER, ICON_ABOVE_TEXT | BUTTON_TOOLBAR | FRAME_RAISED);
+    new FXButton(toolbar, TAB + _("Mirror Vertically") + PARS(key) + TAB + _("Mirror image vertically.") + PARS(key),
+                 miniflipudicon, this, ID_MIRROR_VER, ICON_ABOVE_TEXT | BUTTON_TOOLBAR | FRAME_GROOVE);
 
     // File Menu entries
     FXMenuCommand* mc = NULL;
@@ -699,14 +880,14 @@ XFileImage::XFileImage(FXApp* a, FXbool smoothscroll) : FXMainWindow(a, "Xfi ", 
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "open", "Ctrl-O");
     text = _("&Open...") + TABS(key) + _("Open image file.") + PARS(key);
-    mc = new FXMenuCommand(filemenu, text, fileopenicon, this, ID_OPEN);
-    hotkey = _parseAccel(key);
+    mc = new FXMenuCommand(filemenu, text, minifileopenicon, this, ID_OPEN);
+    hotkey = xf_parseaccel(key);
     getAccelTable()->addAccel(hotkey, mc, FXSEL(SEL_COMMAND, FXMenuCommand::ID_ACCEL));
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "print", "Ctrl-P");
     text = _("&Print...") + TABS(key) + _("Print image file.") + PARS(key);
-    mc = new FXMenuCommand(filemenu, text, printicon, this, ID_PRINT);
-    hotkey = _parseAccel(key);
+    mc = new FXMenuCommand(filemenu, text, miniprinticon, this, ID_PRINT);
+    hotkey = xf_parseaccel(key);
     getAccelTable()->addAccel(hotkey, mc, FXSEL(SEL_COMMAND, FXMenuCommand::ID_ACCEL));
 
     // Recent file menu; this automatically hides if there are no files
@@ -718,124 +899,143 @@ XFileImage::XFileImage(FXApp* a, FXbool smoothscroll) : FXMainWindow(a, "Xfi ", 
     new FXMenuCommand(filemenu, FXString::null, NULL, &mrufiles, FXRecentFiles::ID_FILE_3);
     new FXMenuCommand(filemenu, FXString::null, NULL, &mrufiles, FXRecentFiles::ID_FILE_4);
     new FXMenuCommand(filemenu, FXString::null, NULL, &mrufiles, FXRecentFiles::ID_FILE_5);
-    new FXMenuCommand(filemenu, _("&Clear recent files") + TAB2 + _("Clear recent file menu."), NULL, &mrufiles, FXRecentFiles::ID_CLEAR);
+    new FXMenuCommand(filemenu, _("&Clear Recent Files") + TAB2 + _("Clear recent file menu."), NULL, &mrufiles,
+                      FXRecentFiles::ID_CLEAR);
     FXMenuSeparator* sep2 = new FXMenuSeparator(filemenu);
     sep2->setTarget(&mrufiles);
     sep2->setSelector(FXRecentFiles::ID_ANYFILES);
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "quit", "Ctrl-Q");
     text = _("&Quit") + TABS(key) + _("Quit Xfi.") + PARS(key);
-    mc = new FXMenuCommand(filemenu, text, quiticon, this, ID_QUIT);
-    hotkey = _parseAccel(key);
+    mc = new FXMenuCommand(filemenu, text, miniquiticon, this, ID_QUIT);
+    hotkey = xf_parseaccel(key);
     getAccelTable()->addAccel(hotkey, mc, FXSEL(SEL_COMMAND, FXMenuCommand::ID_ACCEL));
     getAccelTable()->addAccel(KEY_Escape, this, FXSEL(SEL_COMMAND, ID_QUIT));
 
     // Image Menu entries
-    new FXMenuCommand(imagemenu, _("Zoom &in") + TAB + (FXString)"Ctrl+" + TAB + _("Zoom in image.") + PARS("Ctrl+"), zoominicon, this, ID_ZOOM_IN);
-    new FXMenuCommand(imagemenu, _("Zoom &out") + TAB + (FXString)"Ctrl-" + TAB + _("Zoom out image.") + PARS("Ctrl-"), zoomouticon, this, ID_ZOOM_OUT);
+    key = getApp()->reg().readStringEntry("KEYBINDINGS", "view_prev", "Ctrl-J");
+    text = _("&Previous") + TABS(key) + _("View previous image.") + PARS(key);
+    mc = new FXMenuCommand(imagemenu, text, minidirbackicon, this, ID_VIEW_PREV);
+    hotkey = xf_parseaccel(key);
+    getAccelTable()->addAccel(hotkey, mc, FXSEL(SEL_COMMAND, FXMenuCommand::ID_ACCEL));
+
+    key = getApp()->reg().readStringEntry("KEYBINDINGS", "view_next", "Ctrl-K");
+    text = _("&Next") + TABS(key) + _("View next image.") + PARS(key);
+    mc = new FXMenuCommand(imagemenu, text, minidirforwardicon, this, ID_VIEW_NEXT);
+    hotkey = xf_parseaccel(key);
+    getAccelTable()->addAccel(hotkey, mc, FXSEL(SEL_COMMAND, FXMenuCommand::ID_ACCEL));
+
+    new FXMenuSeparator(viewmenu);
+
+    new FXMenuCommand(imagemenu, _("Zoom &in") + TAB + (FXString)"Ctrl+" + TAB + _("Zoom in image.") + PARS("Ctrl+"),
+                      minizoominicon, this, ID_ZOOM_IN);
+    new FXMenuCommand(imagemenu, _("Zoom &out") + TAB + (FXString)"Ctrl-" + TAB + _("Zoom out image.") + PARS("Ctrl-"),
+                      minizoomouticon, this, ID_ZOOM_OUT);
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "zoom_100", "Ctrl-I");
     text = _("Zoo&m 100%") + TABS(key) + _("Zoom image to 100%.") + PARS(key);
-    mc = new FXMenuCommand(imagemenu, text, zoom100icon, this, ID_ZOOM_100);
-    hotkey = _parseAccel(key);
+    mc = new FXMenuCommand(imagemenu, text, minizoom100icon, this, ID_ZOOM_100);
+    hotkey = xf_parseaccel(key);
     getAccelTable()->addAccel(hotkey, mc, FXSEL(SEL_COMMAND, FXMenuCommand::ID_ACCEL));
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "zoom_win", "Ctrl-F");
-    text = _("Zoom to fit &window") + TABS(key) + _("Zoom to fit window.") + PARS(key);
-    mc = new FXMenuCommand(imagemenu, text, zoomwinicon, this, ID_ZOOM_WIN);
-    hotkey = _parseAccel(key);
+    text = _("Zoom to Fit &Window") + TABS(key) + _("Zoom to fit window.") + PARS(key);
+    mc = new FXMenuCommand(imagemenu, text, minizoomwinicon, this, ID_ZOOM_WIN);
+    hotkey = xf_parseaccel(key);
     getAccelTable()->addAccel(hotkey, mc, FXSEL(SEL_COMMAND, FXMenuCommand::ID_ACCEL));
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "rotate_right", "Ctrl-R");
-    text = _("Rotate &right") + TABS(key) + _("Rotate right.") + PARS(key);
-    mc = new FXMenuCommand(imagemenu, text, rotaterighticon, this, ID_ROTATE_270);
-    hotkey = _parseAccel(key);
+    text = _("Rotate &Right") + TABS(key) + _("Rotate right.") + PARS(key);
+    mc = new FXMenuCommand(imagemenu, text, minirotaterighticon, this, ID_ROTATE_270);
+    hotkey = xf_parseaccel(key);
     getAccelTable()->addAccel(hotkey, mc, FXSEL(SEL_COMMAND, FXMenuCommand::ID_ACCEL));
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "rotate_left", "Ctrl-L");
-    text = _("Rotate &left") + TABS(key) + _("Rotate left.") + PARS(key);
-    mc = new FXMenuCommand(imagemenu, text, rotatelefticon, this, ID_ROTATE_90);
-    hotkey = _parseAccel(key);
+    text = _("Rotate &Left") + TABS(key) + _("Rotate left.") + PARS(key);
+    mc = new FXMenuCommand(imagemenu, text, minirotatelefticon, this, ID_ROTATE_90);
+    hotkey = xf_parseaccel(key);
     getAccelTable()->addAccel(hotkey, mc, FXSEL(SEL_COMMAND, FXMenuCommand::ID_ACCEL));
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "mirror_horizontally", "Ctrl-Shift-H");
-    text = _("Mirror &horizontally") + TABS(key) + _("Mirror horizontally.") + PARS(key);
-    mc = new FXMenuCommand(imagemenu, text, fliplricon, this, ID_MIRROR_HOR);
-    hotkey = _parseAccel(key);
+    text = _("Mirror &Horizontally") + TABS(key) + _("Mirror horizontally.") + PARS(key);
+    mc = new FXMenuCommand(imagemenu, text, minifliplricon, this, ID_MIRROR_HOR);
+    hotkey = xf_parseaccel(key);
     getAccelTable()->addAccel(hotkey, mc, FXSEL(SEL_COMMAND, FXMenuCommand::ID_ACCEL));
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "mirror_vertically", "Ctrl-Shift-V");
-    text = _("Mirror &vertically") + TABS(key) + _("Mirror vertically.") + PARS(key);
-    mc = new FXMenuCommand(imagemenu, text, flipudicon, this, ID_MIRROR_VER);
-    hotkey = _parseAccel(key);
+    text = _("Mirror &Vertically") + TABS(key) + _("Mirror vertically.") + PARS(key);
+    mc = new FXMenuCommand(imagemenu, text, miniflipudicon, this, ID_MIRROR_VER);
+    hotkey = xf_parseaccel(key);
     getAccelTable()->addAccel(hotkey, mc, FXSEL(SEL_COMMAND, FXMenuCommand::ID_ACCEL));
 
     // View Menu entries
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "hidden_files", "Ctrl-F6");
-    text = _("&Hidden files") + TABS(key) + _("Show hidden files and folders.") + PARS(key);
+    text = _("&Hidden Files") + TABS(key) + _("Show hidden files and folders.") + PARS(key);
     mc = new FXMenuCheck(viewmenu, text, this, ID_TOGGLE_HIDDEN);
-    hotkey = _parseAccel(key);
+    hotkey = xf_parseaccel(key);
     getAccelTable()->addAccel(hotkey, mc, FXSEL(SEL_COMMAND, FXMenuCommand::ID_ACCEL));
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "thumbnails", "Ctrl-F7");
     text = _("&Thumbnails") + TABS(key) + _("Show image thumbnails.") + PARS(key);
     mc = new FXMenuCheck(viewmenu, text, this, ID_TOGGLE_THUMBNAILS);
-    hotkey = _parseAccel(key);
+    hotkey = xf_parseaccel(key);
     getAccelTable()->addAccel(hotkey, mc, FXSEL(SEL_COMMAND, FXMenuCommand::ID_ACCEL));
 
     new FXMenuSeparator(viewmenu);
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "big_icons", "F10");
-    text = _("&Big icons") + TABS(key) + _("Display folders with big icons.") + PARS(key);
+    text = _("&Big Icons") + TABS(key) + _("Display folders with big icons.") + PARS(key);
     mc = new FXMenuRadio(viewmenu, text, this, ID_SHOW_BIG_ICONS);
-    hotkey = _parseAccel(key);
+    hotkey = xf_parseaccel(key);
     getAccelTable()->addAccel(hotkey, mc, FXSEL(SEL_COMMAND, FXMenuCommand::ID_ACCEL));
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "small_icons", "F11");
-    text = _("&Small icons") + TABS(key) + _("Display folders with small icons.") + PARS(key);
+    text = _("&Small Icons") + TABS(key) + _("Display folders with small icons.") + PARS(key);
     mc = new FXMenuRadio(viewmenu, text, this, ID_SHOW_MINI_ICONS);
-    hotkey = _parseAccel(key);
+    hotkey = xf_parseaccel(key);
     getAccelTable()->addAccel(hotkey, mc, FXSEL(SEL_COMMAND, FXMenuCommand::ID_ACCEL));
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "detailed_file_list", "F12");
-    text = _("&Detailed file list") + TABS(key) + _("Display detailed folder listing.") + PARS(key);
+    text = _("&Detailed File List") + TABS(key) + _("Display detailed folder listing.") + PARS(key);
     mc = new FXMenuRadio(viewmenu, text, this, ID_SHOW_DETAILS);
-    hotkey = _parseAccel(key);
+    hotkey = xf_parseaccel(key);
     getAccelTable()->addAccel(hotkey, mc, FXSEL(SEL_COMMAND, FXMenuCommand::ID_ACCEL));
 
     new FXMenuSeparator(viewmenu);
 
-    mc = new FXMenuRadio(viewmenu, _("&Vertical panels"), this, XFileImage::ID_VERT_PANELS);
+    mc = new FXMenuRadio(viewmenu, _("&Vertical Panels"), this, XFileImage::ID_VERT_PANELS);
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "vert_panels", "Ctrl-Shift-F1");
     mc->setAccelText(key);
 
-    mc = new FXMenuRadio(viewmenu, _("&Horizontal panels"), this, XFileImage::ID_HORZ_PANELS);
+    mc = new FXMenuRadio(viewmenu, _("&Horizontal Panels"), this, XFileImage::ID_HORZ_PANELS);
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "horz_panels", "Ctrl-Shift-F2");
     mc->setAccelText(key);
 
     new FXMenuSeparator(viewmenu);
+    new FXMenuCheck(viewmenu, _("Autos&ize") + TAB2 + _("Autosize icon names."), filelist, FileList::ID_AUTOSIZE);
     new FXMenuRadio(viewmenu, _("&Rows") + TAB2 + _("View icons row-wise."), filelist, FileList::ID_ARRANGE_BY_ROWS);
-    new FXMenuRadio(viewmenu, _("&Columns") + TAB2 + _("View icons column-wise."), filelist, FileList::ID_ARRANGE_BY_COLUMNS);
-    new FXMenuCheck(viewmenu, _("&Autosize") + TAB2 + _("Autosize icon names."), filelist, FileList::ID_AUTOSIZE);
+    new FXMenuRadio(viewmenu, _("&Columns") + TAB2 + _("View icons column-wise."), filelist,
+                    FileList::ID_ARRANGE_BY_COLUMNS);
 
     // Preferences menu
     new FXMenuCheck(prefsmenu, _("&Toolbar") + TAB2 + _("Display toolbar."), toolbar, FXWindow::ID_TOGGLESHOWN);
-    new FXMenuCheck(prefsmenu, _("&File list") + TAB2 + _("Display file list."), filebox, FXWindow::ID_TOGGLESHOWN);
-    new FXMenuCheck(prefsmenu, _("File list &before") + TAB2 + _("Display file list before image window."), this, ID_TOGGLE_FILELIST_BEFORE);
-    new FXMenuCheck(prefsmenu, _("&Filter images") + TAB2 + _("List only image files."), this, ID_TOGGLE_FILTER_IMAGES);
-    new FXMenuCheck(prefsmenu, _("Fit &window when opening") + TAB2 + _("Zoom to fit window when opening an image."), this, ID_TOGGLE_FIT_WIN);
-
+    new FXMenuCheck(prefsmenu, _("&File List") + TAB2 + _("Display file list."), filebox, FXWindow::ID_TOGGLESHOWN);
+    new FXMenuCheck(prefsmenu, _("File List &Before") + TAB2 + _("Display file list before image window."), this,
+                    ID_TOGGLEFILELIST_BEFORE);
+    new FXMenuCheck(prefsmenu, _("&Filter Images") + TAB2 + _("List only image files."), this, ID_TOGGLE_FILTER_IMAGES);
+    new FXMenuCheck(prefsmenu, _("Fit &Window When Opening") + TAB2 + _("Zoom to fit window when opening an image."),
+                    this, ID_TOGGLE_FIT_WIN);
 
     // Help Menu entries
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "help", "F1");
     text = _("&About X File Image") + TABS(key) + _("About X File Image.") + PARS(key);
     mc = new FXMenuCommand(helpmenu, text, NULL, this, ID_ABOUT, 0);
-    hotkey = _parseAccel(key);
+    hotkey = xf_parseaccel(key);
     getAccelTable()->addAccel(hotkey, mc, FXSEL(SEL_COMMAND, FXMenuCommand::ID_ACCEL));
 
     // Close accelerator
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "close", "Ctrl-W");
-    hotkey = _parseAccel(key);
+    hotkey = xf_parseaccel(key);
     getAccelTable()->addAccel(hotkey, this, FXSEL(SEL_COMMAND, XFileImage::ID_QUIT));
 
     // Make a tool tip
@@ -859,6 +1059,10 @@ XFileImage::XFileImage(FXApp* a, FXbool smoothscroll) : FXMainWindow(a, "Xfi ", 
     fileview = ID_SHOW_MINI_ICONS;
     hiddenfiles = false;
 
+    // Read settings
+    relative_resize = getApp()->reg().readUnsignedEntry("SETTINGS", "relative_resize", false);
+    save_win_pos = getApp()->reg().readUnsignedEntry("SETTINGS", "save_win_pos", false);
+
     // Initialize zoom to 100%
     indZoom = ZOOM_100;
     zoomval = zoomtab[indZoom];
@@ -868,11 +1072,6 @@ XFileImage::XFileImage(FXApp* a, FXbool smoothscroll) : FXMainWindow(a, "Xfi ", 
     // Initialize previous window width / height
     prev_width = getWidth();
     prev_height = getHeight();
-    
-    delete btn;
-    delete mc;
-    delete sep1;
-    delete sep2;
 }
 
 
@@ -899,7 +1098,7 @@ XFileImage::~XFileImage()
 }
 
 
-long XFileImage::onCmdPopupMenu(FXObject* o, FXSelector s, void* p)
+long XFileImage::onCmdPopupMenu(FXObject* sender, FXSelector sel, void* ptr)
 {
     // Popup menu pane
     FXMenuPane menu(this);
@@ -908,39 +1107,38 @@ long XFileImage::onCmdPopupMenu(FXObject* o, FXSelector s, void* p)
 
     getRoot()->getCursorPosition(x, y, state);
 
-    new FXMenuCommand(&menu, _("Go ho&me"), homeicon, this, ID_GO_HOME);
-    new FXMenuCommand(&menu, _("Go &work"), workicon, this, ID_GO_WORK);
+    new FXMenuCommand(&menu, _("Go Ho&me"), minihomeicon, this, ID_GO_HOME);
+    new FXMenuCommand(&menu, _("Go &Work"), miniworkicon, this, ID_GO_WORK);
     new FXMenuSeparator(&menu);
-    new FXMenuCheck(&menu, _("&Hidden files"), this, ID_TOGGLE_HIDDEN);
+    new FXMenuCheck(&menu, _("&Hidden Files"), this, ID_TOGGLE_HIDDEN);
     new FXMenuCheck(&menu, _("Thum&bnails"), this, ID_TOGGLE_THUMBNAILS);
     new FXMenuSeparator(&menu);
-    new FXMenuRadio(&menu, _("B&ig icons"), this, ID_SHOW_BIG_ICONS);
-    new FXMenuRadio(&menu, _("&Small icons"), this, ID_SHOW_MINI_ICONS);
-    new FXMenuRadio(&menu, _("Fu&ll file list"), this, ID_SHOW_DETAILS);
+    new FXMenuRadio(&menu, _("B&ig Icons"), this, ID_SHOW_BIG_ICONS);
+    new FXMenuRadio(&menu, _("&Small Icons"), this, ID_SHOW_MINI_ICONS);
+    new FXMenuRadio(&menu, _("&Detailed File List"), this, ID_SHOW_DETAILS);
     new FXMenuSeparator(&menu);
+    new FXMenuCheck(&menu, _("Autos&ize"), filelist, FileList::ID_AUTOSIZE);
     new FXMenuRadio(&menu, _("&Rows"), filelist, FileList::ID_ARRANGE_BY_ROWS);
     new FXMenuRadio(&menu, _("&Columns"), filelist, FileList::ID_ARRANGE_BY_COLUMNS);
-    new FXMenuCheck(&menu, _("Autosize"), filelist, FileList::ID_AUTOSIZE);
     new FXMenuSeparator(&menu);
-    new FXMenuRadio(&menu, _("&Name"), filelist, FileList::ID_SORT_BY_NAME);
-    new FXMenuRadio(&menu, _("Si&ze"), filelist, FileList::ID_SORT_BY_SIZE);
-    new FXMenuRadio(&menu, _("&Type"), filelist, FileList::ID_SORT_BY_TYPE);
-    new FXMenuRadio(&menu, _("E&xtension"), filelist, FileList::ID_SORT_BY_EXT);
-    new FXMenuRadio(&menu, _("&Date"), filelist, FileList::ID_SORT_BY_TIME);
-    new FXMenuRadio(&menu, _("&User"), filelist, FileList::ID_SORT_BY_USER);
-    new FXMenuRadio(&menu, _("&Group"), filelist, FileList::ID_SORT_BY_GROUP);
-    new FXMenuRadio(&menu, _("&Permissions"), filelist, FileList::ID_SORT_BY_PERM);
+    new FXMenuRadio(&menu, _("&Name"), filelist, FileList::ID_COL_NAME);
+    new FXMenuRadio(&menu, _("Si&ze"), filelist, FileList::ID_COL_SIZE);
+    new FXMenuRadio(&menu, _("&Type"), filelist, FileList::ID_COL_TYPE);
+    new FXMenuRadio(&menu, _("E&xtension"), filelist, FileList::ID_COL_EXT);
+    new FXMenuRadio(&menu, _("&Date"), filelist, FileList::ID_COL_DATE);
+    new FXMenuRadio(&menu, _("&User"), filelist, FileList::ID_COL_USER);
+    new FXMenuRadio(&menu, _("&Group"), filelist, FileList::ID_COL_GROUP);
+    new FXMenuRadio(&menu, _("&Permissions"), filelist, FileList::ID_COL_PERMS);
+    new FXMenuRadio(&menu, _("&Link"), filelist, FileList::ID_COL_LINK);
     new FXMenuSeparator(&menu);
-    new FXMenuCheck(&menu, _("Ignore c&ase"), filelist, FileList::ID_SORT_CASE);
-    new FXMenuCheck(&menu, _("Fold&ers first"), filelist, FileList::ID_DIRS_FIRST);
-    new FXMenuCheck(&menu, _("Re&verse order"), filelist, FileList::ID_SORT_REVERSE);
+    new FXMenuCheck(&menu, _("Ignore C&ase"), filelist, FileList::ID_SORT_CASE);
+    new FXMenuCheck(&menu, _("Fold&ers First"), filelist, FileList::ID_DIRS_FIRST);
+    new FXMenuCheck(&menu, _("Re&verse Order"), filelist, FileList::ID_SORT_REVERSE);
 
     menu.create();
-    allowPopupScroll = true;  // Allow keyboard scrolling
     menu.popup(NULL, x, y);
     getApp()->runModalWhileShown(&menu);
-    allowPopupScroll = false;
-    return(1);
+    return 1;
 }
 
 
@@ -953,19 +1151,18 @@ long XFileImage::onKeyPress(FXObject* sender, FXSelector sel, void* ptr)
     if ((event->state & SHIFTMASK && event->code == KEY_F10) || event->code == KEY_Menu)
     {
         this->handle(sender, FXSEL(SEL_COMMAND, XFileImage::ID_POPUP_MENU), ptr);
-        return(1);
+        return 1;
     }
-
     // Any other key was pressed : handle the pressed key in the usual way
     else
     {
         if (FXTopWindow::onKeyPress(sender, sel, ptr))
         {
-            return(1);
+            return 1;
         }
     }
 
-    return(0);
+    return 0;
 }
 
 
@@ -973,10 +1170,10 @@ long XFileImage::onKeyRelease(FXObject* sender, FXSelector sel, void* ptr)
 {
     if (FXTopWindow::onKeyRelease(sender, sel, ptr))
     {
-        return(1);
+        return 1;
     }
 
-    return(0);
+    return 0;
 }
 
 
@@ -989,7 +1186,7 @@ long XFileImage::onCmdDirUp(FXObject*, FXSelector, void*)
 
     filelist->setFocus();
 
-    return(1);
+    return 1;
 }
 
 
@@ -1004,14 +1201,14 @@ long XFileImage::onUpdDirUp(FXObject* sender, FXSelector, void*)
     {
         sender->handle(this, FXSEL(SEL_COMMAND, ID_ENABLE), NULL);
     }
-    return(1);
+    return 1;
 }
 
 
 // Directory back
-long XFileImage::onCmdDirBack(FXObject*, FXSelector s, void* p)
+long XFileImage::onCmdDirBack(FXObject*, FXSelector sel, void* ptr)
 {
-    StringList* backhist, *forwardhist;
+    StringList* backhist, * forwardhist;
     StringItem* item;
     FXString pathname;
 
@@ -1037,7 +1234,7 @@ long XFileImage::onCmdDirBack(FXObject*, FXSelector s, void* p)
 
     filelist->setFocus();
 
-    return(1);
+    return 1;
 }
 
 
@@ -1060,14 +1257,14 @@ long XFileImage::onUpdDirBack(FXObject* sender, FXSelector sel, void* ptr)
         sender->handle(this, FXSEL(SEL_COMMAND, ID_ENABLE), ptr);
     }
 
-    return(1);
+    return 1;
 }
 
 
 // Directory forward
-long XFileImage::onCmdDirForward(FXObject*, FXSelector s, void* p)
+long XFileImage::onCmdDirForward(FXObject*, FXSelector sel, void* ptr)
 {
-    StringList* backhist, *forwardhist;
+    StringList* backhist, * forwardhist;
     StringItem* item;
     FXString pathname;
 
@@ -1093,7 +1290,7 @@ long XFileImage::onCmdDirForward(FXObject*, FXSelector s, void* p)
 
     filelist->setFocus();
 
-    return(1);
+    return 1;
 }
 
 
@@ -1116,14 +1313,14 @@ long XFileImage::onUpdDirForward(FXObject* sender, FXSelector sel, void* ptr)
         sender->handle(this, FXSEL(SEL_COMMAND, ID_ENABLE), ptr);
     }
 
-    return(1);
+    return 1;
 }
 
 
 // Directory back history
 long XFileImage::onCmdDirBackHist(FXObject* sender, FXSelector sel, void* ptr)
 {
-    StringList* backhist, *forwardhist;
+    StringList* backhist, * forwardhist;
     StringItem* item;
     FXString pathname;
 
@@ -1187,7 +1384,7 @@ long XFileImage::onCmdDirBackHist(FXObject* sender, FXSelector sel, void* ptr)
         delete[]dirs;
     }
 
-    return(1);
+    return 1;
 }
 
 
@@ -1210,14 +1407,14 @@ long XFileImage::onUpdDirBackHist(FXObject* sender, FXSelector sel, void* ptr)
         sender->handle(this, FXSEL(SEL_COMMAND, ID_ENABLE), ptr);
     }
 
-    return(1);
+    return 1;
 }
 
 
 // Directory forward history
 long XFileImage::onCmdDirForwardHist(FXObject* sender, FXSelector sel, void* ptr)
 {
-    StringList* backhist, *forwardhist;
+    StringList* backhist, * forwardhist;
     StringItem* item;
     FXString pathname;
 
@@ -1281,7 +1478,7 @@ long XFileImage::onCmdDirForwardHist(FXObject* sender, FXSelector sel, void* ptr
         delete[]dirs;
     }
 
-    return(1);
+    return 1;
 }
 
 
@@ -1304,7 +1501,7 @@ long XFileImage::onUpdDirForwardHist(FXObject* sender, FXSelector sel, void* ptr
         sender->handle(this, FXSEL(SEL_COMMAND, ID_ENABLE), ptr);
     }
 
-    return(1);
+    return 1;
 }
 
 
@@ -1315,7 +1512,7 @@ long XFileImage::onCmdHome(FXObject*, FXSelector, void*)
     pathlink->setPath(filelist->getDirectory());
     pathtext->setText(filelist->getDirectory());
     filelist->setFocus();
-    return(1);
+    return 1;
 }
 
 
@@ -1326,7 +1523,73 @@ long XFileImage::onCmdWork(FXObject*, FXSelector, void*)
     pathlink->setPath(filelist->getDirectory());
     pathtext->setText(filelist->getDirectory());
     filelist->setFocus();
-    return(1);
+    return 1;
+}
+
+
+// View previous image
+long XFileImage::onCmdViewPrev(FXObject*, FXSelector, void*)
+{
+    FXEvent event;
+
+    if (!(filelist->getListStyle() & (ICONLIST_BIG_ICONS | ICONLIST_MINI_ICONS)))
+    {
+        event.code = KEY_Up;
+    }
+    else
+    {
+        if (filelist->getListStyle() & ICONLIST_COLUMNS)
+        {
+            event.code = KEY_Left;
+        }
+        else
+        {
+            event.code = KEY_Up;
+        }
+    }
+
+    filelist->handle(this, FXSEL(SEL_KEYPRESS, 0), &event);
+
+    if (!xf_isdirectory(filelist->getCurrentFile()))
+    {
+        event.code = KEY_Return;
+        filelist->handle(this, FXSEL(SEL_KEYPRESS, 0), &event);
+    }
+
+    return 1;
+}
+
+
+// View next image
+long XFileImage::onCmdViewNext(FXObject*, FXSelector, void*)
+{
+    FXEvent event;
+
+    if (!(filelist->getListStyle() & (ICONLIST_BIG_ICONS | ICONLIST_MINI_ICONS)))
+    {
+        event.code = KEY_Down;
+    }
+    else
+    {
+        if (filelist->getListStyle() & ICONLIST_COLUMNS)
+        {
+            event.code = KEY_Right;
+        }
+        else
+        {
+            event.code = KEY_Down;
+        }
+    }
+    filelist->handle(this, FXSEL(SEL_KEYPRESS, 0), &event);
+
+    if (!xf_isdirectory(filelist->getCurrentFile()))
+    {
+        event.code = KEY_Return;
+        filelist->handle(this, FXSEL(SEL_KEYPRESS, 0), &event);
+    }
+
+
+    return 1;
 }
 
 
@@ -1338,12 +1601,13 @@ long XFileImage::onCmdAbout(FXObject*, FXSelector, void*)
     msg.format(_("X File Image Version %s is a simple image viewer.\n\n"), VERSION);
     msg += COPYRIGHT;
     MessageBox about(this, _("About X File Image"), msg.text(), xfiicon, BOX_OK | DECOR_TITLE | DECOR_BORDER,
-                     JUSTIFY_CENTER_X | ICON_BEFORE_TEXT | LAYOUT_CENTER_Y | LAYOUT_LEFT | LAYOUT_FILL_X | LAYOUT_FILL_Y);
+                     JUSTIFY_CENTER_X | ICON_BEFORE_TEXT | LAYOUT_CENTER_Y | LAYOUT_LEFT | LAYOUT_FILL_X |
+                     LAYOUT_FILL_Y);
     about.execute(PLACEMENT_OWNER);
 
     filelist->setFocus();
 
-    return(1);
+    return 1;
 }
 
 
@@ -1356,8 +1620,8 @@ FXbool XFileImage::loadimage(const FXString& file)
 
     if (!fp)
     {
-        MessageBox::error(this, BOX_OK, _("Error Loading File"), _("Unable to open file: %s"), file.text());
-        return(false);
+        MessageBox::error(this, BOX_OK, _("Error"), _("Unable to open file: %s"), file.text());
+        return false;
     }
     else
     {
@@ -1445,13 +1709,13 @@ FXbool XFileImage::loadimage(const FXString& file)
     if (img == NULL)
     {
         MessageBox::error(this, BOX_OK, _("Error Loading Image"), _("Unsupported type: %s"), ext.text());
-        return(false);
+        return false;
     }
 
     if (tmpimg == NULL)
     {
         MessageBox::error(this, BOX_OK, _("Error Loading Image"), _("Unsupported type: %s"), ext.text());
-        return(false);
+        return false;
     }
 
     // Load it
@@ -1466,9 +1730,10 @@ FXbool XFileImage::loadimage(const FXString& file)
         // If failed
         if (!res)
         {
-            MessageBox::error(this, BOX_OK, _("Error Loading Image"), _("Unable to load image, the file may be corrupted"));
+            MessageBox::error(this, BOX_OK, _("Error Loading Image"),
+                              _("Unable to load image, the file may be corrupted"));
             getApp()->endWaitCursor();
-            return(false);
+            return false;
         }
 
         if (!FXMEMDUP(&tmpdata, img->getData(), FXColor, img->getWidth() * img->getHeight()))
@@ -1510,7 +1775,7 @@ FXbool XFileImage::loadimage(const FXString& file)
         }
     }
 
-    return(true);
+    return true;
 }
 
 
@@ -1519,12 +1784,13 @@ long XFileImage::onCmdToggleFileListBefore(FXObject* sender, FXSelector, void*)
 {
     filelistbefore = !filelistbefore;
 
-    if (BOX_CLICKED_CANCEL != MessageBox::question(this, BOX_OK_CANCEL, _("Restart"), _("Change will be taken into account after restart.\nRestart X File Image now?")))
+    if (BOX_CLICKED_CANCEL != MessageBox::question(this, BOX_OK_CANCEL, _("Restart"),
+                              _("Change will be taken into account after restart.\nRestart X File Image now?")))
     {
         this->handle(this, FXSEL(SEL_COMMAND, XFileImage::ID_RESTART), NULL);
     }
 
-    return(1);
+    return 1;
 }
 
 
@@ -1548,7 +1814,7 @@ long XFileImage::onUpdToggleFileListBefore(FXObject* sender, FXSelector, void*)
         sender->handle(this, FXSEL(SEL_COMMAND, ID_DISABLE), NULL);
     }
 
-    return(1);
+    return 1;
 }
 
 
@@ -1557,7 +1823,7 @@ long XFileImage::onCmdToggleFitWin(FXObject*, FXSelector, void*)
 {
     fitwin = !fitwin;
     filelist->setFocus();
-    return(1);
+    return 1;
 }
 
 
@@ -1572,7 +1838,7 @@ long XFileImage::onUpdToggleFitWin(FXObject* sender, FXSelector, void*)
     {
         sender->handle(this, FXSEL(SEL_COMMAND, ID_UNCHECK), NULL);
     }
-    return(1);
+    return 1;
 }
 
 
@@ -1591,7 +1857,7 @@ long XFileImage::onCmdToggleFilterImages(FXObject*, FXSelector, void*)
 
     filelist->setFocus();
 
-    return(1);
+    return 1;
 }
 
 
@@ -1627,7 +1893,7 @@ long XFileImage::onUpdToggleFilterImages(FXObject* sender, FXSelector, void*)
             sender->handle(this, FXSEL(SEL_COMMAND, ID_UNCHECK), NULL);
         }
     }
-    return(1);
+    return 1;
 }
 
 
@@ -1639,7 +1905,7 @@ long XFileImage::onCmdOpen(FXObject*, FXSelector, void*)
     opendialog.setSelectMode(SELECTFILE_EXISTING);
     opendialog.setPatternList(patterns);
     opendialog.setDirectory(filelist->getDirectory());
-    if (opendialog.execute())
+    if (opendialog.execute(PLACEMENT_CURSOR))
     {
         filename = opendialog.getFilename();
         filelist->setCurrentFile(filename);
@@ -1647,7 +1913,7 @@ long XFileImage::onCmdOpen(FXObject*, FXSelector, void*)
         loadimage(filename);
     }
 
-    return(1);
+    return 1;
 }
 
 
@@ -1663,7 +1929,8 @@ long XFileImage::onCmdPrint(FXObject*, FXSelector, void*)
     int rc = 1;
     if (printdialog == NULL)
     {
-        printdialog = new InputDialog(this, printcommand, _("Print command: \n(ex: lpr -P <printer>)"), _("Print"), "", printbigicon);
+        printdialog = new InputDialog(this, printcommand, _("Print command: \n(ex: lpr -P <printer>)"), _("Print"), "",
+                                      bigprinticon);
     }
     printdialog->setText(printcommand);
     printdialog->CursorEnd();
@@ -1673,7 +1940,7 @@ long XFileImage::onCmdPrint(FXObject*, FXSelector, void*)
     // If cancel was pressed, exit
     if (!rc)
     {
-        return(0);
+        return 0;
     }
 
     // Write the new print command to the registry
@@ -1685,10 +1952,10 @@ long XFileImage::onCmdPrint(FXObject*, FXSelector, void*)
     if (ret < 0)
     {
         MessageBox::error(this, BOX_OK, _("Error"), _("Can't execute command %s"), command.text());
-        return(0);
+        return 0;
     }
 
-    return(1);
+    return 1;
 }
 
 
@@ -1698,7 +1965,7 @@ long XFileImage::onCmdToggleHidden(FXObject* sender, FXSelector sel, void* ptr)
     filelist->handle(sender, FXSEL(SEL_COMMAND, FileList::ID_TOGGLE_HIDDEN), ptr);
     filelist->setFocus();
 
-    return(1);
+    return 1;
 }
 
 
@@ -1725,7 +1992,7 @@ long XFileImage::onUpdToggleHidden(FXObject* sender, FXSelector sel, void* ptr)
         sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_DISABLE), NULL);
     }
 
-    return(1);
+    return 1;
 }
 
 
@@ -1735,7 +2002,7 @@ long XFileImage::onCmdToggleThumbnails(FXObject* sender, FXSelector sel, void* p
     filelist->handle(sender, FXSEL(SEL_COMMAND, FileList::ID_TOGGLE_THUMBNAILS), ptr);
     filelist->setFocus();
 
-    return(1);
+    return 1;
 }
 
 
@@ -1762,7 +2029,7 @@ long XFileImage::onUpdToggleThumbnails(FXObject* sender, FXSelector sel, void* p
         sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_DISABLE), NULL);
     }
 
-    return(1);
+    return 1;
 }
 
 
@@ -1773,7 +2040,7 @@ long XFileImage::onCmdShowMini(FXObject*, FXSelector, void*)
     filelist->handle(this, FXSEL(SEL_COMMAND, FileList::ID_SHOW_MINI_ICONS), NULL);
     filelist->setFocus();
 
-    return(1);
+    return 1;
 }
 
 
@@ -1784,7 +2051,7 @@ long XFileImage::onCmdShowBig(FXObject*, FXSelector, void*)
     filelist->handle(this, FXSEL(SEL_COMMAND, FileList::ID_SHOW_BIG_ICONS), NULL);
     filelist->setFocus();
 
-    return(1);
+    return 1;
 }
 
 
@@ -1795,7 +2062,7 @@ long XFileImage::onCmdShowDetails(FXObject*, FXSelector, void*)
     filelist->handle(this, FXSEL(SEL_COMMAND, FileList::ID_SHOW_DETAILS), NULL);
     filelist->setFocus();
 
-    return(1);
+    return 1;
 }
 
 
@@ -1827,7 +2094,6 @@ long XFileImage::onUpdFileView(FXObject* sender, FXSelector sel, void* ptr)
             filewidth_pct = (double)(filebox->getWidth()) / (double)(getWidth());
         }
     }
-
     // Panel stacked vertically
     else
     {
@@ -1886,7 +2152,7 @@ long XFileImage::onUpdFileView(FXObject* sender, FXSelector sel, void* ptr)
         sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_DISABLE), NULL);
     }
 
-    return(1);
+    return 1;
 }
 
 
@@ -1894,8 +2160,9 @@ long XFileImage::onUpdFileView(FXObject* sender, FXSelector sel, void* ptr)
 long XFileImage::onSigHarvest(FXObject*, FXSelector, void*)
 {
     while (waitpid(-1, NULL, WNOHANG) > 0)
-    {}
-    return(1);
+    {
+    }
+    return 1;
 }
 
 
@@ -1907,7 +2174,7 @@ long XFileImage::onCmdQuit(FXObject*, FXSelector, void*)
 
     // Quit
     getApp()->exit(EXIT_SUCCESS);
-    return(1);
+    return 1;
 }
 
 
@@ -1919,10 +2186,11 @@ long XFileImage::onUpdTitle(FXObject* sender, FXSelector, void*)
 
     if (image && (img != NULL))
     {
-        title += " (" + FXStringVal(img->getWidth()) + "x" + FXStringVal(img->getHeight()) + " - " + FXStringVal(zoomval * 100) + "%" ")";
+        title += " (" + FXStringVal(img->getWidth()) + "x" + FXStringVal(img->getHeight()) + " - " +
+                 FXStringVal(zoomval * 100) + "%" ")";
     }
     sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_SETSTRINGVALUE), (void*)&title);
-    return(1);
+    return 1;
 }
 
 
@@ -1932,7 +2200,7 @@ long XFileImage::onCmdRecentFile(FXObject*, FXSelector, void* ptr)
     filename = (char*)ptr;
     filelist->setCurrentFile(filename);
     loadimage(filename);
-    return(1);
+    return 1;
 }
 
 
@@ -1948,10 +2216,10 @@ long XFileImage::onCmdItemDoubleClicked(FXObject*, FXSelector, void* ptr)
             FXString pathname = filelist->getItemPathname(index);
 
             // Does not have access
-            if (!::isReadExecutable(pathname))
+            if (!xf_isreadexecutable(pathname))
             {
                 MessageBox::error(this, BOX_OK, _("Error"), _(" Permission to: %s denied."), pathname.text());
-                return(0);
+                return 0;
             }
             filelist->setDirectory(pathname);
             pathlink->setPath(pathname);
@@ -1965,7 +2233,7 @@ long XFileImage::onCmdItemDoubleClicked(FXObject*, FXSelector, void* ptr)
             filelist->setCurrentItem(index);
         }
     }
-    return(1);
+    return 1;
 }
 
 
@@ -1979,7 +2247,8 @@ long XFileImage::onCmdItemClicked(FXObject* sender, FXSelector sel, void* ptr)
         FXuint state;
         filelist->getCursorPosition(x, y, state);
         FXbool allow = true;
-        if (!(filelist->getListStyle() & (_ICONLIST_BIG_ICONS | _ICONLIST_MINI_ICONS)) && ((x - filelist->getXPosition()) > filelist->getHeaderSize(0)))
+        if (!(filelist->getListStyle() & (ICONLIST_BIG_ICONS | ICONLIST_MINI_ICONS)) &&
+            ((x - filelist->getXPosition()) > filelist->getHeaderSize(0)))
         {
             allow = false;
         }
@@ -1992,10 +2261,10 @@ long XFileImage::onCmdItemClicked(FXObject* sender, FXSelector sel, void* ptr)
                 FXString pathname = filelist->getItemPathname(index);
 
                 // Does not have access
-                if (!::isReadExecutable(pathname))
+                if (!xf_isreadexecutable(pathname))
                 {
                     MessageBox::error(this, BOX_OK, _("Error"), _(" Permission to: %s denied."), pathname.text());
-                    return(0);
+                    return 0;
                 }
                 filelist->setDirectory(pathname);
                 pathlink->setPath(pathname);
@@ -2010,7 +2279,7 @@ long XFileImage::onCmdItemClicked(FXObject* sender, FXSelector sel, void* ptr)
             }
         }
     }
-    return(1);
+    return 1;
 }
 
 
@@ -2048,7 +2317,7 @@ long XFileImage::onCmdRotate(FXObject*, FXSelector sel, void*)
     imageview->setImage(image);
     filelist->setFocus();
     getApp()->endWaitCursor();
-    return(1);
+    return 1;
 }
 
 
@@ -2063,7 +2332,7 @@ long XFileImage::onUpdImage(FXObject* sender, FXSelector, void*)
     {
         sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_DISABLE), NULL);
     }
-    return(1);
+    return 1;
 }
 
 
@@ -2101,7 +2370,7 @@ long XFileImage::onCmdMirror(FXObject*, FXSelector sel, void*)
     imageview->setImage(image);
     filelist->setFocus();
     getApp()->endWaitCursor();
-    return(1);
+    return 1;
 }
 
 
@@ -2155,7 +2424,7 @@ long XFileImage::onCmdZoomIn(FXObject*, FXSelector, void*)
 
     filelist->setFocus();
     getApp()->endWaitCursor();
-    return(1);
+    return 1;
 }
 
 
@@ -2197,7 +2466,7 @@ long XFileImage::onCmdZoomOut(FXObject*, FXSelector, void*)
 
     filelist->setFocus();
     getApp()->endWaitCursor();
-    return(1);
+    return 1;
 }
 
 
@@ -2210,7 +2479,7 @@ long XFileImage::onCmdZoom100(FXObject*, FXSelector, void*)
     imageview->setImage(img);
     filelist->setFocus();
     getApp()->endWaitCursor();
-    return(1);
+    return 1;
 }
 
 
@@ -2275,7 +2544,7 @@ long XFileImage::onCmdZoomWin(FXObject*, FXSelector, void*)
 
     filelist->setFocus();
     getApp()->endWaitCursor();
-    return(1);
+    return 1;
 }
 
 
@@ -2292,7 +2561,7 @@ long XFileImage::onCmdRestart(FXObject*, FXSelector, void*)
     {
         exit(EXIT_SUCCESS);
     }
-    return(1);
+    return 1;
 }
 
 
@@ -2303,6 +2572,7 @@ void XFileImage::start(FXString startimage)
     if (filename != "")
     {
         loadimage(filename);
+        filelist->setCurrentFile(filename);
     }
 }
 
@@ -2311,8 +2581,8 @@ void XFileImage::start(FXString startimage)
 void XFileImage::create()
 {
     // Get size and position
-    FXuint ww = getApp()->reg().readUnsignedEntry("OPTIONS", "width", DEFAULT_WINDOW_WIDTH);    // Workaround for a possible bug in some WMs
-    FXuint hh = getApp()->reg().readUnsignedEntry("OPTIONS", "height", DEFAULT_WINDOW_HEIGHT);  // Workaround for a possible bug in some WMs
+    FXuint ww = getApp()->reg().readUnsignedEntry("OPTIONS", "width", DEFAULT_WINDOW_WIDTH);            // Workaround for a possible bug in some WMs
+    FXuint hh = getApp()->reg().readUnsignedEntry("OPTIONS", "height", DEFAULT_WINDOW_HEIGHT);          // Workaround for a possible bug in some WMs
 
     filewidth_pct = getApp()->reg().readRealEntry("OPTIONS", "filewidth_pct", 0.25);
     fileheight_pct = getApp()->reg().readRealEntry("OPTIONS", "fileheight_pct", 0.25);
@@ -2323,6 +2593,7 @@ void XFileImage::create()
     pathtext->setText(FXSystem::getCurrentDirectory());
 
     // Display or hide path linker and path text
+    FXbool show_pathlink = getApp()->reg().readUnsignedEntry("SETTINGS", "show_pathlinker", true);
     if (show_pathlink)
     {
         pathtext->hide();
@@ -2361,8 +2632,8 @@ void XFileImage::create()
     filelist->showThumbnails(thumbnails);
 
     // Set list style
-    liststyle = getApp()->reg().readUnsignedEntry("OPTIONS", "liststyle", _ICONLIST_MINI_ICONS);
-    filelist->setListStyle(liststyle | _ICONLIST_BROWSESELECT);
+    liststyle = getApp()->reg().readUnsignedEntry("OPTIONS", "liststyle", ICONLIST_MINI_ICONS | ICONLIST_AUTOSIZE);
+    filelist->setListStyle(liststyle | ICONLIST_BROWSESELECT);
 
     // Set file view
     fileview = getApp()->reg().readUnsignedEntry("OPTIONS", "fileview", ID_SHOW_MINI_ICONS);
@@ -2384,6 +2655,32 @@ void XFileImage::create()
     else
     {
         position(getX(), getY(), ww, hh);
+    }
+
+    // Read filter history
+    FXString history = getApp()->reg().readStringEntry("HISTORY", "filter", "");
+    FXString histent = "";
+    FilterNum = 0;
+    if (history != "")
+    {
+        int i;
+        for (i = 0; ; i++)
+        {
+            if (i < FILTER_HIST_SIZE)
+            {
+                histent = history.section(':', i);
+                if (xf_strequal(histent.text(), ""))
+                {
+                    break;
+                }
+                xf_strlcpy(FilterHistory[i], histent.text(), histent.length() + 1);
+            }
+            else
+            {
+                break;
+            }
+        }
+        FilterNum = i;
     }
 
     FXMainWindow::create();
@@ -2408,7 +2705,6 @@ void XFileImage::create()
 
     show();
 
-
 #ifdef STARTUP_NOTIFICATION
     startup_completed();
 #endif
@@ -2423,17 +2719,21 @@ long XFileImage::onCmdHorzVertPanels(FXObject* sender, FXSelector sel, void* ptr
     case ID_VERT_PANELS:
         splitter->setSplitterStyle(splitter->getSplitterStyle() & ~SPLITTER_VERTICAL);
         vertpanels = true;
+        filebox->setWidth((int)round(filewidth_pct * getWidth()));
+
         break;
 
     case ID_HORZ_PANELS:
         splitter->setSplitterStyle(splitter->getSplitterStyle() | SPLITTER_VERTICAL);
         vertpanels = false;
+        filebox->setHeight((int)round(fileheight_pct * getHeight()));
+
         break;
     }
 
     filelist->setFocus();
 
-    return(1);
+    return 1;
 }
 
 
@@ -2465,7 +2765,7 @@ long XFileImage::onUpdHorzVertPanels(FXObject* sender, FXSelector sel, void* ptr
         }
     }
 
-    return(1);
+    return 1;
 }
 
 
@@ -2528,18 +2828,61 @@ void XFileImage::saveConfig()
     getApp()->reg().writeUnsignedEntry("OPTIONS", "filterimgs", filterimgs);
 
     // Filelist columns sizes
-    getApp()->reg().writeUnsignedEntry("OPTIONS", "name_size", filelist->getHeaderSize(0));
-    getApp()->reg().writeUnsignedEntry("OPTIONS", "size_size", filelist->getHeaderSize(1));
-    getApp()->reg().writeUnsignedEntry("OPTIONS", "type_size", filelist->getHeaderSize(2));
-    getApp()->reg().writeUnsignedEntry("OPTIONS", "ext_size", filelist->getHeaderSize(3));
-    getApp()->reg().writeUnsignedEntry("OPTIONS", "modd_size", filelist->getHeaderSize(4));
-    getApp()->reg().writeUnsignedEntry("OPTIONS", "user_size", filelist->getHeaderSize(5));
-    getApp()->reg().writeUnsignedEntry("OPTIONS", "grou_size", filelist->getHeaderSize(6));
-    getApp()->reg().writeUnsignedEntry("OPTIONS", "attr_size", filelist->getHeaderSize(7));
+    getApp()->reg().writeUnsignedEntry("OPTIONS", "name_size", filelist->getHeaderSize(0)); // Name is at position 0
+
+    FXbool isShown;
+    isShown = getApp()->reg().readUnsignedEntry("SETTINGS", "view_col_size", 1);
+    if (isShown)
+    {
+        getApp()->reg().writeUnsignedEntry("OPTIONS", "size_size",
+                                           (FXuint)filelist->getHeaderSize((FXuint)filelist->getHeaderIndex(FileList::ID_COL_SIZE)));
+    }
+    isShown = getApp()->reg().readUnsignedEntry("SETTINGS", "view_col_type", 1);
+    if (isShown)
+    {
+        getApp()->reg().writeUnsignedEntry("OPTIONS", "type_size",
+                                           (FXuint)filelist->getHeaderSize((FXuint)filelist->getHeaderIndex(FileList::ID_COL_TYPE)));
+    }
+    isShown = getApp()->reg().readUnsignedEntry("SETTINGS", "view_col_ext", 1);
+    if (isShown)
+    {
+        getApp()->reg().writeUnsignedEntry("OPTIONS", "ext_size",
+                                           (FXuint)filelist->getHeaderSize((FXuint)filelist->getHeaderIndex(FileList::ID_COL_EXT)));
+    }
+    isShown = getApp()->reg().readUnsignedEntry("SETTINGS", "view_col_date", 1);
+    if (isShown)
+    {
+        getApp()->reg().writeUnsignedEntry("OPTIONS", "date_size",
+                                           (FXuint)filelist->getHeaderSize((FXuint)filelist->getHeaderIndex(FileList::ID_COL_DATE)));
+    }
+    isShown = getApp()->reg().readUnsignedEntry("SETTINGS", "view_col_user", 1);
+    if (isShown)
+    {
+        getApp()->reg().writeUnsignedEntry("OPTIONS", "user_size",
+                                           (FXuint)filelist->getHeaderSize((FXuint)filelist->getHeaderIndex(FileList::ID_COL_USER)));
+    }
+    isShown = getApp()->reg().readUnsignedEntry("SETTINGS", "view_col_group", 1);
+    if (isShown)
+    {
+        getApp()->reg().writeUnsignedEntry("OPTIONS", "group_size",
+                                           (FXuint)filelist->getHeaderSize((FXuint)filelist->getHeaderIndex(FileList::ID_COL_GROUP)));
+    }
+    isShown = getApp()->reg().readUnsignedEntry("SETTINGS", "view_col_perms", 1);
+    if (isShown)
+    {
+        getApp()->reg().writeUnsignedEntry("OPTIONS", "perms_size",
+                                           (FXuint)(FXuint)filelist->getHeaderSize((FXuint)filelist->getHeaderIndex(FileList::ID_COL_PERMS)));
+    }
+    isShown = getApp()->reg().readUnsignedEntry("SETTINGS", "view_col_link", 1);
+    if (isShown)
+    {
+        getApp()->reg().writeUnsignedEntry("OPTIONS", "link_size",
+                                           (FXuint)filelist->getHeaderSize((FXuint)filelist->getHeaderIndex(FileList::ID_COL_LINK)));
+    }
 
     // Panel stacking
     getApp()->reg().writeUnsignedEntry("OPTIONS", "filelist_before", filelistbefore);
-    getApp()->reg().writeUnsignedEntry("OPTIONS", "vert_panels", vertpanels);
+    getApp()->reg().writeUnsignedEntry("OPTIONS", "vertical_panels", vertpanels);
 
     // Get and write sort function for search window
     FXString sort_func;
@@ -2623,21 +2966,21 @@ void XFileImage::saveConfig()
     {
         sort_func = "descendingExtMix";
     }
-    else if (filelist->getSortFunc() == filelist->ascendingTime)
+    else if (filelist->getSortFunc() == filelist->ascendingDate)
     {
-        sort_func = "ascendingTime";
+        sort_func = "ascendingDate";
     }
-    else if (filelist->getSortFunc() == filelist->ascendingTimeMix)
+    else if (filelist->getSortFunc() == filelist->ascendingDateMix)
     {
-        sort_func = "ascendingTimeMix";
+        sort_func = "ascendingDateMix";
     }
-    else if (filelist->getSortFunc() == filelist->descendingTime)
+    else if (filelist->getSortFunc() == filelist->descendingDate)
     {
-        sort_func = "descendingTime";
+        sort_func = "descendingDate";
     }
-    else if (filelist->getSortFunc() == filelist->descendingTimeMix)
+    else if (filelist->getSortFunc() == filelist->descendingDateMix)
     {
-        sort_func = "descendingTimeMix";
+        sort_func = "descendingDateMix";
     }
     else if (filelist->getSortFunc() == filelist->ascendingUser)
     {
@@ -2671,21 +3014,37 @@ void XFileImage::saveConfig()
     {
         sort_func = "descendingGroupMix";
     }
-    else if (filelist->getSortFunc() == filelist->ascendingPerm)
+    else if (filelist->getSortFunc() == filelist->ascendingPerms)
     {
-        sort_func = "ascendingPerm";
+        sort_func = "ascendingPerms";
     }
-    else if (filelist->getSortFunc() == filelist->ascendingPermMix)
+    else if (filelist->getSortFunc() == filelist->ascendingPermsMix)
     {
-        sort_func = "ascendingPermMix";
+        sort_func = "ascendingPermsMix";
     }
-    else if (filelist->getSortFunc() == filelist->descendingPerm)
+    else if (filelist->getSortFunc() == filelist->descendingPerms)
     {
-        sort_func = "descendingPerm";
+        sort_func = "descendingPerms";
     }
-    else if (filelist->getSortFunc() == filelist->descendingPermMix)
+    else if (filelist->getSortFunc() == filelist->descendingPermsMix)
     {
-        sort_func = "descendingPermMix";
+        sort_func = "descendingPermsMix";
+    }
+    else if (filelist->getSortFunc() == filelist->ascendingLink)
+    {
+        sort_func = "ascendingLink";
+    }
+    else if (filelist->getSortFunc() == filelist->ascendingLinkMix)
+    {
+        sort_func = "ascendingLinkMix";
+    }
+    else if (filelist->getSortFunc() == filelist->descendingLink)
+    {
+        sort_func = "descendingLink";
+    }
+    else if (filelist->getSortFunc() == filelist->descendingLinkMix)
+    {
+        sort_func = "descendingLinkMix";
     }
     else
     {
@@ -2693,13 +3052,26 @@ void XFileImage::saveConfig()
     }
     getApp()->reg().writeStringEntry("OPTIONS", "sort_func", sort_func.text());
 
+    // Write filter history
+    FXString history = "";
+    for (int i = 0; i < FilterNum; i++)
+    {
+        history += FilterHistory[i];
+        history += ":";
+    }
+    if (FilterNum)
+    {
+        getApp()->reg().writeStringEntry("HISTORY", "filter", history.text());
+    }
+
     // Write registry settings
     getApp()->reg().write();
 }
 
 
 // Usage message
-#define USAGE_MSG    _("\
+#define USAGE_MSG    _( \
+            "\
 \nUsage: xfi [options] [image] \n\
 \n\
     [options] can be any of the following:\n\
@@ -2740,23 +3112,12 @@ int main(int argc, char* argv[])
         xdgconfighome = homedir + PATHSEPSTRING CONFIGPATH;
     }
 
-    // Detect if an X input method is used
-    xmodifiers = getenv("XMODIFIERS");
-    if ((xmodifiers == "") || (xmodifiers == "@im=none"))
-    {
-        xim_used = false;
-    }
-    else
-    {
-        xim_used = true;
-    }
-
 #ifdef HAVE_SETLOCALE
     // Set locale via LC_ALL.
     setlocale(LC_ALL, "");
 #endif
 
-#if ENABLE_NLS
+#ifdef ENABLE_NLS
     // Set the text message domain.
     bindtextdomain(PACKAGE, LOCALEDIR);
     bind_textdomain_codeset(PACKAGE, "utf-8");
@@ -2798,31 +3159,36 @@ int main(int argc, char* argv[])
     // Compute integer and fractional scaling factors depending on the monitor resolution
     FXint res = reg_xfe->readUnsignedEntry("SETTINGS", "screenres", 100);
     scaleint = round(res / 100.0);
-    scalefrac = FXMAX(1.0, res / 100.0);
 
     // Redefine the default hand cursor depending on the integer scaling factor
     FXCursor* hand;
     if (scaleint == 1)
     {
-        hand = new FXCursor(application, hand1_bits, hand1_mask_bits, hand1_width, hand1_height, hand1_x_hot, hand1_y_hot);
+        hand = new FXCursor(application, hand1_bits, hand1_mask_bits, hand1_width, hand1_height, hand1_x_hot,
+                            hand1_y_hot);
     }
     else if (scaleint == 2)
     {
-        hand = new FXCursor(application, hand2_bits, hand2_mask_bits, hand2_width, hand2_height, hand2_x_hot, hand2_y_hot);
+        hand = new FXCursor(application, hand2_bits, hand2_mask_bits, hand2_width, hand2_height, hand2_x_hot,
+                            hand2_y_hot);
     }
     else
     {
-        hand = new FXCursor(application, hand3_bits, hand3_mask_bits, hand3_width, hand3_height, hand3_x_hot, hand3_y_hot);
+        hand = new FXCursor(application, hand3_bits, hand3_mask_bits, hand3_width, hand3_height, hand3_x_hot,
+                            hand3_y_hot);
     }
     application->setDefaultCursor(DEF_HAND_CURSOR, hand);
 
     // Load all application icons
-    FXbool iconpathfound = true;
-    loadicons = loadAppIcons(application, &iconpathfound);
+    FXuint iconpathstatus;
+    execpath = xf_execpath(argv[0]);
+    loadicons = loadAppIcons(application, &iconpathstatus);
 
-    // Set base color (to change the default base color at first run)
-    FXColor basecolor = reg_xfe->readColorEntry("SETTINGS", "basecolor", FXRGB(237, 233, 227));
+    // Set base and border colors (to change the default colors at first run)
+    FXColor basecolor = reg_xfe->readColorEntry("SETTINGS", "basecolor", FXRGB(237, 236, 235));
+    FXColor bordercolor = reg_xfe->readColorEntry("SETTINGS", "bordercolor", FXRGB(125, 125, 125));
     application->setBaseColor(basecolor);
+    application->setBorderColor(bordercolor);
 
     // Set Xfi normal font according to the Xfe registry
     FXString fontspec;
@@ -2835,33 +3201,38 @@ int main(int argc, char* argv[])
     }
 
     // Set Xfi file list colors according to the Xfe registry
-    listbackcolor = reg_xfe->readColorEntry("SETTINGS", "listbackcolor", FXRGB(255, 255, 255));
-    listforecolor = reg_xfe->readColorEntry("SETTINGS", "listforecolor", FXRGB(0, 0, 0));
-    highlightcolor = reg_xfe->readColorEntry("SETTINGS", "highlightcolor", FXRGB(238, 238, 238));
+    FXColor listbackcolor = reg_xfe->readColorEntry("SETTINGS", "listbackcolor", FXRGB(255, 255, 255));
+    FXColor listforecolor = reg_xfe->readColorEntry("SETTINGS", "listforecolor", FXRGB(0, 0, 0));
+    FXColor highlightcolor = reg_xfe->readColorEntry("SETTINGS", "highlightcolor", FXRGB(238, 238, 238));
 
     // Set single click navigation according to the Xfe registry
-    single_click = reg_xfe->readUnsignedEntry("SETTINGS", "single_click", SINGLE_CLICK_NONE);
+    FXuint single_click = reg_xfe->readUnsignedEntry("SETTINGS", "single_click", SINGLE_CLICK_NONE);
+    application->reg().writeUnsignedEntry("SETTINGS", "single_click", single_click);
 
     // Set smooth scrolling according to the Xfe registry
     FXbool smoothscroll = reg_xfe->readUnsignedEntry("SETTINGS", "smooth_scroll", true);
 
     // Set file list tooltip flag according to the Xfe registry
-    file_tooltips = reg_xfe->readUnsignedEntry("SETTINGS", "file_tooltips", true);
+    FXbool file_tooltips = reg_xfe->readUnsignedEntry("SETTINGS", "file_tooltips", true);
+    application->reg().writeUnsignedEntry("SETTINGS", "file_tooltips", file_tooltips);
 
     // Set relative resizing flag according to the Xfe registry
-    relative_resize = reg_xfe->readUnsignedEntry("SETTINGS", "relative_resize", true);
+    FXbool relative_resize = reg_xfe->readUnsignedEntry("SETTINGS", "relative_resize", true);
+    application->reg().writeUnsignedEntry("SETTINGS", "relative_resize", relative_resize);
 
     // Set display pathlinker flag according to the Xfe registry
-    show_pathlink = reg_xfe->readUnsignedEntry("SETTINGS", "show_pathlinker", true);
+    FXbool show_pathlink = reg_xfe->readUnsignedEntry("SETTINGS", "show_pathlinker", true);
+    application->reg().writeUnsignedEntry("SETTINGS", "show_pathlinker", show_pathlink);
 
     // Get value of the window position flag
-    save_win_pos = reg_xfe->readUnsignedEntry("SETTINGS", "save_win_pos", false);
+    FXbool save_win_pos = reg_xfe->readUnsignedEntry("SETTINGS", "save_win_pos", false);
+    application->reg().writeUnsignedEntry("SETTINGS", "save_win_pos", save_win_pos);
 
     // Delete the Xfe registry
     delete reg_xfe;
 
     // Make window
-    XFileImage* window = new XFileImage(application, smoothscroll);
+    XFileImage* window = new XFileImage(application, smoothscroll, listbackcolor, listforecolor, highlightcolor);
 
     // Catch SIGCHLD to harvest zombie child processes
     application->addSignal(SIGCHLD, window, XFileImage::ID_HARVEST, true);
@@ -2875,16 +3246,28 @@ int main(int argc, char* argv[])
     // Smooth scrolling
     window->setSmoothScroll(smoothscroll);
 
-    // Icon path not found
-    if (!iconpathfound)
+    // Icon path doesn't exist
+    if (iconpathstatus == ICONPATH_NOT_FOUND)
     {
-        MessageBox::error(application, BOX_OK, _("Error loading icons"), _("Icon path doesn't exist, icon theme was set back to default. Please check your icon path!") );
+        MessageBox::error(application->getRootWindow(), BOX_OK, _("Error loading icons"),
+                          _("Icon path doesn't exist, default icon path was selected.\
+\n\nFrom Xfe, please check your icon path in Edit / Preferences / Appearance..."));
     }
 
     // Some icons not found
-    if (!loadicons)
+    if (!loadicons && iconpathstatus == ICONPATH_MISSING_ICONS)
     {
-        MessageBox::error(application, BOX_OK, _("Error loading icons"), _("Unable to load some icons. Please check your icon theme!"));
+        MessageBox::error(application->getRootWindow(), BOX_OK, _("Error loading icons"),
+                          _("Unable to load some icons, default icon theme was selected.\
+\n\nFrom Xfe, please check your icon theme in Edit / Preferences / Appearance..."));       
+    }
+
+    // Default icon path doesn't exist
+    if (iconpathstatus == DEFAULTICONPATH_NOT_FOUND)
+    {
+        MessageBox::error(application->getRootWindow(), BOX_OK, _("Error loading icons"),
+                          _("Unable to load default icons, no icons can be shown.\
+\n\nPlease check your Xfe installation..."));       
     }
 
     // Tooltips setup time and duration
@@ -2895,5 +3278,5 @@ int main(int argc, char* argv[])
     window->start(startimage);
 
     // Run
-    return(application->run());
+    return application->run();
 }

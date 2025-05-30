@@ -1,49 +1,51 @@
 #ifndef PROPERTIES_H
 #define PROPERTIES_H
 
+#include "ComboBox.h"
 #include "TextLabel.h"
 #include "DialogBox.h"
 
+
 class PropertiesBox;
 
-class PermFrame : public FXVerticalFrame
+class PermsFrame : public FXVerticalFrame
 {
-    FXDECLARE(PermFrame)
+    FXDECLARE(PermsFrame)
     friend class PropertiesBox;
 private:
-    FXCheckButton* ur;
-    FXCheckButton* uw;
-    FXCheckButton* ux;
-    FXCheckButton* gr;
-    FXCheckButton* gw;
-    FXCheckButton* gx;
-    FXCheckButton* or_;
-    FXCheckButton* ow;
-    FXCheckButton* ox;
-    FXCheckButton* suid;
-    FXCheckButton* sgid;
-    FXCheckButton* svtx;
+    FXCheckButton* ur = NULL;
+    FXCheckButton* uw = NULL;
+    FXCheckButton* ux = NULL;
+    FXCheckButton* gr = NULL;
+    FXCheckButton* gw = NULL;
+    FXCheckButton* gx = NULL;
+    FXCheckButton* or_ = NULL;
+    FXCheckButton* ow = NULL;
+    FXCheckButton* ox = NULL;
+    FXCheckButton* suid = NULL;
+    FXCheckButton* sgid = NULL;
+    FXCheckButton* svtx = NULL;
     FXDataTarget cmd_radiotarget;
     FXDataTarget flt_radiotarget;
-    FXRadioButton* set;
-    FXRadioButton* clear;
-    FXRadioButton* dironly;
-    FXRadioButton* fileonly;
-    FXRadioButton* all;
-    FXRadioButton* add;
-    int cmd;
-    int flt;
-    FXCheckButton* rec;
-    FXCheckButton* own;
-    FXComboBox*    user;
-    FXComboBox*    grp;
+    FXRadioButton* set = NULL;
+    FXRadioButton* clear = NULL;
+    FXRadioButton* dironly = NULL;
+    FXRadioButton* fileonly = NULL;
+    FXRadioButton* all = NULL;
+    FXRadioButton* add = NULL;
+    int cmd = 0;
+    int flt = 0;
+    FXCheckButton* rec = NULL;
+    FXCheckButton* own = NULL;
+    ComboBox* user = NULL;
+    ComboBox* grp = NULL;
 
-    PermFrame() : ur(NULL), uw(NULL), ux(NULL), gr(NULL), gw(NULL), gx(NULL), or_(NULL), ow(NULL), ox(NULL), suid(NULL), sgid(NULL), svtx(NULL),
-        set(NULL), clear(NULL), dironly(NULL), fileonly(NULL), all(NULL), add(NULL), cmd(0), flt(0), rec(NULL), own(NULL), user(NULL), grp(NULL)
-    {}
+    PermsFrame()
+    {
+    }
 
 public:
-    PermFrame(FXComposite* parent, FXObject* target);
+    PermsFrame(FXComposite* parent, FXObject* target);
 };
 
 class PropertiesBox : public DialogBox
@@ -51,23 +53,25 @@ class PropertiesBox : public DialogBox
     FXDECLARE(PropertiesBox)
 
 private:
-    int pid = 0;                     // Proccess ID of child (valid if busy).
-    int pipes[2] = {0, 0};           // Pipes to communicate with child process.
+    int pid = -1;                            // Proccess ID of child (valid if busy).
+    int pipes[2] = { 0, 0 };                 // Pipes to communicate with child process.
 
-    FXuint totalnbfiles;
-    FXuint totalnbsubdirs;
-    FXulong totaldirsize;
-    int nbseldirs;
-    FXLabel*     fileSize;
-    FXLabel*     fileSizeDetails;
-    TextLabel*   location;
-    FXLabel*     origlocation;
-    FXLabel*     linkto;
-    FXLabel*     deletiondate;
-    FXTextField* ext;
-    FXString*    files;
-    FXString*    paths;
-    FXLabel*     name_encoding;
+    double scalefrac = 1.0;                  // Icon scaling factor
+
+    FXuint totalnbfiles = 0;
+    FXuint totalnbsubdirs = 0;
+    FXulong totaldirsize = 0;
+    int nbseldirs = 0;
+    FXLabel* fileSize = NULL;
+    FXLabel* fileSizeDetails = NULL;
+    TextLabel* location = NULL;
+    FXLabel* origlocation = NULL;
+    FXLabel* linkto = NULL;
+    FXLabel* deletiondate = NULL;
+    FXTextField* ext = NULL;
+    FXString* files = NULL;
+    FXString* paths = NULL;
+    FXLabel* name_encoding = NULL;
     FXString source;
     FXString parentdir;
     FXString filename;
@@ -79,41 +83,37 @@ private:
     FXString edit_prev;
     FXString bigic_prev;
     FXString miniic_prev;
-    int num;
+    int num = 0;
     FXString trashfileslocation;
     FXString trashinfolocation;
-    FXbool executable;
+    FXbool executable = false;
 #ifdef STARTUP_NOTIFICATION
-    FXCheckButton* snbutton;
-    FXGroupBox*    sngroup;
-    FXbool sndisable_prev;
+    FXCheckButton* snbutton = NULL;
+    FXGroupBox* sngroup = NULL;
+    FXbool sndisable_prev = false;
 #endif
-    FXTextField* input;
-    FXTextField* username;
-    FXTextField* grpname;
-    FXTextField* open;
-    FXTextField* view;
-    FXTextField* edit;
-    FXTextField* descr;
-    FXTextField* bigic;
-    FXButton*    bigicbtn;
-    FXTextField* miniic;
-    FXButton*    miniicbtn;
-    FXbool isDirectory;
-    FXbool isMountpoint;
-    FXbool recsize;
-    mode_t mode;
-    mode_t orig_mode;
-    PermFrame*   perm;
+    FXTabItem* general = NULL;
+    FXTextField* input = NULL;
+    FXTextField* username = NULL;
+    FXTextField* grpname = NULL;
+    FXTextField* open = NULL;
+    FXTextField* view = NULL;
+    FXTextField* edit = NULL;
+    FXTextField* descr = NULL;
+    FXTextField* bigic = NULL;
+    FXButton* bigicbtn = NULL;
+    FXTextField* miniic = NULL;
+    FXButton* miniicbtn = NULL;
+    FXbool isDirectory = false;
+    FXbool isMountpoint = false;
+    FXbool recsize = false;
+    mode_t mode = 0;
+    mode_t orig_mode = 0;
+    PermsFrame* perms = NULL;
 
-    PropertiesBox() : totalnbfiles(0), totalnbsubdirs(0), totaldirsize(0), nbseldirs(0), fileSize(NULL), fileSizeDetails(NULL), location(NULL), origlocation(NULL), linkto(NULL),
-        deletiondate(NULL), ext(NULL), files(NULL), paths(NULL), name_encoding(NULL), num(0), executable(false),
-#ifdef STARTUP_NOTIFICATION
-        snbutton(NULL), sngroup(NULL), sndisable_prev(false),
-#endif
-        input(NULL), username(NULL), grpname(NULL), open(NULL), view(NULL), edit(NULL), descr(NULL), bigic(NULL), bigicbtn(NULL),
-        miniic(NULL), miniicbtn(NULL), isDirectory(false), isMountpoint(false), recsize(false), mode(0), orig_mode(0), perm(NULL)
-    {}
+    PropertiesBox()
+    {
+    }
 
 public:
     enum
@@ -152,7 +152,7 @@ public:
 public:
     virtual void create();
 
-    PropertiesBox(FXWindow* win, FXString file, FXString path);
+    PropertiesBox(FXWindow* win, FXString file, FXString path, FXbool placeitem = false);
     PropertiesBox(FXWindow* win, FXString* file, int num, FXString* path);
     long onCmdAcceptSingle(FXObject*, FXSelector, void*);
     long onCmdAcceptMult(FXObject*, FXSelector, void*);
@@ -162,7 +162,7 @@ public:
     long onCmdFilter(FXObject*, FXSelector, void*);
     long onCmdBrowseIcon(FXObject*, FXSelector, void*);
     long onCmdBrowse(FXObject*, FXSelector, void*);
-    long onUpdSizeAndPerm(FXObject*, FXSelector, void*);
+    long onUpdSizeAndPerms(FXObject*, FXSelector, void*);
     long onCmdKeyPress(FXObject*, FXSelector, void*);
     long onWatchProcess(FXObject*, FXSelector, void*);
 #ifdef STARTUP_NOTIFICATION

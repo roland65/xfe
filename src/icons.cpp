@@ -11,215 +11,516 @@
 #include "icons.h"
 #include "MessageBox.h"
 
+// Application exec path
+extern FXString execpath;
+
 // Icons (global variables)
 
-FXIcon *archaddicon, *archexticon, *attribicon, *bigattribicon, *bigblockdevicon, *bigbrokenlinkicon, *bigcdromicon, *bigchardevicon;
-FXIcon *bigcompareicon, *bigdocicon, *bigexecicon, *bigfileopenicon, *bigfiltericon, *bigfloppyicon, *bigfolderlockedicon;
-FXIcon *bigfolderopenicon, *bigfoldericon, *bigfolderupicon, *bigharddiskicon, *bigiconsicon, *biglinkicon, *bignewfileicon;
-FXIcon *bignewfoldericon, *bignewlinkicon, *bignfsdriveicon;
-FXIcon *bignfsdriveumticon, *bigpipeicon, *bigsocketicon, *bigzipicon, *cdromicon, *charticon;
-FXIcon *closefileicon, *clrbookicon, *collfoldericon, *copy_bigicon, *colltreeicon;
-FXIcon *copy_clpicon, *cut_clpicon, *delete_big_permicon, *delete_bigicon, *deselicon, *detailsicon;
-FXIcon *dirupicon, *editicon, *entericon, *errorbigicon, *exptreeicon, *compareicon;
-FXIcon *filedelete_permicon, *filedeleteicon, *fileopenicon;
-FXIcon *viewicon, *filtericon, *find_againicon, *fliplricon, *flipudicon, *floppyicon;
-FXIcon *fontsicon, *gotobigicon, *gotodiricon, *gotolineicon, *harddiskicon, *helpicon, *hidehiddenicon;
-FXIcon *hidenumbersicon, *hidethumbicon, *homeicon, *infobigicon, *invselicon, *link_bigicon;
-FXIcon *locationicon, *lowercaseicon, *maphosticon, *miniappicon, *miniblockdevicon, *minibrokenlinkicon;
-FXIcon *minichardevicon, *minidocicon, *miniexecicon, *minifolderclosedicon;
-FXIcon *minifolderlockedicon, *minifolderopenicon, *minifoldericon, *minifolderupicon, *minilinkicon;
-FXIcon *minipipeicon, *minishellicon, *minisocketicon;
-FXIcon *move_bigicon, *moveiticon, *newfileicon, *newfoldericon, *nfsdriveicon, *nfsdriveumticon;
-FXIcon *onepanelicon, *packageicon, *paste_clpicon, *prefsicon, *printbigicon, *printicon;
-FXIcon *questionbigicon, *quiticon, *redoicon, *reloadicon, *renameiticon, *replaceicon;
-FXIcon *reverticon, *rotatelefticon, *rotaterighticon, *runicon, *saveasicon, *savefileicon;
-FXIcon *searchnexticon, *searchicon, *searchprevicon, *selallicon, *setbookicon, *shellicon;
-FXIcon *showhiddenicon, *shownumbersicon, *showthumbicon, *smalliconsicon;
-FXIcon *trash_full_bigicon, *trash_fullicon, *treeonepanelicon, *treetwopanelsicon, *twopanelsicon;
-FXIcon *undoicon, *unmaphosticon, *uppercaseicon, *warningbigicon, *workicon, *wrapofficon, *wraponicon, *xfeicon, *xfiicon;
-FXIcon *xfpicon, *xfwicon, *zipicon, *zoom100icon, *zoominicon, *zoomouticon, *zoomwinicon;
-FXIcon *totrashicon, *dirbackicon, *dirforwardicon, *minixfeicon, *minixferooticon, *filedialogicon, *bigarchaddicon;
-FXIcon *switchpanelsicon, *syncpanelsicon, *newlinkicon, *greenbuttonicon, *graybuttonicon;
-FXIcon *keybindingsicon, *minikeybindingsicon, *filerestoreicon, *restore_bigicon, *vertpanelsicon, *horzpanelsicon;
+FXIcon* bigattribicon;
+FXIcon* bigblockdevicon;
+FXIcon* bigbrokenlinkicon;
+FXIcon* bigcdromicon;
+FXIcon* bigchardevicon;
+FXIcon* bigcompareicon;
+FXIcon* bigdocicon;
+FXIcon* bigexecicon;
+FXIcon* bigfileopenicon;
+FXIcon* bigfiltericon;
+FXIcon* bigfloppyicon;
+FXIcon* bigfoldericon;
+FXIcon* bigfolderopenicon;
+FXIcon* bigfolderlinkicon;
+FXIcon* bigfolderupicon;
+FXIcon* bigfoldernewicon;
+FXIcon* bigfolderlockedicon;
+FXIcon* bigfolderremoteicon;
+FXIcon* bigharddriveicon;
+FXIcon* bignewfileicon;
+FXIcon* bignewlinkicon;
+FXIcon* bignetdriveicon;
+FXIcon* bignetdriveumticon;
+FXIcon* bigpipeicon;
+FXIcon* bigsocketicon;
+FXIcon* bigzipdiskicon;
+FXIcon* bigrenameicon;
+FXIcon* bigbookmarkicon;
+FXIcon* bigaddbookicon;
+FXIcon* bigeditbookicon;
+FXIcon* bigremovebookicon;
+FXIcon* bigcopyicon;
+FXIcon* bigdeletepermicon;
+FXIcon* bigdeleteicon;
+FXIcon* bigerroricon;
+FXIcon* biggotoicon;
+FXIcon* biglinktoicon;
+FXIcon* biglinkicon;
+FXIcon* biginfoicon;
+FXIcon* bigmoveicon;
+FXIcon* bigprinticon;
+FXIcon* bigquestionicon;
+FXIcon* bigtrashfullicon;
+FXIcon* bigwarningicon;
+FXIcon* bigrestoreicon;
+FXIcon* bigarchaddicon;
+FXIcon* bigarchexticon;
+FXIcon* bigkeybindingsicon;
+FXIcon* bigsearchicon;
+FXIcon* bigreplaceicon;
+FXIcon* bigrunicon;
+FXIcon* biglinkbadgeicon;
+FXIcon* bigsavefileicon;
+FXIcon* bigsaveasicon;
+FXIcon* bigservericon;
 
+FXIcon* miniarchaddicon;
+FXIcon* miniarchexticon;
+FXIcon* miniattribicon;
+FXIcon* minibigiconsicon;
+FXIcon* minicdromicon;
+FXIcon* minicharticon;
+FXIcon* miniclosefileicon;
+FXIcon* minicolltreeicon;
+FXIcon* minicopyicon;
+FXIcon* minicuticon;
+FXIcon* miniunselicon;
+FXIcon* minidetailsicon;
+FXIcon* minidirupicon;
+FXIcon* miniediticon;
+FXIcon* miniexptreeicon;
+FXIcon* minideletepermicon;
+FXIcon* minideleteicon;
+FXIcon* minifileopenicon;
+FXIcon* miniviewicon;
+FXIcon* minifiltericon;
+FXIcon* minicompareicon;
+FXIcon* minifindagainicon;
+FXIcon* minifliplricon;
+FXIcon* miniflipudicon;
+FXIcon* minifloppyicon;
+FXIcon* minifontsicon;
+FXIcon* minigotodiricon;
+FXIcon* minigotoicon;
+FXIcon* miniharddriveicon;
+FXIcon* minihelpicon;
+FXIcon* minihidehiddenicon;
+FXIcon* minihidenumbersicon;
+FXIcon* minihidethumbicon;
+FXIcon* minihomeicon;
+FXIcon* minidesktopicon;
+FXIcon* miniinvselicon;
+FXIcon* minilowercaseicon;
+FXIcon* minimounticon;
+FXIcon* miniappicon;
+FXIcon* miniblockdevicon;
+FXIcon* minibrokenlinkicon;
+FXIcon* minichardevicon;
+FXIcon* minidocicon;
+FXIcon* miniexecicon;
+FXIcon* minifoldericon;
+FXIcon* minifolderopenicon;
+FXIcon* minifolderlockedicon;
+FXIcon* minifolderlinkicon;
+FXIcon* minifolderupicon;
+FXIcon* minifolderremoteicon;
+FXIcon* minifolderdownloadicon;
+FXIcon* minifoldernewicon;
+FXIcon* minifolderhomeicon;
+FXIcon* minifolderdocumentsicon;
+FXIcon* minifolderimagesicon;
+FXIcon* minifoldermusicicon;
+FXIcon* minifoldervideosicon;
+FXIcon* minilinktoicon;
+FXIcon* minilinkicon;
+FXIcon* minipipeicon;
+FXIcon* minishellicon;
+FXIcon* minisocketicon;
+FXIcon* minimoveicon;
+FXIcon* mininewfileicon;
+FXIcon* mininetdriveicon;
+FXIcon* mininetdriveumticon;
+FXIcon* minionepanelicon;
+FXIcon* minipackageicon;
+FXIcon* minipasteicon;
+FXIcon* miniprefsicon;
+FXIcon* miniprinticon;
+FXIcon* miniquiticon;
+FXIcon* miniredoicon;
+FXIcon* minireloadicon;
+FXIcon* minirenameicon;
+FXIcon* minireplaceicon;
+FXIcon* minireverticon;
+FXIcon* minirotatelefticon;
+FXIcon* minirotaterighticon;
+FXIcon* minirunicon;
+FXIcon* minisaveasicon;
+FXIcon* minisavefileicon;
+FXIcon* minisearchnexticon;
+FXIcon* minisearchicon;
+FXIcon* minisearchprevicon;
+FXIcon* miniselallicon;
+FXIcon* minibookmarkicon;
+FXIcon* miniaddbookicon;
+FXIcon* minieditbookicon;
+FXIcon* miniremovebookicon;
+FXIcon* minishowhiddenicon;
+FXIcon* minishownumbersicon;
+FXIcon* minishowthumbicon;
+FXIcon* minismalliconsicon;
+FXIcon* minitrashfullicon;
+FXIcon* minitreeonepanelicon;
+FXIcon* minitreetwopanelsicon;
+FXIcon* minitwopanelsicon;
+FXIcon* miniundoicon;
+FXIcon* miniunmounticon;
+FXIcon* miniuppercaseicon;
+FXIcon* miniworkicon;
+FXIcon* miniwrapofficon;
+FXIcon* miniwraponicon;
+FXIcon* minizipdiskicon;
+FXIcon* minizoom100icon;
+FXIcon* minizoominicon;
+FXIcon* minizoomouticon;
+FXIcon* minizoomwinicon;
+FXIcon* minitotrashicon;
+FXIcon* minidirbackicon;
+FXIcon* minidirforwardicon;
+FXIcon* minixferooticon;
+FXIcon* minixfeicon;
+FXIcon* minifiledialogicon;
+FXIcon* miniswitchpanelsicon;
+FXIcon* minisyncpanelsicon;
+FXIcon* mininewlinkicon;
+FXIcon* minigreenbuttonicon;
+FXIcon* minigraybuttonicon;
+FXIcon* minikeybindingsicon;
+FXIcon* minirestoreicon;
+FXIcon* minihorzpanelsicon;
+FXIcon* minivertpanelsicon;
+FXIcon* minitreeicon;
+FXIcon* miniplacesicon;
+FXIcon* miniupicon;
+FXIcon* minidownicon;
+FXIcon* miniremovabledeviceicon;
+FXIcon* miniclosefiltericon;
+FXIcon* minilinkbadgeicon;
+FXIcon* minicloseicon;
+FXIcon* miniaddicon;
+FXIcon* mininewtabicon;
+FXIcon* miniremovetabicon;
+FXIcon* miniservericon;
+
+FXIcon* xfeicon;
+FXIcon* xfaicon;
+FXIcon* xfiicon;
+FXIcon* xfpicon;
+FXIcon* xfwicon;
+
+FXIcon* cmymodeicon;
+FXIcon* dialmodeicon;
+FXIcon* eyedropicon;
+FXIcon* hsvmodeicon;
+FXIcon* listmodeicon;
+FXIcon* rgbmodeicon;
+
+FXIcon* docktopicon;
+FXIcon* docklefticon;
+FXIcon* dockrighticon;
+FXIcon* dockbottomicon;
+FXIcon* dockflipicon;
+FXIcon* dockfreeicon;
 
 
 // Load all application icons as global variables
-FXbool loadAppIcons(FXApp* app, FXbool *iconpathfound)
+FXbool loadAppIcons(FXApp* app, FXuint* iconpathstatus)
 {
-    *iconpathfound = true;
+    *iconpathstatus = ICONPATH_FOUND;
     FXbool success = true;
 
-    // Set icon path if it exists, otherwise set icon path to default
-    FXString iconpath = app->reg().readStringEntry("SETTINGS", "iconpath", DEFAULTICONPATH);
+    // Fractional scaling factor
+    FXint res = app->reg().readUnsignedEntry("SETTINGS", "screenres", 100);
+    double scalefrac = FXMAX(1.0, res / 100.0);
 
-    if ( !existFile(iconpath) )
+    // Default icon path
+    FXString defaulticonpath = xf_realpath(FXPath::directory(execpath) + "/../share/xfe/icons/default-theme");
+
+    // Select icon path
+    FXString iconpath = xf_realpath(app->reg().readStringEntry("SETTINGS", "iconpath", defaulticonpath.text()));
+    if (iconpath[0] == '~')
     {
-        iconpath = DEFAULTICONPATH;
-        *iconpathfound = false;
+        iconpath = FXSystem::getHomeDirectory() + iconpath.after('~');
     }
 
-    // Load icons and set the success flag
-    success = ((archaddicon = loadiconfile(app, iconpath, "archadd.png")) != NULL) & success;
-    success = ((archexticon = loadiconfile(app, iconpath, "archext.png")) != NULL) & success;
-    success = ((attribicon = loadiconfile(app, iconpath, "attrib.png")) != NULL) & success;
-    success = ((bigattribicon = loadiconfile(app, iconpath, "bigattrib.png")) != NULL) & success;
-    success = ((bigblockdevicon = loadiconfile(app, iconpath, "bigblockdev.png")) != NULL) & success;
-    success = ((bigbrokenlinkicon = loadiconfile(app, iconpath, "bigbrokenlink.png")) != NULL) & success;
-    success = ((bigcdromicon = loadiconfile(app, iconpath, "bigcdrom.png")) != NULL) & success;
-    success = ((bigchardevicon = loadiconfile(app, iconpath, "bigchardev.png")) != NULL) & success;
-    success = ((bigcompareicon = loadiconfile(app, iconpath, "bigcompare.png")) != NULL) & success;
-    success = ((bigdocicon = loadiconfile(app, iconpath, "bigdoc.png")) != NULL) & success;
-    success = ((bigexecicon = loadiconfile(app, iconpath, "bigexec.png")) != NULL) & success;
-    success = ((bigfileopenicon = loadiconfile(app, iconpath, "bigfileopen.png")) != NULL) & success;
-    success = ((bigfiltericon = loadiconfile(app, iconpath, "bigfilter.png")) != NULL) & success;
-    success = ((bigfloppyicon = loadiconfile(app, iconpath, "bigfloppy.png")) != NULL) & success;
-    success = ((bigfolderlockedicon = loadiconfile(app, iconpath, "bigfolderlocked.png")) != NULL) & success;
-    success = ((bigfolderopenicon = loadiconfile(app, iconpath, "bigfolderopen.png")) != NULL) & success;
-    success = ((bigfoldericon = loadiconfile(app, iconpath, "bigfolder.png")) != NULL) & success;
-    success = ((bigfolderupicon = loadiconfile(app, iconpath, "bigfolderup.png")) != NULL) & success;
-    success = ((bigharddiskicon = loadiconfile(app, iconpath, "bigharddisk.png")) != NULL) & success;
-    success = ((bigiconsicon = loadiconfile(app, iconpath, "bigicons.png")) != NULL) & success;
-    success = ((biglinkicon = loadiconfile(app, iconpath, "biglink.png")) != NULL) & success;
-    success = ((bignewfileicon = loadiconfile(app, iconpath, "bignewfile.png")) != NULL) & success;
-    success = ((bignewfoldericon = loadiconfile(app, iconpath, "bignewfolder.png")) != NULL) & success;
-    success = ((bignewlinkicon = loadiconfile(app, iconpath, "bignewlink.png")) != NULL) & success;
-    success = ((bignfsdriveicon = loadiconfile(app, iconpath, "bignfsdrive.png")) != NULL) & success;
-    success = ((bignfsdriveumticon = loadiconfile(app, iconpath, "bignfsdriveumt.png")) != NULL) & success;
-    success = ((bigpipeicon = loadiconfile(app, iconpath, "bigpipe.png")) != NULL) & success;
-    success = ((bigsocketicon = loadiconfile(app, iconpath, "bigsocket.png")) != NULL) & success;
-    success = ((bigzipicon = loadiconfile(app, iconpath, "bigzip.png")) != NULL) & success;
-    success = ((cdromicon = loadiconfile(app, iconpath, "cdrom.png")) != NULL) & success;
-    success = ((charticon = loadiconfile(app, iconpath, "chart.png")) != NULL) & success;
-    success = ((closefileicon = loadiconfile(app, iconpath, "closefile.png")) != NULL) & success;
-    success = ((clrbookicon = loadiconfile(app, iconpath, "clrbook.png")) != NULL) & success;
-    success = ((colltreeicon = loadiconfile(app, iconpath, "colltree.png")) != NULL) & success;
-    success = ((copy_bigicon = loadiconfile(app, iconpath, "copy_big.png")) != NULL) & success;
-    success = ((copy_clpicon = loadiconfile(app, iconpath, "copy_clp.png")) != NULL) & success;
-    success = ((cut_clpicon = loadiconfile(app, iconpath, "cut_clp.png")) != NULL) & success;
-    success = ((delete_big_permicon = loadiconfile(app, iconpath, "delete_big_perm.png")) != NULL) & success;
-    success = ((delete_bigicon = loadiconfile(app, iconpath, "delete_big.png")) != NULL) & success;
-    success = ((deselicon = loadiconfile(app, iconpath, "desel.png")) != NULL) & success;
-    success = ((detailsicon = loadiconfile(app, iconpath, "details.png")) != NULL) & success;
-    success = ((dirupicon = loadiconfile(app, iconpath, "dirup.png")) != NULL) & success;
-    success = ((editicon = loadiconfile(app, iconpath, "edit.png")) != NULL) & success;
-    success = ((entericon = loadiconfile(app, iconpath, "enter.png")) != NULL) & success;
-    success = ((errorbigicon = loadiconfile(app, iconpath, "errorbig.png")) != NULL) & success;
-    success = ((exptreeicon = loadiconfile(app, iconpath, "exptree.png")) != NULL) & success;
-    success = ((compareicon = loadiconfile(app, iconpath, "compare.png")) != NULL) & success;
-    success = ((filedelete_permicon = loadiconfile(app, iconpath, "filedelete_perm.png")) != NULL) & success;
-    success = ((filedeleteicon = loadiconfile(app, iconpath, "filedelete.png")) != NULL) & success;
-    success = ((fileopenicon = loadiconfile(app, iconpath, "fileopen.png")) != NULL) & success;
-    success = ((viewicon = loadiconfile(app, iconpath, "view.png")) != NULL) & success;
-    success = ((filtericon = loadiconfile(app, iconpath, "filter.png")) != NULL) & success;
-    success = ((find_againicon = loadiconfile(app, iconpath, "find_again.png")) != NULL) & success;
-    success = ((fliplricon = loadiconfile(app, iconpath, "fliplr.png")) != NULL) & success;
-    success = ((flipudicon = loadiconfile(app, iconpath, "flipud.png")) != NULL) & success;
-    success = ((floppyicon = loadiconfile(app, iconpath, "floppy.png")) != NULL) & success;
-    success = ((fontsicon = loadiconfile(app, iconpath, "fonts.png")) != NULL) & success;
-    success = ((gotobigicon = loadiconfile(app, iconpath, "gotobig.png")) != NULL) & success;
-    success = ((gotodiricon = loadiconfile(app, iconpath, "gotodir.png")) != NULL) & success;
-    success = ((gotolineicon = loadiconfile(app, iconpath, "gotoline.png")) != NULL) & success;
-    success = ((harddiskicon = loadiconfile(app, iconpath, "harddisk.png")) != NULL) & success;
-    success = ((helpicon = loadiconfile(app, iconpath, "help.png")) != NULL) & success;
-    success = ((hidehiddenicon = loadiconfile(app, iconpath, "hidehidden.png")) != NULL) & success;
-    success = ((hidenumbersicon = loadiconfile(app, iconpath, "hidenumbers.png")) != NULL) & success;
-    success = ((hidethumbicon = loadiconfile(app, iconpath, "hidethumb.png")) != NULL) & success;
-    success = ((homeicon = loadiconfile(app, iconpath, "home.png")) != NULL) & success;
-    success = ((infobigicon = loadiconfile(app, iconpath, "infobig.png")) != NULL) & success;
-    success = ((invselicon = loadiconfile(app, iconpath, "invsel.png")) != NULL) & success;
-    success = ((link_bigicon = loadiconfile(app, iconpath, "link_big.png")) != NULL) & success;
-    success = ((locationicon = loadiconfile(app, iconpath, "location.png")) != NULL) & success;
-    success = ((lowercaseicon = loadiconfile(app, iconpath, "lowercase.png")) != NULL) & success;
-    success = ((maphosticon = loadiconfile(app, iconpath, "maphost.png")) != NULL) & success;
-    success = ((miniappicon = loadiconfile(app, iconpath, "miniapp.png")) != NULL) & success;
-    success = ((miniblockdevicon = loadiconfile(app, iconpath, "miniblockdev.png")) != NULL) & success;
-    success = ((minibrokenlinkicon = loadiconfile(app, iconpath, "minibrokenlink.png")) != NULL) & success;
-    success = ((minichardevicon = loadiconfile(app, iconpath, "minichardev.png")) != NULL) & success;
-    success = ((minidocicon = loadiconfile(app, iconpath, "minidoc.png")) != NULL) & success;
-    success = ((miniexecicon = loadiconfile(app, iconpath, "miniexec.png")) != NULL) & success;
-    success = ((minifolderclosedicon = loadiconfile(app, iconpath, "minifolderclosed.png")) != NULL) & success;
-    success = ((minifolderlockedicon = loadiconfile(app, iconpath, "minifolderlocked.png")) != NULL) & success;
-    success = ((minifolderopenicon = loadiconfile(app, iconpath, "minifolderopen.png")) != NULL) & success;
-    success = ((minifoldericon = loadiconfile(app, iconpath, "minifolder.png")) != NULL) & success;
-    success = ((minifolderupicon = loadiconfile(app, iconpath, "minifolderup.png")) != NULL) & success;
-    success = ((minilinkicon = loadiconfile(app, iconpath, "minilink.png")) != NULL) & success;
-    success = ((minipipeicon = loadiconfile(app, iconpath, "minipipe.png")) != NULL) & success;
-    success = ((minishellicon = loadiconfile(app, iconpath, "minishell.png")) != NULL) & success;
-    success = ((minisocketicon = loadiconfile(app, iconpath, "minisocket.png")) != NULL) & success;
-    success = ((move_bigicon = loadiconfile(app, iconpath, "move_big.png")) != NULL) & success;
-    success = ((moveiticon = loadiconfile(app, iconpath, "moveit.png")) != NULL) & success;
-    success = ((newfileicon = loadiconfile(app, iconpath, "newfile.png")) != NULL) & success;
-    success = ((newfoldericon = loadiconfile(app, iconpath, "newfolder.png")) != NULL) & success;
-    success = ((nfsdriveicon = loadiconfile(app, iconpath, "nfsdrive.png")) != NULL) & success;
-    success = ((nfsdriveumticon = loadiconfile(app, iconpath, "nfsdriveumt.png")) != NULL) & success;
-    success = ((onepanelicon = loadiconfile(app, iconpath, "onepanel.png")) != NULL) & success;
-    success = ((packageicon = loadiconfile(app, iconpath, "package.png")) != NULL) & success;
-    success = ((paste_clpicon = loadiconfile(app, iconpath, "paste_clp.png")) != NULL) & success;
-    success = ((prefsicon = loadiconfile(app, iconpath, "prefs.png")) != NULL) & success;
-    success = ((printbigicon = loadiconfile(app, iconpath, "printbig.png")) != NULL) & success;
-    success = ((printicon = loadiconfile(app, iconpath, "print.png")) != NULL) & success;
-    success = ((questionbigicon = loadiconfile(app, iconpath, "questionbig.png")) != NULL) & success;
-    success = ((quiticon = loadiconfile(app, iconpath, "quit.png")) != NULL) & success;
-    success = ((redoicon = loadiconfile(app, iconpath, "redo.png")) != NULL) & success;
-    success = ((reloadicon = loadiconfile(app, iconpath, "reload.png")) != NULL) & success;
-    success = ((renameiticon = loadiconfile(app, iconpath, "renameit.png")) != NULL) & success;
-    success = ((replaceicon = loadiconfile(app, iconpath, "replace.png")) != NULL) & success;
-    success = ((reverticon = loadiconfile(app, iconpath, "revert.png")) != NULL) & success;
-    success = ((rotatelefticon = loadiconfile(app, iconpath, "rotateleft.png")) != NULL) & success;
-    success = ((rotaterighticon = loadiconfile(app, iconpath, "rotateright.png")) != NULL) & success;
-    success = ((runicon = loadiconfile(app, iconpath, "run.png")) != NULL) & success;
-    success = ((saveasicon = loadiconfile(app, iconpath, "saveas.png")) != NULL) & success;
-    success = ((savefileicon = loadiconfile(app, iconpath, "savefile.png")) != NULL) & success;
-    success = ((searchnexticon = loadiconfile(app, iconpath, "searchnext.png")) != NULL) & success;
-    success = ((searchicon = loadiconfile(app, iconpath, "search.png")) != NULL) & success;
-    success = ((searchprevicon = loadiconfile(app, iconpath, "searchprev.png")) != NULL) & success;
-    success = ((selallicon = loadiconfile(app, iconpath, "selall.png")) != NULL) & success;
-    success = ((setbookicon = loadiconfile(app, iconpath, "setbook.png")) != NULL) & success;
-    success = ((shellicon = loadiconfile(app, iconpath, "shell.png")) != NULL) & success;
-    success = ((showhiddenicon = loadiconfile(app, iconpath, "showhidden.png")) != NULL) & success;
-    success = ((shownumbersicon = loadiconfile(app, iconpath, "shownumbers.png")) != NULL) & success;
-    success = ((showthumbicon = loadiconfile(app, iconpath, "showthumb.png")) != NULL) & success;
-    success = ((smalliconsicon = loadiconfile(app, iconpath, "smallicons.png")) != NULL) & success;
-    success = ((trash_full_bigicon = loadiconfile(app, iconpath, "trash_full_big.png")) != NULL) & success;
-    success = ((trash_fullicon = loadiconfile(app, iconpath, "trash_full.png")) != NULL) & success;
-    success = ((treeonepanelicon = loadiconfile(app, iconpath, "treeonepanel.png")) != NULL) & success;
-    success = ((treetwopanelsicon = loadiconfile(app, iconpath, "treetwopanels.png")) != NULL) & success;
-    success = ((twopanelsicon = loadiconfile(app, iconpath, "twopanels.png")) != NULL) & success;
-    success = ((undoicon = loadiconfile(app, iconpath, "undo.png")) != NULL) & success;
-    success = ((unmaphosticon = loadiconfile(app, iconpath, "unmaphost.png")) != NULL) & success;
-    success = ((uppercaseicon = loadiconfile(app, iconpath, "uppercase.png")) != NULL) & success;
-    success = ((warningbigicon = loadiconfile(app, iconpath, "warningbig.png")) != NULL) & success;
-    success = ((workicon = loadiconfile(app, iconpath, "work.png")) != NULL) & success;
-    success = ((wrapofficon = loadiconfile(app, iconpath, "wrapoff.png")) != NULL) & success;
-    success = ((wraponicon = loadiconfile(app, iconpath, "wrapon.png")) != NULL) & success;
-    success = ((xfeicon = loadiconfile(app, iconpath, "xfe.png")) != NULL) & success;
-    success = ((xfiicon = loadiconfile(app, iconpath, "xfi.png")) != NULL) & success;
-    success = ((xfpicon = loadiconfile(app, iconpath, "xfp.png")) != NULL) & success;
-    success = ((xfwicon = loadiconfile(app, iconpath, "xfw.png")) != NULL) & success;
-    success = ((zipicon = loadiconfile(app, iconpath, "zip.png")) != NULL) & success;
-    success = ((zoom100icon = loadiconfile(app, iconpath, "zoom100.png")) != NULL) & success;
-    success = ((zoominicon = loadiconfile(app, iconpath, "zoomin.png")) != NULL) & success;
-    success = ((zoomouticon = loadiconfile(app, iconpath, "zoomout.png")) != NULL) & success;
-    success = ((zoomwinicon = loadiconfile(app, iconpath, "zoomwin.png")) != NULL) & success;
-    success = ((totrashicon = loadiconfile(app, iconpath, "totrash.png")) != NULL) & success;
-    success = ((dirbackicon = loadiconfile(app, iconpath, "dirback.png")) != NULL) & success;
-    success = ((dirforwardicon = loadiconfile(app, iconpath, "dirforward.png")) != NULL) & success;
-    success = ((minixferooticon = loadiconfile(app, iconpath, "minixferoot.png")) != NULL) & success;
-    success = ((minixfeicon = loadiconfile(app, iconpath, "minixfe.png")) != NULL) & success;
-    success = ((filedialogicon = loadiconfile(app, iconpath, "filedialog.png")) != NULL) & success;
-    success = ((bigarchaddicon = loadiconfile(app, iconpath, "bigarchadd.png")) != NULL) & success;
-    success = ((switchpanelsicon = loadiconfile(app, iconpath, "switchpanels.png")) != NULL) & success;
-    success = ((syncpanelsicon = loadiconfile(app, iconpath, "syncpanels.png")) != NULL) & success;
-    success = ((newlinkicon = loadiconfile(app, iconpath, "newlink.png")) != NULL) & success;
-    success = ((greenbuttonicon = loadiconfile(app, iconpath, "greenbutton.png")) != NULL) & success;
-    success = ((graybuttonicon = loadiconfile(app, iconpath, "graybutton.png")) != NULL) & success;
-    success = ((keybindingsicon = loadiconfile(app, iconpath, "keybindings.png")) != NULL) & success;
-    success = ((minikeybindingsicon = loadiconfile(app, iconpath, "minikeybindings.png")) != NULL) & success;
-    success = ((filerestoreicon = loadiconfile(app, iconpath, "filerestore.png")) != NULL) & success;
-    success = ((restore_bigicon = loadiconfile(app, iconpath, "restore_big.png")) != NULL) & success;
-    success = ((horzpanelsicon = loadiconfile(app, iconpath, "horzpanels.png")) != NULL) & success;
-    success = ((vertpanelsicon = loadiconfile(app, iconpath, "vertpanels.png")) != NULL) & success;
+    // Icon path does not exist
+    if (!xf_existfile(iconpath))
+    {
+        *iconpathstatus = ICONPATH_NOT_FOUND;
+    
+        // Default icon path does not exist
+        if (!xf_existfile(defaulticonpath))
+        {
+            *iconpathstatus = DEFAULTICONPATH_NOT_FOUND;
+        }
 
-    return(success);
+        // Set icon path to default
+        else
+        {
+            iconpath = defaulticonpath;
+            app->reg().writeStringEntry("SETTINGS", "iconpath", iconpath.text());
+        }
+    }
+
+    // Colors for blending
+    FXColor baseColor = app->getBaseColor();
+    FXColor backColor = app->getBackColor();
+
+    // Load icons and set the success flag
+    FXbool firstpass = true;
+
+load:
+
+    // Big icons with base color background
+    success = ((bigattribicon = xf_loadiconfile(app, iconpath, "bigattrib.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((bigcompareicon = xf_loadiconfile(app, iconpath, "bigcompare.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((bigfiltericon = xf_loadiconfile(app, iconpath, "bigfilter.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((bigfoldernewicon = xf_loadiconfile(app, iconpath, "bigfoldernew.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((bigfolderlinkicon = xf_loadiconfile(app, iconpath, "bigfolderlink.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((bignewfileicon = xf_loadiconfile(app, iconpath, "bignewfile.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((bignewlinkicon = xf_loadiconfile(app, iconpath, "bignewlink.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((bigcopyicon = xf_loadiconfile(app, iconpath, "bigcopy.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((bigdeletepermicon = xf_loadiconfile(app, iconpath, "bigdeleteperm.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((bigdeleteicon = xf_loadiconfile(app, iconpath, "bigdelete.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((bigerroricon = xf_loadiconfile(app, iconpath, "bigerror.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((bigfileopenicon = xf_loadiconfile(app, iconpath, "bigfileopen.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((biggotoicon = xf_loadiconfile(app, iconpath, "biggoto.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((biglinktoicon = xf_loadiconfile(app, iconpath, "biglinkto.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((bigmoveicon = xf_loadiconfile(app, iconpath, "bigmove.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((bigquestionicon = xf_loadiconfile(app, iconpath, "bigquestion.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((bigprinticon = xf_loadiconfile(app, iconpath, "bigprint.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((biginfoicon = xf_loadiconfile(app, iconpath, "biginfo.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((bigrenameicon = xf_loadiconfile(app, iconpath, "bigrename.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((bigbookmarkicon = xf_loadiconfile(app, iconpath, "bigbookmark.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((bigaddbookicon = xf_loadiconfile(app, iconpath, "bigaddbook.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((bigeditbookicon = xf_loadiconfile(app, iconpath, "bigeditbook.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((bigremovebookicon = xf_loadiconfile(app, iconpath, "bigremovebook.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((bigwarningicon = xf_loadiconfile(app, iconpath, "bigwarning.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((bigtrashfullicon = xf_loadiconfile(app, iconpath, "bigtrashfull.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((bigrestoreicon = xf_loadiconfile(app, iconpath, "bigrestore.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((bigarchaddicon = xf_loadiconfile(app, iconpath, "bigarchadd.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((bigarchexticon = xf_loadiconfile(app, iconpath, "bigarchext.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((bigkeybindingsicon = xf_loadiconfile(app, iconpath, "bigkeybindings.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((bigsearchicon = xf_loadiconfile(app, iconpath, "bigsearch.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((bigreplaceicon = xf_loadiconfile(app, iconpath, "bigreplace.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((bigrunicon = xf_loadiconfile(app, iconpath, "bigrun.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((biglinkbadgeicon = xf_loadiconfile(app, iconpath, "biglinkbadge.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((bigsavefileicon = xf_loadiconfile(app, iconpath, "bigsavefile.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((bigsaveasicon = xf_loadiconfile(app, iconpath, "bigsaveas.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((bigservericon = xf_loadiconfile(app, iconpath, "bigserver.png", scalefrac, baseColor)) != NULL) & success;
+
+    // Big icons with back color background
+    success = ((bigblockdevicon = xf_loadiconfile(app, iconpath, "bigblockdev.png", scalefrac, backColor)) != NULL) & success;
+    success = ((bigbrokenlinkicon = xf_loadiconfile(app, iconpath, "bigbrokenlink.png", scalefrac, backColor)) != NULL) & success;
+    success = ((bigcdromicon = xf_loadiconfile(app, iconpath, "bigcdrom.png", scalefrac, backColor)) != NULL) & success;
+    success = ((bigchardevicon = xf_loadiconfile(app, iconpath, "bigchardev.png", scalefrac, backColor)) != NULL) & success;
+    success = ((bigdocicon = xf_loadiconfile(app, iconpath, "bigdoc.png", scalefrac, backColor)) != NULL) & success;
+    success = ((bigexecicon = xf_loadiconfile(app, iconpath, "bigexec.png", scalefrac, backColor)) != NULL) & success;
+    success = ((bigfloppyicon = xf_loadiconfile(app, iconpath, "bigfloppy.png", scalefrac, backColor)) != NULL) & success;
+    success = ((bigfolderlockedicon = xf_loadiconfile(app, iconpath, "bigfolderlocked.png", scalefrac, backColor)) != NULL) & success;
+    success = ((bigfoldericon = xf_loadiconfile(app, iconpath, "bigfolder.png", scalefrac, backColor)) != NULL) & success;
+    success = ((bigfolderopenicon = xf_loadiconfile(app, iconpath, "bigfolderopen.png", scalefrac, backColor)) != NULL) & success;
+    success = ((bigfolderupicon = xf_loadiconfile(app, iconpath, "bigfolderup.png", scalefrac, backColor)) != NULL) & success;
+    success = ((bigfolderremoteicon = xf_loadiconfile(app, iconpath, "bigfolderremote.png", scalefrac, backColor)) != NULL) & success;
+    success = ((bigharddriveicon = xf_loadiconfile(app, iconpath, "bigharddrive.png", scalefrac, backColor)) != NULL) & success;
+    success = ((bignetdriveicon = xf_loadiconfile(app, iconpath, "bignetdrive.png", scalefrac, backColor)) != NULL) & success;
+    success = ((bignetdriveumticon = xf_loadiconfile(app, iconpath, "bignetdriveumt.png", scalefrac, backColor)) != NULL) & success;
+    success = ((bigpipeicon = xf_loadiconfile(app, iconpath, "bigpipe.png", scalefrac, backColor)) != NULL) & success;
+    success = ((bigsocketicon = xf_loadiconfile(app, iconpath, "bigsocket.png", scalefrac, backColor)) != NULL) & success;
+    success = ((bigzipdiskicon = xf_loadiconfile(app, iconpath, "bigzipdisk.png", scalefrac, backColor)) != NULL) & success;
+    success = ((biglinkicon = xf_loadiconfile(app, iconpath, "biglink.png", scalefrac, backColor)) != NULL) & success;
+
+    // Mini icons with base color background
+    success = ((miniarchaddicon = xf_loadiconfile(app, iconpath, "miniarchadd.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((miniarchexticon = xf_loadiconfile(app, iconpath, "miniarchext.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((miniattribicon = xf_loadiconfile(app, iconpath, "miniattrib.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((minibigiconsicon = xf_loadiconfile(app, iconpath, "minibigicons.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((minicharticon = xf_loadiconfile(app, iconpath, "minichart.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((miniclosefileicon = xf_loadiconfile(app, iconpath, "miniclosefile.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((miniaddbookicon = xf_loadiconfile(app, iconpath, "miniaddbook.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((minieditbookicon = xf_loadiconfile(app, iconpath, "minieditbook.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((miniremovebookicon = xf_loadiconfile(app, iconpath, "miniremovebook.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((minicolltreeicon = xf_loadiconfile(app, iconpath, "minicolltree.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((minicopyicon = xf_loadiconfile(app, iconpath, "minicopy.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((minicuticon = xf_loadiconfile(app, iconpath, "minicut.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((miniunselicon = xf_loadiconfile(app, iconpath, "miniunsel.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((minidetailsicon = xf_loadiconfile(app, iconpath, "minidetails.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((minidirupicon = xf_loadiconfile(app, iconpath, "minidirup.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((miniediticon = xf_loadiconfile(app, iconpath, "miniedit.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((miniexptreeicon = xf_loadiconfile(app, iconpath, "miniexptree.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((minicompareicon = xf_loadiconfile(app, iconpath, "minicompare.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((minideletepermicon = xf_loadiconfile(app, iconpath, "minideleteperm.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((minideleteicon = xf_loadiconfile(app, iconpath, "minidelete.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((minifileopenicon = xf_loadiconfile(app, iconpath, "minifileopen.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((miniviewicon = xf_loadiconfile(app, iconpath, "miniview.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((minifiltericon = xf_loadiconfile(app, iconpath, "minifilter.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((minifindagainicon = xf_loadiconfile(app, iconpath, "minifindagain.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((minifliplricon = xf_loadiconfile(app, iconpath, "minifliplr.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((miniflipudicon = xf_loadiconfile(app, iconpath, "miniflipud.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((minifontsicon = xf_loadiconfile(app, iconpath, "minifonts.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((minigotodiricon = xf_loadiconfile(app, iconpath, "minigotodir.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((minigotoicon = xf_loadiconfile(app, iconpath, "minigoto.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((minihelpicon = xf_loadiconfile(app, iconpath, "minihelp.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((minihidehiddenicon = xf_loadiconfile(app, iconpath, "minihidehidden.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((minihidenumbersicon = xf_loadiconfile(app, iconpath, "minihidenumbers.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((minihidethumbicon = xf_loadiconfile(app, iconpath, "minihidethumb.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((minihomeicon = xf_loadiconfile(app, iconpath, "minihome.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((miniinvselicon = xf_loadiconfile(app, iconpath, "miniinvsel.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((minilowercaseicon = xf_loadiconfile(app, iconpath, "minilowercase.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((minimounticon = xf_loadiconfile(app, iconpath, "minimount.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((minifoldernewicon = xf_loadiconfile(app, iconpath, "minifoldernew.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((minilinktoicon = xf_loadiconfile(app, iconpath, "minilinkto.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((minishellicon = xf_loadiconfile(app, iconpath, "minishell.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((minimoveicon = xf_loadiconfile(app, iconpath, "minimove.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((mininewfileicon = xf_loadiconfile(app, iconpath, "mininewfile.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((minionepanelicon = xf_loadiconfile(app, iconpath, "minionepanel.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((minipackageicon = xf_loadiconfile(app, iconpath, "minipackage.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((minipasteicon = xf_loadiconfile(app, iconpath, "minipaste.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((miniprefsicon = xf_loadiconfile(app, iconpath, "miniprefs.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((miniprinticon = xf_loadiconfile(app, iconpath, "miniprint.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((miniquiticon = xf_loadiconfile(app, iconpath, "miniquit.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((miniredoicon = xf_loadiconfile(app, iconpath, "miniredo.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((minireloadicon = xf_loadiconfile(app, iconpath, "minireload.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((minirenameicon = xf_loadiconfile(app, iconpath, "minirename.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((minireplaceicon = xf_loadiconfile(app, iconpath, "minireplace.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((minireverticon = xf_loadiconfile(app, iconpath, "minirevert.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((minirotatelefticon = xf_loadiconfile(app, iconpath, "minirotateleft.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((minirotaterighticon = xf_loadiconfile(app, iconpath, "minirotateright.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((minirunicon = xf_loadiconfile(app, iconpath, "minirun.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((minisaveasicon = xf_loadiconfile(app, iconpath, "minisaveas.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((minisavefileicon = xf_loadiconfile(app, iconpath, "minisavefile.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((minisearchnexticon = xf_loadiconfile(app, iconpath, "minisearchnext.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((minisearchicon = xf_loadiconfile(app, iconpath, "minisearch.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((minisearchprevicon = xf_loadiconfile(app, iconpath, "minisearchprev.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((miniselallicon = xf_loadiconfile(app, iconpath, "miniselall.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((minishowhiddenicon = xf_loadiconfile(app, iconpath, "minishowhidden.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((minishownumbersicon = xf_loadiconfile(app, iconpath, "minishownumbers.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((minishowthumbicon = xf_loadiconfile(app, iconpath, "minishowthumb.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((minismalliconsicon = xf_loadiconfile(app, iconpath, "minismallicons.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((minitrashfullicon = xf_loadiconfile(app, iconpath, "minitrashfull.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((minitreeonepanelicon = xf_loadiconfile(app, iconpath, "minitreeonepanel.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((minitreetwopanelsicon = xf_loadiconfile(app, iconpath, "minitreetwopanels.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((minitwopanelsicon = xf_loadiconfile(app, iconpath, "minitwopanels.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((miniundoicon = xf_loadiconfile(app, iconpath, "miniundo.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((miniunmounticon = xf_loadiconfile(app, iconpath, "miniunmount.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((miniuppercaseicon = xf_loadiconfile(app, iconpath, "miniuppercase.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((miniworkicon = xf_loadiconfile(app, iconpath, "miniwork.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((miniwrapofficon = xf_loadiconfile(app, iconpath, "miniwrapoff.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((miniwraponicon = xf_loadiconfile(app, iconpath, "miniwrapon.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((minizoom100icon = xf_loadiconfile(app, iconpath, "minizoom100.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((minizoominicon = xf_loadiconfile(app, iconpath, "minizoomin.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((minizoomouticon = xf_loadiconfile(app, iconpath, "minizoomout.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((minizoomwinicon = xf_loadiconfile(app, iconpath, "minizoomwin.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((minitotrashicon = xf_loadiconfile(app, iconpath, "minitotrash.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((minidirbackicon = xf_loadiconfile(app, iconpath, "minidirback.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((minidirforwardicon = xf_loadiconfile(app, iconpath, "minidirforward.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((minixferooticon = xf_loadiconfile(app, iconpath, "minixferoot.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((minixfeicon = xf_loadiconfile(app, iconpath, "minixfe.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((minifiledialogicon = xf_loadiconfile(app, iconpath, "minifiledialog.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((miniswitchpanelsicon = xf_loadiconfile(app, iconpath, "miniswitchpanels.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((minisyncpanelsicon = xf_loadiconfile(app, iconpath, "minisyncpanels.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((mininewlinkicon = xf_loadiconfile(app, iconpath, "mininewlink.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((minigreenbuttonicon = xf_loadiconfile(app, iconpath, "minigreenbutton.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((minigraybuttonicon = xf_loadiconfile(app, iconpath, "minigraybutton.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((minikeybindingsicon = xf_loadiconfile(app, iconpath, "minikeybindings.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((minirestoreicon = xf_loadiconfile(app, iconpath, "minirestore.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((minihorzpanelsicon = xf_loadiconfile(app, iconpath, "minihorzpanels.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((minivertpanelsicon = xf_loadiconfile(app, iconpath, "minivertpanels.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((minitreeicon = xf_loadiconfile(app, iconpath, "minitree.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((miniplacesicon = xf_loadiconfile(app, iconpath, "miniplaces.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((miniupicon = xf_loadiconfile(app, iconpath, "miniup.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((minidownicon = xf_loadiconfile(app, iconpath, "minidown.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((miniremovabledeviceicon = xf_loadiconfile(app, iconpath, "miniremovabledevice.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((miniclosefiltericon = xf_loadiconfile(app, iconpath, "miniclosefilter.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((minilinkbadgeicon = xf_loadiconfile(app, iconpath, "minilinkbadge.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((minicloseicon = xf_loadiconfile(app, iconpath, "miniclose.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((miniaddicon = xf_loadiconfile(app, iconpath, "miniadd.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((mininewtabicon = xf_loadiconfile(app, iconpath, "mininewtab.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((miniremovetabicon = xf_loadiconfile(app, iconpath, "miniremovetab.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((miniservericon = xf_loadiconfile(app, iconpath, "miniserver.png", scalefrac, baseColor)) != NULL) & success;
+
+    // Mini icons with back color background
+    success = ((minicdromicon = xf_loadiconfile(app, iconpath, "minicdrom.png", scalefrac, backColor)) != NULL) & success;
+    success = ((minibookmarkicon = xf_loadiconfile(app, iconpath, "minibookmark.png", scalefrac, backColor)) != NULL) & success;
+    success = ((minifloppyicon = xf_loadiconfile(app, iconpath, "minifloppy.png", scalefrac, backColor)) != NULL) & success;
+    success = ((miniharddriveicon = xf_loadiconfile(app, iconpath, "miniharddrive.png", scalefrac, backColor)) != NULL) & success;
+    success = ((minidesktopicon = xf_loadiconfile(app, iconpath, "minidesktop.png", scalefrac, backColor)) != NULL) & success;
+    success = ((miniblockdevicon = xf_loadiconfile(app, iconpath, "miniblockdev.png", scalefrac, backColor)) != NULL) & success;
+    success = ((minibrokenlinkicon = xf_loadiconfile(app, iconpath, "minibrokenlink.png", scalefrac, backColor)) != NULL) & success;
+    success = ((minichardevicon = xf_loadiconfile(app, iconpath, "minichardev.png", scalefrac, backColor)) != NULL) & success;
+    success = ((minidocicon = xf_loadiconfile(app, iconpath, "minidoc.png", scalefrac, backColor)) != NULL) & success;
+    success = ((miniexecicon = xf_loadiconfile(app, iconpath, "miniexec.png", scalefrac, backColor)) != NULL) & success;
+    success = ((minifolderlockedicon = xf_loadiconfile(app, iconpath, "minifolderlocked.png", scalefrac, backColor)) != NULL) & success;
+    success = ((minifolderopenicon = xf_loadiconfile(app, iconpath, "minifolderopen.png", scalefrac, backColor)) != NULL) & success;
+    success = ((minifoldericon = xf_loadiconfile(app, iconpath, "minifolder.png", scalefrac, backColor)) != NULL) & success;
+    success = ((minifolderlinkicon = xf_loadiconfile(app, iconpath, "minifolderlink.png", scalefrac, backColor)) != NULL) & success;
+    success = ((minifolderupicon = xf_loadiconfile(app, iconpath, "minifolderup.png", scalefrac, backColor)) != NULL) & success;
+    success = ((minifolderremoteicon = xf_loadiconfile(app, iconpath, "minifolderremote.png", scalefrac, backColor)) != NULL) & success;
+    success = ((minifolderhomeicon = xf_loadiconfile(app, iconpath, "minifolderhome.png", scalefrac, backColor)) != NULL) & success;
+    success = ((miniappicon = xf_loadiconfile(app, iconpath, "miniapp.png", scalefrac, backColor)) != NULL) & success;
+    success = ((minifolderdownloadicon = xf_loadiconfile(app, iconpath, "minifolderdownload.png", scalefrac, backColor)) != NULL) & success;
+    success = ((minifolderdocumentsicon = xf_loadiconfile(app, iconpath, "minifolderdocuments.png", scalefrac, backColor)) != NULL) & success;
+    success = ((minifoldermusicicon = xf_loadiconfile(app, iconpath, "minifoldermusic.png", scalefrac, backColor)) != NULL) & success;
+    success = ((minifolderimagesicon = xf_loadiconfile(app, iconpath, "minifolderimages.png", scalefrac, backColor)) != NULL) & success;
+    success = ((minifoldervideosicon = xf_loadiconfile(app, iconpath, "minifoldervideos.png", scalefrac, backColor)) != NULL) & success;
+    success = ((minilinkicon = xf_loadiconfile(app, iconpath, "minilink.png", scalefrac, backColor)) != NULL) & success;
+    success = ((minipipeicon = xf_loadiconfile(app, iconpath, "minipipe.png", scalefrac, backColor)) != NULL) & success;
+    success = ((minisocketicon = xf_loadiconfile(app, iconpath, "minisocket.png", scalefrac, backColor)) != NULL) & success;
+    success = ((mininetdriveicon = xf_loadiconfile(app, iconpath, "mininetdrive.png", scalefrac, backColor)) != NULL) & success;
+    success = ((mininetdriveumticon = xf_loadiconfile(app, iconpath, "mininetdriveumt.png", scalefrac, backColor)) != NULL) & success;
+    success = ((minizipdiskicon = xf_loadiconfile(app, iconpath, "minizipdisk.png", scalefrac, backColor)) != NULL) & success;
+
+    // Mini icons with base color background
+    success = ((xfeicon = xf_loadiconfile(app, iconpath, "xfe.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((xfaicon = xf_loadiconfile(app, iconpath, "xfa.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((xfiicon = xf_loadiconfile(app, iconpath, "xfi.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((xfpicon = xf_loadiconfile(app, iconpath, "xfp.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((xfwicon = xf_loadiconfile(app, iconpath, "xfw.png", scalefrac, baseColor)) != NULL) & success;
+
+    // Mini icons with base color background
+    success = ((cmymodeicon = xf_loadiconfile(app, iconpath, "cmymode.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((dialmodeicon = xf_loadiconfile(app, iconpath, "dialmode.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((eyedropicon = xf_loadiconfile(app, iconpath, "eyedrop.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((hsvmodeicon = xf_loadiconfile(app, iconpath, "hsvmode.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((listmodeicon = xf_loadiconfile(app, iconpath, "listmode.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((rgbmodeicon = xf_loadiconfile(app, iconpath, "rgbmode.png", scalefrac, baseColor)) != NULL) & success;
+
+    success = ((docktopicon = xf_loadiconfile(app, iconpath, "docktop.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((dockbottomicon = xf_loadiconfile(app, iconpath, "dockbottom.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((docklefticon = xf_loadiconfile(app, iconpath, "dockleft.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((dockrighticon = xf_loadiconfile(app, iconpath, "dockright.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((dockflipicon = xf_loadiconfile(app, iconpath, "dockflip.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((dockfreeicon = xf_loadiconfile(app, iconpath, "dockfree.png", scalefrac, baseColor)) != NULL) & success;
+
+
+    // If some icons from icon path were missing, reload using default icon path 
+    if (!success && firstpass)
+    {
+        *iconpathstatus = ICONPATH_MISSING_ICONS;
+        
+        // Default icon path does not exist
+        if (!xf_existfile(defaulticonpath))
+        {
+            *iconpathstatus = DEFAULTICONPATH_NOT_FOUND;
+        }
+
+        // Set icon path to default
+        else
+        {
+            iconpath = defaulticonpath;
+            app->reg().writeStringEntry("SETTINGS", "iconpath", iconpath.text());
+        }
+
+        firstpass = false;
+        goto load;
+    }
+    
+    return success;
 }

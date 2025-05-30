@@ -19,12 +19,14 @@
 #include "startupnotification.h"
 #include "FileDialog.h"
 #include "FileList.h"
+#include "Places.h"
 #include "Properties.h"
 #include "XFileExplorer.h"
 #include "InputDialog.h"
 #include "BrowseInputDialog.h"
 #include "ArchInputDialog.h"
 #include "HistInputDialog.h"
+#include "RenameDialog.h"
 #include "File.h"
 #include "MessageBox.h"
 #include "OverwriteBox.h"
@@ -32,6 +34,7 @@
 #include "ExecuteBox.h"
 #include "PathLinker.h"
 #include "FilePanel.h"
+
 
 // Duration (in ms) before we can stop refreshing the file list
 // Used for file operations on a large list of files
@@ -44,7 +47,7 @@
 // Clipboard notes :
 // The uri-list type used for Xfe is the same as the Gnome uri-list type
 // The standard uri-list type is used for KDE and non Gnome / XFCE file managers
-// A special uri-list type that containd only "0" (for copy) or "1" (for cut) is used for KDE compatibility
+// A special uri-list type that contains only "0" (for copy) or "1" (for cut) is used for KDE compatibility
 
 
 // Global Variables
@@ -56,22 +59,18 @@ extern FXString xdgdatahome;
 extern FXString clipboard;
 FXuint clipboard_type = 0;
 
-
+// Open history
 extern char OpenHistory[OPEN_HIST_SIZE][MAX_COMMAND_SIZE];
 extern int OpenNum;
+
+// Filter history
 extern char FilterHistory[FILTER_HIST_SIZE][MAX_PATTERN_SIZE];
 extern int FilterNum;
+
 #if defined(linux)
 extern FXStringDict* fsdevices;
 extern FXStringDict* mtdevices;
-extern FXbool pkg_format;
 #endif
-
-extern FXbool allowPopupScroll;
-extern FXuint single_click;
-
-// Flag for FilePanel::onCmdItemDoubleClicked
-extern FXbool called_from_iconlist;
 
 
 // Map
@@ -95,6 +94,7 @@ FXDEFMAP(FilePanel) FilePanelMap[] =
     FXMAPFUNC(SEL_COMMAND, FilePanel::ID_NEW_DIR, FilePanel::onCmdNewDir),
     FXMAPFUNC(SEL_COMMAND, FilePanel::ID_NEW_FILE, FilePanel::onCmdNewFile),
     FXMAPFUNC(SEL_COMMAND, FilePanel::ID_NEW_SYMLINK, FilePanel::onCmdNewSymlink),
+    FXMAPFUNC(SEL_COMMAND, FilePanel::ID_ADD_BOOKMARK, FilePanel::onCmdAddBookmark),
     FXMAPFUNC(SEL_COMMAND, FilePanel::ID_FILE_COPY, FilePanel::onCmdFileMan),
     FXMAPFUNC(SEL_COMMAND, FilePanel::ID_FILE_CUT, FilePanel::onCmdFileMan),
     FXMAPFUNC(SEL_COMMAND, FilePanel::ID_FILE_COPYTO, FilePanel::onCmdFileMan),
@@ -132,6 +132,8 @@ FXDEFMAP(FilePanel) FilePanelMap[] =
     FXMAPFUNC(SEL_RIGHTBUTTONRELEASE, FilePanel::ID_FILELIST, FilePanel::onCmdPopupMenu),
     FXMAPFUNC(SEL_COMMAND, FilePanel::ID_POPUP_MENU, FilePanel::onCmdPopupMenu),
     FXMAPFUNC(SEL_DOUBLECLICKED, FilePanel::ID_FILELIST, FilePanel::onCmdItemDoubleClicked),
+    FXMAPFUNC(SEL_DOUBLECLICKED, FilePanel::ID_KEY_RETURN, FilePanel::onCmdItemDoubleClicked),
+    FXMAPFUNC(SEL_KEYPRESS, 0, FilePanel::onKeyPress),
     FXMAPFUNC(SEL_CLICKED, FilePanel::ID_FILELIST, FilePanel::onCmdItemClicked),
     FXMAPFUNC(SEL_FOCUSIN, FilePanel::ID_FILELIST, FilePanel::onCmdFocus),
     FXMAPFUNC(SEL_UPDATE, FilePanel::ID_STATUS, FilePanel::onUpdStatus),
@@ -146,7 +148,6 @@ FXDEFMAP(FilePanel) FilePanelMap[] =
     FXMAPFUNC(SEL_UPDATE, FilePanel::ID_FILE_DELETE, FilePanel::onUpdFileDelete),
     FXMAPFUNC(SEL_UPDATE, FilePanel::ID_FILE_MOVETO, FilePanel::onUpdMenu),
     FXMAPFUNC(SEL_UPDATE, FilePanel::ID_FILE_COPYTO, FilePanel::onUpdMenu),
-    FXMAPFUNC(SEL_UPDATE, FilePanel::ID_FILE_RENAME, FilePanel::onUpdSelMult),
     FXMAPFUNC(SEL_UPDATE, FilePanel::ID_COMPARE, FilePanel::onUpdCompare),
     FXMAPFUNC(SEL_UPDATE, FilePanel::ID_EDIT, FilePanel::onUpdOpen),
     FXMAPFUNC(SEL_UPDATE, FilePanel::ID_VIEW, FilePanel::onUpdOpen),
@@ -170,24 +171,31 @@ FXDEFMAP(FilePanel) FilePanelMap[] =
 #endif
 };
 
+
 // Object implementation
 FXIMPLEMENT(FilePanel, FXVerticalFrame, FilePanelMap, ARRAYNUMBER(FilePanelMap))
 
-// Construct File Panel
-FilePanel::FilePanel(FXWindow* owner, const char* nm, FXComposite* p, DirPanel* dp, FXuint name_size, FXuint size_size, FXuint type_size, FXuint ext_size,
-                     FXuint modd_size, FXuint user_size, FXuint grou_size, FXuint attr_size, FXuint deldate_size, FXuint origpath_size, FXbool showthumbs, FXColor listbackcolor, FXColor listforecolor,
+
+// Construct
+FilePanel::FilePanel(FXWindow* owner, const char* nm, FXComposite* p, DirPanel* dp, FXuint* ic, FXuint nc,
+                     FXuint name_size, FXuint size_size, FXuint type_size, FXuint ext_size, FXuint date_size,
+                     FXuint user_size, FXuint group_size, FXuint perms_size, FXuint link_size, FXuint deldate_size,
+                     FXuint origpath_size, FXbool showthumbs, FXColor listbackcolor, FXColor listforecolor,
                      FXColor attentioncolor, FXbool smoothscroll, FXuint opts, int x, int y, int w, int h) :
     FXVerticalFrame(p, opts, x, y, w, h, 0, 0, 0, 0)
 {
+    nbCols = nc;
     name = nm;
     dirpanel = dp;
     attenclr = attentioncolor;
 
     // Global container
-    FXVerticalFrame* cont = new FXVerticalFrame(this, LAYOUT_FILL_Y | LAYOUT_FILL_X | FRAME_NONE, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+    FXVerticalFrame* cont = new FXVerticalFrame(this, LAYOUT_FILL_Y | LAYOUT_FILL_X | FRAME_NONE,
+                                                0, 0, 0, 0, 0, 0, 0, 0, 0, 1);
 
     // Container for the path linker
-    FXHorizontalFrame* pathframe = new FXHorizontalFrame(cont, LAYOUT_LEFT | JUSTIFY_LEFT | LAYOUT_FILL_X | FRAME_NONE, 0, 0, 0, 0, 0, 0, 0, 0);
+    FXHorizontalFrame* pathframe = new FXHorizontalFrame(cont, LAYOUT_LEFT | JUSTIFY_LEFT | LAYOUT_FILL_X | FRAME_NONE,
+                                                         0, 0, 0, 0, 0, 0, 2, 2);
 
     // File list
 
@@ -195,30 +203,74 @@ FilePanel::FilePanel(FXWindow* owner, const char* nm, FXComposite* p, DirPanel* 
     FXuint options;
     if (smoothscroll)
     {
-        options = LAYOUT_FILL_X | LAYOUT_FILL_Y | _ICONLIST_MINI_ICONS;
+        options = LAYOUT_FILL_X | LAYOUT_FILL_Y | ICONLIST_MINI_ICONS;
     }
     else
     {
-        options = LAYOUT_FILL_X | LAYOUT_FILL_Y | _ICONLIST_MINI_ICONS | SCROLLERS_DONT_TRACK;
+        options = LAYOUT_FILL_X | LAYOUT_FILL_Y | ICONLIST_MINI_ICONS | SCROLLERS_DONT_TRACK;
     }
 
-    FXVerticalFrame* cont2 = new FXVerticalFrame(cont, LAYOUT_FILL_Y | LAYOUT_FILL_X | FRAME_SUNKEN, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-    list = new FileList(owner, cont2, this, ID_FILELIST, showthumbs, options);
-    list->setHeaderSize(0, name_size);
-    list->setHeaderSize(1, size_size);
-    list->setHeaderSize(2, type_size);
-    list->setHeaderSize(3, ext_size);
-    list->setHeaderSize(4, modd_size);
-    list->setHeaderSize(5, user_size);
-    list->setHeaderSize(6, grou_size);
-    list->setHeaderSize(7, attr_size);
-    list->setHeaderSize(8, deldate_size);
-    list->setHeaderSize(9, origpath_size);
+    FXVerticalFrame* cont2 = new FXVerticalFrame(cont, LAYOUT_FILL_Y | LAYOUT_FILL_X | FRAME_NONE,
+                                                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+
+    list = new FileList(owner, cont2, ic, nc, this, ID_FILELIST, showthumbs, deldate_size, origpath_size,
+                        options);
+
+    // Set list headers size
+    for (FXuint i = 0; i < nbCols; i++)
+    {
+        FXuint size = 0;
+
+        FXuint id = list->getHeaderId(i);
+
+        switch (id)
+        {
+        case FileList::ID_COL_NAME:
+            size = name_size;
+            break;
+
+        case FileList::ID_COL_SIZE:
+            size = size_size;
+            break;
+
+        case FileList::ID_COL_TYPE:
+            size = type_size;
+            break;
+
+        case FileList::ID_COL_EXT:
+            size = ext_size;
+            break;
+
+        case FileList::ID_COL_DATE:
+            size = date_size;
+            break;
+
+        case FileList::ID_COL_USER:
+            size = user_size;
+            break;
+
+        case FileList::ID_COL_GROUP:
+            size = group_size;
+            break;
+
+        case FileList::ID_COL_PERMS:
+            size = perms_size;
+            break;
+
+        case FileList::ID_COL_LINK:
+            size = link_size;
+            break;
+        }
+
+        list->setHeaderSize(i, size);
+    }
+
     list->setTextColor(listforecolor);
     list->setBackColor(listbackcolor);
 
     // Visually indicate if the panel is active
-    activeicon = new FXButton(pathframe, "", graybuttonicon, this, FilePanel::ID_FILELIST, BUTTON_TOOLBAR | JUSTIFY_LEFT | LAYOUT_LEFT);
+    activeicon = new FXButton(pathframe, "", minigraybuttonicon, this, FilePanel::ID_FILELIST, BUTTON_TOOLBAR |
+                              JUSTIFY_LEFT | LAYOUT_LEFT);
 
     // Path text
     pathtext = new TextLabel(pathframe, 0, this, ID_FILELIST, LAYOUT_FILL_X | LAYOUT_FILL_Y);
@@ -228,26 +280,35 @@ FilePanel::FilePanel(FXWindow* owner, const char* nm, FXComposite* p, DirPanel* 
     pathlink = new PathLinker(pathframe, list, dirpanel->getList(), JUSTIFY_LEFT | LAYOUT_LEFT | LAYOUT_FILL_X);
 
     // Status bar
-    statusbar = new FXHorizontalFrame(cont, LAYOUT_LEFT | JUSTIFY_LEFT | LAYOUT_FILL_X | FRAME_NONE, 0, 0, 0, 0, 3, 3, 3, 3);
+    statusbar = new FXHorizontalFrame(cont, LAYOUT_LEFT | JUSTIFY_LEFT | LAYOUT_FILL_X | FRAME_NONE, 0, 0, 0, 0, 3, 3,
+                                      3, 3);
 
     statusbar->setTarget(this);
     statusbar->setSelector(FXSEL(SEL_UPDATE, FilePanel::ID_STATUS));
 
     FXString key = getApp()->reg().readStringEntry("KEYBINDINGS", "hidden_files", "Ctrl-F6");
-    new FXToggleButton(statusbar, TAB + _("Show hidden files") + PARS(key), TAB + _("Hide hidden files") + PARS(key), showhiddenicon, hidehiddenicon, this->list,
-                       FileList::ID_TOGGLE_HIDDEN, TOGGLEBUTTON_TOOLBAR | LAYOUT_LEFT | ICON_BEFORE_TEXT | FRAME_RAISED);
+    new FXToggleButton(statusbar, TAB + _("Show Hidden Files") + PARS(key), TAB + _("Hide Hidden Files") + PARS(key),
+                       minishowhiddenicon, minihidehiddenicon, this->list,
+                       FileList::ID_TOGGLE_HIDDEN, TOGGLEBUTTON_TOOLBAR | LAYOUT_LEFT | ICON_BEFORE_TEXT | FRAME_NONE);
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "thumbnails", "Ctrl-F7");
-    new FXToggleButton(statusbar, TAB + _("Show thumbnails") + PARS(key), TAB + _("Hide thumbnails") + PARS(key), showthumbicon, hidethumbicon, this->list,
-                       FileList::ID_TOGGLE_THUMBNAILS, TOGGLEBUTTON_TOOLBAR | LAYOUT_LEFT | ICON_BEFORE_TEXT | FRAME_RAISED);
+    new FXToggleButton(statusbar, TAB + _("Show Thumbnails") + PARS(key), TAB + _("Hide Thumbnails") + PARS(key),
+                       minishowthumbicon, minihidethumbicon, this->list,
+                       FileList::ID_TOGGLE_THUMBNAILS,
+                       TOGGLEBUTTON_TOOLBAR | LAYOUT_LEFT | ICON_BEFORE_TEXT | FRAME_NONE);
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "filter", "Ctrl-D");
-    new FXButton(statusbar, TAB + _("Filter") + PARS(key), filtericon, this,
-                 FilePanel::ID_FILTER, BUTTON_TOOLBAR | LAYOUT_LEFT | ICON_BEFORE_TEXT | FRAME_RAISED);
+    new FXButton(statusbar, TAB + _("Filter") + PARS(key), minifiltericon, this,
+                 FilePanel::ID_FILTER, BUTTON_TOOLBAR | LAYOUT_LEFT | ICON_BEFORE_TEXT | FRAME_NONE);
 
-    FXHorizontalFrame* hframe = new FXHorizontalFrame(statusbar, LAYOUT_LEFT | JUSTIFY_LEFT | LAYOUT_FILL_X | FRAME_NONE, 0, 0, 0, 0, 0, 0, 0, 0);
+    FXHorizontalFrame* hframe = new FXHorizontalFrame(statusbar, LAYOUT_LEFT | JUSTIFY_LEFT | LAYOUT_FILL_X | FRAME_NONE,
+                                                      0, 0, 0, 0, 0, 0, 0, 0);
+    filterlabel = new FXLabel(hframe, "", NULL, JUSTIFY_LEFT | LAYOUT_LEFT);
+    closefilter = new FXButton(hframe, TAB + _("Close Filter"), miniclosefiltericon, this->list,
+                               FileList::ID_CLOSE_FILTER,
+                               JUSTIFY_LEFT | LAYOUT_LEFT | BUTTON_TOOLBAR | ICON_BEFORE_TEXT | FRAME_NONE);
+
     statuslabel = new FXLabel(hframe, _("Status"), NULL, JUSTIFY_LEFT | LAYOUT_LEFT);
-    filterlabel = new FXLabel(hframe, "", NULL, JUSTIFY_LEFT | LAYOUT_LEFT | LAYOUT_FILL_X);
 
     corner = new FXDragCorner(statusbar);
 
@@ -264,18 +325,6 @@ FilePanel::FilePanel(FXWindow* owner, const char* nm, FXComposite* p, DirPanel* 
     {
         list->setDefaultCursor(getApp()->getDefaultCursor(DEF_HAND_CURSOR));
     }
-
-    // Dialogs
-    operationdialogsingle = NULL;
-    operationdialogrename = NULL;
-    operationdialogmultiple = NULL;
-    newdirdialog = NULL;
-    newfiledialog = NULL;
-    newlinkdialog = NULL;
-    opendialog = NULL;
-    archdialog = NULL;
-    filterdialog = NULL;
-    comparedialog = NULL;
 
     // Home and trahscan locations
     trashlocation = xdgdatahome + PATHSEPSTRING TRASHPATH;
@@ -297,9 +346,6 @@ FilePanel::FilePanel(FXWindow* owner, const char* nm, FXComposite* p, DirPanel* 
 
     // Initialize the active panel flag
     isactive = false;
-
-    // Initialize the flag used in FilePanel::onCmdItemDoubleClicked
-    called_from_iconlist = false;
 
     // Default programs identifiers
     progs["<txtviewer>"] = TXTVIEWER;
@@ -363,10 +409,12 @@ FilePanel::~FilePanel()
     delete archdialog;
     delete filterdialog;
     delete comparedialog;
+    delete addbookmarkdialog;
     delete operationdialogsingle;
     delete operationdialogrename;
     delete operationdialogmultiple;
     delete pathtext;
+    delete closefilter;
 }
 
 
@@ -374,7 +422,7 @@ FilePanel::~FilePanel()
 void FilePanel::setActive()
 {
     // Set active icon
-    activeicon->setIcon(greenbuttonicon);
+    activeicon->setIcon(minigreenbuttonicon);
     activeicon->setTipText(_("Panel is active"));
 
     pathlink->focus();
@@ -401,7 +449,7 @@ void FilePanel::setActive()
 void FilePanel::setInactive(FXbool force)
 {
     // Set active icon
-    activeicon->setIcon(graybuttonicon);
+    activeicon->setIcon(minigraybuttonicon);
     activeicon->setTipText(_("Activate panel"));
 
     // By default we set the panel inactive
@@ -419,7 +467,7 @@ void FilePanel::setInactive(FXbool force)
 long FilePanel::onCmdFocus(FXObject* sender, FXSelector sel, void* ptr)
 {
     setActive();
-    return(1);
+    return 1;
 }
 
 
@@ -463,7 +511,7 @@ void FilePanel::updateLocation()
 {
     FXString item;
     int i = 0;
-    FXComboBox* address = ((XFileExplorer*)mainWindow)->getAddressBox();
+    ComboBox* address = ((XFileExplorer*)mainWindow)->getAddressBox();
 
     address->setNumVisible(5);
     int count = address->getNumItems();
@@ -478,7 +526,7 @@ void FilePanel::updateLocation()
     while (i < count)
     {
         item = address->getItem(i++);
-        if (streq((const char*)&p[0], (const char*)&item[0]))
+        if (xf_strequal((const char*)&p[0], (const char*)&item[0]))
         {
             i--;
             break;
@@ -498,7 +546,7 @@ void FilePanel::updateLocation()
 long FilePanel::onClipboardGained(FXObject* sender, FXSelector sel, void* ptr)
 {
     FXVerticalFrame::onClipboardGained(sender, sel, ptr);
-    return(1);
+    return 1;
 }
 
 
@@ -506,7 +554,7 @@ long FilePanel::onClipboardGained(FXObject* sender, FXSelector sel, void* ptr)
 long FilePanel::onClipboardLost(FXObject* sender, FXSelector sel, void* ptr)
 {
     FXVerticalFrame::onClipboardLost(sender, sel, ptr);
-    return(1);
+    return 1;
 }
 
 
@@ -520,7 +568,7 @@ long FilePanel::onClipboardRequest(FXObject* sender, FXSelector sel, void* ptr)
     // Perhaps the target wants to supply its own data for the clipboard
     if (FXVerticalFrame::onClipboardRequest(sender, sel, ptr))
     {
-        return(1);
+        return 1;
     }
 
     // Clipboard target is xfelistType (Xfe, Gnome or XFCE)
@@ -553,7 +601,7 @@ long FilePanel::onClipboardRequest(FXObject* sender, FXSelector sel, void* ptr)
                 setDNDData(FROM_CLIPBOARD, event->target, data, len);
 
                 // Return because xfelistType is not compatible with other types
-                return(1);
+                return 1;
             }
         }
     }
@@ -590,7 +638,7 @@ long FilePanel::onClipboardRequest(FXObject* sender, FXSelector sel, void* ptr)
             FXMEMDUP(&data, clipboard.text(), FXuchar, len);
             setDNDData(FROM_CLIPBOARD, event->target, data, len);
 
-            return(1);
+            return 1;
         }
     }
 
@@ -625,7 +673,6 @@ long FilePanel::onClipboardRequest(FXObject* sender, FXSelector sel, void* ptr)
                     beg = end;
                 }
             }
-
             // Clipboard contains 'copy\n' or 'cut\n' as first line, thus skip it
             else
             {
@@ -660,11 +707,11 @@ long FilePanel::onClipboardRequest(FXObject* sender, FXSelector sel, void* ptr)
                 FXMEMDUP(&data, str.text(), FXuchar, len);
                 setDNDData(FROM_CLIPBOARD, event->target, data, len);
 
-                return(1);
+                return 1;
             }
         }
     }
-    return(0);
+    return 0;
 }
 
 
@@ -678,7 +725,6 @@ long FilePanel::onCmdCopyCut(FXObject*, FXSelector sel, void*)
     {
         clipboard.clear();
     }
-
     // Add an '\n' at the end if addcopy or addcut
     else
     {
@@ -700,13 +746,12 @@ long FilePanel::onCmdCopyCut(FXObject*, FXSelector sel, void*)
 
     if (num == 0)
     {
-        return(0);
+        return 0;
     }
-
     // If exist selected files, use them
     else if (num >= 1)
     {
-        // Eventually deselect the '..' directory
+        // Possibly deselect the '..' directory
         if (current->list->isItemSelected(0))
         {
             current->list->deselectItem(0);
@@ -723,11 +768,11 @@ long FilePanel::onCmdCopyCut(FXObject*, FXSelector sel, void*)
                 name = name.section('\t', 0);
                 if (curdir == ROOTDIR)
                 {
-                    clipboard += FXURL::encode(::fileToURI(curdir + name)) + "\n";
+                    clipboard += FXURL::encode(::xf_filetouri(curdir + name)) + "\n";
                 }
                 else
                 {
-                    clipboard += FXURL::encode(::fileToURI(curdir + PATHSEPSTRING + name)) + "\n";
+                    clipboard += FXURL::encode(::xf_filetouri(curdir + PATHSEPSTRING + name)) + "\n";
                 }
             }
         }
@@ -744,10 +789,10 @@ long FilePanel::onCmdCopyCut(FXObject*, FXSelector sel, void*)
     types[3] = utf8Type;
     if (acquireClipboard(types, 4))
     {
-        return(0);
+        return 0;
     }
 
-    return(1);
+    return 1;
 }
 
 
@@ -763,13 +808,12 @@ long FilePanel::onCmdCopyName(FXObject*, FXSelector sel, void*)
 
     if (num == 0)
     {
-        return(0);
+        return 0;
     }
-
     // If exist selected files, use them
     else if (num >= 1)
     {
-        // Eventually deselect the '..' directory
+        // Possibly deselect the '..' directory
         if (current->list->isItemSelected(0))
         {
             current->list->deselectItem(0);
@@ -782,7 +826,7 @@ long FilePanel::onCmdCopyName(FXObject*, FXSelector sel, void*)
             {
                 FXString name = current->list->getItemText(u).text();
                 name = name.section('\t', 0);
-                clipboard += FXURL::encode(::fileToURI(name)) + "\n";
+                clipboard += FXURL::encode(::xf_filetouri(name)) + "\n";
             }
         }
     }
@@ -798,10 +842,10 @@ long FilePanel::onCmdCopyName(FXObject*, FXSelector sel, void*)
     types[3] = utf8Type;
     if (acquireClipboard(types, 4))
     {
-        return(0);
+        return 0;
     }
 
-    return(1);
+    return 1;
 }
 
 
@@ -834,7 +878,7 @@ long FilePanel::onCmdPaste(FXObject*, FXSelector sel, void*)
             // Obtain item url
             url = clipboard.mid(beg, end - beg);
 
-            // Eventually remove the trailing '\r' if any
+            // Possibly remove the trailing '\r' if any
             if ((pos = url.rfind('\r')) > 0)
             {
                 url.erase(pos);
@@ -854,7 +898,6 @@ long FilePanel::onCmdPaste(FXObject*, FXSelector sel, void*)
                     clipboard_type = CUT_CLIPBOARD;
                     num++;
                 }
-
                 // If first item is not "copy" nor "cut", process it as a normal url
                 // and use default clipboard type
                 else
@@ -866,7 +909,6 @@ long FilePanel::onCmdPaste(FXObject*, FXSelector sel, void*)
                     num += 2;
                 }
             }
-
             // Process other items
             else
             {
@@ -898,7 +940,7 @@ long FilePanel::onCmdPaste(FXObject*, FXSelector sel, void*)
         FXFREE(&data);
 
         // Return here because xfelistType is not compatible with other types
-        return(1);
+        return 1;
     }
 
     // If source type is kdelistType (KDE)
@@ -947,7 +989,7 @@ long FilePanel::onCmdPaste(FXObject*, FXSelector sel, void*)
             // Obtain item url
             url = clipboard.mid(beg, end - beg);
 
-            // Eventually remove the trailing '\r' if any
+            // Possibly remove the trailing '\r' if any
             if ((pos = url.rfind('\r')) > 0)
             {
                 url.erase(pos);
@@ -977,7 +1019,7 @@ long FilePanel::onCmdPaste(FXObject*, FXSelector sel, void*)
         handle(this, sel, (void*)param.text());
 
         FXFREE(&data);
-        return(1);
+        return 1;
     }
 
     // If source type is utf8Type (simple text)
@@ -999,7 +1041,7 @@ long FilePanel::onCmdPaste(FXObject*, FXSelector sel, void*)
             // Obtain item file path
             filepath = clipboard.mid(beg, end - beg);
 
-            // Eventually remove the trailing '\r' if any
+            // Possibly remove the trailing '\r' if any
             if ((pos = filepath.rfind('\r')) > 0)
             {
                 filepath.erase(pos);
@@ -1019,18 +1061,16 @@ long FilePanel::onCmdPaste(FXObject*, FXSelector sel, void*)
         handle(this, sel, (void*)param.text());
 
         FXFREE(&data);
-        return(1);
+        return 1;
     }
 
-    return(0);
-
+    return 0;
 }
 
 
 // Execute file with an optional confirm dialog
 void FilePanel::execFile(FXString filepath)
 {
-    int ret;
     FXString cmd, cmdname, str;
 
 #ifdef STARTUP_NOTIFICATION
@@ -1039,50 +1079,9 @@ void FilePanel::execFile(FXString filepath)
     FXString snexcepts = getApp()->reg().readStringEntry("OPTIONS", "startup_notification_exceptions", "");
 #endif
 
-    // Is file a link ?
-    if (FXStat::isLink(filepath))
-    {
-        // Loop to find the file towards the link (or chain of links) points
-        while (1)
-        {
-            FXString linkpath = FXPath::directory(filepath) + PATHSEPSTRING + FXFile::symlink(filepath.text());
-
-            if (FXStat::exists(linkpath))
-            {
-                if (FXStat::isLink(linkpath))
-                {
-                    filepath = linkpath;
-                }
-                else
-                {
-                    // File pointed by the link
-                    str = mimetype(linkpath);
-                    break;
-                }
-            }
-            else
-            {
-                // Broken link
-                return;
-            }
-        }
-    }
-
-    // Regular file
-    else
-    {
-        str = mimetype(filepath);
-    }
-
-    // File is executable, but is it a text file?
-    FXbool isTextFile = true;
-    if (strstr(str.text(), "charset=binary"))
-    {
-        isTextFile = false;
-    }
-
     // Text file
-    if (isTextFile)
+    int ret = xf_istextfile(filepath);
+    if (ret == 1)
     {
         // Execution forbidden, edit the file
         FXbool no_script = getApp()->reg().readUnsignedEntry("OPTIONS", "no_script", false);
@@ -1093,23 +1092,21 @@ void FilePanel::execFile(FXString filepath)
             cmdname = cmd;
 
             // If command exists, run it
-            if (::existCommand(cmdname))
+            if (xf_existcommand(cmdname))
             {
-                cmd = cmdname + " " + ::quote(filepath);
+                cmd = cmdname + " " + xf_quote(filepath);
 #ifdef STARTUP_NOTIFICATION
                 runcmd(cmd, cmdname, current->list->getDirectory(), startlocation, usesn, snexcepts);
 #else
                 runcmd(cmd, current->list->getDirectory(), startlocation);
 #endif
             }
-
             // If command does not exist, call the "Open with..." dialog
             else
             {
                 current->handle(this, FXSEL(SEL_COMMAND, ID_OPEN_WITH), NULL);
             }
         }
-
         // Execution allowed, execute file with optional confirmation dialog
         else
         {
@@ -1127,7 +1124,7 @@ void FilePanel::execFile(FXString filepath)
                 if (answer == EXECBOX_CLICKED_EXECUTE)
                 {
                     cmdname = FXPath::name(filepath);
-                    cmd = ::quote(filepath);
+                    cmd = xf_quote(filepath);
 #ifdef STARTUP_NOTIFICATION
                     // No startup notification in this case
                     runcmd(cmd, cmdname, current->list->getDirectory(), startlocation, false, "");
@@ -1139,28 +1136,30 @@ void FilePanel::execFile(FXString filepath)
                 // Execute in console mode
                 if (answer == EXECBOX_CLICKED_CONSOLE)
                 {
-                    ret = chdir(current->list->getDirectory().text());
+                    int ret = chdir(current->list->getDirectory().text());
                     if (ret < 0)
                     {
                         int errcode = errno;
                         if (errcode)
                         {
-                            MessageBox::error(this, BOX_OK, _("Error"), _("Can't enter folder %s: %s"), current->list->getDirectory().text(), strerror(errcode));
+                            MessageBox::error(this, BOX_OK, _("Error"), _("Can't enter folder %s: %s"),
+                                              current->list->getDirectory().text(), strerror(errcode));
                         }
                         else
                         {
-                            MessageBox::error(this, BOX_OK, _("Error"), _("Can't enter folder %s"), current->list->getDirectory().text());
+                            MessageBox::error(this, BOX_OK, _("Error"), _("Can't enter folder %s"),
+                                              current->list->getDirectory().text());
                         }
                     }
 
                     cmdname = FXPath::name(filepath);
-                    cmd = ::quote(filepath);
+                    cmd = xf_quote(filepath);
 
                     // Make and show command window
                     // The CommandWindow object will delete itself when closed!
                     CommandWindow* cmdwin = new CommandWindow(getApp(), _("Command log"), cmd, 30, 80);
                     cmdwin->create();
-                    cmdwin->setIcon(runicon);
+                    cmdwin->setIcon(minirunicon);
 
                     ret = chdir(startlocation.text());
                     if (ret < 0)
@@ -1168,11 +1167,13 @@ void FilePanel::execFile(FXString filepath)
                         int errcode = errno;
                         if (errcode)
                         {
-                            MessageBox::error(this, BOX_OK, _("Error"), _("Can't enter folder %s: %s"), startlocation.text(), strerror(errcode));
+                            MessageBox::error(this, BOX_OK, _("Error"), _("Can't enter folder %s: %s"),
+                                              startlocation.text(), strerror(errcode));
                         }
                         else
                         {
-                            MessageBox::error(this, BOX_OK, _("Error"), _("Can't enter folder %s"), startlocation.text());
+                            MessageBox::error(this, BOX_OK, _("Error"), _("Can't enter folder %s"),
+                                              startlocation.text());
                         }
                     }
                 }
@@ -1185,16 +1186,15 @@ void FilePanel::execFile(FXString filepath)
                     cmdname = cmd;
 
                     // If command exists, run it
-                    if (::existCommand(cmdname))
+                    if (xf_existcommand(cmdname))
                     {
-                        cmd = cmdname + " " + ::quote(filepath);
+                        cmd = cmdname + " " + xf_quote(filepath);
 #ifdef STARTUP_NOTIFICATION
                         runcmd(cmd, cmdname, current->list->getDirectory(), startlocation, usesn, snexcepts);
 #else
                         runcmd(cmd, current->list->getDirectory(), startlocation);
 #endif
                     }
-
                     // If command does not exist, call the "Open with..." dialog
                     else
                     {
@@ -1204,40 +1204,72 @@ void FilePanel::execFile(FXString filepath)
             }
         }
     }
-
     // Binary file, execute it
-    else
+    else if (ret == 0)
     {
         cmdname = FXPath::name(filepath);
-        cmd = ::quote(filepath);
+        cmd = xf_quote(filepath);
 #ifdef STARTUP_NOTIFICATION
         runcmd(cmd, cmdname, current->list->getDirectory(), startlocation, usesn, snexcepts);
 #else
         runcmd(cmd, current->list->getDirectory(), startlocation);
 #endif
     }
+    // Broken link
+    else  // ret = -1
+    {
+        return;
+    }
+}
+
+
+// Keyboard press
+long FilePanel::onKeyPress(FXObject* sender, FXSelector sel, void* ptr)
+{
+    FXEvent* event = (FXEvent*)ptr;
+
+    int currentitem = current->list->getCurrentItem();
+
+    switch (event->code)
+    {
+    case KEY_Escape:
+
+        this->handle(sender, FXSEL(SEL_COMMAND, ID_DESELECT_ALL), ptr);
+        return 1;
+
+    case KEY_KP_Enter:
+    case KEY_Return:
+
+        // Call onCmdItemDoubleClicked()
+        handle(this, FXSEL(SEL_DOUBLECLICKED, FilePanel::ID_KEY_RETURN), (void*)(FXival)(currentitem));
+        return 1;
+
+    default:
+
+        // Pass key to IconList
+        return current->list->onKeyPress(sender, sel, ptr);
+    }
+
+    return 0;
 }
 
 
 // Double Click on File Item
 long FilePanel::onCmdItemDoubleClicked(FXObject* sender, FXSelector sel, void* ptr)
 {
-    // Don't do anything if not called from icon list and single click mode
-    // and if first column in detailed list, or big or mini icon list
-    if (!called_from_iconlist && (single_click == SINGLE_CLICK_DIR_FILE))
+    // In single click mode, return if not called from return key
+    if ( (FXSELID(sel) != FilePanel::ID_KEY_RETURN) && (single_click == SINGLE_CLICK_DIR_FILE))
     {
         int x, y;
         FXuint state;
         getCursorPosition(x, y, state);
-        if ( (!(list->getListStyle() & (_ICONLIST_BIG_ICONS | _ICONLIST_MINI_ICONS)) && ((x - list->getXPosition()) < list->getHeaderSize(0)))
-             || (list->getListStyle() & (_ICONLIST_BIG_ICONS | _ICONLIST_MINI_ICONS)) )
+        if ((!(list->getListStyle() & (ICONLIST_BIG_ICONS | ICONLIST_MINI_ICONS)) &&
+             ((x - list->getXPosition()) < list->getHeaderSize(0)))
+            || (list->getListStyle() & (ICONLIST_BIG_ICONS | ICONLIST_MINI_ICONS)))
         {
-            return(1);
+            return 1;
         }
     }
-
-    // Reset flag
-    called_from_iconlist = false;
 
     // Make panel active
     setActive();
@@ -1276,11 +1308,12 @@ long FilePanel::onCmdItemDoubleClicked(FXObject* sender, FXSelector sel, void* p
             if (list->isItemDirectory(item))
             {
                 // Does not have access
-                if (!::isReadExecutable(pathname))
+                if (!xf_isreadexecutable(pathname))
                 {
-                    MessageBox::error(getApp(), BOX_OK_SU, _("Error"), _(" Permission to: %s denied."), pathname.text());
+                    MessageBox::error(getApp(), BOX_OK_SU, _("Error"), _(" Permission to: %s denied."),
+                                      pathname.text());
                     getApp()->endWaitCursor();
-                    return(0);
+                    return 0;
                 }
                 if (filename == "..")
                 {
@@ -1301,7 +1334,7 @@ long FilePanel::onCmdItemDoubleClicked(FXObject* sender, FXSelector sel, void* p
             else if (list->isItemFile(item))
             {
                 // Update associations dictionary
-                FileDict*  assocdict = new FileDict(getApp());
+                FileDict* assocdict = new FileDict(getApp());
                 FileAssoc* association = assocdict->findFileBinding(pathname.text());
 
                 // If there is an association
@@ -1353,16 +1386,15 @@ long FilePanel::onCmdItemDoubleClicked(FXObject* sender, FXSelector sel, void* p
                         }
 
                         // If command exists, run it
-                        if (::existCommand(cmdname))
+                        if (xf_existcommand(cmdname))
                         {
-                            cmd = cmdname + " " + ::quote(pathname);
+                            cmd = cmdname + " " + xf_quote(pathname);
 #ifdef STARTUP_NOTIFICATION
                             runcmd(cmd, cmdname, current->list->getDirectory(), startlocation, usesn, snexcepts);
 #else
                             runcmd(cmd, current->list->getDirectory(), startlocation);
 #endif
                         }
-
                         // If command does not exist, call the "Open with..." dialog
                         else
                         {
@@ -1370,13 +1402,11 @@ long FilePanel::onCmdItemDoubleClicked(FXObject* sender, FXSelector sel, void* p
                             current->handle(this, FXSEL(SEL_COMMAND, ID_OPEN_WITH), NULL);
                         }
                     }
-
                     // Or execute the file
                     else if (list->isItemExecutable(item))
                     {
                         execFile(pathname);
                     }
-
                     // Or call the "Open with..." dialog
                     else
                     {
@@ -1384,25 +1414,22 @@ long FilePanel::onCmdItemDoubleClicked(FXObject* sender, FXSelector sel, void* p
                         current->handle(this, FXSEL(SEL_COMMAND, ID_OPEN_WITH), NULL);
                     }
                 }
-
                 // If no association but executable
                 else if (list->isItemExecutable(item))
                 {
                     execFile(pathname);
                 }
-
                 // Other cases
                 else
                 {
                     getApp()->endWaitCursor();
                     current->handle(this, FXSEL(SEL_COMMAND, ID_OPEN_WITH), NULL);
                 }
-                
+
                 delete assocdict;
             }
         }
     }
-
     // More than one selected files
     else
     {
@@ -1411,7 +1438,7 @@ long FilePanel::onCmdItemDoubleClicked(FXObject* sender, FXSelector sel, void* p
 
     getApp()->endWaitCursor();
 
-    return(1);
+    return 1;
 }
 
 
@@ -1429,12 +1456,13 @@ long FilePanel::onCmdItemClicked(FXObject* sender, FXSelector sel, void* ptr)
         getCursorPosition(x, y, state);
         if (state & (CONTROLMASK | SHIFTMASK))
         {
-            return(1);
+            return 1;
         }
 
         // In detailed mode, avoid single click when mouse cursor is not over the first column
         FXbool allow = true;
-        if (!(list->getListStyle() & (_ICONLIST_BIG_ICONS | _ICONLIST_MINI_ICONS)) && ((x - list->getXPosition()) > list->getHeaderSize(0)))
+        if (!(list->getListStyle() & (ICONLIST_BIG_ICONS | ICONLIST_MINI_ICONS)) &&
+            ((x - list->getXPosition()) > list->getHeaderSize(0)))
         {
             allow = false;
         }
@@ -1474,11 +1502,12 @@ long FilePanel::onCmdItemClicked(FXObject* sender, FXSelector sel, void* ptr)
                 if ((single_click != SINGLE_CLICK_NONE) && list->isItemDirectory(item) && allow)
                 {
                     // Does not have access
-                    if (!::isReadExecutable(pathname))
+                    if (!xf_isreadexecutable(pathname))
                     {
-                        MessageBox::error(getApp(), BOX_OK_SU, _("Error"), _(" Permission to: %s denied."), pathname.text());
+                        MessageBox::error(getApp(), BOX_OK_SU, _("Error"), _(" Permission to: %s denied."),
+                                          pathname.text());
                         getApp()->endWaitCursor();
-                        return(0);
+                        return 0;
                     }
                     if (filename == "..")
                     {
@@ -1496,12 +1525,11 @@ long FilePanel::onCmdItemClicked(FXObject* sender, FXSelector sel, void* ptr)
                     // Update location history
                     updateLocation();
                 }
-
                 // If file, use the association if any
                 else if ((single_click == SINGLE_CLICK_DIR_FILE) && list->isItemFile(item) && allow)
                 {
                     // Update associations dictionary
-                    FileDict*  assocdict = new FileDict(getApp());
+                    FileDict* assocdict = new FileDict(getApp());
                     FileAssoc* association = assocdict->findFileBinding(pathname.text());
 
                     // If there is an association
@@ -1547,22 +1575,21 @@ long FilePanel::onCmdItemClicked(FXObject* sender, FXSelector sel, void* ptr)
                                 cmdname = archiver;
                                 break;
 
-                            case NONE:                             // No program found
+                            case NONE: // No program found
                                 ;
                                 break;
                             }
 
                             // If command exists, run it
-                            if (::existCommand(cmdname))
+                            if (xf_existcommand(cmdname))
                             {
-                                cmd = cmdname + " " + ::quote(pathname);
+                                cmd = cmdname + " " + xf_quote(pathname);
 #ifdef STARTUP_NOTIFICATION
                                 runcmd(cmd, cmdname, current->list->getDirectory(), startlocation, usesn, snexcepts);
 #else
                                 runcmd(cmd, current->list->getDirectory(), startlocation);
 #endif
                             }
-
                             // If command does not exist, call the "Open with..." dialog
                             else
                             {
@@ -1570,13 +1597,11 @@ long FilePanel::onCmdItemClicked(FXObject* sender, FXSelector sel, void* ptr)
                                 current->handle(this, FXSEL(SEL_COMMAND, ID_OPEN_WITH), NULL);
                             }
                         }
-
                         // Or execute the file
                         else if (list->isItemExecutable(item))
                         {
                             execFile(pathname);
                         }
-
                         // Or call the "Open with..." dialog
                         else
                         {
@@ -1584,13 +1609,11 @@ long FilePanel::onCmdItemClicked(FXObject* sender, FXSelector sel, void* ptr)
                             current->handle(this, FXSEL(SEL_COMMAND, ID_OPEN_WITH), NULL);
                         }
                     }
-
                     // If no association but executable
                     else if (list->isItemExecutable(item))
                     {
                         execFile(pathname);
                     }
-
                     // Other cases
                     else
                     {
@@ -1598,21 +1621,19 @@ long FilePanel::onCmdItemClicked(FXObject* sender, FXSelector sel, void* ptr)
                         current->handle(this, FXSEL(SEL_COMMAND, ID_OPEN_WITH), NULL);
                     }
 
-					delete assocdict;
+                    delete assocdict;
                 }
             }
         }
-
         // More than one selected files
-        else if ( (single_click == SINGLE_CLICK_DIR_FILE) && allow)
+        else if ((single_click == SINGLE_CLICK_DIR_FILE) && allow)
         {
             current->handle(this, FXSEL(SEL_COMMAND, ID_OPEN), NULL);
         }
 
         getApp()->endWaitCursor();
-
     }
-    return(1);
+    return 1;
 }
 
 
@@ -1624,7 +1645,7 @@ long FilePanel::onCmdDirectoryUp(FXObject* sender, FXSelector sel, void* ptr)
     dirpanel->setDirectory(current->list->getDirectory(), true);
     current->updatePath();
     updateLocation();
-    return(1);
+    return 1;
 }
 
 
@@ -1636,7 +1657,7 @@ long FilePanel::onCmdGoHome(FXObject* sender, FXSelector sel, void* ptr)
     dirpanel->setDirectory(homedir, true);
     current->updatePath();
     updateLocation();
-    return(1);
+    return 1;
 }
 
 
@@ -1648,7 +1669,7 @@ long FilePanel::onCmdGoTrash(FXObject* sender, FXSelector sel, void* ptr)
     dirpanel->setDirectory(trashfileslocation, true);
     current->updatePath();
     updateLocation();
-    return(1);
+    return 1;
 }
 
 
@@ -1657,7 +1678,7 @@ long FilePanel::onCmdStopListRefreshTimer(FXObject*, FXSelector, void*)
 {
     stopListRefresh = true;
 
-    return(0);
+    return 0;
 }
 
 
@@ -1674,6 +1695,10 @@ long FilePanel::onCmdFileMan(FXObject* sender, FXSelector sel, void* ptr)
     // Confirmation dialog?
     FXbool ask_before_copy = getApp()->reg().readUnsignedEntry("OPTIONS", "ask_before_copy", true);
 
+    // Copy suffix
+    FXString copysuffix = getApp()->reg().readStringEntry("OPTIONS", "copysuffix", DEFAULT_COPY_SUFFIX);
+    FXuint copysuffix_pos = getApp()->reg().readUnsignedEntry("OPTIONS", "copysuffix_pos", 0);
+
     // If we are we called from the paste command, get the parameters from the pointer
     if (fromPaste)
     {
@@ -1689,7 +1714,7 @@ long FilePanel::onCmdFileMan(FXObject* sender, FXSelector sel, void* ptr)
         // If no item in clipboard, return
         if (num <= 0)
         {
-            return(0);
+            return 0;
         }
 
         // If there is a selected directory in file panel, use it as target directory
@@ -1702,7 +1727,6 @@ long FilePanel::onCmdFileMan(FXObject* sender, FXSelector sel, void* ptr)
             }
         }
     }
-
     // Obtain the parameters from the file panel
     else
     {
@@ -1715,10 +1739,10 @@ long FilePanel::onCmdFileMan(FXObject* sender, FXSelector sel, void* ptr)
         // If no item, return
         if (num <= 0)
         {
-            return(0);
+            return 0;
         }
 
-        // Eventually deselect the '..' directory
+        // Possibly deselect the '..' directory
         if (current->list->isItemSelected(0))
         {
             current->list->deselectItem(0);
@@ -1766,28 +1790,28 @@ long FilePanel::onCmdFileMan(FXObject* sender, FXSelector sel, void* ptr)
     }
 
     // Configure the command, title, message, etc.
-    FXIcon*  icon = NULL;
+    FXIcon* icon = NULL;
     FXString command, title, message;
     if (FXSELID(sel) == ID_FILE_COPY)
     {
         command = "copy";
         title = _("Copy");
-        icon = copy_bigicon;
+        icon = bigcopyicon;
         if (num == 1)
         {
             message = _("Copy ");
             message += source;
-            if (::isFile(source))
+            if (xf_isfile(source))
             {
                 target += name;
             }
 
             // Source and target are identical => add a suffix to the name
-            FXString tgt = ::cleanPath(target); // Remove trailing / if any
-            if ((::identical(source, tgt) && (tgt != current->list->getDirectory())) || // Check we are not within target
-                (::isDirectory(source) && (source == tgt + PATHSEPSTRING + FXPath::name(source))))
+            FXString tgt = xf_cleanpath(target);                                                 // Remove trailing / if any
+            if ((xf_isidentical(source, tgt) && (tgt != current->list->getDirectory())) ||         // Check we are not within target
+                (xf_isdirectory(source) && (source == tgt + PATHSEPSTRING + FXPath::name(source))))
             {
-                target = ::buildCopyName(source, ::isDirectory(source));
+                target = xf_buildcopyname(source, xf_isdirectory(source), copysuffix, copysuffix_pos);
             }
         }
         else
@@ -1799,24 +1823,19 @@ long FilePanel::onCmdFileMan(FXObject* sender, FXSelector sel, void* ptr)
     {
         command = "rename";
         title = _("Rename");
-        icon = move_bigicon;
+        icon = bigrenameicon;
         if (num == 1)
         {
             message = _("Rename ");
             message += name;
             target = name;
-            title = _("Rename");
-        }
-        else
-        {
-            return(0);
         }
     }
     if (FXSELID(sel) == ID_FILE_COPYTO)
     {
         command = "copy";
         title = _("Copy");
-        icon = copy_bigicon;
+        icon = bigcopyicon;
         if (num == 1)
         {
             message = _("Copy ");
@@ -1831,7 +1850,7 @@ long FilePanel::onCmdFileMan(FXObject* sender, FXSelector sel, void* ptr)
     {
         command = "move";
         title = _("Move");
-        icon = move_bigicon;
+        icon = bigmoveicon;
         if (num == 1)
         {
             message = _("Move ");
@@ -1847,12 +1866,12 @@ long FilePanel::onCmdFileMan(FXObject* sender, FXSelector sel, void* ptr)
     {
         command = "move";
         title = _("Move");
-        icon = move_bigicon;
+        icon = bigmoveicon;
         if (num == 1)
         {
             message = _("Move ");
             message += source;
-            if (::isFile(source))
+            if (xf_isfile(source))
             {
                 target += name;
             }
@@ -1867,7 +1886,7 @@ long FilePanel::onCmdFileMan(FXObject* sender, FXSelector sel, void* ptr)
     {
         command = "symlink";
         title = _("Symlink");
-        icon = link_bigicon;
+        icon = biglinktoicon;
         if (num == 1)
         {
             message = _("Symlink ");
@@ -1881,9 +1900,10 @@ long FilePanel::onCmdFileMan(FXObject* sender, FXSelector sel, void* ptr)
     }
 
     // File operation dialog, if needed
-    if (ask_before_copy || (source == target) || (FXSELID(sel) == ID_FILE_COPYTO) || (FXSELID(sel) == ID_FILE_MOVETO) || (FXSELID(sel) == ID_FILE_RENAME) || (FXSELID(sel) == ID_FILE_SYMLINK))
+    if (ask_before_copy || (source == target) || (FXSELID(sel) == ID_FILE_COPYTO) || (FXSELID(sel) == ID_FILE_MOVETO) ||
+        (FXSELID(sel) == ID_FILE_RENAME) || (FXSELID(sel) == ID_FILE_SYMLINK))
     {
-        if (num == 1)
+        if (num == 1) // One source
         {
             if (FXSELID(sel) == ID_FILE_RENAME)
             {
@@ -1896,7 +1916,7 @@ long FilePanel::onCmdFileMan(FXObject* sender, FXSelector sel, void* ptr)
                 operationdialogrename->setMessage(message);
                 operationdialogrename->setText(target);
 
-                if (::isDirectory(source))  // directory
+                if (xf_isdirectory(source)) // directory
                 {
                     operationdialogrename->selectAll();
                 }
@@ -1919,20 +1939,22 @@ long FilePanel::onCmdFileMan(FXObject* sender, FXSelector sel, void* ptr)
                 // Target name contains '/'
                 if (target.contains(PATHSEPCHAR))
                 {
-                    MessageBox::warning(this, BOX_OK, _("Warning"), _("The / character is not allowed in file or folder names, operation cancelled"));
-                    return(0);
+                    MessageBox::warning(this, BOX_OK, _("Warning"),
+                    _("The / character is not allowed in file or folder names, operation cancelled"));
+                    return 0;
                 }
 
                 if (!rc)
                 {
-                    return(0);
+                    return 0;
                 }
             }
             else
             {
                 if (operationdialogsingle == NULL)
                 {
-                    operationdialogsingle = new BrowseInputDialog(this, "", "", title, _("To:"), icon, BROWSE_INPUT_MIXED);
+                    operationdialogsingle = new BrowseInputDialog(this, "", "", title, _("To:"), icon,
+                                                                  BROWSE_INPUT_MIXED);
                 }
                 operationdialogsingle->setTitle(title);
                 operationdialogsingle->setIcon(icon);
@@ -1954,27 +1976,31 @@ long FilePanel::onCmdFileMan(FXObject* sender, FXSelector sel, void* ptr)
                 target = operationdialogsingle->getText();
                 if (!rc)
                 {
-                    return(0);
+                    return 0;
                 }
             }
         }
-        else
+        else // Multiple sources
         {
-            if (operationdialogmultiple == NULL)
+            if (FXSELID(sel) != ID_FILE_RENAME) // No such dialog for multiple rename
             {
-                operationdialogmultiple = new BrowseInputDialog(this, "", "", title, _("To folder:"), icon, BROWSE_INPUT_FOLDER);
-            }
-            operationdialogmultiple->setTitle(title);
-            operationdialogmultiple->setIcon(icon);
-            operationdialogmultiple->setMessage(message);
-            operationdialogmultiple->setText(target);
-            operationdialogmultiple->CursorEnd();
-            operationdialogmultiple->setDirectory(targetdir);
-            int rc = operationdialogmultiple->execute(PLACEMENT_CURSOR);
-            target = operationdialogmultiple->getText();
-            if (!rc)
-            {
-                return(0);
+                if (operationdialogmultiple == NULL)
+                {
+                    operationdialogmultiple = new BrowseInputDialog(this, "", "", title, _("To folder:"), icon,
+                                                                    BROWSE_INPUT_FOLDER);
+                }
+                operationdialogmultiple->setTitle(title);
+                operationdialogmultiple->setIcon(icon);
+                operationdialogmultiple->setMessage(message);
+                operationdialogmultiple->setText(target);
+                operationdialogmultiple->CursorEnd();
+                operationdialogmultiple->setDirectory(targetdir);
+                int rc = operationdialogmultiple->execute(PLACEMENT_CURSOR);
+                target = operationdialogmultiple->getText();
+                if (!rc)
+                {
+                    return 0;
+                }
             }
         }
     }
@@ -1983,12 +2009,12 @@ long FilePanel::onCmdFileMan(FXObject* sender, FXSelector sel, void* ptr)
     if (target == "")
     {
         MessageBox::warning(this, BOX_OK, _("Warning"), _("File name is empty, operation cancelled"));
-        return(0);
+        return 0;
     }
 
     // Update target and target parent directory
-    target = ::filePath(target, current->list->getDirectory());
-    if (::isDirectory(target))
+    target = xf_filepath(target, current->list->getDirectory());
+    if (xf_isdirectory(target))
     {
         targetdir = target;
     }
@@ -1998,53 +2024,56 @@ long FilePanel::onCmdFileMan(FXObject* sender, FXSelector sel, void* ptr)
     }
 
     // Target parent directory doesn't exist
-    if (!existFile(targetdir))
+    if (!xf_existfile(targetdir))
     {
         MessageBox::error(this, BOX_OK, _("Error"), _("Folder %s doesn't exist"), targetdir.text());
-        return(0);
+        return 0;
     }
 
     // Target parent directory not writable
-    if (!::isWritable(targetdir))
+    if (!xf_iswritable(targetdir))
     {
         MessageBox::error(getApp(), BOX_OK_SU, _("Error"), _("Can't write to %s: Permission denied"), targetdir.text());
-        return(0);
+        return 0;
     }
 
     // Target parent directory is not a directory
-    if (!::isDirectory(targetdir))
+    if (!xf_isdirectory(targetdir))
     {
         MessageBox::error(this, BOX_OK, _("Error"), _("%s is not a folder"), targetdir.text());
-        return(0);
+        return 0;
     }
 
     // Multiple sources and non existent destination
-    if ((num > 1) && !existFile(target))
+    if ((num > 1) && !xf_existfile(target))
     {
         MessageBox::error(this, BOX_OK, _("Error"), _("Folder %s doesn't exist"), target.text());
-        return(0);
+        return 0;
     }
 
     // Multiple sources and target is a file
-    if ((num > 1) && ::isFile(target))
+    if ((num > 1) && xf_isfile(target))
     {
         MessageBox::error(this, BOX_OK, _("Error"), _("%s is not a folder"), target.text());
-        return(0);
+        return 0;
     }
 
     // Target is a directory and is not writable
-    if (::isDirectory(target) && !::isWritable(target))
+    if (xf_isdirectory(target) && !xf_iswritable(target))
     {
         MessageBox::error(getApp(), BOX_OK_SU, _("Error"), _("Can't write to %s: Permission denied"), target.text());
-        return(0);
+        return 0;
     }
 
     // Target is a file and its parent directory is not writable
-    if (::isFile(target) && !::isWritable(targetdir))
+    if (xf_isfile(target) && !xf_iswritable(targetdir))
     {
         MessageBox::error(getApp(), BOX_OK_SU, _("Error"), _("Can't write to %s: Permission denied"), targetdir.text());
-        return(0);
+        return 0;
     }
+
+    FXString hsourcesize;
+    FXulong sourcesize = 0, tstart = 0;
 
     // One source
     File* f = NULL;
@@ -2055,7 +2084,7 @@ long FilePanel::onCmdFileMan(FXObject* sender, FXSelector sel, void* ptr)
         // Don't perform any file operation on it!
         if (source == "")
         {
-            return(0);
+            return 0;
         }
 
         // Wait cursor
@@ -2064,8 +2093,20 @@ long FilePanel::onCmdFileMan(FXObject* sender, FXSelector sel, void* ptr)
         // File object
         if (command == "copy")
         {
-            f = new File(this, _("File copy"), COPY, num);
+            f = new File(this, _("Copy files"), COPY, num);
             f->create();
+
+            // Get total source size and start time
+            hsourcesize = f->sourcesize(src, &sourcesize);
+            tstart = xf_getcurrenttime();
+
+            // If action is cancelled in progress dialog
+            if (f->isCancelled())
+            {
+                f->hideProgressDialog();
+                MessageBox::error(this, BOX_OK, _("Warning"), _("Copy file operation cancelled!"));
+                goto out;
+            }
 
             // If target file is located at trash location, also create the corresponding trashinfo file
             // Do it silently and don't report any error if it fails
@@ -2073,22 +2114,21 @@ long FilePanel::onCmdFileMan(FXObject* sender, FXSelector sel, void* ptr)
             if (use_trash_can && (target == trashfileslocation))
             {
                 // Trash files path name
-                FXString trashpathname = createTrashpathname(source, trashfileslocation);
+                FXString trashpathname = xf_create_trashpathname(source, trashfileslocation);
 
                 // Adjust target name to get the _N suffix if any
                 FXString trashtarget = target + PATHSEPSTRING + FXPath::name(trashpathname);
 
                 // Create trashinfo file
-                createTrashinfo(source, trashpathname, trashfileslocation, trashinfolocation);
+                xf_create_trashinfo(source, trashpathname, trashfileslocation, trashinfolocation);
 
                 // Copy source to trash target
-                ret = f->copy(source, trashtarget);
+                ret = f->copy(source, trashtarget, hsourcesize, sourcesize, tstart);
             }
-
             // Copy source to target
             else
             {
-                ret = f->copy(source, target);
+                ret = f->copy(source, target, hsourcesize, sourcesize, tstart);
             }
 
             // An unknown error has occurred
@@ -2096,6 +2136,7 @@ long FilePanel::onCmdFileMan(FXObject* sender, FXSelector sel, void* ptr)
             {
                 f->hideProgressDialog();
                 MessageBox::error(this, BOX_OK, _("Error"), _("An error has occurred during the copy file operation!"));
+                goto out;
             }
 
             // If action is cancelled in progress dialog
@@ -2103,11 +2144,12 @@ long FilePanel::onCmdFileMan(FXObject* sender, FXSelector sel, void* ptr)
             {
                 f->hideProgressDialog();
                 MessageBox::error(this, BOX_OK, _("Warning"), _("Copy file operation cancelled!"));
+                goto out;
             }
         }
         else if (command == "rename")
         {
-            f = new File(this, _("File rename"), RENAME, num);
+            f = new File(this, _("Rename Files"), RENAME, num);
             f->create();
             ret = f->rename(source, target);
 
@@ -2117,13 +2159,25 @@ long FilePanel::onCmdFileMan(FXObject* sender, FXSelector sel, void* ptr)
             if (use_trash_can && ret && (source.left(trashfileslocation.length()) == trashfileslocation))
             {
                 FXString trashinfopathname = trashinfolocation + PATHSEPSTRING + FXPath::name(source) + ".trashinfo";
-                ::unlink(trashinfopathname.text());
+                unlink(trashinfopathname.text());
             }
         }
         else if (command == "move")
         {
-            f = new File(this, _("File move"), MOVE, num);
+            f = new File(this, _("Move Files"), MOVE, num);
             f->create();
+
+            // Get total source size and start time
+            hsourcesize = f->sourcesize(src, &sourcesize);
+            tstart = xf_getcurrenttime();
+
+            // If action is cancelled in progress dialog
+            if (f->isCancelled())
+            {
+                f->hideProgressDialog();
+                MessageBox::error(this, BOX_OK, _("Warning"), _("Move file operation cancelled!"));
+                goto out;
+            }
 
             // If target file is located at trash location, also create the corresponding trashinfo file
             // Do it silently and don't report any error if it fails
@@ -2131,22 +2185,21 @@ long FilePanel::onCmdFileMan(FXObject* sender, FXSelector sel, void* ptr)
             if (use_trash_can && (target == trashfileslocation))
             {
                 // Trash files path name
-                FXString trashpathname = createTrashpathname(source, trashfileslocation);
+                FXString trashpathname = xf_create_trashpathname(source, trashfileslocation);
 
                 // Adjust target name to get the _N suffix if any
                 FXString trashtarget = target + PATHSEPSTRING + FXPath::name(trashpathname);
 
                 // Create trashinfo file
-                createTrashinfo(source, trashpathname, trashfileslocation, trashinfolocation);
+                xf_create_trashinfo(source, trashpathname, trashfileslocation, trashinfolocation);
 
                 // Move source to trash target
-                ret = f->move(source, trashtarget);
+                ret = f->fmove(source, trashtarget, hsourcesize, sourcesize, tstart);
             }
-
             // Move source to target
             else
             {
-                ret = f->move(source, target);
+                ret = f->fmove(source, target, hsourcesize, sourcesize, tstart);
             }
 
             // If source file is located at trash location, try to also remove the corresponding trashinfo file if it exists
@@ -2154,7 +2207,7 @@ long FilePanel::onCmdFileMan(FXObject* sender, FXSelector sel, void* ptr)
             if (use_trash_can && ret && (source.left(trashfileslocation.length()) == trashfileslocation))
             {
                 FXString trashinfopathname = trashinfolocation + PATHSEPSTRING + FXPath::name(source) + ".trashinfo";
-                ::unlink(trashinfopathname.text());
+                unlink(trashinfopathname.text());
             }
 
             // An unknown error has occurred
@@ -2162,6 +2215,7 @@ long FilePanel::onCmdFileMan(FXObject* sender, FXSelector sel, void* ptr)
             {
                 f->hideProgressDialog();
                 MessageBox::error(this, BOX_OK, _("Error"), _("An error has occurred during the move file operation!"));
+                goto out;
             }
 
             // If action is cancelled in progress dialog
@@ -2169,6 +2223,7 @@ long FilePanel::onCmdFileMan(FXObject* sender, FXSelector sel, void* ptr)
             {
                 f->hideProgressDialog();
                 MessageBox::error(this, BOX_OK, _("Warning"), _("Move file operation cancelled!"));
+                goto out;
             }
         }
         else if (command == "symlink")
@@ -2186,9 +2241,7 @@ long FilePanel::onCmdFileMan(FXObject* sender, FXSelector sel, void* ptr)
         getApp()->endWaitCursor();
         delete f;
     }
-
     // Multiple sources
-    // Note : rename cannot be used in this case!
     else if (num > 1)
     {
         // Wait cursor
@@ -2197,22 +2250,127 @@ long FilePanel::onCmdFileMan(FXObject* sender, FXSelector sel, void* ptr)
         // File object
         if (command == "copy")
         {
-            f = new File(this, _("File copy"), COPY, num);
+            f = new File(this, _("Copy Files"), COPY, num);
+            f->create();
+
+            // Get total source size and start time
+            hsourcesize = f->sourcesize(src, &sourcesize);
+            tstart = xf_getcurrenttime();
+
+            // If action is cancelled in progress dialog
+            if (f->isCancelled())
+            {
+                f->hideProgressDialog();
+                MessageBox::error(this, BOX_OK, _("Warning"), _("Copy file operation cancelled!"));
+                goto out;
+            }
         }
         else if (command == "move")
         {
-            f = new File(this, _("File move"), MOVE, num);
+            f = new File(this, _("Move Files"), MOVE, num);
+            f->create();
+
+            // Get total source size
+            hsourcesize = f->sourcesize(src, &sourcesize);
+            tstart = xf_getcurrenttime();
+
+            // If action is cancelled in progress dialog
+            if (f->isCancelled())
+            {
+                f->hideProgressDialog();
+                MessageBox::error(this, BOX_OK, _("Warning"), _("Move file operation cancelled!"));
+                goto out;
+            }
         }
         else if (command == "symlink")
         {
             f = new File(this, _("Symlink"), SYMLINK, num);
+            f->create();
+        }
+        else if (command == "rename")
+        {
+            getApp()->endWaitCursor();
+
+            // Read Rename Dialog geometry
+            FXuint width = getApp()->reg().readUnsignedEntry("OPTIONS", "rename_width", 800);
+            FXuint height = getApp()->reg().readUnsignedEntry("OPTIONS", "rename_height", 600);
+
+            // Rename dialog
+            RenameDialog* renamedialog = new RenameDialog(this, title, src, num, false, width, height);  // Hide folder names
+            renamedialog->execute(PLACEMENT_OWNER);
+
+            // Rename files
+            FXString tgt = renamedialog->getTarget();
+            if (tgt != "")
+            {
+                getApp()->beginWaitCursor();
+
+                f = new File(this, _("Rename Files"), RENAME, num);
+                f->create();
+
+                // Loop on the multiple files
+                for (int i = 0; i < num; i++)
+                {
+                    // Individual source and target files
+                    source = src.section('\n', i);
+                    target = tgt.section('\n', i);
+
+                    if (target != "" && target != source)
+                    {
+                        ret = f->rename(source, target);
+
+                        // If source file is located at trash location, try to also remove the corresponding trashinfo file if it exists
+                        // Do it silently and don't report any error if it fails
+                        FXbool use_trash_can = getApp()->reg().readUnsignedEntry("OPTIONS", "use_trash_can", true);
+                        if (use_trash_can && ret && (source.left(trashfileslocation.length()) == trashfileslocation))
+                        {
+                            FXString trashinfopathname = trashinfolocation + PATHSEPSTRING + FXPath::name(source) +
+                                                         ".trashinfo";
+                            unlink(trashinfopathname.text());
+                        }
+
+                        // If action is cancelled in progress dialog
+                        if (f->isCancelled())
+                        {
+                            MessageBox::error(this, BOX_OK, _("Warning"), _("Rename file operation cancelled!"));
+                            break;
+                        }
+                        // An known error has occurred
+                        if (ret == -1)
+                        {
+                            break;
+                        }
+
+                        // An unknown error has occurred
+                        if (ret == 0)
+                        {
+                            MessageBox::error(this, BOX_OK, _("Error"),
+                                              _("An error has occurred during the rename file operation!"));
+                            break;
+                        }
+                    }
+                }
+
+                // Deselect all items
+                list->handle(sender, FXSEL(SEL_COMMAND, FileList::ID_DESELECT_ALL), NULL);
+
+                getApp()->endWaitCursor();
+                delete f;
+            }
+
+            // Write Rename Dialog geometry
+            getApp()->reg().writeUnsignedEntry("OPTIONS", "rename_width", (FXuint)renamedialog->getWidth());
+            getApp()->reg().writeUnsignedEntry("OPTIONS", "rename_height", (FXuint)renamedialog->getHeight());
+            getApp()->reg().write();
+
+            delete renamedialog;
+            return 1;
         }
         // Shouldn't happen
         else
         {
             exit(EXIT_FAILURE);
         }
-        f->create();
 
         // Initialize file list stop refresh timer and flag
         stopListRefresh = false;
@@ -2247,10 +2405,15 @@ long FilePanel::onCmdFileMan(FXObject* sender, FXSelector sel, void* ptr)
             }
 
             // Individual source file
-            source = src.section('\n', i);
+            //~ source = src.section('\n', i);
+
+            // NB: src string is altered by strtok()
+            char* token;
+            (i == 0 ? token = strtok((char*)src.text(), "\n") : token = strtok(NULL, "\n"));
+            source = FXString(token);
 
             // File could have already been moved above in the tree
-            if (!existFile(source))
+            if (!xf_existfile(source))
             {
                 continue;
             }
@@ -2267,22 +2430,21 @@ long FilePanel::onCmdFileMan(FXObject* sender, FXSelector sel, void* ptr)
                     if (use_trash_can && (target == trashfileslocation))
                     {
                         // Trash files path name
-                        FXString trashpathname = createTrashpathname(source, trashfileslocation);
+                        FXString trashpathname = xf_create_trashpathname(source, trashfileslocation);
 
                         // Adjust target name to get the _N suffix if any
                         FXString trashtarget = target + PATHSEPSTRING + FXPath::name(trashpathname);
 
                         // Create trashinfo file
-                        createTrashinfo(source, trashpathname, trashfileslocation, trashinfolocation);
+                        xf_create_trashinfo(source, trashpathname, trashfileslocation, trashinfolocation);
 
                         // Copy source to trash target
-                        ret = f->copy(source, trashtarget);
+                        ret = f->copy(source, trashtarget, hsourcesize, sourcesize, tstart);
                     }
-
                     // Copy source to target
                     else
                     {
-                        ret = f->copy(source, target);
+                        ret = f->copy(source, target, hsourcesize, sourcesize, tstart);
                     }
 
                     // An known error has occurred
@@ -2296,7 +2458,8 @@ long FilePanel::onCmdFileMan(FXObject* sender, FXSelector sel, void* ptr)
                     if ((ret == 0) && !f->isCancelled())
                     {
                         f->hideProgressDialog();
-                        MessageBox::error(this, BOX_OK, _("Error"), _("An error has occurred during the copy file operation!"));
+                        MessageBox::error(this, BOX_OK, _("Error"),
+                                          _("An error has occurred during the copy file operation!"));
                         break;
                     }
 
@@ -2316,30 +2479,30 @@ long FilePanel::onCmdFileMan(FXObject* sender, FXSelector sel, void* ptr)
                     if (use_trash_can && (target == trashfileslocation))
                     {
                         // Trash files path name
-                        FXString trashpathname = createTrashpathname(source, trashfileslocation);
+                        FXString trashpathname = xf_create_trashpathname(source, trashfileslocation);
 
                         // Adjust target name to get the _N suffix if any
                         FXString trashtarget = target + PATHSEPSTRING + FXPath::name(trashpathname);
 
                         // Create trashinfo file
-                        createTrashinfo(source, trashpathname, trashfileslocation, trashinfolocation);
+                        xf_create_trashinfo(source, trashpathname, trashfileslocation, trashinfolocation);
 
                         // Move source to trash target
-                        ret = f->move(source, trashtarget);
+                        ret = f->fmove(source, trashtarget, hsourcesize, sourcesize, tstart);
                     }
-
                     // Move source to target
                     else
                     {
-                        ret = f->move(source, target);
+                        ret = f->fmove(source, target, hsourcesize, sourcesize, tstart);
                     }
 
                     // If source file is located at trash location, try to also remove the corresponding trashinfo file if it exists
                     // Do it silently and don't report any error if it fails
                     if (use_trash_can && ret && (source.left(trashfileslocation.length()) == trashfileslocation))
                     {
-                        FXString trashinfopathname = trashinfolocation + PATHSEPSTRING + FXPath::name(source) + ".trashinfo";
-                        ::unlink(trashinfopathname.text());
+                        FXString trashinfopathname = trashinfolocation + PATHSEPSTRING + FXPath::name(source) +
+                                                     ".trashinfo";
+                        unlink(trashinfopathname.text());
                     }
 
                     // An known error has occurred
@@ -2353,7 +2516,8 @@ long FilePanel::onCmdFileMan(FXObject* sender, FXSelector sel, void* ptr)
                     if ((ret == 0) && !f->isCancelled())
                     {
                         f->hideProgressDialog();
-                        MessageBox::error(this, BOX_OK, _("Error"), _("An error has occurred during the move file operation!"));
+                        MessageBox::error(this, BOX_OK, _("Error"),
+                                          _("An error has occurred during the move file operation!"));
                         break;
                     }
 
@@ -2380,7 +2544,8 @@ long FilePanel::onCmdFileMan(FXObject* sender, FXSelector sel, void* ptr)
                     if ((ret == 0) && !f->isCancelled())
                     {
                         f->hideProgressDialog();
-                        MessageBox::error(this, BOX_OK, _("Error"), _("An error has occurred during the symlink operation!"));
+                        MessageBox::error(this, BOX_OK, _("Error"),
+                                          _("An error has occurred during the symlink operation!"));
                         break;
                     }
 
@@ -2401,6 +2566,7 @@ long FilePanel::onCmdFileMan(FXObject* sender, FXSelector sel, void* ptr)
         }
 
         // Reinit timer and refresh flags
+out:
         getApp()->removeTimeout(this, ID_STOP_LIST_REFRESH_TIMER);
         current->setAllowRefresh(true);
         next->setAllowRefresh(true);
@@ -2415,7 +2581,8 @@ long FilePanel::onCmdFileMan(FXObject* sender, FXSelector sel, void* ptr)
     current->onCmdRefresh(0, 0, 0);
 
     // Enable previous or last selected item for keyboard navigation
-    if (((FXSELID(sel) == ID_FILE_MOVETO) || (FXSELID(sel) == ID_FILE_RENAME)) && (current->list->getNumItems() < numitems))
+    if (((FXSELID(sel) == ID_FILE_MOVETO) || (FXSELID(sel) == ID_FILE_RENAME)) &&
+        (current->list->getNumItems() < numitems))
     {
         firstitem = (firstitem < 1) ? 0 : firstitem - 1;
         current->list->enableItem(firstitem);
@@ -2427,7 +2594,7 @@ long FilePanel::onCmdFileMan(FXObject* sender, FXSelector sel, void* ptr)
         current->list->setCurrentItem(lastitem);
     }
 
-    return(1);
+    return 1;
 }
 
 
@@ -2443,17 +2610,18 @@ long FilePanel::onCmdFileTrash(FXObject*, FXSelector, void*)
     FXbool confirm_trash = getApp()->reg().readUnsignedEntry("OPTIONS", "confirm_trash", true);
 
     // If we don't have permission to write to the parent directory
-    if (!::isWritable(dir))
+    if (!xf_iswritable(dir))
     {
         MessageBox::error(getApp(), BOX_OK_SU, _("Error"), _("Can't write to %s: Permission denied"), dir.text());
-        return(0);
+        return 0;
     }
 
     // If we don't have permission to write to the trash directory
-    if (!::isWritable(trashfileslocation))
+    if (!xf_iswritable(trashfileslocation))
     {
-        MessageBox::error(getApp(), BOX_OK_SU, _("Error"), _("Can't write to trash location %s: Permission denied"), trashfileslocation.text());
-        return(0);
+        MessageBox::error(getApp(), BOX_OK_SU, _("Error"), _("Can't write to trash location %s: Permission denied"),
+                          trashfileslocation.text());
+        return 0;
     }
 
     // Items number in the file list
@@ -2462,13 +2630,12 @@ long FilePanel::onCmdFileTrash(FXObject*, FXSelector, void*)
     // If nothing selected, return
     if (num == 0)
     {
-        return(0);
+        return 0;
     }
-
     // If exist selected files, use them
     else if (num >= 1)
     {
-        // Eventually deselect the '..' directory
+        // Possibly deselect the '..' directory
         if (current->list->isItemSelected(0))
         {
             current->list->deselectItem(0);
@@ -2487,7 +2654,7 @@ long FilePanel::onCmdFileTrash(FXObject*, FXSelector, void*)
                         pathname = current->list->getItemPathname(u);
                     }
                 }
-                if (::isDirectory(pathname))
+                if (xf_isdirectory(pathname))
                 {
                     message.format(_("Move folder %s to trash can?"), pathname.text());
                 }
@@ -2501,10 +2668,11 @@ long FilePanel::onCmdFileTrash(FXObject*, FXSelector, void*)
                 message.format(_("Move %s selected items to trash can?"), FXStringVal(num).text());
             }
 
-            MessageBox box(this, _("Confirm Trash"), message, delete_bigicon, BOX_OK_CANCEL | DECOR_TITLE | DECOR_BORDER);
+            MessageBox box(this, _("Confirm Trash"), message, bigdeleteicon,
+                           BOX_OK_CANCEL | DECOR_TITLE | DECOR_BORDER);
             if (box.execute(PLACEMENT_CURSOR) != BOX_CLICKED_OK)
             {
-                return(0);
+                return 0;
             }
         }
 
@@ -2512,7 +2680,7 @@ long FilePanel::onCmdFileTrash(FXObject*, FXSelector, void*)
         getApp()->beginWaitCursor();
 
         // File object
-        f = new File(this, _("Move to trash"), DELETE, num);
+        f = new File(this, _("Move to Trash"), DELETE, num);
         f->create();
         list->setAllowRefresh(false);
 
@@ -2549,7 +2717,7 @@ long FilePanel::onCmdFileTrash(FXObject*, FXSelector, void*)
                 pathname = current->list->getItemPathname(u);
 
                 // If we don't have permission to write to the file
-                if (!::isWritable(pathname))
+                if (!xf_iswritable(pathname))
                 {
                     // Overwrite dialog if necessary
                     if (!(overwrite_all | skip_all))
@@ -2604,7 +2772,6 @@ long FilePanel::onCmdFileTrash(FXObject*, FXSelector, void*)
                                 skip_all = true;
                                 break;
                             }
-
                         }
                     }
                     if ((overwrite | overwrite_all) && !skip_all)
@@ -2613,26 +2780,26 @@ long FilePanel::onCmdFileTrash(FXObject*, FXSelector, void*)
                         if (filename != "..")
                         {
                             // Trash files path name
-                            FXString trashpathname = createTrashpathname(pathname, trashfileslocation);
+                            FXString trashpathname = xf_create_trashpathname(pathname, trashfileslocation);
 
                             // Create trashinfo file
-                            createTrashinfo(pathname, trashpathname, trashfileslocation, trashinfolocation);
+                            xf_create_trashinfo(pathname, trashpathname, trashfileslocation, trashinfolocation);
 
                             // Move file to trash files location
-                            int ret = f->move(pathname, trashpathname);
+                            int ret = f->fmove(pathname, trashpathname);
 
                             // An error has occurred
                             if ((ret == 0) && !f->isCancelled())
                             {
                                 f->hideProgressDialog();
-                                MessageBox::error(this, BOX_OK, _("Error"), _("An error has occurred during the move to trash operation!"));
+                                MessageBox::error(this, BOX_OK, _("Error"),
+                                                  _("An error has occurred during the move to trash operation!"));
                                 break;
                             }
                         }
                     }
                     f->showProgressDialog();
                 }
-
                 // If we have permission to write
                 else
                 {
@@ -2640,19 +2807,20 @@ long FilePanel::onCmdFileTrash(FXObject*, FXSelector, void*)
                     if (filename != "..")
                     {
                         // Trash files path name
-                        FXString trashpathname = createTrashpathname(pathname, trashfileslocation);
+                        FXString trashpathname = xf_create_trashpathname(pathname, trashfileslocation);
 
                         // Create trashinfo file
-                        createTrashinfo(pathname, trashpathname, trashfileslocation, trashinfolocation);
+                        xf_create_trashinfo(pathname, trashpathname, trashfileslocation, trashinfolocation);
 
                         // Move file to trash files location
-                        int ret = f->move(pathname, trashpathname);
+                        int ret = f->fmove(pathname, trashpathname);
 
                         // An error has occurred
                         if ((ret == 0) && !f->isCancelled())
                         {
                             f->hideProgressDialog();
-                            MessageBox::error(this, BOX_OK, _("Error"), _("An error has occurred during the move to trash operation!"));
+                            MessageBox::error(this, BOX_OK, _("Error"),
+                                              _("An error has occurred during the move to trash operation!"));
                             break;
                         }
                     }
@@ -2681,7 +2849,7 @@ end:
     current->list->enableItem(firstitem);
     current->list->setCurrentItem(firstitem);
 
-    return(1);
+    return 1;
 }
 
 
@@ -2701,13 +2869,12 @@ long FilePanel::onCmdFileRestore(FXObject*, FXSelector, void*)
     // If nothing selected, return
     if (num == 0)
     {
-        return(0);
+        return 0;
     }
-
     // If exist selected files, use them
     else if (num >= 1)
     {
-        // Eventually deselect the '..' directory
+        // Possibly deselect the '..' directory
         if (current->list->isItemSelected(0))
         {
             current->list->deselectItem(0);
@@ -2717,7 +2884,7 @@ long FilePanel::onCmdFileRestore(FXObject*, FXSelector, void*)
         getApp()->beginWaitCursor();
 
         // File object
-        f = new File(this, _("Restore from trash"), DELETE, num);
+        f = new File(this, _("Restore From Trash"), DELETE, num);
         f->create();
         list->setAllowRefresh(false);
 
@@ -2762,7 +2929,7 @@ long FilePanel::onCmdFileRestore(FXObject*, FXSelector, void*)
                     subpath.erase(0, trashbasename.length());
 
                     // Read the .trashinfo file
-                    FILE*    fp;
+                    FILE* fp;
                     char line[1024];
                     FXbool success = true;
                     FXString trashinfopathname = trashinfolocation + PATHSEPSTRING + trashbasename + ".trashinfo";
@@ -2795,26 +2962,30 @@ long FilePanel::onCmdFileRestore(FXObject*, FXSelector, void*)
                         FXString message;
                         if (num == 1)
                         {
-                            if (::isDirectory(pathname))
+                            if (xf_isdirectory(pathname))
                             {
-                                message.format(_("Restore folder %s to its original location %s ?"), filename.text(), origpathname.text());
+                                message.format(_("Restore folder %s to its original location %s ?"), filename.text(),
+                                               origpathname.text());
                             }
                             else
                             {
-                                message.format(_("Restore file %s to its original location %s ?"), filename.text(), origpathname.text());
+                                message.format(_("Restore file %s to its original location %s ?"), filename.text(),
+                                               origpathname.text());
                             }
                         }
                         else
                         {
-                            message.format(_("Restore %s selected items to their original locations?"), FXStringVal(num).text());
+                            message.format(_("Restore %s selected items to their original locations?"),
+                                           FXStringVal(num).text());
                         }
                         f->hideProgressDialog();
-                        MessageBox box(this, _("Confirm Restore"), message, restore_bigicon, BOX_OK_CANCEL | DECOR_TITLE | DECOR_BORDER);
+                        MessageBox box(this, _("Confirm Restore"), message, bigrestoreicon,
+                                       BOX_OK_CANCEL | DECOR_TITLE | DECOR_BORDER);
                         if (box.execute(PLACEMENT_CURSOR) != BOX_CLICKED_OK)
                         {
                             getApp()->endWaitCursor();
                             delete f;
-                            return(0);
+                            return 0;
                         }
                         f->showProgressDialog();
                     }
@@ -2822,19 +2993,22 @@ long FilePanel::onCmdFileRestore(FXObject*, FXSelector, void*)
                     if (origpathname == "")
                     {
                         f->hideProgressDialog();
-                        MessageBox::error(this, BOX_OK, _("Error"), _("Restore information not available for %s"), pathname.text());
+                        MessageBox::error(this, BOX_OK, _("Error"), _("Restore information not available for %s"),
+                                          pathname.text());
                         goto end;
                     }
 
                     // If parent dir of the original location does not exist
                     FXString origparentdir = FXPath::directory(origpathname);
-                    if (!existFile(origparentdir))
+                    if (!xf_existfile(origparentdir))
                     {
                         // Ask the user if he wants to create it
                         f->hideProgressDialog();
                         FXString message;
-                        message.format(_("Parent folder %s does not exist, do you want to create it?"), origparentdir.text());
-                        MessageBox box(this, _("Confirm Restore"), message, restore_bigicon, BOX_OK_CANCEL | DECOR_TITLE | DECOR_BORDER);
+                        message.format(_("Parent folder %s does not exist, do you want to create it?"),
+                                       origparentdir.text());
+                        MessageBox box(this, _("Confirm Restore"), message, bigrestoreicon,
+                                       BOX_OK_CANCEL | DECOR_TITLE | DECOR_BORDER);
                         if (box.execute(PLACEMENT_CURSOR) != BOX_CLICKED_OK)
                         {
                             goto end;
@@ -2842,18 +3016,20 @@ long FilePanel::onCmdFileRestore(FXObject*, FXSelector, void*)
                         else
                         {
                             errno = 0;
-                            int ret = mkpath(origparentdir.text(), 0755);
+                            int ret = xf_mkpath(origparentdir.text(), 0755);
                             int errcode = errno;
                             if (ret == -1)
                             {
                                 f->hideProgressDialog();
                                 if (errcode)
                                 {
-                                    MessageBox::error(this, BOX_OK, _("Error"), _("Can't create folder %s: %s"), origparentdir.text(), strerror(errcode));
+                                    MessageBox::error(this, BOX_OK, _("Error"), _("Can't create folder %s: %s"),
+                                                      origparentdir.text(), strerror(errcode));
                                 }
                                 else
                                 {
-                                    MessageBox::error(this, BOX_OK, _("Error"), _("Can't create folder %s"), origparentdir.text());
+                                    MessageBox::error(this, BOX_OK, _("Error"), _("Can't create folder %s"),
+                                                      origparentdir.text());
                                 }
                                 goto end;
                             }
@@ -2862,21 +3038,22 @@ long FilePanel::onCmdFileRestore(FXObject*, FXSelector, void*)
                     }
 
                     // Move file to original location (with restore option)
-                    int ret = f->move(pathname, origpathname, true);
+                    int ret = f->fmove(pathname, origpathname, "", true);
 
                     // An error has occurred
                     if ((ret == 0) && !f->isCancelled())
                     {
                         f->hideProgressDialog();
-                        MessageBox::error(this, BOX_OK, _("Error"), _("An error has occurred during the restore from trash operation!"));
+                        MessageBox::error(this, BOX_OK, _("Error"),
+                                          _("An error has occurred during the restore from trash operation!"));
                         goto end;
                     }
 
                     // Silently remove trashinfo file
                     FXString trashfilespathname = trashfileslocation + PATHSEPSTRING + trashbasename;
-                    if ((pathname == trashfilespathname) && !existFile(trashfilespathname))
+                    if ((pathname == trashfilespathname) && !xf_existfile(trashfilespathname))
                     {
-                        ::unlink(trashinfopathname.text());
+                        unlink(trashinfopathname.text());
                     }
                 }
                 // If action is cancelled in progress dialog
@@ -2903,7 +3080,7 @@ end:
     current->list->enableItem(firstitem);
     current->list->setCurrentItem(firstitem);
 
-    return(1);
+    return 1;
 }
 
 
@@ -2920,10 +3097,10 @@ long FilePanel::onCmdFileDelete(FXObject*, FXSelector, void*)
     FXbool confirm_del_emptydir = getApp()->reg().readUnsignedEntry("OPTIONS", "confirm_delete_emptydir", true);
 
     // If we don't have permission to write to the parent directory
-    if (!::isWritable(dir))
+    if (!xf_iswritable(dir))
     {
         MessageBox::error(getApp(), BOX_OK_SU, _("Error"), _("Can't write to %s: Permission denied"), dir.text());
-        return(0);
+        return 0;
     }
 
     // Items number in the file list
@@ -2932,13 +3109,12 @@ long FilePanel::onCmdFileDelete(FXObject*, FXSelector, void*)
     // If nothing selected, return
     if (num == 0)
     {
-        return(0);
+        return 0;
     }
-
     // If exist selected files, use them
     else if (num >= 1)
     {
-        // Eventually deselect the '..' directory
+        // Possibly deselect the '..' directory
         if (current->list->isItemSelected(0))
         {
             current->list->deselectItem(0);
@@ -2957,7 +3133,7 @@ long FilePanel::onCmdFileDelete(FXObject*, FXSelector, void*)
                         pathname = current->list->getItemPathname(u);
                     }
                 }
-                if (::isDirectory(pathname))
+                if (xf_isdirectory(pathname))
                 {
                     message.format(_("Definitively delete folder %s ?"), pathname.text());
                 }
@@ -2970,17 +3146,18 @@ long FilePanel::onCmdFileDelete(FXObject*, FXSelector, void*)
             {
                 message.format(_("Definitively delete %s selected items?"), FXStringVal(num).text());
             }
-            MessageBox box(this, _("Confirm Delete"), message, delete_big_permicon, BOX_OK_CANCEL | DECOR_TITLE | DECOR_BORDER);
+            MessageBox box(this, _("Confirm Delete"), message, bigdeletepermicon,
+                           BOX_OK_CANCEL | DECOR_TITLE | DECOR_BORDER);
             if (box.execute(PLACEMENT_CURSOR) != BOX_CLICKED_OK)
             {
-                return(0);
+                return 0;
             }
         }
         // Wait cursor
         getApp()->beginWaitCursor();
 
         // File object
-        f = new File(this, _("File delete"), DELETE, num);
+        f = new File(this, _("Delete Files"), DELETE, num);
         f->create();
         list->setAllowRefresh(false);
 
@@ -3021,7 +3198,7 @@ long FilePanel::onCmdFileDelete(FXObject*, FXSelector, void*)
                 // Confirm empty directory deletion
                 if (confirm_del & confirm_del_emptydir & ask_del_empty)
                 {
-                    if ((::isEmptyDir(pathname) == 0) && !::isLink(pathname))
+                    if ((xf_isemptydir(pathname) == 0) && !xf_islink(pathname))
                     {
                         if (skip_all_del_emptydir)
                         {
@@ -3043,7 +3220,6 @@ long FilePanel::onCmdFileDelete(FXObject*, FXSelector, void*)
                                 goto end;
                             }
                         }
-
                         else
                         {
                             OverwriteBox* dlg = new OverwriteBox(this, _("Confirm Delete"), msg);
@@ -3082,7 +3258,7 @@ long FilePanel::onCmdFileDelete(FXObject*, FXSelector, void*)
                 }
 
                 // If we don't have permission to write to the file
-                if (!::isWritable(pathname))
+                if (!xf_iswritable(pathname))
                 {
                     // Overwrite dialog if necessary
                     if (!(overwrite_all | skip_all))
@@ -3105,7 +3281,6 @@ long FilePanel::onCmdFileDelete(FXObject*, FXSelector, void*)
                                 goto end;
                             }
                         }
-
                         else
                         {
                             OverwriteBox* dlg = new OverwriteBox(this, _("Confirm Delete"), msg);
@@ -3151,7 +3326,6 @@ long FilePanel::onCmdFileDelete(FXObject*, FXSelector, void*)
                     }
                     f->showProgressDialog();
                 }
-
                 // If we have permission to write
                 else
                 {
@@ -3167,7 +3341,7 @@ long FilePanel::onCmdFileDelete(FXObject*, FXSelector, void*)
                         if (use_trash_can && (pathname.left(trashfileslocation.length()) == trashfileslocation))
                         {
                             FXString trashinfopathname = trashinfolocation + PATHSEPSTRING + filename + ".trashinfo";
-                            ::unlink(trashinfopathname.text());
+                            unlink(trashinfopathname.text());
                         }
                     }
                     // If action is cancelled in progress dialog
@@ -3195,12 +3369,12 @@ end:
     current->list->enableItem(firstitem);
     current->list->setCurrentItem(firstitem);
 
-    return(1);
+    return 1;
 }
 
 
 // View/Edit files
-long FilePanel::onCmdEdit(FXObject*, FXSelector s, void*)
+long FilePanel::onCmdEdit(FXObject*, FXSelector sel, void*)
 {
     // Wait cursor
     getApp()->beginWaitCursor();
@@ -3211,26 +3385,6 @@ long FilePanel::onCmdEdit(FXObject*, FXSelector s, void*)
     FXbool first = true;
 
     current->list->setFocus();
-
-    // At most one item selected, select item under cursor if not called from the popup menu
-    if ( (current->list->getNumSelectedItems() <= 1) && !allowPopupScroll )
-    {
-        int x, y;
-        FXuint state;
-        list->getCursorPosition(x, y, state);
-
-        int item = list->getItemAt(x, y);
-
-        if (list->getCurrentItem() >= 0)
-        {
-            list->deselectItem(list->getCurrentItem());
-        }
-        if (item >= 0)
-        {
-            list->setCurrentItem(item);
-            list->selectItem(item);
-        }
-    }
 
     FXString txtviewer = getApp()->reg().readStringEntry("PROGS", "txtviewer", DEFAULT_TXTVIEWER);
     FXString txteditor = getApp()->reg().readStringEntry("PROGS", "txteditor", DEFAULT_TXTEDITOR);
@@ -3257,7 +3411,7 @@ long FilePanel::onCmdEdit(FXObject*, FXSelector s, void*)
             if (association)
             {
                 // Use it to edit/view the files
-                if (FXSELID(s) == ID_EDIT) // Edit
+                if (FXSELID(sel) == ID_EDIT) // Edit
                 {
                     cmd = association->command.section(',', 2);
 
@@ -3343,7 +3497,7 @@ long FilePanel::onCmdEdit(FXObject*, FXSelector s, void*)
                     }
 
                     // List of selected items
-                    itemslist += ::quote(pathname) + " ";
+                    itemslist += xf_quote(pathname) + " ";
                 }
                 else
                 {
@@ -3351,7 +3505,39 @@ long FilePanel::onCmdEdit(FXObject*, FXSelector s, void*)
                     break;
                 }
             }
+            // Text file
+            else if (xf_istextfile(pathname) == 1)
+            {
+                if (FXSELID(sel) == ID_EDIT) // Edit
+                {
+                    cmd = txteditor;
+                }
+                else
+                {
+                    cmd = txtviewer;
+                }
 
+                // First selected item
+                if (first)
+                {
+                    samecmd = cmd;
+                    first = false;
+                }
+
+                if (samecmd != cmd)
+                {
+                    same = false;
+                    break;
+                }
+
+                // List of selected items
+                itemslist += xf_quote(pathname) + " ";
+            }
+            // Broken link
+            else if (xf_istextfile(pathname) == -1)
+            {
+                return 1;
+            }
             // No association
             else
             {
@@ -3360,7 +3546,7 @@ long FilePanel::onCmdEdit(FXObject*, FXSelector s, void*)
             }
         }
     }
-   
+
 #ifdef STARTUP_NOTIFICATION
     // Startup notification option and exceptions (if any)
     FXbool usesn = getApp()->reg().readUnsignedEntry("OPTIONS", "use_startup_notification", true);
@@ -3373,7 +3559,7 @@ long FilePanel::onCmdEdit(FXObject*, FXSelector s, void*)
         cmdname = samecmd;
 
         // If command exists, run it
-        if (::existCommand(cmdname))
+        if (xf_existcommand(cmdname))
         {
             cmd = cmdname + itemslist;
 #ifdef STARTUP_NOTIFICATION
@@ -3382,7 +3568,6 @@ long FilePanel::onCmdEdit(FXObject*, FXSelector s, void*)
             runcmd(cmd, current->list->getDirectory(), startlocation);
 #endif
         }
-
         // If command does not exist, call the "Open with..." dialog
         else
         {
@@ -3390,7 +3575,6 @@ long FilePanel::onCmdEdit(FXObject*, FXSelector s, void*)
             current->handle(this, FXSEL(SEL_COMMAND, ID_OPEN_WITH), NULL);
         }
     }
-
     // Files have different associations : handle them separately
     else
     {
@@ -3401,7 +3585,7 @@ long FilePanel::onCmdEdit(FXObject*, FXSelector s, void*)
                 pathname = current->list->getItemPathname(u);
 
                 // Only View / Edit regular files (not directories)
-                if (::isFile(pathname))
+                if (xf_isfile(pathname))
                 {
                     association = assocdict->findFileBinding(pathname.text());
 
@@ -3409,7 +3593,7 @@ long FilePanel::onCmdEdit(FXObject*, FXSelector s, void*)
                     if (association)
                     {
                         // Use it to edit/view the file
-                        if (FXSELID(s) == ID_EDIT) // Edit
+                        if (FXSELID(sel) == ID_EDIT) // Edit
                         {
                             cmd = association->command.section(',', 2);
 
@@ -3481,16 +3665,15 @@ long FilePanel::onCmdEdit(FXObject*, FXSelector s, void*)
                             cmdname = cmd;
 
                             // If command exists, run it
-                            if (::existCommand(cmdname))
+                            if (xf_existcommand(cmdname))
                             {
-                                cmd = cmdname + " " + ::quote(pathname);
+                                cmd = cmdname + " " + xf_quote(pathname);
 #ifdef STARTUP_NOTIFICATION
                                 runcmd(cmd, cmdname, current->list->getDirectory(), startlocation, usesn, snexcepts);
 #else
                                 runcmd(cmd, current->list->getDirectory(), startlocation);
 #endif
                             }
-
                             // If command does not exist, call the "Open with..." dialog
                             else
                             {
@@ -3499,11 +3682,10 @@ long FilePanel::onCmdEdit(FXObject*, FXSelector s, void*)
                             }
                         }
                     }
-
                     // No association
                     else
                     {
-                        if (FXSELID(s) == ID_EDIT)
+                        if (FXSELID(sel) == ID_EDIT)
                         {
                             cmd = txteditor;
                         }
@@ -3515,16 +3697,15 @@ long FilePanel::onCmdEdit(FXObject*, FXSelector s, void*)
                         cmdname = cmd;
 
                         // If command exists, run it
-                        if (::existCommand(cmdname))
+                        if (xf_existcommand(cmdname))
                         {
-                            cmd = cmdname + " " + ::quote(pathname);
+                            cmd = cmdname + " " + xf_quote(pathname);
 #ifdef STARTUP_NOTIFICATION
                             runcmd(cmd, cmdname, current->list->getDirectory(), startlocation, usesn, snexcepts);
 #else
                             runcmd(cmd, current->list->getDirectory(), startlocation);
 #endif
                         }
-
                         // If command does not exist, call the "Open with..." dialog
                         else
                         {
@@ -3540,12 +3721,12 @@ long FilePanel::onCmdEdit(FXObject*, FXSelector s, void*)
     delete assocdict;
     getApp()->endWaitCursor();
 
-    return(1);
+    return 1;
 }
 
 
 // Compare two files
-long FilePanel::onCmdCompare(FXObject*, FXSelector s, void*)
+long FilePanel::onCmdCompare(FXObject*, FXSelector sel, void*)
 {
     current->list->setFocus();
     int num = current->list->getNumSelectedItems();
@@ -3554,7 +3735,7 @@ long FilePanel::onCmdCompare(FXObject*, FXSelector s, void*)
     if ((num != 1) && (num != 2))
     {
         getApp()->endWaitCursor();
-        return(0);
+        return 0;
     }
 
 #ifdef STARTUP_NOTIFICATION
@@ -3575,29 +3756,40 @@ long FilePanel::onCmdCompare(FXObject*, FXSelector s, void*)
             if (current->list->isItemSelected(u))
             {
                 pathname = current->list->getItemPathname(u);
-                itemslist += ::quote(pathname) + " ";
+                itemslist += xf_quote(pathname) + " ";
             }
         }
 
         // Open a dialog to select the other item to be compared
         if (comparedialog == NULL)
         {
-            comparedialog = new BrowseInputDialog(this, "", "", _("Compare"), _("With:"), bigcompareicon, BROWSE_INPUT_FILE);
+            comparedialog = new BrowseInputDialog(this, "", "", _("Compare"), _("With:"), bigcompareicon,
+                                                  BROWSE_INPUT_FILE);
         }
         comparedialog->setIcon(bigcompareicon);
         comparedialog->setMessage(pathname);
         comparedialog->setText("");
+
+        // Select browse input type
+        if (xf_isdirectory(pathname))
+        {
+            comparedialog->setBrowseType(BROWSE_INPUT_FOLDER);
+        }
+        else
+        {
+            comparedialog->setBrowseType(BROWSE_INPUT_FILE);            
+        }
+        
         int rc = comparedialog->execute(PLACEMENT_CURSOR);
 
         // Get item path and add it to the list
         FXString str = comparedialog->getText();
-        itemslist += ::quote(str);
+        itemslist += xf_quote(str);
         if (!rc || (str == ""))
         {
-            return(0);
+            return 0;
         }
     }
-
     // Two selected items
     else if (num == 2)
     {
@@ -3607,7 +3799,7 @@ long FilePanel::onCmdCompare(FXObject*, FXSelector s, void*)
             if (current->list->isItemSelected(u))
             {
                 pathname = current->list->getItemPathname(u);
-                itemslist += ::quote(pathname) + " ";
+                itemslist += xf_quote(pathname) + " ";
             }
         }
     }
@@ -3617,7 +3809,7 @@ long FilePanel::onCmdCompare(FXObject*, FXSelector s, void*)
 
     // If command exists, run it
     cmdname = filecomparator;
-    if (::existCommand(cmdname))
+    if (xf_existcommand(cmdname))
     {
         cmd = cmdname + itemslist;
 #ifdef STARTUP_NOTIFICATION
@@ -3626,17 +3818,18 @@ long FilePanel::onCmdCompare(FXObject*, FXSelector s, void*)
         runcmd(cmd, current->list->getDirectory(), startlocation);
 #endif
     }
-
     // If command does not exist, issue an error message
     else
     {
         getApp()->endWaitCursor();
-        MessageBox::error(this, BOX_OK, _("Error"), _("Program %s not found. Please define a file comparator program in the Preferences dialog!"), cmdname.text());
+        MessageBox::error(this, BOX_OK, _("Error"),
+                          _("Program %s not found. Please define a file / folder comparator program in the Preferences dialog!"),
+                          cmdname.text());
     }
 
     getApp()->endWaitCursor();
 
-    return(1);
+    return 1;
 }
 
 
@@ -3652,13 +3845,12 @@ long FilePanel::onCmdProperties(FXObject* sender, FXSelector, void*)
     num = current->list->getNumSelectedItems(&itm);
     if (num == 0)
     {
-        return(0);
+        return 0;
     }
-
     // There is one selected file in the file list
     else if (num == 1)
     {
-        // Eventually deselect the '..' directory
+        // Possibly deselect the '..' directory
         if (current->list->isItemSelected(0))
         {
             current->list->deselectItem(0);
@@ -3671,7 +3863,6 @@ long FilePanel::onCmdProperties(FXObject* sender, FXSelector, void*)
         attrdlg->create();
         attrdlg->show(PLACEMENT_OWNER);
     }
-
     // There are multiple selected files in the file list
     else if (num > 1)
     {
@@ -3681,21 +3872,23 @@ long FilePanel::onCmdProperties(FXObject* sender, FXSelector, void*)
             int errcode = errno;
             if (errcode)
             {
-                MessageBox::error(this, BOX_OK, _("Error"), _("Can't enter folder %s: %s"), current->list->getDirectory().text(), strerror(errcode));
+                MessageBox::error(this, BOX_OK, _("Error"), _("Can't enter folder %s: %s"),
+                                  current->list->getDirectory().text(), strerror(errcode));
             }
             else
             {
-                MessageBox::error(this, BOX_OK, _("Error"), _("Can't enter folder %s"), current->list->getDirectory().text());
+                MessageBox::error(this, BOX_OK, _("Error"), _("Can't enter folder %s"),
+                                  current->list->getDirectory().text());
             }
 
-            return(0);
+            return 0;
         }
 
         FXString path = current->list->getDirectory();
         FXString* files = new FXString[num];
         FXString* paths = new FXString[num];
 
-        // Eventually deselect the '..' directory
+        // Possibly deselect the '..' directory
         if (current->list->isItemSelected(0))
         {
             current->list->deselectItem(0);
@@ -3722,19 +3915,20 @@ long FilePanel::onCmdProperties(FXObject* sender, FXSelector, void*)
             int errcode = errno;
             if (errcode)
             {
-                MessageBox::error(this, BOX_OK, _("Error"), _("Can't enter folder %s: %s"), startlocation.text(), strerror(errcode));
+                MessageBox::error(this, BOX_OK, _("Error"), _("Can't enter folder %s: %s"), startlocation.text(),
+                                  strerror(errcode));
             }
             else
             {
                 MessageBox::error(this, BOX_OK, _("Error"), _("Can't enter folder %s"), startlocation.text());
             }
 
-            return(0);
+            return 0;
         }
     }
 
     // Force panel refresh
-    return(1);
+    return 1;
 }
 
 
@@ -3754,7 +3948,7 @@ long FilePanel::onCmdNewDir(FXObject*, FXSelector, void*)
 
     if (newdirdialog == NULL)
     {
-        newdirdialog = new InputDialog(this, "", _("Create new folder:"), _("New Folder"), "", bignewfoldericon);
+        newdirdialog = new InputDialog(this, "", _("Create new folder:"), _("New Folder"), "", bigfoldernewicon);
     }
     newdirdialog->setText("");
 
@@ -3764,24 +3958,25 @@ long FilePanel::onCmdNewDir(FXObject*, FXSelector, void*)
         if (newdirdialog->getText() == "")
         {
             MessageBox::warning(this, BOX_OK, _("Warning"), _("Folder name is empty, operation cancelled"));
-            return(0);
+            return 0;
         }
 
         // Directory name contains '/'
         if (newdirdialog->getText().contains(PATHSEPCHAR))
         {
-            MessageBox::warning(this, BOX_OK, _("Warning"), _("The / character is not allowed in folder names, operation cancelled"));
-            return(0);
+            MessageBox::warning(this, BOX_OK, _("Warning"),
+                                _("The / character is not allowed in folder names, operation cancelled"));
+            return 0;
         }
 
         dirname = dirpath + newdirdialog->getText();
         if (dirname != dirpath)
         {
             // Check if file or folder already exists
-            if (existFile(dirname))
+            if (xf_existfile(dirname))
             {
                 MessageBox::error(this, BOX_OK, _("Error"), _("File or folder %s already exists"), dirname.text());
-                return(0);
+                return 0;
             }
 
             // Create the new dir according to the current umask
@@ -3797,21 +3992,21 @@ long FilePanel::onCmdNewDir(FXObject*, FXSelector, void*)
             {
                 if (errcode)
                 {
-                    MessageBox::error(getApp(), BOX_OK_SU, _("Error"), _("Can't create folder %s: %s"), dirname.text(), strerror(errcode));
+                    MessageBox::error(getApp(), BOX_OK_SU, _("Error"), _("Can't create folder %s: %s"), dirname.text(),
+                                      strerror(errcode));
                 }
                 else
                 {
                     MessageBox::error(getApp(), BOX_OK_SU, _("Error"), _("Can't create folder %s"), dirname.text());
                 }
-                return(0);
+                return 0;
             }
         }
     }
-
     // Cancel was pressed
     else
     {
-        return(0);
+        return 0;
     }
 
     // Force panel refresh
@@ -3830,7 +4025,7 @@ long FilePanel::onCmdNewDir(FXObject*, FXSelector, void*)
         }
     }
 
-    return(1);
+    return 1;
 }
 
 
@@ -3860,14 +4055,15 @@ long FilePanel::onCmdNewFile(FXObject*, FXSelector, void*)
         if (newfiledialog->getText() == "")
         {
             MessageBox::warning(this, BOX_OK, _("Warning"), _("File name is empty, operation cancelled"));
-            return(0);
+            return 0;
         }
 
         // File name contains '/'
         if (newfiledialog->getText().contains(PATHSEPCHAR))
         {
-            MessageBox::warning(this, BOX_OK, _("Warning"), _("The / character is not allowed in file names, operation cancelled"));
-            return(0);
+            MessageBox::warning(this, BOX_OK, _("Warning"),
+                                _("The / character is not allowed in file names, operation cancelled"));
+            return 0;
         }
 
         filename = pathname + newfiledialog->getText();
@@ -3875,10 +4071,10 @@ long FilePanel::onCmdNewFile(FXObject*, FXSelector, void*)
         if (filename != pathname)
         {
             // Check if file or folder already exists
-            if (existFile(filename))
+            if (xf_existfile(filename))
             {
                 MessageBox::error(this, BOX_OK, _("Error"), _("File or folder %s already exists"), filename.text());
-                return(0);
+                return 0;
             }
 
             // Create the new file
@@ -3887,13 +4083,14 @@ long FilePanel::onCmdNewFile(FXObject*, FXSelector, void*)
             {
                 if (errno)
                 {
-                    MessageBox::error(getApp(), BOX_OK_SU, _("Error"), _("Can't create file %s: %s"), filename.text(), strerror(errno));
+                    MessageBox::error(getApp(), BOX_OK_SU, _("Error"), _("Can't create file %s: %s"), filename.text(),
+                                      strerror(errno));
                 }
                 else
                 {
                     MessageBox::error(getApp(), BOX_OK_SU, _("Error"), _("Can't create file %s"), filename.text());
                 }
-                return(0);
+                return 0;
             }
 
             // Change the file permissions according to the current umask
@@ -3907,20 +4104,21 @@ long FilePanel::onCmdNewFile(FXObject*, FXSelector, void*)
             {
                 if (errcode)
                 {
-                    MessageBox::error(getApp(), BOX_OK_SU, _("Error"), _("Can't set permissions in %s: %s"), filename.text(), strerror(errcode));
+                    MessageBox::error(getApp(), BOX_OK_SU, _("Error"), _("Can't set permissions in %s: %s"),
+                                      filename.text(), strerror(errcode));
                 }
                 else
                 {
-                    MessageBox::error(getApp(), BOX_OK_SU, _("Error"), _("Can't set permissions in %s"), filename.text());
+                    MessageBox::error(getApp(), BOX_OK_SU, _("Error"), _("Can't set permissions in %s"),
+                                      filename.text());
                 }
             }
         }
     }
-
     // Cancel was pressed
     else
     {
-        return(0);
+        return 0;
     }
 
     // Force panel refresh
@@ -3939,7 +4137,7 @@ long FilePanel::onCmdNewFile(FXObject*, FXSelector, void*)
         }
     }
 
-    return(1);
+    return 1;
 }
 
 
@@ -3959,7 +4157,8 @@ long FilePanel::onCmdNewSymlink(FXObject*, FXSelector, void*)
 
     if (newlinkdialog == NULL)
     {
-        newlinkdialog = new InputDialog(this, "", _("Create new symbolic link:"), _("New Symlink"), "", bignewlinkicon, false);
+        newlinkdialog = new InputDialog(this, "", _("Create new symbolic link:"), _("New Symlink"), "", bignewlinkicon,
+                                        false);
     }
     newlinkdialog->setText("");
 
@@ -3969,17 +4168,17 @@ long FilePanel::onCmdNewSymlink(FXObject*, FXSelector, void*)
         if (newlinkdialog->getText() == "")
         {
             MessageBox::warning(this, BOX_OK, _("Warning"), _("File name is empty, operation cancelled"));
-            return(0);
+            return 0;
         }
         linkname = linkpath + newlinkdialog->getText();
         File* f;
         if (linkname != linkpath)
         {
             // Test some error conditions
-            if (existFile(linkname))
+            if (xf_existfile(linkname))
             {
                 MessageBox::error(this, BOX_OK, _("Error"), _("File or folder %s already exists"), linkname.text());
-                return(0);
+                return 0;
             }
 
             // Select target
@@ -3991,10 +4190,11 @@ long FilePanel::onCmdNewSymlink(FXObject*, FXSelector, void*)
                 FXString linksource = browse.getFilename();
 
                 // Source does not exist
-                if (!existFile(linksource))
+                if (!xf_existfile(linksource))
                 {
-                    MessageBox::error(this, BOX_OK, _("Error"), _("Symlink source %s does not exist"), linksource.text());
-                    return(0);
+                    MessageBox::error(this, BOX_OK, _("Error"), _("Symlink source %s does not exist"),
+                                      linksource.text());
+                    return 0;
                 }
 
                 f = new File(this, _("Symlink"), SYMLINK);
@@ -4006,11 +4206,10 @@ long FilePanel::onCmdNewSymlink(FXObject*, FXSelector, void*)
             //return 0;
         }
     }
-
     // Cancel was pressed
     else
     {
-        return(0);
+        return 0;
     }
 
     // Force panel refresh
@@ -4029,7 +4228,46 @@ long FilePanel::onCmdNewSymlink(FXObject*, FXSelector, void*)
         }
     }
 
-    return(1);
+    return 1;
+}
+
+
+// Add bookmark
+long FilePanel::onCmdAddBookmark(FXObject*, FXSelector, void*)
+{
+    FXString dirpathname = current->list->getDirectory();
+
+    // Bookmark dialog
+    if (addbookmarkdialog == NULL)
+    {
+        addbookmarkdialog = new BookmarkDialog(this, "", "", _("Add Bookmark"), _("Name:"),
+                                               _("Icon:"), bigaddbookicon);
+    }
+    addbookmarkdialog->setName(FXPath::name(dirpathname));
+    addbookmarkdialog->selectAll();
+
+    FXString msg = FXString(_("Location:")) + " " + dirpathname;
+    addbookmarkdialog->setMessage(msg);
+
+    // Accept was pressed
+    if (addbookmarkdialog->execute(PLACEMENT_CURSOR))
+    {
+        // Append bookmark
+        FXString bookname = addbookmarkdialog->getName();
+        FXString iconpathname = addbookmarkdialog->getIconPathname();
+        int ret = dirpanel->getBookmarksList()->appendBookmark(bookname, dirpathname, iconpathname);
+        if (ret == 0)
+        {
+            return 0;
+        }
+    }
+    // Cancel was pressed
+    else
+    {
+        return 0;
+    }
+
+    return 1;
 }
 
 
@@ -4045,7 +4283,7 @@ long FilePanel::onCmdOpen(FXObject*, FXSelector, void*)
     if (current->list->getNumSelectedItems() == 0)
     {
         getApp()->endWaitCursor();
-        return(0);
+        return 0;
     }
 
     // Default programs
@@ -4075,7 +4313,7 @@ long FilePanel::onCmdOpen(FXObject*, FXSelector, void*)
             FXString pathname = current->list->getItemPathname(u);
 
             // If directory, skip it
-            if (::isDirectory(pathname))
+            if (xf_isdirectory(pathname))
             {
                 continue;
             }
@@ -4146,23 +4384,20 @@ long FilePanel::onCmdOpen(FXObject*, FXSelector, void*)
                     if (!found)
                     {
                         cmdlist.push_back(cmd);
-                        itemslist.push_back( ::quote(pathname) );
+                        itemslist.push_back(xf_quote(pathname));
                     }
-
                     // Command already in list, then update the items list for that command
                     else
                     {
-                        itemslist[j] = itemslist[j] + " " + ::quote(pathname);
+                        itemslist[j] = itemslist[j] + " " + xf_quote(pathname);
                     }
                 }
             }
-
             // Or execute the file
             else if (current->list->isItemExecutable(u))
             {
                 execFile(pathname);
             }
-
             // Or call the "Open with..." dialog
             else
             {
@@ -4171,14 +4406,11 @@ long FilePanel::onCmdOpen(FXObject*, FXSelector, void*)
                 {
                     getApp()->endWaitCursor();
                     current->handle(this, FXSEL(SEL_COMMAND, ID_OPEN_WITH), NULL);
-
                 }
-
                 // More than one item, add items to the ignored list
                 else
                 {
                     ignoreditems += " " + FXPath::name(pathname) + "\n";
-
                 }
             }
         }
@@ -4197,7 +4429,7 @@ long FilePanel::onCmdOpen(FXObject*, FXSelector, void*)
         FXString cmdname = cmdlist[i];
 
         // If command exists, run it
-        if (::existCommand(cmdname))
+        if (xf_existcommand(cmdname))
         {
             FXString cmd = cmdname + " " + itemslist[i];
 #ifdef STARTUP_NOTIFICATION
@@ -4219,7 +4451,7 @@ long FilePanel::onCmdOpen(FXObject*, FXSelector, void*)
     delete assocdict;
     getApp()->endWaitCursor();
 
-    return(1);
+    return 1;
 }
 
 
@@ -4232,13 +4464,14 @@ long FilePanel::onCmdOpenWith(FXObject*, FXSelector, void*)
 
     if (current->list->getNumSelectedItems() == 0)
     {
-        return(0);
+        return 0;
     }
 
     FXString cmd = "", cmdname;
     if (opendialog == NULL)
     {
-        opendialog = new HistInputDialog(this, "", _("Open selected file(s) with:"), _("Open With"), "", bigfileopenicon, HIST_INPUT_EXECUTABLE_FILE, true, _("A&ssociate"));
+        opendialog = new HistInputDialog(this, "", _("Open selected file(s) with:"), _("Open With"), "",
+                                         bigfileopenicon, false, true, HIST_INPUT_EXECUTABLE_FILE, true, _("A&ssociate"));
     }
     opendialog->setText(cmd);
 
@@ -4258,7 +4491,7 @@ long FilePanel::onCmdOpenWith(FXObject*, FXSelector, void*)
         if (cmd == "")
         {
             MessageBox::warning(this, BOX_OK, _("Warning"), _("File name is empty, operation cancelled"));
-            return(0);
+            return 0;
         }
 
         for (int u = 0; u < current->list->getNumItems(); u++)
@@ -4271,8 +4504,10 @@ long FilePanel::onCmdOpenWith(FXObject*, FXSelector, void*)
                     FXString filename = current->list->getItemFilename(u);
                     FXString ext = filename.rafter('.', 2).lower();
 
-                    if ((ext == "tar.gz") || (ext == "tar.bz2") || (ext == "tar.xz") || (ext == "tar.z")) // Special cases
-                    {}
+                    if ((ext == "tar.gz") || (ext == "tar.bz2") || (ext == "tar.xz") || (ext == "tar.zst") ||
+                        (ext == "tar.z")) // Special cases
+                    {
+                    }
                     else
                     {
                         ext = FXPath::extension(filename).lower();
@@ -4297,8 +4532,8 @@ long FilePanel::onCmdOpenWith(FXObject*, FXSelector, void*)
                         str = new char* [2];
                         str[0] = new char[strlen(ext.text()) + 1];
                         str[1] = new char[strlen(oldfileassoc.text()) + 1];
-                        strlcpy(str[0], ext.text(), ext.length() + 1);
-                        strlcpy(str[1], oldfileassoc.text(), oldfileassoc.length() + 1);
+                        xf_strlcpy(str[0], ext.text(), ext.length() + 1);
+                        xf_strlcpy(str[1], oldfileassoc.text(), oldfileassoc.length() + 1);
                         mainWindow->handle(this, FXSEL(SEL_COMMAND, XFileExplorer::ID_FILE_ASSOC), str);
                     }
                     else
@@ -4311,8 +4546,8 @@ long FilePanel::onCmdOpenWith(FXObject*, FXSelector, void*)
                         str = new char* [2];
                         str[0] = new char[strlen(ext.text()) + 1];
                         str[1] = new char[strlen(newcmd.text()) + 1];
-                        strlcpy(str[0], ext.text(), ext.length() + 1);
-                        strlcpy(str[1], newcmd.text(), newcmd.length() + 1);
+                        xf_strlcpy(str[0], ext.text(), ext.length() + 1);
+                        xf_strlcpy(str[1], newcmd.text(), newcmd.length() + 1);
                         mainWindow->handle(this, FXSEL(SEL_COMMAND, XFileExplorer::ID_FILE_ASSOC), str);
                     }
                 }
@@ -4321,7 +4556,7 @@ long FilePanel::onCmdOpenWith(FXObject*, FXSelector, void*)
                 FXString pathname = current->list->getItemPathname(u);
                 cmdname = cmd;
                 cmd += " ";
-                cmd = cmd + ::quote(pathname);
+                cmd = cmd + xf_quote(pathname);
             }
         }
 
@@ -4335,22 +4570,20 @@ long FilePanel::onCmdOpenWith(FXObject*, FXSelector, void*)
 #endif
 
         // If command exists, run it
-        if (::existCommand(cmdname))
+        if (xf_existcommand(cmdname))
+        {
 #ifdef STARTUP_NOTIFICATION
-        {
             runcmd(cmd, cmdname, current->list->getDirectory(), startlocation, usesn, snexcepts);
-        }
 #else
-        {
             runcmd(cmd, current->list->getDirectory(), startlocation);
-        }
 #endif
+        }
         // If command does not exist, call the "Open with..." dialog
         else
         {
             getApp()->endWaitCursor();
             current->handle(this, FXSEL(SEL_COMMAND, ID_OPEN_WITH), NULL);
-            return(1);
+            return 1;
         }
 
         // Update history list
@@ -4361,7 +4594,7 @@ long FilePanel::onCmdOpenWith(FXObject*, FXSelector, void*)
         FXbool newstr = true;
         for (int i = 0; i < OpenNum - 1; i++)
         {
-            if (streq(OpenHistory[i], cmd.text()))
+            if (xf_strequal(OpenHistory[i], cmd.text()))
             {
                 newstr = false;
                 break;
@@ -4385,46 +4618,62 @@ long FilePanel::onCmdOpenWith(FXObject*, FXSelector, void*)
         if (newstr)
         {
             // FIFO
-            strlcpy(OpenHistory[0], cmd.text(), cmd.length() + 1);
+            xf_strlcpy(OpenHistory[0], cmd.text(), cmd.length() + 1);
             for (int i = 1; i < OpenNum; i++)
             {
-                strlcpy(OpenHistory[i], opendialog->getHistoryItem(i - 1).text(), opendialog->getHistoryItem(i - 1).length() + 1);
+                xf_strlcpy(OpenHistory[i], opendialog->getHistoryItem(i - 1).text(),
+                         opendialog->getHistoryItem(i - 1).length() + 1);
             }
         }
 
         getApp()->endWaitCursor();
     }
 
-    return(1);
+    // If list has been cleared, set history size to zero
+    if (opendialog->getHistorySize() == 0)
+    {
+        OpenNum = 0;
+    }
+
+    return 1;
 }
 
 
-long FilePanel::onCmdItemFilter(FXObject* o, FXSelector sel, void*)
+long FilePanel::onCmdItemFilter(FXObject* sender, FXSelector sel, void*)
 {
     if (FilterNum == 0)
     {
-        strlcpy(FilterHistory[FilterNum], "*", 2);
+        xf_strlcpy(FilterHistory[FilterNum], "*", 2);
         FilterNum++;
     }
 
     int i;
     FXString pat = list->getPattern();
+
     if (filterdialog == NULL)
     {
-        filterdialog = new HistInputDialog(this, pat, _("Show files:"), _("Filter"), "", bigfiltericon, HIST_INPUT_FILE);
+        filterdialog = new HistInputDialog(this, pat, _("Show:"), _("Filter"), "", bigfiltericon, false, true,
+                                           HIST_INPUT_FILE, true, _("Also apply to folders"));
     }
-    filterdialog->CursorEnd();
-    filterdialog->selectAll();
+
     filterdialog->clearItems();
+    filterdialog->CursorEnd();
+
     for (int i = 0; i < FilterNum; i++)
     {
         filterdialog->appendItem(FilterHistory[i]);
     }
-    filterdialog->sortItems();
 
+    filterdialog->sortItems();
+    filterdialog->setText(pat);
+
+    // Set filter type
     if (filterdialog->execute() && ((pat = filterdialog->getText()) != ""))
     {
-        // Change file list patten
+        // Set filter folders option
+        list->setFilterFolders(filterdialog->getOption());
+
+        // Change file list pattern
         if (FXSELID(sel) == ID_FILTER_CURRENT)
         {
             current->list->setPattern(pat);
@@ -4437,7 +4686,7 @@ long FilePanel::onCmdItemFilter(FXObject* o, FXSelector sel, void*)
         FXbool newstr = true;
         for (i = 0; i < FilterNum; i++)
         {
-            if (streq(FilterHistory[i], pat.text()))
+            if (xf_strequal(FilterHistory[i], pat.text()))
             {
                 newstr = false;
                 break;
@@ -4446,26 +4695,34 @@ long FilePanel::onCmdItemFilter(FXObject* o, FXSelector sel, void*)
         // Append new string to the list bottom
         if (newstr && (FilterNum < FILTER_HIST_SIZE))
         {
-            strlcpy(FilterHistory[FilterNum], pat.text(), pat.length() + 1);
+            xf_strlcpy(FilterHistory[FilterNum], pat.text(), pat.length() + 1);
             FilterNum++;
         }
     }
 
+    list->onCmdRefresh(0, 0, 0);
     list->setFocus();
-    return(1);
+
+    // If list has been cleared, set history size to zero
+    if (filterdialog->getHistorySize() == 0)
+    {
+        FilterNum = 0;
+    }
+
+    return 1;
 }
 
 
 // Panel context menu
-long FilePanel::onCmdPopupMenu(FXObject* o, FXSelector s, void* p)
+long FilePanel::onCmdPopupMenu(FXObject* sender, FXSelector sel, void* ptr)
 {
     // Make panel active
     setActive();
 
     // Check if control key or Shift-F10 or menu was pressed
-    if (p != NULL)
+    if (ptr != NULL)
     {
-        FXEvent* event = (FXEvent*)p;
+        FXEvent* event = (FXEvent*)ptr;
         if (event->state & CONTROLMASK)
         {
             ctrl = true;
@@ -4506,7 +4763,7 @@ long FilePanel::onCmdPopupMenu(FXObject* o, FXSelector s, void* p)
     // If control flag is set, deselect all items
     if (ctrl)
     {
-        list->handle(o, FXSEL(SEL_COMMAND, FileList::ID_DESELECT_ALL), p);
+        list->handle(sender, FXSEL(SEL_COMMAND, FileList::ID_DESELECT_ALL), ptr);
     }
 
     // Popup menu pane
@@ -4518,41 +4775,70 @@ long FilePanel::onCmdPopupMenu(FXObject* o, FXSelector s, void* p)
     int num, itm;
     num = current->list->getNumSelectedItems(&itm);
 
+    // Find if both selected items have the same file type
+    // This is used to enable / disable compare menu item
+    if (num == 2)
+    {
+        int u1 = 0;
+        FXbool isfile1 = true, isfile2 = true;
+        for (int u = 0; u < current->list->getNumItems(); u++)
+        {
+            if (current->list->isItemSelected(u))
+            {
+                FXString pathname = current->list->getItemPathname(u);
+               
+                if (u1 == 0)
+                {
+                    u1 = u;
+                    isfile1 = xf_isfile(pathname);
+                }
+                else
+                {
+                    isfile2 = xf_isfile(pathname);                    
+                }
+            }
+        }
+        // Indicates that both selected items have the same file type (files or directories)
+        sameFileType = (isfile1 == isfile2 ? true : false);
+    }
+
     // No selection or control flag set
     if ((num == 0) || current->ctrl)
     {
         // Menu items
-        new FXMenuCommand(menu, _("New& file..."), newfileicon, current, FilePanel::ID_NEW_FILE);
-        new FXMenuCommand(menu, _("New f&older..."), newfoldericon, current, FilePanel::ID_NEW_DIR);
-        new FXMenuCommand(menu, _("New s&ymlink..."), newlinkicon, current, FilePanel::ID_NEW_SYMLINK);
-        new FXMenuCommand(menu, _("Fi&lter..."), filtericon, current, FilePanel::ID_FILTER);
+        new FXMenuCommand(menu, _("New& File..."), mininewfileicon, current, FilePanel::ID_NEW_FILE);
+        new FXMenuCommand(menu, _("New F&older..."), minifoldernewicon, current, FilePanel::ID_NEW_DIR);
+        new FXMenuCommand(menu, _("New S&ymlink..."), mininewlinkicon, current, FilePanel::ID_NEW_SYMLINK);
+        new FXMenuCommand(menu, _("&Add Bookmark..."), miniaddbookicon, this, FilePanel::ID_ADD_BOOKMARK);
+        new FXMenuCommand(menu, _("Fi&lter..."), minifiltericon, current, FilePanel::ID_FILTER);
         new FXMenuSeparator(menu);
-        new FXMenuCommand(menu, _("&Paste"), paste_clpicon, current, FilePanel::ID_PASTE_CLIPBOARD);
+        new FXMenuCommand(menu, _("&Paste"), minipasteicon, current, FilePanel::ID_PASTE_CLIPBOARD);
         new FXMenuSeparator(menu);
-        new FXMenuCheck(menu, _("&Hidden files"), current->list, FileList::ID_TOGGLE_HIDDEN);
+        new FXMenuCheck(menu, _("&Hidden Files"), current->list, FileList::ID_TOGGLE_HIDDEN);
         new FXMenuCheck(menu, _("Thum&bnails"), current->list, FileList::ID_TOGGLE_THUMBNAILS);
         new FXMenuSeparator(menu);
-        new FXMenuRadio(menu, _("B&ig icons"), current->list, IconList::ID_SHOW_BIG_ICONS);
-        new FXMenuRadio(menu, _("&Small icons"), current->list, IconList::ID_SHOW_MINI_ICONS);
-        new FXMenuRadio(menu, _("&Full file list"), current->list, IconList::ID_SHOW_DETAILS);
+        new FXMenuRadio(menu, _("B&ig Icons"), current->list, IconList::ID_SHOW_BIG_ICONS);
+        new FXMenuRadio(menu, _("&Small Icons"), current->list, IconList::ID_SHOW_MINI_ICONS);
+        new FXMenuRadio(menu, _("&Detailed File List"), current->list, IconList::ID_SHOW_DETAILS);
         new FXMenuSeparator(menu);
+        new FXMenuCheck(menu, _("Autos&ize"), current->list, FileList::ID_AUTOSIZE);
         new FXMenuRadio(menu, _("&Rows"), current->list, FileList::ID_ARRANGE_BY_ROWS);
         new FXMenuRadio(menu, _("&Columns"), current->list, FileList::ID_ARRANGE_BY_COLUMNS);
-        new FXMenuCheck(menu, _("Autosize"), current->list, FileList::ID_AUTOSIZE);
         new FXMenuSeparator(menu);
-        new FXMenuRadio(menu, _("&Name"), current->list, FileList::ID_SORT_BY_NAME);
-        new FXMenuRadio(menu, _("Si&ze"), current->list, FileList::ID_SORT_BY_SIZE);
-        new FXMenuRadio(menu, _("&Type"), current->list, FileList::ID_SORT_BY_TYPE);
-        new FXMenuRadio(menu, _("E&xtension"), current->list, FileList::ID_SORT_BY_EXT);
-        new FXMenuRadio(menu, _("&Date"), current->list, FileList::ID_SORT_BY_TIME);
-        new FXMenuRadio(menu, _("&User"), current->list, FileList::ID_SORT_BY_USER);
-        new FXMenuRadio(menu, _("&Group"), current->list, FileList::ID_SORT_BY_GROUP);
-        new FXMenuRadio(menu, _("Per&missions"), current->list, FileList::ID_SORT_BY_PERM);
-        new FXMenuRadio(menu, _("Deletion date"), current->list, FileList::ID_SORT_BY_DELTIME);
+        new FXMenuRadio(menu, _("&Name"), current->list, FileList::ID_COL_NAME);
+        new FXMenuRadio(menu, _("Si&ze"), current->list, FileList::ID_COL_SIZE);
+        new FXMenuRadio(menu, _("&Type"), current->list, FileList::ID_COL_TYPE);
+        new FXMenuRadio(menu, _("E&xtension"), current->list, FileList::ID_COL_EXT);
+        new FXMenuRadio(menu, _("&Date"), current->list, FileList::ID_COL_DATE);
+        new FXMenuRadio(menu, _("&User"), current->list, FileList::ID_COL_USER);
+        new FXMenuRadio(menu, _("&Group"), current->list, FileList::ID_COL_GROUP);
+        new FXMenuRadio(menu, _("Per&missions"), current->list, FileList::ID_COL_PERMS);
+        new FXMenuRadio(menu, _("&Link"), current->list, FileList::ID_COL_LINK);
+        new FXMenuRadio(menu, _("&Deletion Date"), current->list, FileList::ID_COL_DELDATE);
         new FXMenuSeparator(menu);
-        new FXMenuCheck(menu, _("Ignore c&ase"), current->list, FileList::ID_SORT_CASE);
-        new FXMenuCheck(menu, _("Fold&ers first"), current->list, FileList::ID_DIRS_FIRST);
-        new FXMenuCheck(menu, _("Re&verse order"), current->list, FileList::ID_SORT_REVERSE);
+        new FXMenuCheck(menu, _("Ignore C&ase"), current->list, FileList::ID_SORT_CASE);
+        new FXMenuCheck(menu, _("Fold&ers First"), current->list, FileList::ID_DIRS_FIRST);
+        new FXMenuCheck(menu, _("Re&verse Order"), current->list, FileList::ID_SORT_REVERSE);
     }
     // Non empty selection
     else
@@ -4565,37 +4851,39 @@ long FilePanel::onCmdPopupMenu(FXObject* o, FXSelector s, void* p)
 
         // Panel submenu items
         FXMenuPane* submenu = new FXMenuPane(this);
-        new FXMenuCommand(submenu, _("Ne&w file..."), newfileicon, current, FilePanel::ID_NEW_FILE);
-        new FXMenuCommand(submenu, _("New f&older..."), newfoldericon, current, FilePanel::ID_NEW_DIR);
-        new FXMenuCommand(submenu, _("New s&ymlink..."), newlinkicon, current, FilePanel::ID_NEW_SYMLINK);
-        new FXMenuCommand(submenu, _("Fi&lter..."), filtericon, current, FilePanel::ID_FILTER);
+        new FXMenuCommand(submenu, _("Ne&w File..."), mininewfileicon, current, FilePanel::ID_NEW_FILE);
+        new FXMenuCommand(submenu, _("New F&older..."), minifoldernewicon, current, FilePanel::ID_NEW_DIR);
+        new FXMenuCommand(submenu, _("New S&ymlink..."), mininewlinkicon, current, FilePanel::ID_NEW_SYMLINK);
+        new FXMenuCommand(submenu, _("&Add Bookmark..."), miniaddbookicon, this, FilePanel::ID_ADD_BOOKMARK);
+        new FXMenuCommand(submenu, _("Fi&lter..."), minifiltericon, current, FilePanel::ID_FILTER);
         new FXMenuSeparator(submenu);
-        new FXMenuCommand(submenu, _("&Paste"), paste_clpicon, current, FilePanel::ID_PASTE_CLIPBOARD);
+        new FXMenuCommand(submenu, _("&Paste"), minipasteicon, current, FilePanel::ID_PASTE_CLIPBOARD);
         new FXMenuSeparator(submenu);
-        new FXMenuCheck(submenu, _("&Hidden files"), current->list, FileList::ID_TOGGLE_HIDDEN);
+        new FXMenuCheck(submenu, _("&Hidden Files"), current->list, FileList::ID_TOGGLE_HIDDEN);
         new FXMenuCheck(submenu, _("Thum&bnails"), current->list, FileList::ID_TOGGLE_THUMBNAILS);
         new FXMenuSeparator(submenu);
-        new FXMenuRadio(submenu, _("B&ig icons"), current->list, IconList::ID_SHOW_BIG_ICONS);
-        new FXMenuRadio(submenu, _("&Small icons"), current->list, IconList::ID_SHOW_MINI_ICONS);
-        new FXMenuRadio(submenu, _("&Full file list"), current->list, IconList::ID_SHOW_DETAILS);
+        new FXMenuRadio(submenu, _("B&ig Icons"), current->list, IconList::ID_SHOW_BIG_ICONS);
+        new FXMenuRadio(submenu, _("&Small Icons"), current->list, IconList::ID_SHOW_MINI_ICONS);
+        new FXMenuRadio(submenu, _("&Detailed File List"), current->list, IconList::ID_SHOW_DETAILS);
         new FXMenuSeparator(submenu);
+        new FXMenuCheck(submenu, _("Autos&ize"), current->list, FileList::ID_AUTOSIZE);
         new FXMenuRadio(submenu, _("&Rows"), current->list, FileList::ID_ARRANGE_BY_ROWS);
         new FXMenuRadio(submenu, _("&Columns"), current->list, FileList::ID_ARRANGE_BY_COLUMNS);
-        new FXMenuCheck(submenu, _("Autosize"), current->list, FileList::ID_AUTOSIZE);
         new FXMenuSeparator(submenu);
-        new FXMenuRadio(submenu, _("&Name"), current->list, FileList::ID_SORT_BY_NAME);
-        new FXMenuRadio(submenu, _("Si&ze"), current->list, FileList::ID_SORT_BY_SIZE);
-        new FXMenuRadio(submenu, _("&Type"), current->list, FileList::ID_SORT_BY_TYPE);
-        new FXMenuRadio(submenu, _("E&xtension"), current->list, FileList::ID_SORT_BY_EXT);
-        new FXMenuRadio(submenu, _("&Date"), current->list, FileList::ID_SORT_BY_TIME);
-        new FXMenuRadio(submenu, _("&User"), current->list, FileList::ID_SORT_BY_USER);
-        new FXMenuRadio(submenu, _("&Group"), current->list, FileList::ID_SORT_BY_GROUP);
-        new FXMenuRadio(submenu, _("Per&missions"), current->list, FileList::ID_SORT_BY_PERM);
-        new FXMenuRadio(submenu, _("Deletion date"), current->list, FileList::ID_SORT_BY_DELTIME);
+        new FXMenuRadio(submenu, _("&Name"), current->list, FileList::ID_COL_NAME);
+        new FXMenuRadio(submenu, _("Si&ze"), current->list, FileList::ID_COL_SIZE);
+        new FXMenuRadio(submenu, _("&Type"), current->list, FileList::ID_COL_TYPE);
+        new FXMenuRadio(submenu, _("E&xtension"), current->list, FileList::ID_COL_EXT);
+        new FXMenuRadio(submenu, _("&Date"), current->list, FileList::ID_COL_DATE);
+        new FXMenuRadio(submenu, _("&User"), current->list, FileList::ID_COL_USER);
+        new FXMenuRadio(submenu, _("&Group"), current->list, FileList::ID_COL_GROUP);
+        new FXMenuRadio(submenu, _("Per&missions"), current->list, FileList::ID_COL_PERMS);
+        new FXMenuRadio(submenu, _("&Link"), current->list, FileList::ID_COL_LINK);
+        new FXMenuRadio(submenu, _("&Deletion Date"), current->list, FileList::ID_COL_DELDATE);
         new FXMenuSeparator(submenu);
-        new FXMenuCheck(submenu, _("Ignore c&ase"), current->list, FileList::ID_SORT_CASE);
-        new FXMenuCheck(submenu, _("Fold&ers first"), current->list, FileList::ID_DIRS_FIRST);
-        new FXMenuCheck(submenu, _("Re&verse order"), current->list, FileList::ID_SORT_REVERSE);
+        new FXMenuCheck(submenu, _("Ignore C&ase"), current->list, FileList::ID_SORT_CASE);
+        new FXMenuCheck(submenu, _("Fold&ers First"), current->list, FileList::ID_DIRS_FIRST);
+        new FXMenuCheck(submenu, _("Re&verse Order"), current->list, FileList::ID_SORT_REVERSE);
         new FXMenuCascade(menu, _("Pane&l"), NULL, submenu);
         new FXMenuSeparator(menu);
 
@@ -4603,8 +4891,8 @@ long FilePanel::onCmdPopupMenu(FXObject* o, FXSelector s, void* p)
         FXString name = current->list->getItemPathname(itm);
         if ((num == 1) && (fsdevices->find(name.text()) || mtdevices->find(name.text())))
         {
-            new FXMenuCommand(menu, _("&Mount"), maphosticon, current, FilePanel::ID_MOUNT);
-            new FXMenuCommand(menu, _("Unmount"), unmaphosticon, current, FilePanel::ID_UMOUNT);
+            new FXMenuCommand(menu, _("&Mount"), minimounticon, current, FilePanel::ID_MOUNT);
+            new FXMenuCommand(menu, _("Unmount"), miniunmounticon, current, FilePanel::ID_UMOUNT);
             new FXMenuSeparator(menu);
         }
 #endif
@@ -4612,8 +4900,8 @@ long FilePanel::onCmdPopupMenu(FXObject* o, FXSelector s, void* p)
         FXbool ar = false;
         if (current->list->getItem(itm) && current->list->isItemFile(itm))
         {
-            new FXMenuCommand(menu, _("Open &with..."), fileopenicon, current, FilePanel::ID_OPEN_WITH);
-            new FXMenuCommand(menu, _("&Open"), fileopenicon, current, FilePanel::ID_OPEN);
+            new FXMenuCommand(menu, _("Open &With..."), minifileopenicon, current, FilePanel::ID_OPEN_WITH);
+            new FXMenuCommand(menu, _("&Open"), minifileopenicon, current, FilePanel::ID_OPEN);
             FXString name = current->list->getItemText(itm).section('\t', 0);
 
             // Last and before last file extensions
@@ -4622,67 +4910,77 @@ long FilePanel::onCmdPopupMenu(FXObject* o, FXSelector s, void* p)
 
             // Destination folder name
             FXString extract_to_folder;
-            if ((ext2 == "tar.gz") || (ext2 == "tar.bz2") || (ext2 == "tar.xz") || (ext2 == "tar.z"))
+            if ((ext2 == "tar.gz") || (ext2 == "tar.bz2") || (ext2 == "tar.xz") || (ext2 == "tar.zst") ||
+                (ext2 == "tar.z"))
             {
-                extract_to_folder = _("Extr&act to folder ") + name.section('\t', 0).rbefore('.', 2);
+                extract_to_folder = _("Extr&act to Folder ") + name.section('\t', 0).rbefore('.', 2);
             }
             else
             {
-                extract_to_folder = _("Extr&act to folder ") + name.section('\t', 0).rbefore('.', 1);
+                extract_to_folder = _("Extr&act to Folder ") + name.section('\t', 0).rbefore('.', 1);
             }
 
             // Display the extract and package menus according to the archive extensions
-            if ((num == 1) && ((ext2 == "tar.gz") || (ext2 == "tar.bz2") || (ext2 == "tar.xz") || (ext2 == "tar.z")))
+            if ((num == 1) &&
+                ((ext2 == "tar.gz") || (ext2 == "tar.bz2") || (ext2 == "tar.xz") || (ext2 == "tar.zst") ||
+                 (ext2 == "tar.z")))
             {
                 ar = true;
-                new FXMenuCommand(menu, _("&Extract here"), archexticon, current, FilePanel::ID_EXTRACT_HERE);
-                new FXMenuCommand(menu, extract_to_folder, archexticon, current, FilePanel::ID_EXTRACT_TO_FOLDER);
-                new FXMenuCommand(menu, _("E&xtract to..."), archexticon, current, FilePanel::ID_EXTRACT);
+                new FXMenuCommand(menu, _("&Extract Here"), miniarchexticon, current, FilePanel::ID_EXTRACT_HERE);
+                new FXMenuCommand(menu, extract_to_folder, miniarchexticon, current, FilePanel::ID_EXTRACT_TO_FOLDER);
+                new FXMenuCommand(menu, _("E&xtract to..."), miniarchexticon, current, FilePanel::ID_EXTRACT);
             }
-            else if ((num == 1) && ((ext1 == "gz") || (ext1 == "bz2") || (ext1 == "xz") || (ext1 == "z")))
+            else if ((num == 1) &&
+                     ((ext1 == "gz") || (ext1 == "bz2") || (ext1 == "zst") || (ext1 == "xz") || (ext1 == "z")))
             {
                 ar = true;
-                new FXMenuCommand(menu, _("&Extract here"), archexticon, current, FilePanel::ID_EXTRACT_HERE);
+                new FXMenuCommand(menu, _("&Extract here"), miniarchexticon, current, FilePanel::ID_EXTRACT_HERE);
             }
-            else if ((num == 1) && ((ext1 == "tar") || (ext1 == "tgz") || (ext1 == "tbz2") || (ext1 == "tbz") || (ext1 == "taz") || (ext1 == "txz") || (ext1 == "zip") || (ext1 == "7z") || (ext1 == "lzh") || (ext1 == "rar") || (ext1 == "ace") || (ext1 == "arj")))
+            else if ((num == 1) && ((ext1 == "tar") || (ext1 == "tgz") || (ext1 == "tbz2") || (ext1 == "tbz")
+                                    || (ext1 == "tzst") || (ext1 == "taz") || (ext1 == "txz") || (ext1 == "zip") ||
+                                    (ext1 == "7z")
+                                    || (ext1 == "lzh") || (ext1 == "rar") || (ext1 == "ace") || (ext1 == "arj")))
             {
                 ar = true;
-                new FXMenuCommand(menu, _("&Extract here"), archexticon, current, FilePanel::ID_EXTRACT_HERE);
-                new FXMenuCommand(menu, extract_to_folder, archexticon, current, FilePanel::ID_EXTRACT_TO_FOLDER);
-                new FXMenuCommand(menu, _("E&xtract to..."), archexticon, current, FilePanel::ID_EXTRACT);
+                new FXMenuCommand(menu, _("&Extract Here"), miniarchexticon, current, FilePanel::ID_EXTRACT_HERE);
+                new FXMenuCommand(menu, extract_to_folder, miniarchexticon, current, FilePanel::ID_EXTRACT_TO_FOLDER);
+                new FXMenuCommand(menu, _("E&xtract to..."), miniarchexticon, current, FilePanel::ID_EXTRACT);
             }
 #if defined(linux)
             else if ((num == 1) && ((ext1 == "rpm") || (ext1 == "deb")))
             {
                 ar = true;
-                new FXMenuCommand(menu, _("&View"), packageicon, current, FilePanel::ID_VIEW);
-                new FXMenuCommand(menu, _("Install/Up&grade"), packageicon, current, ID_PKG_INSTALL);
-                new FXMenuCommand(menu, _("Un&install"), packageicon, current, ID_PKG_UNINSTALL);
+                new FXMenuCommand(menu, _("&View"), minipackageicon, current, FilePanel::ID_VIEW);
+                new FXMenuCommand(menu, _("Install / Up&grade"), minipackageicon, current, ID_PKG_INSTALL);
+                new FXMenuCommand(menu, _("Un&install"), minipackageicon, current, ID_PKG_UNINSTALL);
             }
 #endif
             // Not archive nor package
             if (!ar)
             {
-                new FXMenuCommand(menu, _("&View"), viewicon, current, FilePanel::ID_VIEW);
-                new FXMenuCommand(menu, _("&Edit"), editicon, current, FilePanel::ID_EDIT);
-                if (num == 1)
-                {
-                    new FXMenuCommand(menu, _("Com&pare..."), compareicon, current, FilePanel::ID_COMPARE);
-                }
-                else
-                {
-                    new FXMenuCommand(menu, _("Com&pare"), compareicon, current, FilePanel::ID_COMPARE);
-                }
+                new FXMenuCommand(menu, _("&View"), miniviewicon, current, FilePanel::ID_VIEW);
+                new FXMenuCommand(menu, _("&Edit"), miniediticon, current, FilePanel::ID_EDIT);
             }
         }
+        
+        // Not a file
         if (!ar)
         {
-            new FXMenuCommand(menu, _("&Add to archive..."), archaddicon, current, FilePanel::ID_ADD_TO_ARCH);
+            // Not archive nor package
+            if (num == 1)
+            {
+                new FXMenuCommand(menu, _("Com&pare..."), minicompareicon, current, FilePanel::ID_COMPARE);
+            }
+            else
+            {
+                new FXMenuCommand(menu, _("Com&pare"), minicompareicon, current, FilePanel::ID_COMPARE);
+            }
+            new FXMenuCommand(menu, _("&Add to Archive..."), miniarchaddicon, current, FilePanel::ID_ADD_TO_ARCH);
         }
 #if defined(linux)
-        if ((num == 1) && !ar)
+        if ((num == 1) && !ar && current->list->isItemFile(itm))
         {
-            new FXMenuCommand(menu, _("Packages &query "), packageicon, current, FilePanel::ID_PKG_QUERY);
+            new FXMenuCommand(menu, _("Packages &Query "), minipackageicon, current, FilePanel::ID_PKG_QUERY);
         }
 #endif
 
@@ -4690,56 +4988,51 @@ long FilePanel::onCmdPopupMenu(FXObject* o, FXSelector s, void* p)
         new FXMenuSeparator(menu);
         FXString scriptpath = homedir + PATHSEPSTRING CONFIGPATH PATHSEPSTRING XFECONFIGPATH PATHSEPSTRING SCRIPTPATH;
         FXMenuPane* scriptsmenu = new FXMenuPane(this);
-        new FXMenuCascade(menu, _("Scripts"), runicon, scriptsmenu);
-        readScriptDir(scriptsmenu, scriptpath);
+        new FXMenuCascade(menu, _("Scripts"), minirunicon, scriptsmenu);
+        readScriptDir(this, scriptsmenu, scriptpath);
         new FXMenuSeparator(scriptsmenu);
-        new FXMenuCommand(scriptsmenu, _("&Go to script folder"), gotodiricon, this, FilePanel::ID_GO_SCRIPTDIR);
+        new FXMenuCommand(scriptsmenu, _("&Go to Script Folder"), minigotodiricon, this, FilePanel::ID_GO_SCRIPTDIR);
 
         new FXMenuSeparator(menu);
-        new FXMenuCommand(menu, _("&Copy"), copy_clpicon, current, FilePanel::ID_COPY_CLIPBOARD);
-        new FXMenuCommand(menu, _("C&ut"), cut_clpicon, current, FilePanel::ID_CUT_CLIPBOARD);
-        new FXMenuCommand(menu, _("&Paste"), paste_clpicon, current, FilePanel::ID_PASTE_CLIPBOARD);
-        new FXMenuSeparator(menu);
-        new FXMenuCommand(menu, _("Re&name..."), renameiticon, current, FilePanel::ID_FILE_RENAME);
-        new FXMenuCommand(menu, _("Copy &to..."), copy_clpicon, current, FilePanel::ID_FILE_COPYTO);
-        new FXMenuCommand(menu, _("&Move to..."), moveiticon, current, FilePanel::ID_FILE_MOVETO);
-        new FXMenuCommand(menu, _("Symlin&k to..."), minilinkicon, current, FilePanel::ID_FILE_SYMLINK);
-        new FXMenuCommand(menu, _("M&ove to trash"), filedeleteicon, current, FilePanel::ID_FILE_TRASH);
-        new FXMenuCommand(menu, _("Restore &from trash"), filerestoreicon, current, FilePanel::ID_FILE_RESTORE);
-        new FXMenuCommand(menu, _("&Delete"), filedelete_permicon, current, FilePanel::ID_FILE_DELETE);
-        new FXMenuSeparator(menu);
-        new FXMenuCommand(menu, _("Compare &sizes"), charticon, current, FilePanel::ID_DIR_USAGE);
-        
+        new FXMenuCommand(menu, _("&Copy"), minicopyicon, current, FilePanel::ID_COPY_CLIPBOARD);
+        new FXMenuCommand(menu, _("C&ut"), minicuticon, current, FilePanel::ID_CUT_CLIPBOARD);
+        new FXMenuCommand(menu, _("&Paste"), minipasteicon, current, FilePanel::ID_PASTE_CLIPBOARD);
         if (num == 1)
         {
-            new FXMenuCommand(menu, _("Cop&y name"), copy_clpicon, current, FilePanel::ID_COPYNAME_CLIPBOARD);
+            new FXMenuCommand(menu, _("Cop&y Name"), minicopyicon, current, FilePanel::ID_COPYNAME_CLIPBOARD);
         }
         else
         {
-            new FXMenuCommand(menu, _("Cop&y names"), copy_clpicon, current, FilePanel::ID_COPYNAME_CLIPBOARD);
+            new FXMenuCommand(menu, _("Cop&y Names"), minicopyicon, current, FilePanel::ID_COPYNAME_CLIPBOARD);
         }
-        
-        new FXMenuCommand(menu, _("P&roperties"), attribicon, current, FilePanel::ID_PROPERTIES);
+        new FXMenuSeparator(menu);
+        new FXMenuCommand(menu, _("Re&name..."), minirenameicon, current, FilePanel::ID_FILE_RENAME);
+        new FXMenuCommand(menu, _("Copy &to..."), minicopyicon, current, FilePanel::ID_FILE_COPYTO);
+        new FXMenuCommand(menu, _("&Move to..."), minimoveicon, current, FilePanel::ID_FILE_MOVETO);
+        new FXMenuCommand(menu, _("Symlin&k to..."), minilinktoicon, current, FilePanel::ID_FILE_SYMLINK);
+        new FXMenuCommand(menu, _("M&ove to Trash"), minideleteicon, current, FilePanel::ID_FILE_TRASH);
+        new FXMenuCommand(menu, _("Restore &From Trash"), minirestoreicon, current, FilePanel::ID_FILE_RESTORE);
+        new FXMenuCommand(menu, _("&Delete"), minideletepermicon, current, FilePanel::ID_FILE_DELETE);
+        new FXMenuSeparator(menu);
+        new FXMenuCommand(menu, _("Compare &Sizes"), minicharticon, current, FilePanel::ID_DIR_USAGE);
+        new FXMenuCommand(menu, _("P&roperties"), miniattribicon, current, FilePanel::ID_PROPERTIES);
     }
     menu->create();
 
     // Reset flags
     ctrl = false;
     shiftf10 = false;
-    allowPopupScroll = true;  // Allow keyboard scrolling
-
 
     menu->popup(NULL, x, y);
     getApp()->runModalWhileShown(menu);
-    allowPopupScroll = false;
 
-    return(1);
+    return 1;
 }
 
 
 // Read all executable file names that are located into the script directory
 // Sort entries alphabetically, directories first
-int FilePanel::readScriptDir(FXMenuPane* scriptsmenu, FXString dir)
+int FilePanel::readScriptDir(FXWindow* owner, FXMenuPane* scriptsmenu, FXString dir)
 {
     DIR* dp;
     struct dirent** namelist;
@@ -4747,10 +5040,10 @@ int FilePanel::readScriptDir(FXMenuPane* scriptsmenu, FXString dir)
     // Open directory
     if ((dp = opendir(dir.text())) == NULL)
     {
-        return(0);
+        return 0;
     }
 
-    // Eventually add a / at the end of the directory name
+    // Possibly add a / at the end of the directory name
     if (dir[dir.length() - 1] != '/')
     {
         dir = dir + "/";
@@ -4773,13 +5066,13 @@ int FilePanel::readScriptDir(FXMenuPane* scriptsmenu, FXString dir)
                 FXString pathname = dir + namelist[k]->d_name;
 
                 // Recurse if non empty directory
-                if (::isDirectory(pathname))
+                if (xf_isdirectory(pathname))
                 {
-                    if (!::isEmptyDir(pathname))
+                    if (!xf_isemptydir(pathname))
                     {
-                        FXMenuPane* submenu = new FXMenuPane(this);
+                        FXMenuPane* submenu = new FXMenuPane(owner);
                         new FXMenuCascade(scriptsmenu, namelist[k]->d_name, NULL, submenu);
-                        readScriptDir(submenu, pathname);
+                        readScriptDir(this, submenu, pathname);
                     }
                 }
             }
@@ -4800,9 +5093,10 @@ int FilePanel::readScriptDir(FXMenuPane* scriptsmenu, FXString dir)
         {
             // Add only executable files to the list
             FXString pathname = dir + namelist[k]->d_name;
-            if (!::isDirectory(pathname) && isReadExecutable(pathname))
+            if (!xf_isdirectory(pathname) && xf_isreadexecutable(pathname))
             {
-                new FXMenuCommand(scriptsmenu, namelist[k]->d_name + FXString("\t\t") + pathname, miniexecicon, this, FilePanel::ID_RUN_SCRIPT);
+                new FXMenuCommand(scriptsmenu, namelist[k]->d_name + FXString("\t\t") + pathname, miniexecicon, this,
+                                  FilePanel::ID_RUN_SCRIPT);
             }
             free(namelist[k]);
         }
@@ -4812,7 +5106,7 @@ int FilePanel::readScriptDir(FXMenuPane* scriptsmenu, FXString dir)
     // Close directory
     (void)closedir(dp);
 
-    return(1);
+    return 1;
 }
 
 
@@ -4828,14 +5122,16 @@ long FilePanel::onCmdXTerm(FXObject*, FXSelector, void*)
         int errcode = errno;
         if (errcode)
         {
-            MessageBox::error(this, BOX_OK, _("Error"), _("Can't enter folder %s: %s"), current->list->getDirectory().text(), strerror(errcode));
+            MessageBox::error(this, BOX_OK, _("Error"), _("Can't enter folder %s: %s"),
+                              current->list->getDirectory().text(), strerror(errcode));
         }
         else
         {
-            MessageBox::error(this, BOX_OK, _("Error"), _("Can't enter folder %s"), current->list->getDirectory().text());
+            MessageBox::error(this, BOX_OK, _("Error"), _("Can't enter folder %s"),
+                              current->list->getDirectory().text());
         }
 
-        return(0);
+        return 0;
     }
 
     FXString cmd = getApp()->reg().readStringEntry("PROGS", "xterm", "xterm -sb");
@@ -4853,27 +5149,28 @@ long FilePanel::onCmdXTerm(FXObject*, FXSelector, void*)
         int errcode = errno;
         if (errcode)
         {
-            MessageBox::error(this, BOX_OK, _("Error"), _("Can't enter folder %s: %s"), startlocation.text(), strerror(errcode));
+            MessageBox::error(this, BOX_OK, _("Error"), _("Can't enter folder %s: %s"), startlocation.text(),
+                              strerror(errcode));
         }
         else
         {
             MessageBox::error(this, BOX_OK, _("Error"), _("Can't enter folder %s"), startlocation.text());
         }
 
-        return(0);
+        return 0;
     }
 
     getApp()->endWaitCursor();
-    return(1);
+    return 1;
 }
 
 
 // Add files or directory to an archive
-long FilePanel::onCmdAddToArch(FXObject* o, FXSelector, void*)
+long FilePanel::onCmdAddToArch(FXObject* sender, FXSelector, void*)
 {
     int ret;
     FXString name, ext1, ext2, cmd, archive = "";
-    File*    f;
+    File* f;
 
     ret = chdir(current->list->getDirectory().text());
     if (ret < 0)
@@ -4881,17 +5178,18 @@ long FilePanel::onCmdAddToArch(FXObject* o, FXSelector, void*)
         int errcode = errno;
         if (errcode)
         {
-            MessageBox::error(this, BOX_OK, _("Error"), _("Can't enter folder %s: %s"), list->getDirectory().text(), strerror(errcode));
+            MessageBox::error(this, BOX_OK, _("Error"), _("Can't enter folder %s: %s"), list->getDirectory().text(),
+                              strerror(errcode));
         }
         else
         {
             MessageBox::error(this, BOX_OK, _("Error"), _("Can't enter folder %s"), list->getDirectory().text());
         }
 
-        return(0);
+        return 0;
     }
 
-    // Eventually deselect the '..' directory
+    // Possibly deselect the '..' directory
     if (current->list->isItemSelected(0))
     {
         current->list->deselectItem(0);
@@ -4900,7 +5198,7 @@ long FilePanel::onCmdAddToArch(FXObject* o, FXSelector, void*)
     // Return if nothing is selected
     if (current->list->getNumSelectedItems() == 0)
     {
-        return(0);
+        return 0;
     }
 
     // If only one item is selected, use its name as a starting guess for the archive name
@@ -4941,32 +5239,24 @@ long FilePanel::onCmdAddToArch(FXObject* o, FXSelector, void*)
         if (archdialog->getText() == "")
         {
             MessageBox::warning(this, BOX_OK, _("Warning"), _("File name is empty, operation cancelled"));
-            return(0);
+            return 0;
         }
 
         // Get string and preserve escape characters
-        archive = ::quote(archdialog->getText());
+        archive = xf_quote(archdialog->getText());
 
         // Get extensions of the archive name
         ext1 = archdialog->getText().rafter('.', 1).lower();
         ext2 = archdialog->getText().rafter('.', 2).lower();
 
         // Handle different archive formats
-        if (ext2 == "tar.gz")
+        if ((ext2 == "tar.gz") || (ext2 == "tar.bz2") || (ext2 == "tar.xz") || (ext2 == "tar.zst"))
         {
-            cmd = "tar -zcvf " + archive + " ";
+            cmd = "tar -acvf " + archive + " ";
         }
-        else if (ext2 == "tar.bz2")
+        else if ((ext1 == "tgz") || (ext1 == "tbz2") || (ext1 == "tbz") || (ext1 == "txz") || (ext1 == "tzst"))
         {
-            cmd = "tar -jcvf " + archive + " ";
-        }
-        else if (ext2 == "tar.xz")
-        {
-            cmd = "tar -Jcvf " + archive + " ";
-        }
-        else if (ext2 == "tar.z")
-        {
-            cmd = "tar -Zcvf " + archive + " ";
+            cmd = "tar -acvf " + archive + " ";
         }
         else if (ext1 == "tar")
         {
@@ -4976,33 +5266,17 @@ long FilePanel::onCmdAddToArch(FXObject* o, FXSelector, void*)
         {
             cmd = "gzip -v ";
         }
-        else if (ext1 == "tgz")
-        {
-            cmd = "tar -zcvf " + archive + " ";
-        }
-        else if (ext1 == "taz")
-        {
-            cmd = "tar -Zcvf " + archive + " ";
-        }
         else if (ext1 == "bz2")
         {
             cmd = "bzip2 -v ";
         }
+        else if (ext1 == "zst")
+        {
+            cmd = "zstd ";
+        }
         else if (ext1 == "xz")
         {
             cmd = "xz -v ";
-        }
-        else if ((ext1 == "tbz2") || (ext1 == "tbz"))
-        {
-            cmd = "tar -jcvf " + archive + " ";
-        }
-        else if (ext1 == "txz")
-        {
-            cmd = "tar -Jcvf " + archive + " ";
-        }
-        else if (ext1 == "z")
-        {
-            cmd = "compress -v ";
         }
         else if (ext1 == "zip")
         {
@@ -5012,12 +5286,15 @@ long FilePanel::onCmdAddToArch(FXObject* o, FXSelector, void*)
         {
             cmd = "7z a " + archive + " ";
         }
-
+        else if (ext1 == "rar")
+        {
+            cmd = "rar a " + archive + " ";
+        }
         // Default archive format
         else
         {
             archive += ".tar.gz";
-            cmd = "tar -zcvf " + archive + " ";
+            cmd = "tar -acvf " + archive + " ";
         }
 
         for (int u = 0; u < current->list->getNumItems(); u++)
@@ -5029,7 +5306,7 @@ long FilePanel::onCmdAddToArch(FXObject* o, FXSelector, void*)
                 if (name != "..")
                 {
                     cmd += " ";
-                    cmd = cmd + ::quote(name);
+                    cmd = cmd + xf_quote(name);
                     cmd += " ";
                 }
             }
@@ -5050,7 +5327,8 @@ long FilePanel::onCmdAddToArch(FXObject* o, FXSelector, void*)
             int errcode = errno;
             if (errcode)
             {
-                MessageBox::error(this, BOX_OK, _("Error"), _("Can't enter folder %s: %s"), startlocation.text(), strerror(errcode));
+                MessageBox::error(this, BOX_OK, _("Error"), _("Can't enter folder %s: %s"), startlocation.text(),
+                                  strerror(errcode));
             }
             else
             {
@@ -5058,7 +5336,7 @@ long FilePanel::onCmdAddToArch(FXObject* o, FXSelector, void*)
             }
 
             delete f;
-            return(0);
+            return 0;
         }
 
         delete f;
@@ -5067,21 +5345,21 @@ long FilePanel::onCmdAddToArch(FXObject* o, FXSelector, void*)
         // Force panel refresh
         onCmdRefresh(0, 0, 0);
     }
-    return(1);
+    return 1;
 }
 
 
-// Extract archive
+// Extract archive to selected folder
 long FilePanel::onCmdExtract(FXObject*, FXSelector, void*)
 {
     FXString name, ext1, ext2, cmd, dir, cdir;
-    File*    f;
+    File* f;
 
     // Current directory
     cdir = current->list->getDirectory();
 
     // File selection dialog
-    FileDialog browse(this, _("Select a destination folder"));
+    FileDialog browse(this, _("Select a Destination Folder"));
     const char* patterns[] =
     {
         _("All Files"), "*", NULL
@@ -5099,24 +5377,17 @@ long FilePanel::onCmdExtract(FXObject*, FXSelector, void*)
 
         ext1 = name.section('\t', 0).rafter('.', 1).lower();
         ext2 = name.section('\t', 0).rafter('.', 2).lower();
-        name = ::quote(cdir + PATHSEPSTRING + name.section('\t', 0));
+        name = xf_quote(cdir + PATHSEPSTRING + name.section('\t', 0));
 
         // Handle different archive formats
-        if (ext2 == "tar.gz")
+        if ((ext2 == "tar.gz") || (ext2 == "tar.bz2") || (ext2 == "tar.xz") || (ext2 == "tar.zst") || (ext2 == "tar.z"))
         {
-            cmd = "tar -zxvf ";
+            cmd = "tar -axvf ";
         }
-        else if (ext2 == "tar.bz2")
+        else if ((ext1 == "tgz") || (ext1 == "tbz2") || (ext1 == "tbz") || (ext1 == "txz") || (ext1 == "taz") ||
+                 (ext1 == "tzst"))
         {
-            cmd = "tar -jxvf ";
-        }
-        else if (ext2 == "tar.xz")
-        {
-            cmd = "tar -Jxvf ";
-        }
-        else if (ext2 == "tar.z")
-        {
-            cmd = "tar -Zxvf ";
+            cmd = "tar -axvf ";
         }
         else if (ext1 == "tar")
         {
@@ -5126,29 +5397,17 @@ long FilePanel::onCmdExtract(FXObject*, FXSelector, void*)
         {
             cmd = "gunzip -v ";
         }
-        else if (ext1 == "tgz")
-        {
-            cmd = "tar -zxvf ";
-        }
-        else if (ext1 == "taz")
-        {
-            cmd = "tar -Zxvf ";
-        }
         else if (ext1 == "bz2")
         {
             cmd = "bunzip2 -v ";
         }
+        else if (ext1 == "zst")
+        {
+            cmd = "zstd -df ";
+        }
         else if (ext1 == "xz")
         {
             cmd = "unxz -v ";
-        }
-        else if ((ext1 == "tbz2") || (ext1 == "tbz"))
-        {
-            cmd = "tar -jxvf ";
-        }
-        else if (ext1 == "txz")
-        {
-            cmd = "tar -Jxvf ";
         }
         else if (ext1 == "z")
         {
@@ -5180,7 +5439,7 @@ long FilePanel::onCmdExtract(FXObject*, FXSelector, void*)
         }
         else
         {
-            cmd = "tar -zxvf ";
+            cmd = "tar -axvf ";
         }
 
         // Final extract command
@@ -5192,13 +5451,13 @@ long FilePanel::onCmdExtract(FXObject*, FXSelector, void*)
         {
             dir = browse.getFilename();
 
-            if (isWritable(dir))
+            if (xf_iswritable(dir))
             {
                 // Wait cursor
                 getApp()->beginWaitCursor();
 
                 // File object
-                f = new File(this, _("Extract archive"), EXTRACT);
+                f = new File(this, _("Extract Archive"), EXTRACT);
                 f->create();
 
                 // Extract archive
@@ -5209,7 +5468,8 @@ long FilePanel::onCmdExtract(FXObject*, FXSelector, void*)
             }
             else
             {
-                MessageBox::error(getApp(), BOX_OK_SU, _("Error"), _("Can't write to %s: Permission denied"), dir.text());
+                MessageBox::error(getApp(), BOX_OK_SU, _("Error"), _("Can't write to %s: Permission denied"),
+                                  dir.text());
             }
         }
     }
@@ -5217,7 +5477,7 @@ long FilePanel::onCmdExtract(FXObject*, FXSelector, void*)
     // Force panel refresh
     onCmdRefresh(0, 0, 0);
 
-    return(1);
+    return 1;
 }
 
 
@@ -5225,7 +5485,7 @@ long FilePanel::onCmdExtract(FXObject*, FXSelector, void*)
 long FilePanel::onCmdExtractToFolder(FXObject*, FXSelector, void*)
 {
     FXString name, pathname, ext1, ext2, cmd, dirname, dirpath, cdir;
-    File*    f;
+    File* f;
 
     // Current directory
     cdir = current->list->getDirectory();
@@ -5240,7 +5500,7 @@ long FilePanel::onCmdExtractToFolder(FXObject*, FXSelector, void*)
         ext2 = name.section('\t', 0).rafter('.', 2).lower();
 
         // Destination folder name
-        if ((ext2 == "tar.gz") || (ext2 == "tar.bz2") || (ext2 == "tar.xz") || (ext2 == "tar.z"))
+        if ((ext2 == "tar.gz") || (ext2 == "tar.bz2") || (ext2 == "tar.xz") || (ext2 == "tar.zst") || (ext2 == "tar.z"))
         {
             dirname = name.section('\t', 0).rbefore('.', 2);
         }
@@ -5261,34 +5521,28 @@ long FilePanel::onCmdExtractToFolder(FXObject*, FXSelector, void*)
         {
             if (errcode)
             {
-                MessageBox::error(getApp(), BOX_OK_SU, _("Error"), _("Can't create folder %s: %s"), dirpath.text(), strerror(errcode));
+                MessageBox::error(getApp(), BOX_OK_SU, _("Error"), _("Can't create folder %s: %s"), dirpath.text(),
+                                  strerror(errcode));
             }
             else
             {
                 MessageBox::error(getApp(), BOX_OK_SU, _("Error"), _("Can't create folder %s"), dirpath.text());
             }
-            return(0);
+            return 0;
         }
 
         // Archive pathname
-        pathname = ::quote(cdir + PATHSEPSTRING + name.section('\t', 0));
+        pathname = xf_quote(cdir + PATHSEPSTRING + name.section('\t', 0));
 
         // Handle different archive formats
-        if (ext2 == "tar.gz")
+        if ((ext2 == "tar.gz") || (ext2 == "tar.bz2") || (ext2 == "tar.xz") || (ext2 == "tar.zst") || (ext2 == "tar.z"))
         {
-            cmd = "tar -zxvf ";
+            cmd = "tar -axvf ";
         }
-        else if (ext2 == "tar.bz2")
+        else if ((ext1 == "tgz") || (ext1 == "tbz2") || (ext1 == "tbz") || (ext1 == "txz") || (ext1 == "taz") ||
+                 (ext1 == "tzst"))
         {
-            cmd = "tar -jxvf ";
-        }
-        else if (ext2 == "tar.xz")
-        {
-            cmd = "tar -Jxvf ";
-        }
-        else if (ext2 == "tar.z")
-        {
-            cmd = "tar -Zxvf ";
+            cmd = "tar -axvf ";
         }
         else if (ext1 == "tar")
         {
@@ -5298,29 +5552,17 @@ long FilePanel::onCmdExtractToFolder(FXObject*, FXSelector, void*)
         {
             cmd = "gunzip -v ";
         }
-        else if (ext1 == "tgz")
-        {
-            cmd = "tar -zxvf ";
-        }
-        else if (ext1 == "taz")
-        {
-            cmd = "tar -Zxvf ";
-        }
         else if (ext1 == "bz2")
         {
             cmd = "bunzip2 -v ";
         }
+        else if (ext1 == "zst")
+        {
+            cmd = "zstd -df ";
+        }
         else if (ext1 == "xz")
         {
             cmd = "unxz -v ";
-        }
-        else if ((ext1 == "tbz2") || (ext1 == "tbz"))
-        {
-            cmd = "tar -jxvf ";
-        }
-        else if (ext1 == "txz")
-        {
-            cmd = "tar -Jxvf ";
         }
         else if (ext1 == "z")
         {
@@ -5352,7 +5594,7 @@ long FilePanel::onCmdExtractToFolder(FXObject*, FXSelector, void*)
         }
         else
         {
-            cmd = "tar -zxvf ";
+            cmd = "tar -axvf ";
         }
 
         // Final extract command
@@ -5362,7 +5604,7 @@ long FilePanel::onCmdExtractToFolder(FXObject*, FXSelector, void*)
         getApp()->beginWaitCursor();
 
         // File object
-        f = new File(this, _("Extract archive"), EXTRACT);
+        f = new File(this, _("Extract Archive"), EXTRACT);
         f->create();
 
         // Extract archive
@@ -5375,7 +5617,7 @@ long FilePanel::onCmdExtractToFolder(FXObject*, FXSelector, void*)
     // Force panel refresh
     onCmdRefresh(0, 0, 0);
 
-    return(1);
+    return 1;
 }
 
 
@@ -5383,7 +5625,7 @@ long FilePanel::onCmdExtractToFolder(FXObject*, FXSelector, void*)
 long FilePanel::onCmdExtractHere(FXObject*, FXSelector, void*)
 {
     FXString name, ext1, ext2, cmd, cdir;
-    File*    f;
+    File* f;
 
     // Current directory
     cdir = current->list->getDirectory();
@@ -5392,31 +5634,25 @@ long FilePanel::onCmdExtractHere(FXObject*, FXSelector, void*)
     current->list->getNumSelectedItems(&item);
     if (current->list->getItem(item))
     {
-        if (isWritable(cdir))
+        if (xf_iswritable(cdir))
         {
             // Archive name and extensions
             name = current->list->getItemText(item).text();
             ext1 = name.section('\t', 0).rafter('.', 1);
             lower();
             ext2 = name.section('\t', 0).rafter('.', 2).lower();
-            name = ::quote(cdir + PATHSEPSTRING + name.section('\t', 0));
+            name = xf_quote(cdir + PATHSEPSTRING + name.section('\t', 0));
 
             // Handle different archive formats
-            if (ext2 == "tar.gz")
+            if ((ext2 == "tar.gz") || (ext2 == "tar.bz2") || (ext2 == "tar.xz") || (ext2 == "tar.zst") ||
+                (ext2 == "tar.z"))
             {
-                cmd = "tar -zxvf ";
+                cmd = "tar -axvf ";
             }
-            else if (ext2 == "tar.bz2")
+            else if ((ext1 == "tgz") || (ext1 == "tbz2") || (ext1 == "tbz") || (ext1 == "txz") || (ext1 == "taz") ||
+                     (ext1 == "tzst"))
             {
-                cmd = "tar -jxvf ";
-            }
-            else if (ext2 == "tar.xz")
-            {
-                cmd = "tar -Jxvf ";
-            }
-            else if (ext2 == "tar.z")
-            {
-                cmd = "tar -Zxvf ";
+                cmd = "tar -axvf ";
             }
             else if (ext1 == "tar")
             {
@@ -5426,29 +5662,17 @@ long FilePanel::onCmdExtractHere(FXObject*, FXSelector, void*)
             {
                 cmd = "gunzip -v ";
             }
-            else if (ext1 == "tgz")
-            {
-                cmd = "tar -zxvf ";
-            }
-            else if (ext1 == "taz")
-            {
-                cmd = "tar -Zxvf ";
-            }
             else if (ext1 == "bz2")
             {
                 cmd = "bunzip2 -v ";
             }
+            else if (ext1 == "zst")
+            {
+                cmd = "zstd -df ";
+            }
             else if (ext1 == "xz")
             {
                 cmd = "unxz -v ";
-            }
-            else if ((ext1 == "tbz2") || (ext1 == "tbz"))
-            {
-                cmd = "tar -jxvf ";
-            }
-            else if (ext1 == "txz")
-            {
-                cmd = "tar -Jxvf ";
             }
             else if (ext1 == "z")
             {
@@ -5480,7 +5704,7 @@ long FilePanel::onCmdExtractHere(FXObject*, FXSelector, void*)
             }
             else
             {
-                cmd = "tar -zxvf ";
+                cmd = "tar -axvf ";
             }
 
             // Final extract command
@@ -5490,7 +5714,7 @@ long FilePanel::onCmdExtractHere(FXObject*, FXSelector, void*)
             getApp()->beginWaitCursor();
 
             // File object
-            f = new File(this, _("Extract archive"), EXTRACT);
+            f = new File(this, _("Extract Archive"), EXTRACT);
             f->create();
 
             // Extract archive
@@ -5508,7 +5732,7 @@ long FilePanel::onCmdExtractHere(FXObject*, FXSelector, void*)
     // Force panel refresh
     onCmdRefresh(0, 0, 0);
 
-    return(1);
+    return 1;
 }
 
 
@@ -5517,7 +5741,7 @@ long FilePanel::onCmdExtractHere(FXObject*, FXSelector, void*)
 long FilePanel::onCmdPkgInstall(FXObject*, FXSelector, void*)
 {
     FXString name, path, cmd, dir, cdir;
-    File*    f;
+    File* f;
 
     cdir = current->list->getDirectory();
 
@@ -5527,7 +5751,7 @@ long FilePanel::onCmdPkgInstall(FXObject*, FXSelector, void*)
     {
         name = current->list->getItemText(itm).text();
         name = name.section('\t', 0);
-        path = ::quote(cdir + PATHSEPSTRING + name);
+        path = xf_quote(cdir + PATHSEPSTRING + name);
 
         // Command to perform
         FXString ext = FXPath::extension(name);
@@ -5544,7 +5768,7 @@ long FilePanel::onCmdPkgInstall(FXObject*, FXSelector, void*)
         getApp()->beginWaitCursor();
 
         // File object
-        f = new File(this, _("Package Install/Upgrade"), PKG_INSTALL);
+        f = new File(this, _("Package Install / Upgrade"), PKG_INSTALL);
         f->create();
 
         // Install/Upgrade package
@@ -5557,7 +5781,7 @@ long FilePanel::onCmdPkgInstall(FXObject*, FXSelector, void*)
     // Force panel refresh
     onCmdRefresh(0, 0, 0);
 
-    return(1);
+    return 1;
 }
 
 
@@ -5565,7 +5789,7 @@ long FilePanel::onCmdPkgInstall(FXObject*, FXSelector, void*)
 long FilePanel::onCmdPkgUninstall(FXObject*, FXSelector, void*)
 {
     FXString name, cmd, dir, cdir;
-    File*    f;
+    File* f;
 
     cdir = current->list->getDirectory();
 
@@ -5606,7 +5830,7 @@ long FilePanel::onCmdPkgUninstall(FXObject*, FXSelector, void*)
     // Force panel refresh
     onCmdRefresh(0, 0, 0);
 
-    return(1);
+    return 1;
 }
 
 
@@ -5618,6 +5842,7 @@ long FilePanel::onCmdRefresh(FXObject*, FXSelector, void*)
 {
     // Refresh panel
     FXString dir = list->getDirectory();
+
     list->setDirectory(ROOTDIR, false);
     list->setDirectory(dir, false);
     updatePath();
@@ -5625,7 +5850,7 @@ long FilePanel::onCmdRefresh(FXObject*, FXSelector, void*)
     // Focus on current panel
     current->list->setFocus();
 
-    return(1);
+    return 1;
 }
 
 
@@ -5637,17 +5862,17 @@ long FilePanel::onCmdSelect(FXObject* sender, FXSelector sel, void* ptr)
     {
     case ID_SELECT_ALL:
         current->list->handle(sender, FXSEL(SEL_COMMAND, FileList::ID_SELECT_ALL), ptr);
-        return(1);
+        return 1;
 
     case ID_DESELECT_ALL:
         current->list->handle(sender, FXSEL(SEL_COMMAND, FileList::ID_DESELECT_ALL), ptr);
-        return(1);
+        return 1;
 
     case ID_SELECT_INVERSE:
         current->list->handle(sender, FXSEL(SEL_COMMAND, FileList::ID_SELECT_INVERSE), ptr);
-        return(1);
+        return 1;
     }
-    return(1);
+    return 1;
 }
 
 
@@ -5672,7 +5897,7 @@ long FilePanel::onCmdShow(FXObject* sender, FXSelector sel, void* ptr)
     // Set focus on current panel list
     current->list->setFocus();
 
-    return(1);
+    return 1;
 }
 
 
@@ -5685,21 +5910,21 @@ long FilePanel::onUpdShow(FXObject* sender, FXSelector sel, void* ptr)
     switch (FXSELID(sel))
     {
     case ID_SHOW_BIG_ICONS:
-        if (style & _ICONLIST_BIG_ICONS)
+        if (style & ICONLIST_BIG_ICONS)
         {
             msg = FXWindow::ID_CHECK;
         }
         break;
 
     case ID_SHOW_MINI_ICONS:
-        if (style & _ICONLIST_MINI_ICONS)
+        if (style & ICONLIST_MINI_ICONS)
         {
             msg = FXWindow::ID_CHECK;
         }
         break;
 
     case ID_SHOW_DETAILS:
-        if (!(style & (_ICONLIST_MINI_ICONS | _ICONLIST_BIG_ICONS)))
+        if (!(style & (ICONLIST_MINI_ICONS | ICONLIST_BIG_ICONS)))
         {
             msg = FXWindow::ID_CHECK;
         }
@@ -5707,7 +5932,7 @@ long FilePanel::onUpdShow(FXObject* sender, FXSelector sel, void* ptr)
     }
     sender->handle(this, FXSEL(SEL_COMMAND, msg), ptr);
 
-    return(1);
+    return 1;
 }
 
 
@@ -5715,7 +5940,7 @@ long FilePanel::onUpdShow(FXObject* sender, FXSelector sel, void* ptr)
 long FilePanel::onCmdToggleHidden(FXObject* sender, FXSelector sel, void* ptr)
 {
     current->list->handle(sender, FXSEL(SEL_COMMAND, FileList::ID_TOGGLE_HIDDEN), ptr);
-    return(1);
+    return 1;
 }
 
 
@@ -5730,7 +5955,7 @@ long FilePanel::onUpdToggleHidden(FXObject* sender, FXSelector sel, void* ptr)
         msg = FXWindow::ID_CHECK;
     }
     sender->handle(this, FXSEL(SEL_COMMAND, msg), ptr);
-    return(1);
+    return 1;
 }
 
 
@@ -5738,7 +5963,7 @@ long FilePanel::onUpdToggleHidden(FXObject* sender, FXSelector sel, void* ptr)
 long FilePanel::onCmdToggleThumbnails(FXObject* sender, FXSelector sel, void* ptr)
 {
     current->list->handle(sender, FXSEL(SEL_COMMAND, FileList::ID_TOGGLE_THUMBNAILS), ptr);
-    return(1);
+    return 1;
 }
 
 
@@ -5753,18 +5978,18 @@ long FilePanel::onUpdToggleThumbnails(FXObject* sender, FXSelector sel, void* pt
         msg = FXWindow::ID_CHECK;
     }
     sender->handle(this, FXSEL(SEL_COMMAND, msg), ptr);
-    return(1);
+    return 1;
 }
 
 
 // Run script
-long FilePanel::onCmdRunScript(FXObject* o, FXSelector sel, void*)
+long FilePanel::onCmdRunScript(FXObject* sender, FXSelector sel, void*)
 {
     // Wait cursor
     getApp()->beginWaitCursor();
 
     FXString pathname, cmd, itemslist = " ";
-    FXString scriptpath = dynamic_cast<FXMenuCommand*>(o)->getHelpText();
+    FXString scriptpath = dynamic_cast<FXMenuCommand*>(sender)->getHelpText();
 
     // Construct selected files list
     current->list->setFocus();
@@ -5775,12 +6000,12 @@ long FilePanel::onCmdRunScript(FXObject* o, FXSelector sel, void*)
             pathname = current->list->getItemPathname(u);
 
             // List of selected items
-            itemslist += ::quote(pathname) + " ";
+            itemslist += xf_quote(pathname) + " ";
         }
     }
 
     // Construct command line
-    cmd = ::quote(scriptpath) + itemslist + " &";
+    cmd = xf_quote(scriptpath) + itemslist + " &";
 
     // Go to the current directory
     int ret = chdir(current->list->getDirectory().text());
@@ -5789,11 +6014,13 @@ long FilePanel::onCmdRunScript(FXObject* o, FXSelector sel, void*)
         int errcode = errno;
         if (errcode)
         {
-            MessageBox::error(this, BOX_OK, _("Error"), _("Can't enter folder %s: %s"), current->list->getDirectory().text(), strerror(errcode));
+            MessageBox::error(this, BOX_OK, _("Error"), _("Can't enter folder %s: %s"),
+                              current->list->getDirectory().text(), strerror(errcode));
         }
         else
         {
-            MessageBox::error(this, BOX_OK, _("Error"), _("Can't enter folder %s"), current->list->getDirectory().text());
+            MessageBox::error(this, BOX_OK, _("Error"), _("Can't enter folder %s"),
+                              current->list->getDirectory().text());
         }
     }
 
@@ -5818,7 +6045,8 @@ long FilePanel::onCmdRunScript(FXObject* o, FXSelector sel, void*)
         int errcode = errno;
         if (errcode)
         {
-            MessageBox::error(this, BOX_OK, _("Error"), _("Can't enter folder %s: %s"), startlocation.text(), strerror(errcode));
+            MessageBox::error(this, BOX_OK, _("Error"), _("Can't enter folder %s: %s"), startlocation.text(),
+                              strerror(errcode));
         }
         else
         {
@@ -5828,35 +6056,36 @@ long FilePanel::onCmdRunScript(FXObject* o, FXSelector sel, void*)
 
     getApp()->endWaitCursor();
 
-    return(1);
+    return 1;
 }
 
 
 // Go to scripts directory
-long FilePanel::onCmdGoScriptDir(FXObject* o, FXSelector sel, void*)
+long FilePanel::onCmdGoScriptDir(FXObject* sender, FXSelector sel, void*)
 {
     FXString scriptpath = homedir + PATHSEPSTRING CONFIGPATH PATHSEPSTRING XFECONFIGPATH PATHSEPSTRING SCRIPTPATH;
 
-    if (!existFile(scriptpath))
+    if (!xf_existfile(scriptpath))
     {
         // Create the script directory according to the umask
         int mask = umask(0);
         umask(mask);
         errno = 0;
-        int ret = mkpath(scriptpath.text(), 511 & ~mask);
+        int ret = xf_mkpath(scriptpath.text(), 511 & ~mask);
         int errcode = errno;
         if (ret == -1)
         {
             if (errcode)
             {
-                MessageBox::error(this, BOX_OK, _("Error"), _("Can't create script folder %s: %s"), scriptpath.text(), strerror(errcode));
+                MessageBox::error(this, BOX_OK, _("Error"), _("Can't create script folder %s: %s"), scriptpath.text(),
+                                  strerror(errcode));
             }
             else
             {
                 MessageBox::error(this, BOX_OK, _("Error"), _("Can't create script folder %s"), scriptpath.text());
             }
 
-            return(0);
+            return 0;
         }
     }
 
@@ -5867,7 +6096,7 @@ long FilePanel::onCmdGoScriptDir(FXObject* o, FXSelector sel, void*)
     current->updatePath();
     updateLocation();
 
-    return(1);
+    return 1;
 }
 
 
@@ -5876,15 +6105,14 @@ long FilePanel::onCmdGoScriptDir(FXObject* o, FXSelector sel, void*)
 long FilePanel::onCmdMount(FXObject*, FXSelector sel, void*)
 {
     int ret;
-    FXString cmd, msg, text;
+    FXString cmd, msg, msgwait;
     FXuint op;
-    File*    f;
+    File* f;
     FXString dir;
 
     current->list->setFocus();
 
-    // Use the selected directory in FilePanel if any
-    // or use the selected directory in DirPanel
+    // Use the selected directory in FilePanel if any or use the selected directory in DirPanel
     if (current->list->getNumSelectedItems() == 0)
     {
         dir = current->list->getDirectory();
@@ -5901,24 +6129,26 @@ long FilePanel::onCmdMount(FXObject*, FXSelector sel, void*)
     }
 
     // If symbolic link, read the linked directory
-    if (::isLink(dir))
+    if (xf_islink(dir))
     {
-        dir = ::readLink(dir);
+        dir = xf_readlink(dir);
     }
 
     if (FXSELID(sel) == ID_MOUNT)
     {
         op = MOUNT;
-        msg = _("Mount");
+        msg = _("Mount file system...");
+        msgwait = _("Volume busy, please wait while mounting folder:");
         cmd = getApp()->reg().readStringEntry("PROGS", "mount", DEFAULT_MOUNTCMD) + FXString(" ");
     }
     else
     {
         op = UNMOUNT;
-        msg = _("Unmount");
+        msg = _("Unmount file system...");
+        msgwait = _("Volume busy, please wait while unmounting folder:");
         cmd = getApp()->reg().readStringEntry("PROGS", "unmount", DEFAULT_UMOUNTCMD) + FXString(" ");
     }
-    cmd += ::quote(dir);
+    cmd += xf_quote(dir);
     cmd += " 2>&1";
     ret = chdir(ROOTDIR);
     if (ret < 0)
@@ -5933,60 +6163,57 @@ long FilePanel::onCmdMount(FXObject*, FXSelector sel, void*)
             MessageBox::error(this, BOX_OK, _("Error"), _("Can't enter folder %s"), ROOTDIR);
         }
 
-        return(0);
+        return 0;
     }
 
     // Wait cursor
     getApp()->beginWaitCursor();
 
     // File object
-    text = msg + _(" file system...");
-    f = new File(this, text.text(), op);
+    f = new File(this, msg.text(), op);
     f->create();
 
     // Mount/unmount file system
-    text = msg + _(" the folder:");
-    f->mount(dir, text, cmd, op);
+    f->mount(dir, msgwait, cmd);
+
     ret = chdir(startlocation.text());
     if (ret < 0)
     {
         int errcode = errno;
         if (errcode)
         {
-            MessageBox::error(this, BOX_OK, _("Error"), _("Can't enter folder %s: %s"), startlocation.text(), strerror(errcode));
+            MessageBox::error(this, BOX_OK, _("Error"), _("Can't enter folder %s: %s"), startlocation.text(),
+                              strerror(errcode));
         }
         else
         {
             MessageBox::error(this, BOX_OK, _("Error"), _("Can't enter folder %s"), startlocation.text());
         }
-		
-		delete f;
-        return(0);
-    }
 
-    // If action is cancelled in progress dialog
-    if (f->isCancelled())
-    {
-        f->hide();
-        text = msg + _(" operation cancelled!");
-        MessageBox::error(this, BOX_OK, _("Warning"), "%s", text.text());
-        
         delete f;
-        return(0);
+        return 0;
     }
 
     delete f;
     getApp()->endWaitCursor();
 
+    // If unmount, return to start location
+    if (FXSELID(sel) == ID_UMOUNT)
+    {
+        dirpanel->setDirectory(startlocation, true);
+        ((XFileExplorer*)mainWindow)->getCurrentPanel()->setDirectory(startlocation);
+        ((XFileExplorer*)mainWindow)->getCurrentPanel()->updatePath();        
+    }
+
     // Force panel refresh
     onCmdRefresh(0, 0, 0);
 
-    return(1);
+    return 1;
 }
 
 
 // Update the Mount button
-long FilePanel::onUpdMount(FXObject* o, FXSelector sel, void*)
+long FilePanel::onUpdMount(FXObject* sender, FXSelector sel, void*)
 {
     FXString dir;
 
@@ -6009,21 +6236,22 @@ long FilePanel::onUpdMount(FXObject* o, FXSelector sel, void*)
         }
     }
 
-    if (fsdevices->find(dir.text()) && !mtdevices->find(dir.text()) && current->list->getNumItems() && !current->list->isItemSelected(0))
+    if (fsdevices->find(dir.text()) && !mtdevices->find(dir.text()) && current->list->getNumItems() &&
+        !current->list->isItemSelected(0))
     {
-        o->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_ENABLE), NULL);
+        sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_ENABLE), NULL);
     }
     else
     {
-        o->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_DISABLE), NULL);
+        sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_DISABLE), NULL);
     }
 
-    return(1);
+    return 1;
 }
 
 
 // Update the Unmount button
-long FilePanel::onUpdUnmount(FXObject* o, FXSelector sel, void*)
+long FilePanel::onUpdUnmount(FXObject* sender, FXSelector sel, void*)
 {
     FXString dir;
 
@@ -6046,40 +6274,44 @@ long FilePanel::onUpdUnmount(FXObject* o, FXSelector sel, void*)
         }
     }
 
-    if ((fsdevices->find(dir.text()) || mtdevices->find(dir.text())) && current->list->getNumItems() && !current->list->isItemSelected(0))
+    if ((fsdevices->find(dir.text()) || mtdevices->find(dir.text())) && current->list->getNumItems() &&
+        !current->list->isItemSelected(0))
     {
-        o->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_ENABLE), NULL);
+        sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_ENABLE), NULL);
     }
     else
     {
-        o->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_DISABLE), NULL);
+        sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_DISABLE), NULL);
     }
 
-    return(1);
+    return 1;
 }
 
 
 // Query packages data base
-long FilePanel::onCmdPkgQuery(FXObject* o, FXSelector sel, void*)
+long FilePanel::onCmdPkgQuery(FXObject* sender, FXSelector sel, void*)
 {
     FXString cmd;
 
     // Name of the current selected file
     FXString file = current->list->getCurrentFile();
 
+    // Read package format
+    FXuint pkg_format = getApp()->reg().readUnsignedEntry("SETTINGS", "package_format", DEB_PKG);
+
     // Command to perform
     if (pkg_format == DEB_PKG)
     {
-        cmd = "dpkg -S " + ::quote(file);
+        cmd = "dpkg -S " + xf_quote(file);
     }
     else if (pkg_format == RPM_PKG)
     {
-        cmd = "rpm -qf " + ::quote(file);
+        cmd = "rpm -qf " + xf_quote(file);
     }
     else
     {
         MessageBox::error(this, BOX_OK, _("Error"), _("No compatible package manager (rpm or dpkg) found!"));
-        return(0);
+        return 0;
     }
 
     // Query command
@@ -6093,7 +6325,7 @@ long FilePanel::onCmdPkgQuery(FXObject* o, FXSelector sel, void*)
     if (!pcmd)
     {
         MessageBox::error(this, BOX_OK, _("Error"), _("Failed command: %s"), cmd.text());
-        return(0);
+        return 0;
     }
 
     // Get command output
@@ -6103,26 +6335,26 @@ long FilePanel::onCmdPkgQuery(FXObject* o, FXSelector sel, void*)
     {
         buf += text;
     }
-    snprintf(text, sizeof(text) - 1, "%s", buf.text());
+    snprintf(text, sizeof(text), "%s", buf.text());
 
     // Close the stream and display error message if any
-    if ((pclose(pcmd) == -1) && (errno != ECHILD))   // ECHILD can be set if the child was caught by sigHarvest
+    if ((pclose(pcmd) == -1) && (errno != ECHILD)) // ECHILD can be set if the child was caught by sigHarvest
     {
         getApp()->endWaitCursor();
         MessageBox::error(this, BOX_OK, _("Error"), "%s", text);
-        return(0);
+        return 0;
     }
     getApp()->endWaitCursor();
 
     // Get package name, or detect when the file isn't in a package
     FXString str = text;
-    if (pkg_format == DEB_PKG)  // DEB based distribution
+    if (pkg_format == DEB_PKG)                                  // DEB based distribution
     {
-        int idx = str.find(" ");               // Split output at first whitespace
-        FXString pkgname = str.left(idx - 1);    // Remove trailing colon
+        int idx = str.find(" ");                                // Split output at first whitespace
+        FXString pkgname = str.left(idx - 1);                   // Remove trailing colon
         FXString fname = str.right(str.length() - idx);
-        fname.trim();                          // Remove leading space and trailing newline
-        if (streq(fname.text(), file.text()))  // No other word than the file name
+        fname.trim();                                           // Remove leading space and trailing newline
+        if (xf_strequal(fname.text(), file.text()))             // No other word than the file name
         {
             str = pkgname.text();
         }
@@ -6131,9 +6363,9 @@ long FilePanel::onCmdPkgQuery(FXObject* o, FXSelector sel, void*)
             str = "";
         }
     }
-    if (pkg_format == RPM_PKG)   // RPM based distribution
+    if (pkg_format == RPM_PKG)                  // RPM based distribution
     {
-        if (str.find(' ') != -1) // Space character exists in the string
+        if (str.find(' ') != -1)                // Space character exists in the string
         {
             str = "";
         }
@@ -6152,12 +6384,12 @@ long FilePanel::onCmdPkgQuery(FXObject* o, FXSelector sel, void*)
         MessageBox::information(this, BOX_OK, _("Information"), "%s", message.text());
     }
 
-    return(1);
+    return 1;
 }
 
 
 // Update the package query menu
-long FilePanel::onUpdPkgQuery(FXObject* o, FXSelector sel, void*)
+long FilePanel::onUpdPkgQuery(FXObject* sender, FXSelector sel, void*)
 {
     // Menu item is disabled when nothing is selected or multiple selection
     // or when unique selection and the selected item is a directory
@@ -6168,22 +6400,22 @@ long FilePanel::onUpdPkgQuery(FXObject* o, FXSelector sel, void*)
 
     if ((num == 0) || (num > 1))
     {
-        o->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_DISABLE), NULL);
+        sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_DISABLE), NULL);
     }
     else // num=1
     {
         int item = current->list->getCurrentItem();
         if ((item >= 0) && current->list->isItemDirectory(item))
         {
-            o->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_DISABLE), NULL);
+            sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_DISABLE), NULL);
         }
         else
         {
-            o->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_ENABLE), NULL);
+            sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_ENABLE), NULL);
         }
     }
 
-    return(1);
+    return 1;
 }
 
 
@@ -6191,20 +6423,23 @@ long FilePanel::onUpdPkgQuery(FXObject* o, FXSelector sel, void*)
 
 
 // Directory usage on file selection
-long FilePanel::onCmdDirUsage(FXObject* o, FXSelector, void*)
+long FilePanel::onCmdDirUsage(FXObject* sender, FXSelector, void*)
 {
     FXString name, command, itemslist = " ";
     FXString cmd1 = "/usr/bin/du --apparent-size -k -s ";
-    FXString cmd2 = " 2> /dev/null | /usr/bin/sort -rn | /usr/bin/cut -f2 | /usr/bin/xargs -d '\n' /usr/bin/du --apparent-size --total --si -s 2> /dev/null";
+    FXString cmd2 =
+        " 2> /dev/null | /usr/bin/sort -rn | /usr/bin/cut -f2 | /usr/bin/xargs -d '\n' /usr/bin/du --apparent-size --total --si -s 2> /dev/null";
 
     // Enter current directory
     int ret = chdir(current->getDirectory().text());
+
     if (ret < 0)
     {
         int errcode = errno;
         if (errcode)
         {
-            MessageBox::error(this, BOX_OK, _("Error"), _("Can't enter folder %s: %s"), current->getDirectory().text(), strerror(errcode));
+            MessageBox::error(this, BOX_OK, _("Error"), _("Can't enter folder %s: %s"), current->getDirectory().text(),
+                              strerror(errcode));
         }
         else
         {
@@ -6214,7 +6449,7 @@ long FilePanel::onCmdDirUsage(FXObject* o, FXSelector, void*)
         return 0;
     }
 
-    // Eventually deselect the '..' directory
+    // Possibly deselect the '..' directory
     if (current->list->isItemSelected(0))
     {
         current->list->deselectItem(0);
@@ -6223,7 +6458,7 @@ long FilePanel::onCmdDirUsage(FXObject* o, FXSelector, void*)
     // Return if nothing is selected
     if (current->list->getNumSelectedItems() == 0)
     {
-        return(0);
+        return 0;
     }
 
     // Construct selected files list
@@ -6235,7 +6470,7 @@ long FilePanel::onCmdDirUsage(FXObject* o, FXSelector, void*)
             name = current->list->getItemFilename(u);
 
             // List of selected items
-            itemslist += ::quote(name) + " ";
+            itemslist += xf_quote(name) + " ";
         }
     }
 
@@ -6245,7 +6480,7 @@ long FilePanel::onCmdDirUsage(FXObject* o, FXSelector, void*)
     // Make and show command window
     CommandWindow* cmdwin = new CommandWindow(getApp(), _("Sizes of Selected Items"), command, 25, 50);
     cmdwin->create();
-    cmdwin->setIcon(charticon);
+    cmdwin->setIcon(minicharticon);
 
     // The CommandWindow object will delete itself when closed!
 
@@ -6256,7 +6491,8 @@ long FilePanel::onCmdDirUsage(FXObject* o, FXSelector, void*)
         int errcode = errno;
         if (errcode)
         {
-            MessageBox::error(this, BOX_OK, _("Error"), _("Can't enter folder %s: %s"), startlocation.text(), strerror(errcode));
+            MessageBox::error(this, BOX_OK, _("Error"), _("Can't enter folder %s: %s"), startlocation.text(),
+                              strerror(errcode));
         }
         else
         {
@@ -6264,7 +6500,7 @@ long FilePanel::onCmdDirUsage(FXObject* o, FXSelector, void*)
         }
     }
 
-    return(1);
+    return 1;
 }
 
 
@@ -6273,12 +6509,10 @@ long FilePanel::onUpdStatus(FXObject* sender, FXSelector, void*)
 {
     // Update the status bar
     int item = -1;
-    FXString str, linkto;
+    FXString status, linkto;
     char usize[64];
     FXulong size = 0;
     FXString hsize = _("0 bytes");
-
-    FXString path = list->getDirectory();
 
     int num = list->getNumSelectedItems();
 
@@ -6297,6 +6531,7 @@ long FilePanel::onUpdStatus(FXObject* sender, FXSelector, void*)
 
     item = list->getCurrentItem();
 
+    // Several items selected
     if (num > 1)
     {
         int nbdirs = 0;
@@ -6306,14 +6541,14 @@ long FilePanel::onUpdStatus(FXObject* sender, FXSelector, void*)
             {
                 size += list->getItemFileSize(u);
 #if __WORDSIZE == 64
-                snprintf(usize, sizeof(usize) - 1, "%lu", size);
+                snprintf(usize, sizeof(usize), "%lu", size);
 #else
-                snprintf(usize, sizeof(usize) - 1, "%llu", size);
+                snprintf(usize, sizeof(usize), "%llu", size);
 #endif
-                hsize = ::hSize(usize);
+                hsize = xf_humansize(usize);
             }
 
-            if (list->isItemSelected(u) && list->isItemDirectory(u) && (list->getItemText(u) != "..") )
+            if (list->isItemSelected(u) && list->isItemDirectory(u) && (list->getItemText(u) != ".."))
             {
                 nbdirs++;
             }
@@ -6322,19 +6557,23 @@ long FilePanel::onUpdStatus(FXObject* sender, FXSelector, void*)
         int nbfiles = num - nbdirs;
         if (nbdirs <= 1 && nbfiles <= 1)
         {
-            str.format(_("%s in %s selected items (%s folder, %s file)"), hsize.text(), FXStringVal(num).text(), FXStringVal(nbdirs).text(), FXStringVal(nbfiles).text());
+            status.format(_("%s in %s selected items (%s folder, %s file)"), hsize.text(), FXStringVal(num).text(),
+                          FXStringVal(nbdirs).text(), FXStringVal(nbfiles).text());
         }
         else if (nbdirs <= 1 && nbfiles > 1)
         {
-            str.format(_("%s in %s selected items (%s folder, %s files)"), hsize.text(), FXStringVal(num).text(), FXStringVal(nbdirs).text(), FXStringVal(nbfiles).text());
+            status.format(_("%s in %s selected items (%s folder, %s files)"), hsize.text(), FXStringVal(num).text(),
+                          FXStringVal(nbdirs).text(), FXStringVal(nbfiles).text());
         }
         else if (nbdirs > 1 && nbfiles <= 1)
         {
-            str.format(_("%s in %s selected items (%s folders, %s file)"), hsize.text(), FXStringVal(num).text(), FXStringVal(nbdirs).text(), FXStringVal(nbfiles).text());
+            status.format(_("%s in %s selected items (%s folders, %s file)"), hsize.text(), FXStringVal(num).text(),
+                          FXStringVal(nbdirs).text(), FXStringVal(nbfiles).text());
         }
         else
         {
-            str.format(_("%s in %s selected items (%s folders, %s files)"), hsize.text(), FXStringVal(num).text(), FXStringVal(nbdirs).text(), FXStringVal(nbfiles).text());
+            status.format(_("%s in %s selected items (%s folders, %s files)"), hsize.text(), FXStringVal(num).text(),
+                          FXStringVal(nbdirs).text(), FXStringVal(nbfiles).text());
         }
     }
     else
@@ -6345,7 +6584,7 @@ long FilePanel::onUpdStatus(FXObject* sender, FXSelector, void*)
             num = list->getNumItems();
             if (num == 1)
             {
-                str = _("1 item (1 folder)");
+                status = _("1 item (1 folder)");
             }
             else
             {
@@ -6356,85 +6595,117 @@ long FilePanel::onUpdStatus(FXObject* sender, FXSelector, void*)
                     {
                         nbdirs++;
                     }
+                    else
+                    {
+                        size += list->getItemFileSize(u);
+#if __WORDSIZE == 64
+                        snprintf(usize, sizeof(usize), "%lu", size);
+#else
+                        snprintf(usize, sizeof(usize), "%llu", size);
+#endif
+                        hsize = xf_humansize(usize);
+                    }
                 }
 
                 int nbfiles = num - nbdirs;
-                str.format(_("%s items (%s folders, %s files)"), FXStringVal(num).text(), FXStringVal(nbdirs).text(), FXStringVal(nbfiles).text());
+                status.format(_("%s items (%s folders, %s files, %s)"), FXStringVal(num).text(),
+                              FXStringVal(nbdirs).text(),
+                              FXStringVal(nbfiles).text(), hsize.text());
                 if (nbdirs <= 1 && nbfiles <= 1)
                 {
-                    str.format(_("%s items (%s folder, %s file)"), FXStringVal(num).text(), FXStringVal(nbdirs).text(), FXStringVal(nbfiles).text());
+                    status.format(_("%s items (%s folder, %s file, %s)"), FXStringVal(num).text(),
+                                  FXStringVal(nbdirs).text(),
+                                  FXStringVal(nbfiles).text(), hsize.text());
                 }
                 else if (nbdirs <= 1 && nbfiles > 1)
                 {
-                    str.format(_("%s items (%s folder, %s files)"), FXStringVal(num).text(), FXStringVal(nbdirs).text(), FXStringVal(nbfiles).text());
+                    status.format(_("%s items (%s folder, %s files, %s)"), FXStringVal(num).text(),
+                                  FXStringVal(nbdirs).text(),
+                                  FXStringVal(nbfiles).text(), hsize.text());
                 }
                 else if (nbdirs > 1 && nbfiles <= 1)
                 {
-                    str.format(_("%s items (%s folders, %s file)"), FXStringVal(num).text(), FXStringVal(nbdirs).text(), FXStringVal(nbfiles).text());
+                    status.format(_("%s items (%s folders, %s file, %s)"), FXStringVal(num).text(),
+                                  FXStringVal(nbdirs).text(),
+                                  FXStringVal(nbfiles).text(), hsize.text());
                 }
                 else
                 {
-                    str.format(_("%s items (%s folders, %s files)"), FXStringVal(num).text(), FXStringVal(nbdirs).text(), FXStringVal(nbfiles).text());
+                    status.format(_("%s items (%s folders, %s files, %s)"), FXStringVal(num).text(),
+                                  FXStringVal(nbdirs).text(),
+                                  FXStringVal(nbfiles).text(), hsize.text());
                 }
             }
         }
+
+        // One item selected
         else
         {
-            FXString string = list->getItemText(item);
-            FXString name = string.section('\t', 0);
-            FXString type = string.section('\t', 2);
+            // Item text
+            FXString str = list->getItemText(item);
 
-            FXString date = string.section('\t', 4);
-            FXString usr = string.section('\t', 5);
-            FXString grp = string.section('\t', 6);
-            FXString perm = string.section('\t', 7);
-
-            if (type.contains(_("Broken link")))
+            // Are we in trash?
+            FXString dirpath = list->getDirectory();
+            FXbool inTrash = false;
+            if (dirpath.left(trashfileslocation.length()) == trashfileslocation)
             {
-                linkto = ::readLink(path + PATHSEPSTRING + name);
-                str = name + "->" + linkto.text() + " | " + type + " | " + date + " | " + usr + " | " + grp + " | " + perm;
+                inTrash = true;
             }
-            else if (type.contains(_("Link")))
+
+            // Actual number of columns
+            FXuint nbHeaders;
+            FXuint beg;
+
+            if (inTrash)
             {
-                linkto = ::readLink(path + PATHSEPSTRING + name);
-                str = name + "->" + linkto.text() + " | " + type + " | " + date + " | " + usr + " | " + grp + " | " + perm;
+                nbHeaders = nbCols + 2;
+                beg = 3; // Skip name, original path and deletion date
             }
             else
             {
-                for (int u = 0; u < list->getNumItems(); u++)
-                {
-                    if (list->isItemSelected(u) && !list->isItemDirectory(u))
-                    {
-                        size = list->getItemFileSize(u);
-#if __WORDSIZE == 64
-                        snprintf(usize, sizeof(usize) - 1, "%lu", size);
-#else
-                        snprintf(usize, sizeof(usize) - 1, "%llu", size);
-#endif
-                        hsize = ::hSize(usize);
-                        break;
-                    }
-                }
-                str = hsize + " | " + type + " | " + date + " | " + usr + " | " + grp + " | " + perm;
+                nbHeaders = nbCols;
+                beg = 1; // Skip name
             }
+
+            // Status text
+            for (FXuint i = beg; i < nbHeaders - 1; i++)
+            {
+                FXString txt = str.section('\t', i);
+                if (txt.length() != 0)
+                {
+                    status += txt + " | ";
+                }
+            }
+            status += str.section('\t', nbHeaders - 1);
         }
     }
 
-    statuslabel->setText(str);
+    // Set status label
+    statuslabel->setText(status);
 
-    // Add the filter pattern if any
+    // Prepend the filter pattern if any
     if ((list->getPattern() != "*") && (list->getPattern() != "*.*"))
     {
-        str.format(_(" - Filter: %s"), list->getPattern().text());
-        filterlabel->setText(str);
+        closefilter->show();
+
+        if (list->getFilterFolders())
+        {
+            status.format(_("Filter: %s (files and folders)"), list->getPattern().text());
+        }
+        else
+        {
+            status.format(_("Filter: %s (files)"), list->getPattern().text());
+        }
+        filterlabel->setText(status);
         filterlabel->setTextColor(attenclr);
     }
     else
     {
+        closefilter->hide();
         filterlabel->setText("");
     }
 
-    return(1);
+    return 1;
 }
 
 
@@ -6447,32 +6718,32 @@ void FilePanel::updatePath()
 
 
 // Update the go to parent directory command
-long FilePanel::onUpdUp(FXObject* o, FXSelector, void*)
+long FilePanel::onUpdUp(FXObject* sender, FXSelector, void*)
 {
-    FXButton* button = (FXButton*)o;
+    FXButton* button = (FXButton*)sender;
     int style = button->getButtonStyle();
 
     if (style & TOGGLEBUTTON_TOOLBAR)
     {
         if (current->list->getDirectory() != ROOTDIR)
         {
-            o->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_ENABLE), NULL);
+            sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_ENABLE), NULL);
         }
         else
         {
-            o->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_DISABLE), NULL);
+            sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_DISABLE), NULL);
         }
     }
     else
     {
-        o->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_ENABLE), NULL);
+        sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_ENABLE), NULL);
     }
-    return(1);
+    return 1;
 }
 
 
 // Update the paste button
-long FilePanel::onUpdPaste(FXObject* o, FXSelector, void*)
+long FilePanel::onUpdPaste(FXObject* sender, FXSelector, void*)
 {
     FXuchar* data;
     FXuint len;
@@ -6498,7 +6769,6 @@ long FilePanel::onUpdPaste(FXObject* o, FXSelector, void*)
         // Free data pointer
         FXFREE(&data);
     }
-
     // If source type is urilistType (KDE apps ; non Gnome, non XFCE and non Xfe apps)
     else if (getDNDData(FROM_CLIPBOARD, urilistType, data, len))
     {
@@ -6515,7 +6785,6 @@ long FilePanel::onUpdPaste(FXObject* o, FXSelector, void*)
         // Free data pointer
         FXFREE(&data);
     }
-
     // If source is utf8Type (simple text)
     else if (getDNDData(FROM_CLIPBOARD, utf8Type, data, len))
     {
@@ -6543,11 +6812,10 @@ long FilePanel::onUpdPaste(FXObject* o, FXSelector, void*)
                 clipboard_valid = false;
                 break;
             }
-
             // File path is not an existing file or directory
             else
             {
-                if (!existFile(filepath))
+                if (!xf_existfile(filepath))
                 {
                     clipboard_valid = false;
                     break;
@@ -6568,22 +6836,22 @@ long FilePanel::onUpdPaste(FXObject* o, FXSelector, void*)
     // Gray out the paste button, if necessary
     if (clipboard_empty || clipboard_type == COPYNAME_CLIPBOARD)
     {
-        o->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_DISABLE), NULL);
+        sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_DISABLE), NULL);
     }
     else
     {
-        o->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_ENABLE), NULL);
+        sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_ENABLE), NULL);
     }
 
     // Unlock clipboard
     clipboard_locked = false;
 
-    return(1);
+    return 1;
 }
 
 
 // Update menu items and toolbar buttons that are related to file operations
-long FilePanel::onUpdMenu(FXObject* o, FXSelector sel, void*)
+long FilePanel::onUpdMenu(FXObject* sender, FXSelector sel, void*)
 {
     // Menu item is disabled when nothing or only ".." is selected
     int num;
@@ -6595,70 +6863,70 @@ long FilePanel::onUpdMenu(FXObject* o, FXSelector sel, void*)
     {
         if (num == 0)
         {
-            o->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_ENABLE), NULL);
+            sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_ENABLE), NULL);
         }
         else if ((num == 1) && current->list->isItemSelected(0))
         {
-            o->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_DISABLE), NULL);
+            sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_DISABLE), NULL);
         }
         else
         {
-            o->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_ENABLE), NULL);
+            sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_ENABLE), NULL);
         }
     }
     else
     {
         if (num == 0)
         {
-            o->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_DISABLE), NULL);
+            sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_DISABLE), NULL);
         }
         else if ((num == 1) && current->list->isItemSelected(0))
         {
-            o->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_DISABLE), NULL);
+            sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_DISABLE), NULL);
         }
         else
         {
-            o->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_ENABLE), NULL);
+            sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_ENABLE), NULL);
         }
     }
 
-    return(1);
+    return 1;
 }
 
 
 // Update file delete menu item and toolbar button
-long FilePanel::onUpdFileDelete(FXObject* o, FXSelector sel, void*)
+long FilePanel::onUpdFileDelete(FXObject* sender, FXSelector sel, void*)
 {
     FXbool use_trash_can = getApp()->reg().readUnsignedEntry("OPTIONS", "use_trash_can", true);
     FXbool use_trash_bypass = getApp()->reg().readUnsignedEntry("OPTIONS", "use_trash_bypass", false);
 
-    if ( (!use_trash_can) | use_trash_bypass)
+    if ((!use_trash_can) | use_trash_bypass)
     {
         int num = current->list->getNumSelectedItems();
         if (num == 0)
         {
-            o->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_DISABLE), NULL);
+            sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_DISABLE), NULL);
         }
         else if ((num == 1) && current->list->isItemSelected(0))
         {
-            o->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_DISABLE), NULL);
+            sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_DISABLE), NULL);
         }
         else
         {
-            o->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_ENABLE), NULL);
+            sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_ENABLE), NULL);
         }
     }
     else
     {
-        o->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_DISABLE), NULL);
+        sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_DISABLE), NULL);
     }
 
-    return(1);
+    return 1;
 }
 
 
 // Update move to trash menu item and toolbar button
-long FilePanel::onUpdFileTrash(FXObject* o, FXSelector sel, void*)
+long FilePanel::onUpdFileTrash(FXObject* sender, FXSelector sel, void*)
 {
     // Disable move to trash menu if we are in trash can
     // or if the trash can directory is selected
@@ -6694,28 +6962,28 @@ long FilePanel::onUpdFileTrash(FXObject* o, FXSelector sel, void*)
         int num = current->list->getNumSelectedItems();
         if (num == 0)
         {
-            o->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_DISABLE), NULL);
+            sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_DISABLE), NULL);
         }
         else if ((num == 1) && current->list->isItemSelected(0))
         {
-            o->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_DISABLE), NULL);
+            sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_DISABLE), NULL);
         }
         else
         {
-            o->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_ENABLE), NULL);
+            sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_ENABLE), NULL);
         }
     }
     else
     {
-        o->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_DISABLE), NULL);
+        sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_DISABLE), NULL);
     }
 
-    return(1);
+    return 1;
 }
 
 
 // Update restore from trash menu item and toolbar button
-long FilePanel::onUpdFileRestore(FXObject* o, FXSelector sel, void*)
+long FilePanel::onUpdFileRestore(FXObject* sender, FXSelector sel, void*)
 {
     // Enable restore from trash menu if we are in trash can
 
@@ -6733,46 +7001,46 @@ long FilePanel::onUpdFileRestore(FXObject* o, FXSelector sel, void*)
         int num = current->list->getNumSelectedItems();
         if (num == 0)
         {
-            o->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_DISABLE), NULL);
+            sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_DISABLE), NULL);
         }
         else if ((num == 1) && current->list->isItemSelected(0))
         {
-            o->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_DISABLE), NULL);
+            sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_DISABLE), NULL);
         }
         else
         {
-            o->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_ENABLE), NULL);
+            sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_ENABLE), NULL);
         }
     }
     else
     {
-        o->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_DISABLE), NULL);
+        sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_DISABLE), NULL);
     }
 
-    return(1);
+    return 1;
 }
 
 
 // Update go trash menu item and toolbar button
-long FilePanel::onUpdGoTrash(FXObject* o, FXSelector sel, void*)
+long FilePanel::onUpdGoTrash(FXObject* sender, FXSelector sel, void*)
 {
     FXbool use_trash_can = getApp()->reg().readUnsignedEntry("OPTIONS", "use_trash_can", true);
 
     if (use_trash_can)
     {
-        o->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_ENABLE), NULL);
+        sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_ENABLE), NULL);
     }
     else
     {
-        o->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_DISABLE), NULL);
+        sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_DISABLE), NULL);
     }
 
-    return(1);
+    return 1;
 }
 
 
 // Update file open menu
-long FilePanel::onUpdOpen(FXObject* o, FXSelector, void*)
+long FilePanel::onUpdOpen(FXObject* sender, FXSelector, void*)
 {
     // Menu item is disabled when nothing or a directory (including "..") is selected
     int num, item;
@@ -6781,25 +7049,25 @@ long FilePanel::onUpdOpen(FXObject* o, FXSelector, void*)
 
     if (num == 0)
     {
-        o->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_DISABLE), NULL);
+        sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_DISABLE), NULL);
     }
     else
     {
         if (current->list->getItem(item) && current->list->isItemFile(item))
         {
-            o->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_ENABLE), NULL);
+            sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_ENABLE), NULL);
         }
         else
         {
-            o->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_DISABLE), NULL);
+            sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_DISABLE), NULL);
         }
     }
-    return(1);
+    return 1;
 }
 
 
 // Update the status of the menu items that should be disabled when selecting multiple files
-long FilePanel::onUpdSelMult(FXObject* o, FXSelector sel, void*)
+long FilePanel::onUpdSelMult(FXObject* sender, FXSelector sel, void*)
 {
     // Menu item is disabled when nothing is selected or multiple selection or ".." is only selected
     int num;
@@ -6811,49 +7079,61 @@ long FilePanel::onUpdSelMult(FXObject* o, FXSelector sel, void*)
     {
         if (!item || !dirpanel->shown())
         {
-            o->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_DISABLE), NULL);
+            sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_DISABLE), NULL);
         }
         else
         {
-            o->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_ENABLE), NULL);
+            sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_ENABLE), NULL);
         }
     }
     else if (current->selmult || ((num == 1) && current->list->isItemSelected(0)))
     {
-        o->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_DISABLE), NULL);
+        sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_DISABLE), NULL);
     }
     else
     {
-        o->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_ENABLE), NULL);
+        sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_ENABLE), NULL);
     }
 
-    return(1);
+    return 1;
 }
 
 
 // Update the file compare menu item
-long FilePanel::onUpdCompare(FXObject* o, FXSelector sel, void*)
+long FilePanel::onUpdCompare(FXObject* sender, FXSelector sel, void*)
 {
-    // Menu item is enabled only when two files are selected
+    // Menu item is enabled only when one file or folder is selected
+    // or when two files or two folders are selected
     int num;
 
     num = current->list->getNumSelectedItems();
 
-    if ((num == 1) || (num == 2))
+    if (num == 1)
     {
-        o->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_ENABLE), NULL);
+        sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_ENABLE), NULL);
+    }
+    else if (num == 2)
+    {
+        if (sameFileType)  // Selected items are both files or directories
+        {
+             sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_ENABLE), NULL);                       
+        }
+        else
+        {
+            sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_DISABLE), NULL);
+        }
     }
     else
     {
-        o->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_DISABLE), NULL);
+        sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_DISABLE), NULL);
     }
 
-    return(1);
+    return 1;
 }
 
 
 // Update Add to archive menu
-long FilePanel::onUpdAddToArch(FXObject* o, FXSelector, void*)
+long FilePanel::onUpdAddToArch(FXObject* sender, FXSelector, void*)
 {
     // Menu item is disabled when nothing or ".." is selected
     int num, item;
@@ -6861,22 +7141,22 @@ long FilePanel::onUpdAddToArch(FXObject* o, FXSelector, void*)
     num = current->list->getNumSelectedItems(&item);
     if (num == 0)
     {
-        o->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_DISABLE), NULL);
+        sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_DISABLE), NULL);
     }
     else if ((num == 1) && current->list->isItemSelected(0))
     {
-        o->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_DISABLE), NULL);
+        sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_DISABLE), NULL);
     }
     else
     {
-        o->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_ENABLE), NULL);
+        sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_ENABLE), NULL);
     }
-    return(1);
+    return 1;
 }
 
 
 // Update scripts menu item
-long FilePanel::onUpdRunScript(FXObject* o, FXSelector, void*)
+long FilePanel::onUpdRunScript(FXObject* sender, FXSelector, void*)
 {
     // Menu item is disabled when nothing or ".." is selected
     int num, item;
@@ -6884,18 +7164,18 @@ long FilePanel::onUpdRunScript(FXObject* o, FXSelector, void*)
     num = current->list->getNumSelectedItems(&item);
     if (num == 0)
     {
-        o->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_DISABLE), NULL);
+        sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_DISABLE), NULL);
     }
     else
     {
-        o->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_ENABLE), NULL);
+        sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_ENABLE), NULL);
     }
-    return(1);
+    return 1;
 }
 
 
 // Update directory usage menu item
-long FilePanel::onUpdDirUsage(FXObject* o, FXSelector, void*)
+long FilePanel::onUpdDirUsage(FXObject* sender, FXSelector, void*)
 {
     // Menu item is enabled only when at least two items are selected
     int num, item;
@@ -6903,11 +7183,11 @@ long FilePanel::onUpdDirUsage(FXObject* o, FXSelector, void*)
     num = current->list->getNumSelectedItems(&item);
     if (num > 1)
     {
-        o->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_ENABLE), NULL);
+        sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_ENABLE), NULL);
     }
     else
     {
-        o->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_DISABLE), NULL);
+        sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_DISABLE), NULL);
     }
-    return(1);
+    return 1;
 }

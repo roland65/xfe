@@ -47,18 +47,24 @@ FXIMPLEMENT(CommandWindow, DialogBox, CommandWindowMap, ARRAYNUMBER(CommandWindo
 
 // Construct window which will always float over the owner window
 CommandWindow::CommandWindow(FXWindow* owner, const FXString& name, FXString strcmd, int nblines, int nbcols) :
-    DialogBox(owner, name, DECOR_TITLE | DECOR_BORDER | DECOR_RESIZE | DECOR_MAXIMIZE | DECOR_CLOSE, 0, 0, 0, 0, 6, 6, 6, 6, 4, 4)
+    DialogBox(owner, name,
+              DECOR_TITLE | DECOR_MINIMIZE | DECOR_MAXIMIZE | DECOR_CLOSE | DECOR_BORDER | DECOR_STRETCHABLE,
+              0, 0, 0, 0, 6, 6, 6, 6, 4, 4)
 {
     // Get command to execute
     command = strcmd;
 
     // Bottom part
     FXHorizontalFrame* buttonbox = new FXHorizontalFrame(this, LAYOUT_SIDE_BOTTOM | LAYOUT_FILL_X | PACK_UNIFORM_WIDTH);
-    new FXButton(buttonbox, _("Cl&ose"), NULL, this, ID_CLOSE, BUTTON_DEFAULT | LAYOUT_RIGHT | FRAME_RAISED | FRAME_THICK, 0, 0, 0, 0, 20, 20, 5, 5);
-    FXButton* cancelbutton = new FXButton(buttonbox, _("&Cancel"), NULL, this, ID_KILLPROCESS, BUTTON_INITIAL | BUTTON_DEFAULT | LAYOUT_RIGHT | FRAME_RAISED | FRAME_THICK, 0, 0, 0, 0, 20, 20, 5, 5);
+    new FXButton(buttonbox, _("Cl&ose"), NULL, this, ID_CLOSE, BUTTON_DEFAULT | LAYOUT_RIGHT | FRAME_GROOVE,
+                 0, 0, 0, 0, 20, 20, 5, 5);
+    FXButton* cancelbutton = new FXButton(buttonbox, _("&Cancel"), NULL, this, ID_KILLPROCESS, BUTTON_INITIAL |
+                                          BUTTON_DEFAULT | LAYOUT_RIGHT | FRAME_GROOVE, 0, 0, 0, 0, 20, 20, 5, 5);
 
     // Text part
-    FXHorizontalFrame* textbox = new FXHorizontalFrame(this, LAYOUT_SIDE_TOP | LAYOUT_FILL_X | LAYOUT_FILL_Y | FRAME_SUNKEN, 0, 0, 0, 0, 0, 0, 0, 0);
+    FXHorizontalFrame* textbox = new FXHorizontalFrame(this,
+                                                       LAYOUT_SIDE_TOP | LAYOUT_FILL_X | LAYOUT_FILL_Y | FRAME_NONE,
+                                                       0, 0, 0, 0, 0, 0, 0, 0);
     text = new FXText(textbox, NULL, 0, TEXT_READONLY | TEXT_WORDWRAP | LAYOUT_FILL_X | LAYOUT_FILL_Y);
     text->setVisibleRows(nblines);
     text->setVisibleColumns(nbcols);
@@ -76,18 +82,24 @@ CommandWindow::CommandWindow(FXWindow* owner, const FXString& name, FXString str
 
 // Construct free-floating window
 CommandWindow::CommandWindow(FXApp* a, const FXString& name, FXString strcmd, int nblines, int nbcols) :
-    DialogBox(a, name, DECOR_TITLE | DECOR_BORDER | DECOR_RESIZE | DECOR_MAXIMIZE | DECOR_MINIMIZE | DECOR_CLOSE, 0, 0, 0, 0, 6, 6, 6, 6, 4, 4)
+    DialogBox(a, name, DECOR_TITLE | DECOR_MINIMIZE | DECOR_MAXIMIZE | DECOR_CLOSE | DECOR_BORDER | DECOR_STRETCHABLE,
+              0, 0, 0, 0, 6, 6, 6, 6, 4, 4)
 {
     // Get command to execute
     command = strcmd;
 
     // Bottom part
     FXHorizontalFrame* buttonbox = new FXHorizontalFrame(this, LAYOUT_SIDE_BOTTOM | LAYOUT_FILL_X | PACK_UNIFORM_WIDTH);
-    new FXButton(buttonbox, _("Cl&ose"), NULL, this, ID_CLOSE, BUTTON_DEFAULT | LAYOUT_RIGHT | FRAME_RAISED | FRAME_THICK, 0, 0, 0, 0, 20, 20, 5, 5);
-    FXButton* cancelbutton = new FXButton(buttonbox, _("&Cancel"), NULL, this, ID_KILLPROCESS, BUTTON_INITIAL | BUTTON_DEFAULT | LAYOUT_RIGHT | FRAME_RAISED | FRAME_THICK, 0, 0, 0, 0, 20, 20, 5, 5);
+    new FXButton(buttonbox, _("Cl&ose"), NULL, this, ID_CLOSE, BUTTON_DEFAULT | LAYOUT_RIGHT | FRAME_GROOVE, 0, 0, 0, 0,
+                 20, 20, 5, 5);
+    FXButton* cancelbutton = new FXButton(buttonbox, _("&Cancel"), NULL, this, ID_KILLPROCESS,
+                                          BUTTON_INITIAL | BUTTON_DEFAULT |
+                                          LAYOUT_RIGHT | FRAME_GROOVE, 0, 0, 0, 0, 20, 20, 5, 5);
 
     // Text part
-    FXHorizontalFrame* textbox = new FXHorizontalFrame(this, LAYOUT_SIDE_TOP | LAYOUT_FILL_X | LAYOUT_FILL_Y | FRAME_SUNKEN, 0, 0, 0, 0, 0, 0, 0, 0);
+    FXHorizontalFrame* textbox = new FXHorizontalFrame(this,
+                                                       LAYOUT_SIDE_TOP | LAYOUT_FILL_X | LAYOUT_FILL_Y | FRAME_NONE,
+                                                       0, 0, 0, 0, 0, 0, 0, 0);
     text = new FXText(textbox, NULL, 0, TEXT_READONLY | TEXT_WORDWRAP | LAYOUT_FILL_X | LAYOUT_FILL_Y);
     text->setVisibleRows(nblines);
     text->setVisibleColumns(nbcols);
@@ -130,7 +142,7 @@ long CommandWindow::onCmdKillProcess(FXObject*, FXSelector, void*)
 {
     kill((-1 * pid), SIGTERM); // Kills the process group
     killed = true;
-    return(0);
+    return 0;
 }
 
 
@@ -147,7 +159,7 @@ long CommandWindow::onUpdKillProcess(FXObject* sender, FXSelector, void*)
     {
         btn->enable();
     }
-    return(1);
+    return 1;
 }
 
 
@@ -164,7 +176,7 @@ long CommandWindow::onUpdClose(FXObject* sender, FXSelector, void*)
     {
         btn->disable();
     }
-    return(1);
+    return 1;
 }
 
 
@@ -174,7 +186,7 @@ int CommandWindow::execCmd(FXString command)
     // Open pipes to communicate with child process
     if (pipe(pipes) == -1)
     {
-        return(-1);
+        return -1;
     }
 
     // Create child process
@@ -182,14 +194,14 @@ int CommandWindow::execCmd(FXString command)
     if (pid == -1)
     {
         fprintf(stderr, _("Error: Fork failed: %s\n"), strerror(errno));
-        return(-1);
+        return -1;
     }
     if (pid == 0) // Child
     {
         char* args[4];
-        int ret1 = dup2(pipes[0], STDIN_FILENO);     // Use the pipes as the new channels
-        int ret2 = dup2(pipes[1], STDOUT_FILENO);    // (where stdout and stderr
-        int ret3 = dup2(pipes[1], STDERR_FILENO);    // go to the same pipe!).
+        int ret1 = dup2(pipes[0], STDIN_FILENO);        // Use the pipes as the new channels
+        int ret2 = dup2(pipes[1], STDOUT_FILENO);       // (where stdout and stderr
+        int ret3 = dup2(pipes[1], STDERR_FILENO);       // go to the same pipe!).
 
         if ((ret1 < 0) || (ret2 < 0) || (ret3 < 0))
         {
@@ -203,30 +215,30 @@ int CommandWindow::execCmd(FXString command)
                 MessageBox::error(this, BOX_OK, _("Error"), _("Can't duplicate pipes"));
             }
 
-            return(-1);
+            return -1;
         }
 
-        args[0] = (char*)"sh";           // Setup arguments
-        args[1] = (char*)"-vc";          // to run command (option -v to display the command to execute)
-        args[2] = (char*)command.text(); // in a shell in
-        args[3] = NULL;                  // a new process.
-        setpgid(0, 0);                   // Allows to kill the whole group
-        execvp(args[0], args);           // Start a new process which will execute the command.
-        _exit(EXIT_FAILURE);             // We'll get here only if an error occurred.
+        args[0] = (char*)"sh";                  // Setup arguments
+        args[1] = (char*)"-vc";                 // to run command (option -v to display the command to execute)
+        args[2] = (char*)command.text();        // in a shell in
+        args[3] = NULL;                         // a new process.
+        setpgid(0, 0);                          // Allows to kill the whole group
+        execvp(args[0], args);                  // Start a new process which will execute the command.
+        _exit(EXIT_FAILURE);                    // We'll get here only if an error occurred.
     }
     else // Parent
     {
         // Make sure we get called so we can check when child has finished
         getApp()->addChore(this, ID_WATCHPROCESS);
     }
-    return(0);
+    return 0;
 }
 
 
 // Watch progress of child process
 long CommandWindow::onWatchProcess(FXObject*, FXSelector, void*)
 {
-    char buf[1024];
+    char buf[32768];
     int nread;
 
     if (closed)
@@ -241,7 +253,6 @@ long CommandWindow::onWatchProcess(FXObject*, FXSelector, void*)
         // Object deletes itself!
         delete this;
     }
-
     else if ((waitpid(pid, NULL, WNOHANG) == 0))
     {
         // Child is still running, just wait
@@ -271,22 +282,29 @@ long CommandWindow::onWatchProcess(FXObject*, FXSelector, void*)
             }
         }
     }
-
     else
     {
         // Child has finished.
         // Read data from the finished child
-        while ((nread = read(pipes[0], buf, sizeof(buf) - 1)) > 0)
+        int pflags;
+        if ((pflags = fcntl(pipes[0], F_GETFL)) >= 0)
         {
-            buf[nread] = '\0';
-            // Remove backspace characters, if any
-            FXString strbuf = buf;
-            strbuf = strbuf.substitute("\b", ".");
-            text->appendText(strbuf.text(), strlen(strbuf.text()));
-            scrollToLastLine();
-            if (nread < (int)(sizeof(buf) - 1))
+            pflags |= O_NONBLOCK;
+            if (fcntl(pipes[0], F_SETFL, pflags) >= 0)
             {
-                break;
+                while ((nread = read(pipes[0], buf, sizeof(buf) - 1)) > 0)
+                {
+                    buf[nread] = '\0';
+                    // Remove backspace characters, if any
+                    FXString strbuf = buf;
+                    strbuf = strbuf.substitute("\b", ".");
+                    text->appendText(strbuf.text(), strlen(strbuf.text()));
+                    scrollToLastLine();
+                    if (nread < (int)(sizeof(buf) - 1))
+                    {
+                        break;
+                    }
+                }
             }
         }
         if (killed)
@@ -305,7 +323,7 @@ long CommandWindow::onWatchProcess(FXObject*, FXSelector, void*)
     }
 
 
-    return(1);
+    return 1;
 }
 
 
@@ -320,9 +338,12 @@ long CommandWindow::onCmdClose(FXObject*, FXSelector, void*)
     delete this;
 
     // Set focus to main window
-    mainWindow->setFocus();
+    if (mainWindow)
+    {
+        mainWindow->setFocus();
+    }
 
-    return(1);
+    return 1;
 }
 
 
@@ -353,7 +374,7 @@ void CommandWindow::scrollToLastLine(void)
 // Get text length
 int CommandWindow::getLength(void)
 {
-    return(text->getLength());
+    return text->getLength();
 }
 
 

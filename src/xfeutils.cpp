@@ -24,13 +24,8 @@
 #include "../st/x.h"
 
 
-// Scaling factors for the UI
-FXint scaleint;
-double scalefrac;
-
-
 // Get available space on the file system where the file is located
-FXlong GetAvailableSpace(const FXString& filepath)
+FXlong xf_getavailablespace(const FXString& filepath)
 {
     struct statvfs stat;
 
@@ -43,6 +38,7 @@ FXlong GetAvailableSpace(const FXString& filepath)
     // The available size is f_bsize * f_bavail
     return stat.f_bsize * stat.f_bavail;
 }
+
 
 // Decode filename to get original again
 FXString FXPath::dequote(const FXString& file)
@@ -87,13 +83,13 @@ FXString FXPath::dequote(const FXString& file)
         // Trunc to size
         result.trunc(r);
     }
-    return(result);
+    return result;
 }
 
 
 // Note : the original function from FXAccelTable is buggy!!
 // Parse accelerator from string
-FXHotKey _parseAccel(const FXString& string)
+FXHotKey xf_parseaccel(const FXString& string)
 {
     FXuint code = 0, mods = 0;
     int pos = 0;
@@ -214,7 +210,6 @@ FXHotKey _parseAccel(const FXString& string)
     {
         code = KEY_space;
     }
-
     // Test for function keys
     else if ((Ascii::toLower(string[pos]) == 'f') && Ascii::isDigit(string[pos + 1]))
     {
@@ -234,7 +229,6 @@ FXHotKey _parseAccel(const FXString& string)
     {
         code = strtoul(&string[pos + 1], NULL, 16);
     }
-
     // Test if its a single character accelerator
     else if (Ascii::isPrint(string[pos]))
     {
@@ -247,12 +241,12 @@ FXHotKey _parseAccel(const FXString& string)
             code = Ascii::toLower(string[pos]) + KEY_space - ' ';
         }
     }
-    return(MKUINT(code, mods));
+    return MKUINT(code, mods);
 }
 
 
 // Find if the specified command exists
-FXbool existCommand(const FXString cmd)
+FXbool xf_existcommand(const FXString cmd)
 {
     struct stat linfo;
 
@@ -263,12 +257,11 @@ FXbool existCommand(const FXString cmd)
     if (cmdpath[0] == PATHSEPCHAR)
     {
         // Check if command file name exists and is not a directory
-        if (!cmdpath.empty() && (lstatrep(cmdpath.text(), &linfo) == 0) && !S_ISDIR(linfo.st_mode))
+        if (!cmdpath.empty() && (xf_lstat(cmdpath.text(), &linfo) == 0) && !S_ISDIR(linfo.st_mode))
         {
-            return(true);
+            return true;
         }
     }
-
     // If first character is '~' then cmdpath is a path relative to home directory
     else if (cmdpath[0] == '~')
     {
@@ -276,12 +269,11 @@ FXbool existCommand(const FXString cmd)
         cmdpath = FXSystem::getHomeDirectory() + cmdpath.after('~');
 
         // Check if command file name exists and is not a directory
-        if (!cmdpath.empty() && (lstatrep(cmdpath.text(), &linfo) == 0) && !S_ISDIR(linfo.st_mode))
+        if (!cmdpath.empty() && (xf_lstat(cmdpath.text(), &linfo) == 0) && !S_ISDIR(linfo.st_mode))
         {
-            return(true);
+            return true;
         }
     }
-
     // Simple command name or path relative to the exec path
     else
     {
@@ -303,21 +295,21 @@ FXbool existCommand(const FXString cmd)
                 path += PATHSEPSTRING + cmdpath;
 
                 // Check if command file name exists and is not a directory
-                if (!path.empty() && (lstatrep(path.text(), &linfo) == 0) && !S_ISDIR(linfo.st_mode))
+                if (!path.empty() && (xf_lstat(path.text(), &linfo) == 0) && !S_ISDIR(linfo.st_mode))
                 {
-                    return(true);
+                    return true;
                 }
             }
         }
     }
 
-    return(false);
+    return false;
 }
 
 
 // Get key binding string from user input
 // Code adapted from FXAccelTable::unparseAccel() and modified to get strings like 'Ctrl-A' instead of 'ctrl+a'
-FXString getKeybinding(FXEvent* event)
+FXString xf_getkeybinding(FXEvent* event)
 {
     // Get modifiers and key
     int mods = event->state;
@@ -442,7 +434,7 @@ FXString getKeybinding(FXEvent* event)
     case KEY_F33:
     case KEY_F34:
     case KEY_F35:
-        snprintf(buffer, sizeof(buffer) - 1, "F%d", code - KEY_F1 + 1);
+        snprintf(buffer, sizeof(buffer), "F%d", code - KEY_F1 + 1);
         s += buffer;
         break;
 
@@ -453,12 +445,12 @@ FXString getKeybinding(FXEvent* event)
         }
         else
         {
-            s = "";  // Invalid case
+            s = ""; // Invalid case
         }
         break;
     }
 
-    return(s);
+    return s;
 }
 
 
@@ -466,14 +458,14 @@ FXString getKeybinding(FXEvent* event)
 // Return 0 if success or -1 if fail
 // Original author : Niall O'Higgins */
 // http://niallohiggins.com/2009/01/08/mkpath-mkdir-p-alike-in-c-for-unix
-int mkpath(const char* s, mode_t mode)
+int xf_mkpath(const char* s, mode_t mode)
 {
-    char* q, *r = NULL, *path = NULL, *up = NULL;
+    char* q, * r = NULL, * path = NULL, * up = NULL;
     int rv = -1;
 
     if ((strcmp(s, ".") == 0) || (strcmp(s, "/") == 0))
     {
-        return(0);
+        return 0;
     }
 
     if ((path = strdup(s)) == NULL)
@@ -496,7 +488,7 @@ int mkpath(const char* s, mode_t mode)
         exit(EXIT_FAILURE);
     }
 
-    if ((mkpath(up, mode) == -1) && (errno != EEXIST))
+    if ((xf_mkpath(up, mode) == -1) && (errno != EEXIST))
     {
         goto out;
     }
@@ -513,24 +505,24 @@ out:
     }
     free(q);
     free(path);
-    return(rv);
+    return rv;
 }
 
 
 // Obtain a unique trash files path name based on the file path name
-FXString createTrashpathname(FXString pathname, FXString trashfileslocation)
+FXString xf_create_trashpathname(FXString pathname, FXString trashfileslocation)
 {
     // Initial trash files path name
     FXString trashpathname = trashfileslocation + PATHSEPSTRING + FXPath::name(pathname);
 
-    // Eventually modify the trash files path name by adding a suffix like '_1', '_2', etc.,
+    // Possibly modify the trash files path name by adding a suffix like '_1', '_2', etc.,
     // if the file already exists in the trash can files directory
     for (int i = 1; ; i++)
     {
-        if (existFile(trashpathname))
+        if (xf_existfile(trashpathname))
         {
             char suffix[32];
-            snprintf(suffix, sizeof(suffix) - 1, "_%d", i);
+            snprintf(suffix, sizeof(suffix), "_%d", i);
             FXString prefix = trashpathname.rbefore('_');
             if (prefix == "")
             {
@@ -544,29 +536,30 @@ FXString createTrashpathname(FXString pathname, FXString trashfileslocation)
         }
     }
 
-    return(trashpathname);
+    return trashpathname;
 }
 
 
 // Create trashinfo file based on the pathname and the trashpathname
-int createTrashinfo(FXString pathname, FXString trashpathname, FXString trashfileslocation, FXString trashinfolocation)
+int xf_create_trashinfo(FXString pathname, FXString trashpathname,
+                       FXString trashfileslocation, FXString trashinfolocation)
 {
     // Create trash can files if it doesn't exist
-    if (!existFile(trashfileslocation))
+    if (!xf_existfile(trashfileslocation))
     {
         int mask = umask(0);
         umask(mask);
-        int ret = mkpath(trashfileslocation.text(), 511 & ~mask);
-        return(ret);
+        int ret = xf_mkpath(trashfileslocation.text(), 511 & ~mask);
+        return ret;
     }
 
     // Create trash can info if it doesn't exist
-    if (!existFile(trashinfolocation))
+    if (!xf_existfile(trashinfolocation))
     {
         int mask = umask(0);
         umask(mask);
-        int ret = mkpath(trashinfolocation.text(), 511 & ~mask);
-        return(ret);
+        int ret = xf_mkpath(trashinfolocation.text(), 511 & ~mask);
+        return ret;
     }
 
     // Deletion date
@@ -593,16 +586,16 @@ int createTrashinfo(FXString pathname, FXString trashpathname, FXString trashfil
         ret = -1;
     }
 
-    return(ret);
+    return ret;
 }
 
 
 // Return mime type of a file
 // Makes use of the Unix file command, thus this function may be slow
-FXString mimetype(FXString pathname)
+FXString xf_mimetype(FXString pathname)
 {
     FXString cmd = "/usr/bin/file -b -i " + pathname;
-    FILE*    filecmd = popen(cmd.text(), "r");
+    FILE* filecmd = popen(cmd.text(), "r");
 
     if (!filecmd)
     {
@@ -617,13 +610,65 @@ FXString mimetype(FXString pathname)
     }
     pclose(filecmd);
 
-    return(buf.rbefore('\n'));
+    return buf.rbefore('\n');
+}
+
+
+// Return 1 if the file given by its pathname is a text file, else return 0
+// If the file is a valid link, then the source of the link is tested
+// If the file is a broken link, return -1
+int xf_istextfile(FXString pathname)
+{
+    FXString filepath = pathname;
+    FXString str;
+
+    // Is file a link ?
+    if (xf_islink(pathname))
+    {
+        // Loop to find the file towards the link (or chain of links) points
+        while (1)
+        {
+            FXString linkpath = FXPath::directory(filepath) + PATHSEPSTRING + FXFile::symlink(filepath.text());
+
+            if (xf_existfile(linkpath))
+            {
+                if (xf_islink(linkpath))
+                {
+                    filepath = linkpath;
+                }
+                else
+                {
+                    // File pointed by the link
+                    str = xf_mimetype(linkpath);
+                    break;
+                }
+            }
+            else
+            {
+                // Broken link
+                return -1;
+            }
+        }
+    }
+    // Regular file
+    else
+    {
+        str = xf_mimetype(filepath);
+    }
+
+    // Text file?
+    if (strstr(str.text(), "charset=binary"))
+    {
+        return 0;
+    }
+
+    return 1;
 }
 
 
 // Quote a filename against shell substitutions
 // Thanks to Glynn Clements <glynnc@users.sourceforge.net>
-FXString quote(FXString str)
+FXString xf_quote(FXString str)
 {
     FXString result = "'";
     const char* p;
@@ -641,14 +686,14 @@ FXString quote(FXString str)
     }
 
     result += '\'';
-    return(result);
+    return result;
 }
 
 
 // Test if a string is encoded in UTF-8
 // "length" is the number of bytes of the string to consider
 // Taken from the weechat project. Original author FlashCode <flashcode@flashtux.org>
-FXbool isUtf8(const char* string, FXuint length)
+FXbool xf_isutf8(const char* string, FXuint length)
 {
     FXuint n = 0;
 
@@ -659,7 +704,7 @@ FXbool isUtf8(const char* string, FXuint length)
         {
             if (!string[1] || (((FXuchar)(string[1]) & 0xC0) != 0x80))
             {
-                return(false);
+                return false;
             }
             string += 2;
             n += 2;
@@ -671,7 +716,7 @@ FXbool isUtf8(const char* string, FXuint length)
                 (((FXuchar)(string[1]) & 0xC0) != 0x80) ||
                 (((FXuchar)(string[2]) & 0xC0) != 0x80))
             {
-                return(false);
+                return false;
             }
             string += 3;
             n += 3;
@@ -684,7 +729,7 @@ FXbool isUtf8(const char* string, FXuint length)
                 (((FXuchar)(string[2]) & 0xC0) != 0x80) ||
                 (((FXuchar)(string[3]) & 0xC0) != 0x80))
             {
-                return(false);
+                return false;
             }
             string += 4;
             n += 4;
@@ -692,7 +737,7 @@ FXbool isUtf8(const char* string, FXuint length)
         // UTF-8, 1 byte, should be: 0vvvvvvv
         else if ((FXuchar)(string[0]) >= 0x80)
         {
-            return(false);
+            return false;
         }
         // Next byte
         else
@@ -701,15 +746,14 @@ FXbool isUtf8(const char* string, FXuint length)
             n++;
         }
     }
-    return(true);
+    return true;
 }
 
 
-#if !defined (__OpenBSD__)
 // Safe strcpy function (Public domain, by C.B. Falconer)
 // The destination string is always null terminated
 // Size sz must be equal to strlen(src)+1
-size_t strlcpy(char* dst, const char* src, size_t sz)
+size_t xf_strlcpy(char* dst, const char* src, size_t sz)
 {
     const char* start = src;
 
@@ -734,35 +778,36 @@ size_t strlcpy(char* dst, const char* src, size_t sz)
         {
             continue;
         }
-        return(src - start - 1);
+        return src - start - 1;
     }
     else if (sz)
     {
         *dst = '\0';
     }
-    return(0);
+    return 0;
 }
+
 
 // Safe strcat function (Public domain, by C.B. Falconer)
 // The destination string is always null terminated
-size_t strlcat(char* dst, const char* src, size_t sz)
+size_t xf_strlcat(char* dst, const char* src, size_t sz)
 {
     char* start = dst;
 
-    while (*dst++)      // assumes sz >= strlen(dst)
+    while (*dst++)  // assumes sz >= strlen(dst)
     {
         if (sz)
         {
-            sz--;          // i.e. well formed string
+            sz--; // i.e. well formed string
         }
     }
     dst--;
-    return(dst - start + strlcpy(dst, src, sz));
+    return dst - start + xf_strlcpy(dst, src, sz);
 }
-#endif
+
 
 // Obtain the non recursive size of a directory
-FXulong dirsize(const char* path)
+FXulong xf_dirsize(const char* path)
 {
     DIR* dp;
     struct dirent* dirp;
@@ -773,23 +818,23 @@ FXulong dirsize(const char* path)
 
     if ((dp = opendir(path)) == NULL)
     {
-        return(0);
+        return 0;
     }
 
     while ((dirp = readdir(dp)))
     {
-        if (streq(dirp->d_name, ".") || streq(dirp->d_name, ".."))
+        if (xf_strequal(dirp->d_name, ".") || xf_strequal(dirp->d_name, ".."))
         {
             continue;
         }
 
-        if (streq(path, ROOTDIR))
+        if (xf_strequal(path, ROOTDIR))
         {
-            snprintf(buf, sizeof(buf) - 1, "%s%s", path, dirp->d_name);
+            snprintf(buf, sizeof(buf), "%s%s", path, dirp->d_name);
         }
         else
         {
-            snprintf(buf, sizeof(buf) - 1, "%s/%s", path, dirp->d_name);
+            snprintf(buf, sizeof(buf), "%s/%s", path, dirp->d_name);
         }
 
 #if defined(linux)
@@ -800,7 +845,7 @@ FXulong dirsize(const char* path)
         }
 #endif
 
-        ret = lstatrep(buf, &statbuf);
+        ret = xf_lstat(buf, &statbuf);
         if (ret == 0)
         {
             if (!S_ISDIR(statbuf.st_mode))
@@ -813,7 +858,7 @@ FXulong dirsize(const char* path)
     {
         fprintf(stderr, _("Error: Can't close folder %s\n"), path);
     }
-    return(dsize);
+    return dsize;
 }
 
 
@@ -823,7 +868,7 @@ FXulong dirsize(const char* path)
 // After that, nbfiles contains the total number of files (including the count of sub directories),
 // nbsubdirs contains the number of sub directories and totalsize the total directory size
 // The pipes are used to write partial results, for inter process communication
-FXulong pathsize(char* path, FXuint* nbfiles, FXuint* nbsubdirs, FXulong *totalsize, int pipes[2])
+FXulong xf_pathsize(char* path, FXuint* nbfiles, FXuint* nbsubdirs, FXulong* totalsize, int pipes[2])
 {
     struct stat statbuf;
     struct dirent* dirp;
@@ -832,12 +877,10 @@ FXulong pathsize(char* path, FXuint* nbfiles, FXuint* nbsubdirs, FXulong *totals
     FXulong dsize;
     int ret;
 
-    char buf[256];
-
-    ret = lstatrep(path, &statbuf);
+    ret = xf_lstat(path, &statbuf);
     if (ret < 0)
     {
-        return(0);
+        return 0;
     }
     dsize = (FXulong)statbuf.st_size;
     (*totalsize) += dsize;
@@ -846,26 +889,26 @@ FXulong pathsize(char* path, FXuint* nbfiles, FXuint* nbsubdirs, FXulong *totals
     // Write to pipe, if requested
     if (pipes != NULL)
     {
+        char buf[256];
+
 #if __WORDSIZE == 64
-        {
-            snprintf(buf, sizeof(buf), "%lu %u %u/", *totalsize, *nbfiles, *nbsubdirs);
-        }
+        snprintf(buf, sizeof(buf), "%lu %u %u/", *totalsize, *nbfiles, *nbsubdirs);
 #else
-        {
-            snprintf(buf, sizeof(buf), "%llu %u %u/", *totalsize, *nbfiles, *nbsubdirs);
-        }
+        snprintf(buf, sizeof(buf), "%llu %u %u/", *totalsize, *nbfiles, *nbsubdirs);
 #endif
+
         if (write(pipes[1], buf, strlen(buf)) == -1)
         {
             perror("write");
             exit(EXIT_FAILURE);
-        };
+        }
+        ;
     }
 
     // Not a directory
     if (!S_ISDIR(statbuf.st_mode))
     {
-        return(dsize);
+        return dsize;
     }
 
     // Directory
@@ -880,19 +923,19 @@ FXulong pathsize(char* path, FXuint* nbfiles, FXuint* nbsubdirs, FXulong *totals
 
     if ((dp = opendir(path)) == NULL)
     {
-        return(0);
+        return 0;
     }
 
     while ((dirp = readdir(dp)))
     {
-        if (streq(dirp->d_name, ".") || streq(dirp->d_name, ".."))
+        if (xf_strequal(dirp->d_name, ".") || xf_strequal(dirp->d_name, ".."))
         {
             continue;
         }
-        strlcpy(ptr, dirp->d_name, strlen(dirp->d_name) + 1);
+        xf_strlcpy(ptr, dirp->d_name, strlen(dirp->d_name) + 1);
 
         // Recursive call
-        dsize += pathsize(path, nbfiles, nbsubdirs, totalsize, pipes);
+        dsize += xf_pathsize(path, nbfiles, nbsubdirs, totalsize, pipes);
     }
 
     ptr[-1] = '\0'; // ??
@@ -902,13 +945,13 @@ FXulong pathsize(char* path, FXuint* nbfiles, FXuint* nbsubdirs, FXulong *totals
         fprintf(stderr, _("Error: Can't close folder %s\n"), path);
     }
 
-    return(dsize);
+    return dsize;
 }
 
 
 // Write the file size in human readable form (bytes, kBytes, MBytes, GBytes)
 // We use a decimal basis for kB, MB, GB count
-FXString hSize(char* size)
+FXString xf_humansize(char* size)
 {
     int flag = 0;
     char suf[64];
@@ -918,24 +961,27 @@ FXString hSize(char* size)
     FXulong lsize = strtoull(size, NULL, 10);
     float fsize = 0.0;
 
-    strlcpy(suf, _("bytes"), sizeof(suf));
     if (lsize > 1e9)
     {
         fsize = lsize / 1e9;
-        strlcpy(suf, _("GB"), sizeof(suf));
+        xf_strlcpy(suf, _("GB"), sizeof(suf));
         flag = 1;
     }
     else if (lsize > 1e6)
     {
         fsize = lsize / 1e6;
-        strlcpy(suf, _("MB"), sizeof(suf));
+        xf_strlcpy(suf, _("MB"), sizeof(suf));
         flag = 1;
     }
     else if (lsize > 1e3)
     {
         fsize = lsize / 1e3;
-        strlcpy(suf, _("kB"), sizeof(suf));
+        xf_strlcpy(suf, _("kB"), sizeof(suf));
         flag = 1;
+    }
+    else
+    {
+        xf_strlcpy(suf, _("bytes"), sizeof(suf));
     }
 
     if (flag)
@@ -950,26 +996,23 @@ FXString hSize(char* size)
         }
     }
     else
-
+    {
 #if __WORDSIZE == 64
-    {
         snprintf(buf, sizeof(buf), "%lu %s", lsize, suf);
-    }
 #else
-    {
         snprintf(buf, sizeof(buf), "%llu %s", lsize, suf);
-    }
 #endif
+    }
 
     hsize = buf;
-    return(hsize);
+    return hsize;
 }
 
 
 // Remove terminating '/' on a path string to simplify a file or directory path
 // Thus '/bla/bla////' becomes '/bla/bla'
 // Special case : '/' stays to '/'
-FXString cleanPath(const FXString path)
+FXString xf_cleanpath(const FXString path)
 {
     FXString in = path, out = path;
 
@@ -985,7 +1028,7 @@ FXString cleanPath(const FXString path)
             break;
         }
     }
-    return(out);
+    return out;
 }
 
 
@@ -993,7 +1036,7 @@ FXString cleanPath(const FXString path)
 // Remove terminating '/' on a path string to simplify a file or directory path
 // Thus '/bla/bla////' becomes '/bla/bla'
 // Special case : '/' stays to '/'
-FXString filePath(const FXString path)
+FXString xf_filepath(const FXString path)
 {
     FXString in = path, out = path;
 
@@ -1014,11 +1057,11 @@ FXString filePath(const FXString path)
     // If absolute path
     if (ISPATHSEP(out[0]))
     {
-        return(out);
+        return out;
     }
     else
     {
-        return(dir + PATHSEPSTRING + out);
+        return dir + PATHSEPSTRING + out;
     }
 }
 
@@ -1027,7 +1070,7 @@ FXString filePath(const FXString path)
 // Remove terminating '/' on a path string to simplify a file or directory path
 // Thus '/bla/bla////' becomes '/bla/bla'
 // Special case : '/' stays to '/'
-FXString filePath(const FXString path, const FXString dir)
+FXString xf_filepath(const FXString path, const FXString dir)
 {
     FXString in = path, out = path;
 
@@ -1046,157 +1089,265 @@ FXString filePath(const FXString path, const FXString dir)
     // If absolute path
     if (ISPATHSEP(out[0]))
     {
-        return(out);
+        return out;
     }
     else
     {
-        return(dir + PATHSEPSTRING + out);
+        return dir + PATHSEPSTRING + out;
     }
+}
+
+
+// Obtain real pathname (remove ../ and ./ from absolute path)
+FXString xf_realpath(const FXString path)
+{
+    char buf[MAXPATHLEN];
+    FXString ret;
+    
+    // Get real pathname
+    char* res = realpath(path.text(), buf);
+    if (res != NULL)
+    {
+        ret = FXString(res);
+    }
+   
+    // An error has occurred, return original pathname
+    else
+    {
+        ret = path;
+    }
+    
+    return ret;
+}
+
+
+// Return the absolute path of the application executable
+// Exit application if error
+// Source: https://www.linuxquestions.org/questions/programming-9/c-function-to-get-application-path-335442/
+FXString xf_execpath(char* path)
+{
+    FXString execpath;
+    char abs_exe_path[MAXPATHLEN] = "";
+    int ret;
+
+#if defined(linux)
+    ret = readlink("/proc/self/exe", abs_exe_path, MAXPATHLEN);
+    if (ret < 0)
+    {
+        goto err;
+    }
+    
+#else
+    char path_save[MAXPATHLEN];
+    char *p1, *p2;
+
+    if(!(p1 = strrchr(path, '/')))
+    {
+        p2 = getcwd(abs_exe_path, sizeof(abs_exe_path));
+    }
+    else
+    {
+        *p1 = '\0';
+        p2 = getcwd(path_save, sizeof(path_save));
+        if (p2 == NULL)
+        {
+            goto err;
+        }
+
+        ret = chdir(path);
+        if (ret < 0)
+        {
+            goto err;
+        }
+
+        p2 = getcwd(abs_exe_path, sizeof(abs_exe_path));
+        if (p2 == NULL)
+        {
+            goto err;
+        }
+    
+        ret = chdir(path_save);
+        if (ret < 0)
+        {
+            goto err;
+        }
+    }
+    
+#endif
+
+    execpath = abs_exe_path;
+    return execpath;
+
+err:
+        fprintf(stderr, _("Error: %s\n"), strerror(errno));
+        exit(EXIT_FAILURE);
 }
 
 
 // Obtain file path from URI specified as file:///bla/bla/bla...
 // If no 'file:' prefix is found, return the input string as is
-FXString fileFromURI(FXString uri)
+FXString xf_filefromuri(FXString uri)
 {
     if (comparecase("file:", uri, 5) == 0)
     {
         if ((uri[5] == PATHSEPCHAR) && (uri[6] == PATHSEPCHAR))
         {
-            return(uri.mid(7, uri.length() - 7));
+            return uri.mid(7, uri.length() - 7);
         }
-        return(uri.mid(5, uri.length() - 5));
+        return uri.mid(5, uri.length() - 5);
     }
 
-    return(uri);
+    return uri;
 }
 
 
 // Return URI of filename
-FXString fileToURI(const FXString& file)
+FXString xf_filetouri(const FXString& file)
 {
-    return("file://" + file);
+    return "file://" + file;
 }
 
 
 // Construct a target name by adding a suffix that tells it's a copy of the original target file name
-FXString buildCopyName(const FXString& target, const FXbool isDir)
+// This suffix can be added before the file extension (if any) and between parentheses (ex: test (copy).txt)
+// or at the end of the file name (ex: test.txt.copy)
+FXString xf_buildcopyname(const FXString& target, const FXbool isDir, FXString& suffix, const FXuint suffix_pos)
 {
-    const FXString suffix = _("copy");
-
     FXString copytarget;
-    FXString copystr = " (" + suffix;
     FXString name = FXPath::name(target);
+    FXString dir = FXPath::directory(target);
 
-    // Get file extensions
-    FXString ext1 = name.rafter('.', 1);
-    FXString ext2 = name.rafter('.', 2);
-    FXString ext3 = ext2.before('.');
-    FXString ext4 = name.before('.');
-
-    // Case of folder or dot file names (hidden files or folders)
-    if (isDir || name.before('.') == "")
+    // Copy suffix is added before file name extension (if any) and between parentheses
+    if (suffix_pos == 0)
     {
-        int pos = target.rfind(copystr);
+        FXString copystr = " (" + suffix;
+
+        // Get file extensions
+        FXString ext1 = name.rafter('.', 1);
+        FXString ext2 = name.rafter('.', 2);
+        FXString ext3 = ext2.before('.');
+        FXString ext4 = name.before('.');
+
+        // Case of folder or dot file names (hidden files or folders)
+        if (isDir || name.before('.') == "")
+        {
+            int pos = name.rfind(copystr);
+
+            // First copy
+            if (pos < 0)
+            {
+                copytarget = dir + PATHSEPSTRING + name + copystr + ")";
+            }
+            // Add a number to the suffix for next copies
+            else
+            {
+                FXString strnum = name.mid(pos + copystr.length(), name.length() - pos - copystr.length());
+                FXuint num = FXUIntVal(strnum);
+                num = (num == 0 ? num + 2 : num + 1);
+                copytarget = dir + PATHSEPSTRING + name.left(pos) + copystr + " " + FXStringVal(num) + ")";
+            }
+        }
+        // Case of compressed tar archive names
+        else if (ext3.lower() == "tar")
+        {
+            FXString basename = name.rbefore('.', 2);
+            int pos = basename.rfind(copystr);
+
+            if (pos < 0)
+            {
+                copytarget = dir + PATHSEPSTRING + basename + copystr + ")." + ext2;
+            }
+            else
+            {
+                // Add a number if it's not the first copy
+                FXString strnum = name.mid(pos + copystr.length(),
+                                           name.length() - pos - copystr.length() - ext2.length() - 1);
+                FXuint num = FXUIntVal(strnum);
+                num = (num == 0 ? num + 2 : num + 1);
+
+                copytarget = dir + PATHSEPSTRING + name.left(pos) + copystr + " " + FXStringVal(num) + ")." + ext2;
+            }
+        }
+        // Other cases
+        else
+        {
+            // File name has no extension
+            if (ext1 == name)
+            {
+                int pos = name.rfind(copystr);
+
+                // First copy
+                if (pos < 0)
+                {
+                    copytarget = dir + PATHSEPSTRING + name + copystr + ")";
+                }
+                // Add a number to the suffix for next copies
+                else
+                {
+                    FXString strnum = name.mid(pos + copystr.length(), name.length() - pos - copystr.length());
+                    FXuint num = FXUIntVal(strnum);
+                    num = (num == 0 ? num + 2 : num + 1);
+                    copytarget = dir + PATHSEPSTRING + name.left(pos) + copystr + " " + FXStringVal(num) + ")";
+                }
+            }
+            // File name has an extension
+            else
+            {
+                FXString basename = name.rbefore('.', 1);
+                int pos = basename.rfind(copystr);
+
+                // First copy
+                if (pos < 0)
+                {
+                    copytarget = dir + PATHSEPSTRING + basename + copystr + ")." + ext1;
+                }
+                // Add a number to the suffix for next copies
+                else
+                {
+                    FXString strnum = name.mid(pos + copystr.length(),
+                                               name.length() - pos - copystr.length() - ext1.length() - 1);
+                    FXuint num = FXUIntVal(strnum);
+                    num = (num == 0 ? 2 : num + 1);
+                    copytarget = dir + PATHSEPSTRING + name.left(pos) + copystr + " " + FXStringVal(num) + ")." + ext1;
+                }
+            }
+        }
+    }
+    // Copy suffix is added at the end of the file name
+    else
+    {
+        FXString copystr = "." + suffix;
+
+        int pos = name.rfind(copystr);
 
         // First copy
         if (pos < 0)
         {
-            copytarget = target + copystr + ")";
+            copytarget = dir + PATHSEPSTRING + name + copystr;
         }
-
         // Add a number to the suffix for next copies
         else
         {
-            FXString strnum = target.mid(pos + copystr.length(), target.length() - pos - copystr.length());
+            FXString strnum = name.mid(pos + copystr.length(), name.length());
             FXuint num = FXUIntVal(strnum);
-            num = (num == 0 ? num + 2 : num + 1);
-            copytarget = target.left(pos) + copystr + " " + FXStringVal(num) + ")";
-        }
-    }
-
-    // Case of compressed tar archive names
-    else if (ext3.lower() == "tar")
-    {
-        FXString basename = target.rbefore('.', 2);
-        int pos = basename.rfind(copystr);
-
-        if (pos < 0)
-        {
-            copytarget = basename + copystr + ")." + ext2;
-        }
-
-        else
-        {
-            // Add a number if it's not the first copy
-            FXString strnum = target.mid(pos + copystr.length(), target.length() - pos - copystr.length() - ext2.length() - 1);
-            FXuint num = FXUIntVal(strnum);
-            num = (num == 0 ? num + 2 : num + 1);
-
-            copytarget = target.left(pos) + copystr + " " + FXStringVal(num) + ")." + ext2;
-        }
-    }
-
-    // Other cases
-    else
-    {
-        // File name has no extension
-        if (ext1 == name)
-        {
-            int pos = target.rfind(copystr);
-
-            // First copy
-            if (pos < 0)
-            {
-                copytarget = target + copystr + ")";
-            }
-
-            // Add a number to the suffix for next copies
-            else
-            {
-                FXString strnum = target.mid(pos + copystr.length(), target.length() - pos - copystr.length());
-                FXuint num = FXUIntVal(strnum);
-                num = (num == 0 ? num + 2 : num + 1);
-                copytarget = target.left(pos) + copystr + " " + FXStringVal(num) + ")";
-            }
-        }
-
-        // File name has an extension
-        else
-        {
-            FXString basename = target.rbefore('.', 1);
-            int pos = basename.rfind(copystr);
-
-            // First copy
-            if (pos < 0)
-            {
-                copytarget = basename + copystr + ")." + ext1;
-            }
-
-            // Add a number to the suffix for next copies
-            else
-            {
-                FXString strnum = target.mid(pos + copystr.length(), target.length() - pos - copystr.length() - ext1.length() - 1);
-                FXuint num = FXUIntVal(strnum);
-                num = (num == 0 ? 2 : num + 1);
-                copytarget = target.left(pos) + copystr + " " + FXStringVal(num) + ")." + ext1;
-            }
+            num = (num == 0 ? 2 : num + 1);
+            copytarget = dir + PATHSEPSTRING + name.left(pos) + copystr + FXStringVal(num);
         }
     }
 
     // Recursive call to avoid existing file names
-    if (existFile(copytarget))
+    if (xf_existfile(copytarget))
     {
-        copytarget = buildCopyName(copytarget, isDir);
+        copytarget = xf_buildcopyname(copytarget, isDir, suffix, suffix_pos);
     }
 
-    return(copytarget);
+    return copytarget;
 }
 
 
 // Convert the deletion date to the number of seconds since the epoch
 // The string representing the deletion date must be in the format YYYY-MM-DDThh:mm:ss
-FXlong deltime(FXString delstr)
+FXlong xf_deltime(FXString delstr)
 {
     // Decompose the date into year, month, day, hour, minutes and seconds
     FXString year = delstr.mid(0, 4);
@@ -1224,17 +1375,17 @@ FXlong deltime(FXString delstr)
         t = 0;
     }
 
-    return(t);
+    return t;
 }
 
 
 // Test if a directory is empty
 // Return -1 if not a directory, 1 if empty and 0 if not empty
-int isEmptyDir(const FXString directory)
+int xf_isemptydir(const FXString directory)
 {
     int ret = -1;
     DIR* dir;
-    struct dirent* entry=NULL;
+    struct dirent* entry = NULL;
     int n = 0;
 
     if ((dir = opendir(directory.text())) != NULL)
@@ -1258,13 +1409,13 @@ int isEmptyDir(const FXString directory)
     {
         closedir(dir);
     }
-    return(ret);
+    return ret;
 }
 
 
 // Test if a directory has sub-directories
 // Return -1 if not a directory, 1 if has sub-directories, 0 if does not have
-int hasSubDirs(const FXString directory)
+int xf_hassubdirs(const FXString directory)
 {
     int ret = -1;
     DIR* dir;
@@ -1284,13 +1435,11 @@ int hasSubDirs(const FXString directory)
             {
                 break;
             }
-
             // Entry is . or ..
             else if ((strcmp(entry->d_name, ".") == 0) || (strcmp(entry->d_name, "..") == 0))
             {
                 continue;
             }
-
             // Regular entry
             // We don't use dirent.d_type anymore because of portability issues
             // (e.g. reiserfs don't know dirent.d_type)
@@ -1299,7 +1448,7 @@ int hasSubDirs(const FXString directory)
                 // Stat entry
                 struct stat entrystat;
                 FXString entrypath = directory + PATHSEPSTRING + entry->d_name;
-                if (statrep(entrypath.text(), &entrystat) != 0)
+                if (xf_stat(entrypath.text(), &entrystat) != 0)
                 {
                     continue;
                 }
@@ -1317,40 +1466,40 @@ int hasSubDirs(const FXString directory)
     {
         closedir(dir);
     }
-    return(ret);
+    return ret;
 }
 
 
 // Check if file or directory exists
-FXbool existFile(const FXString& file)
+FXbool xf_existfile(const FXString& file)
 {
     struct stat linfo;
 
-    return(!file.empty() && (lstatrep(file.text(), &linfo) == 0));
+    return !file.empty() && (xf_lstat(file.text(), &linfo) == 0);
 }
 
 
 // Check if the file represents a directory
-FXbool isDirectory(const FXString& file)
+FXbool xf_isdirectory(const FXString& file)
 {
     struct stat info;
 
-    return(!file.empty() && (statrep(file.text(), &info) == 0) && S_ISDIR(info.st_mode));
+    return !file.empty() && (xf_stat(file.text(), &info) == 0) && S_ISDIR(info.st_mode);
 }
 
 
 // Check if file represents a file
-FXbool isFile(const FXString& file)
+FXbool xf_isfile(const FXString& file)
 {
     struct stat info;
 
-    return(!file.empty() && (statrep(file.text(), &info) == 0) && S_ISREG(info.st_mode));
+    return !file.empty() && (xf_stat(file.text(), &info) == 0) && S_ISREG(info.st_mode);
 }
 
 
 // Check if current user is member of gid
 // (thanks to Armin Buehler <abuehler@users.sourceforge.net>)
-FXbool isGroupMember(gid_t gid)
+FXbool xf_isgroupmember(gid_t gid)
 {
     static int ngroups = 0;
     static gid_t* gids = NULL;
@@ -1378,7 +1527,7 @@ FXbool isGroupMember(gid_t gid)
     }
     if (ngroups == 0)
     {
-        return(false);
+        return false;
     }
 
     // Check if the group id is contained within the group list
@@ -1387,7 +1536,7 @@ FXbool isGroupMember(gid_t gid)
     {
         if (gid == gids[i])
         {
-            return(true);
+            return true;
         }
     }
 
@@ -1402,116 +1551,115 @@ err:
         fprintf(stderr, _("Error: Can't read group list"));
     }
 
-    return(false);
+    return false;
 }
 
 
 // Check if the file or the link refered file is readable AND executable
 // Function used to test if we can enter a directory
 // Uses the access() system function
-FXbool isReadExecutable(const FXString& file)
+FXbool xf_isreadexecutable(const FXString& file)
 {
     struct stat info;
 
     // File exists and can be stated
-    if (!file.empty() && (statrep(file.text(), &info) == 0))
+    if (!file.empty() && (xf_stat(file.text(), &info) == 0))
     {
         int ret = access(file.text(), R_OK | X_OK);
         if (ret == 0)
         {
-            return(true);
+            return true;
         }
         else
         {
-            return(false);
+            return false;
         }
     }
-
     // File doesn't exist
     else
     {
-        return(false);
+        return false;
     }
 }
 
 
 // Check if file is readable
-FXbool isReadable(const FXString& file)
+FXbool xf_isreadable(const FXString& file)
 {
     struct stat info;
 
     // File exists and can be stated
-    if (!file.empty() && (statrep(file.text(), &info) == 0))
+    if (!file.empty() && (xf_stat(file.text(), &info) == 0))
     {
         int ret = access(file.text(), R_OK);
         if (ret == 0)
         {
-            return(true);
+            return true;
         }
         else
         {
-            return(false);
+            return false;
         }
     }
-
     // File doesn't exist
     else
     {
-        return(false);
+        return false;
     }
 }
 
 
 // Check if file is writable
-FXbool isWritable(const FXString& file)
+FXbool xf_iswritable(const FXString& file)
 {
     struct stat info;
 
     // File exists and can be stated
-    if (!file.empty() && (statrep(file.text(), &info) == 0))
+    if (!file.empty() && (xf_stat(file.text(), &info) == 0))
     {
         int ret = access(file.text(), W_OK);
         if (ret == 0)
         {
-            return(true);
+            return true;
         }
         else
         {
-            return(false);
+            return false;
         }
     }
-
     // File doesn't exist
     else
     {
-        return(false);
+        return false;
     }
 }
 
 
 // Check if file represents a link
-FXbool isLink(const FXString& file)
+FXbool xf_islink(const FXString& file)
 {
     struct stat linfo;
 
-    return(!file.empty() && (lstatrep(file.text(), &linfo) == 0) && S_ISLNK(linfo.st_mode));
+    return !file.empty() && (xf_lstat(file.text(), &linfo) == 0) && S_ISLNK(linfo.st_mode);
 }
 
 
 // Get file info (file or link refered file)
-FXbool info(const FXString& file, struct stat& inf)
+FXbool xf_info(const FXString& file, struct stat& inf)
 {
-    return(!file.empty() && (statrep(file.text(), &inf) == 0));
+    return !file.empty() && (xf_stat(file.text(), &inf) == 0);
 }
 
 
 // Return permissions string
 // (the FOX function FXSystem::modeString() seems to use another format for the mode field)
-FXString permissions(FXuint mode)
+FXString xf_permissions(FXuint mode)
 {
     char result[11];
 
-    result[0] = S_ISLNK(mode) ? 'l' : S_ISREG(mode) ? '-' : S_ISDIR(mode) ? 'd' : S_ISCHR(mode) ? 'c' : S_ISBLK(mode) ? 'b' : S_ISFIFO(mode) ? 'p' : S_ISSOCK(mode) ? 's' : '?';
+    result[0] =
+        S_ISLNK(mode) ? 'l' : S_ISREG(mode) ? '-' : S_ISDIR(mode) ? 'd' : S_ISCHR(mode) ? 'c' : S_ISBLK(mode) ? 'b' :
+        S_ISFIFO(mode) ? 'p' : S_ISSOCK(mode) ? 's' : '?';
     result[1] = (mode & S_IRUSR) ? 'r' : '-';
     result[2] = (mode & S_IWUSR) ? 'w' : '-';
     result[3] = (mode & S_ISUID) ? 's' : (mode & S_IXUSR) ? 'x' : '-';
@@ -1522,44 +1670,46 @@ FXString permissions(FXuint mode)
     result[8] = (mode & S_IWOTH) ? 'w' : '-';
     result[9] = (mode & S_ISVTX) ? 't' : (mode & S_IXOTH) ? 'x' : '-';
     result[10] = 0;
-    return(result);
+    return result;
 }
 
 
 // Read symbolic link
-FXString readLink(const FXString& file)
+FXString xf_readlink(const FXString& file)
 {
     char lnk[MAXPATHLEN + 1];
     int len = readlink(file.text(), lnk, MAXPATHLEN);
 
     if (0 <= len)
     {
-        return(FXString(lnk, len));
+        return FXString(lnk, len);
     }
     else
     {
-        return(FXString::null);
+        return FXString::null;
     }
 }
 
 
 // Return true if files are identical
 // Compare file names and inodes for case insensitive filesystems
-FXbool identical(const FXString& file1, const FXString& file2)
+FXbool xf_isidentical(const FXString& file1, const FXString& file2)
 {
     if (file1 != file2)
     {
         struct stat linfo1, linfo2;
-        return(!::lstatrep(file1.text(), &linfo1) && !::lstatrep(file2.text(), &linfo2) && linfo1.st_ino == linfo2.st_ino && linfo1.st_dev == linfo2.st_dev);
+        return !::xf_lstat(file1.text(), &linfo1) && !::xf_lstat(file2.text(),
+                           &linfo2) && linfo1.st_ino == linfo2.st_ino &&
+                           linfo1.st_dev == linfo2.st_dev;
     }
-    return(true);
+    return true;
 }
 
 
 // Start or stop wait cursor (start if type is BEGIN_CURSOR, stop if type is END_CURSOR)
 // Do nothing if type is QUERY_CURSOR or anything different from BEGIN_CURSOR and END_CURSOR)
 // Return wait cursor count (0 means wait cursor is not set)
-int setWaitCursor(FXApp* app, FXuint type)
+int xf_setwaitcursor(FXApp* app, FXuint type)
 {
     static int waitcount = 0;
 
@@ -1569,7 +1719,6 @@ int setWaitCursor(FXApp* app, FXuint type)
         app->beginWaitCursor();
         waitcount++;
     }
-
     // End wait cursor
     else if (type == END_CURSOR)
     {
@@ -1583,19 +1732,19 @@ int setWaitCursor(FXApp* app, FXuint type)
             waitcount = 0;
         }
     }
-
     // Other cases : do nothing
     else
-    {}
+    {
+    }
 
-    return(waitcount);
+    return waitcount;
 }
 
 
 // Run a command in an internal st terminal
 // Return 0 if success, -1 else
 // N.B.: zombie process should be dealt with in the main application class
-int runst(FXString cmd)
+int xf_runst(FXString cmd)
 {
     FXString str1, str2;
     int nbargs, i, j;
@@ -1607,7 +1756,7 @@ int runst(FXString cmd)
     while (1)
     {
         str1 = cmd.section(' ', i);
-        if (str1[0] == '\'')       // If a ' is found, ignore the spaces till the next '
+        if (str1[0] == '\'') // If a ' is found, ignore the spaces till the next '
         {
             str2 = cmd.section('\'', j);
             j += 2;
@@ -1619,7 +1768,7 @@ int runst(FXString cmd)
             nbargs++;
         }
 
-        if (streq(str1.text(), ""))
+        if (xf_strequal(str1.text(), ""))
         {
             break;
         }
@@ -1642,17 +1791,17 @@ int runst(FXString cmd)
             j += 2;
             i += str2.contains(' ');
             args[nbargs] = (char*)malloc(str2.length() + 1);
-            strlcpy(args[nbargs], str2.text(), str2.length() + 1);
+            xf_strlcpy(args[nbargs], str2.text(), str2.length() + 1);
             nbargs++;
         }
         else
         {
             args[nbargs] = (char*)malloc(str1.length() + 1);
-            strlcpy(args[nbargs], str1.text(), str1.length() + 1);
+            xf_strlcpy(args[nbargs], str1.text(), str1.length() + 1);
             nbargs++;
         }
 
-        if (streq(str1.text(), ""))
+        if (xf_strequal(str1.text(), ""))
         {
             break;
         }
@@ -1688,7 +1837,6 @@ int runst(FXString cmd)
             }
         }
     }
-
     // Fork failed
     else
     {
@@ -1703,13 +1851,13 @@ int runst(FXString cmd)
     }
     free(args);
 
-    return(res);
+    return res;
 }
 
 
 // Get the output of a Unix command
-// Return the command output or the error message id any
-FXString getCommandOutput(FXString cmd)
+// Return the command output or the error message if any
+FXString xf_getcommandoutput(FXString cmd)
 {
     FXString data;
     FILE* stream;
@@ -1731,17 +1879,18 @@ FXString getCommandOutput(FXString cmd)
         }
         pclose(stream);
     }
-    return(data);
+    return data;
 }
 
 
 // Load a PNG icon from a file in the icon path
-FXIcon* loadiconfile(FXApp* app, const FXString iconpath, const FXString iconname)
+FXIcon* xf_loadiconfile(FXApp* app, const FXString iconpath, const FXString iconname,
+                        const double scalefrac, const FXColor blendcolor)
 {
     // Icon name is empty
     if (iconname.length() == 0)
     {
-        return(NULL);
+        return NULL;
     }
 
     // New PNG icon
@@ -1763,8 +1912,14 @@ FXIcon* loadiconfile(FXApp* app, const FXString iconpath, const FXString iconnam
                 // Load it
                 icon->loadPixels(str);
 
+                // Use IMAGE_KEEP for blending
+                icon->setOptions(IMAGE_KEEP);
+
                 // Scale it
                 icon->scale(scalefrac * icon->getWidth(), scalefrac * icon->getHeight());
+
+                // Blend it
+                icon->blend(blendcolor);
 
                 // Create it
                 icon->create();
@@ -1772,33 +1927,34 @@ FXIcon* loadiconfile(FXApp* app, const FXString iconpath, const FXString iconnam
                 // Done
                 str.close();
 
-                return(icon);
+                return icon;
             }
         }
 
         // Failed, delete the icon
         delete icon;
     }
-    return(NULL);
+    return NULL;
 }
 
 
 // Truncate a string to the specified number of UTF-8 characters
 // and adds "..." to the end
-FXString truncLine(FXString str, FXuint maxlinesize)
+FXString xf_truncline(FXString str, FXuint maxlinesize)
 {
     if (str.count() <= (int)maxlinesize)
     {
-        return(str);
+        return str;
     }
 
-    return(str.trunc(str.validate(maxlinesize)) + "...");
+    return str.trunc(str.validate(maxlinesize)) + "...";
 }
 
 
 // Insert line breaks as needed to allow displaying string using lines
 // of specified maximum number of UTF-8 characters
-FXString multiLines(FXString str, FXuint maxlinesize)
+// Don't insert line breaks in a middle of a word
+FXString xf_multilines(FXString str, FXuint maxlinesize)
 {
     int pos1 = 0;
     int pos2;
@@ -1815,13 +1971,25 @@ FXString multiLines(FXString str, FXuint maxlinesize)
                 int nbl = nbc / maxlinesize;
                 for (int n = 1; n <= nbl; n++)
                 {
-                    str.insert(str.validate(pos1 + n * maxlinesize), '\n'); // Use a valid UTF-8 position
+                    // Don't insert line break in a middle of a word
+                    int pos3 = str.find(' ', pos1 + n * maxlinesize);
+                    if (pos3 < 0)
+                    {
+                        str.insert(str.validate(pos1 + n * maxlinesize), '\n'); // Use a valid UTF-8 position
+                    }
+                    else
+                    {
+                        // Don't insert line break before '?' or '!' 
+                        if ( (str.find('?', pos3 + 1) < 0) && (str.find('!', pos3 + 1) < 0) )
+                        {
+                            str.insert(str.validate(pos3 + 1), '\n'); // Use a valid UTF-8 position
+                        } 
+                    }
                 }
             }
 
             break;
         }
-
         // Line break found
         else
         {
@@ -1831,7 +1999,21 @@ FXString multiLines(FXString str, FXuint maxlinesize)
                 int nbl = nbc / maxlinesize;
                 for (int n = 1; n <= nbl; n++)
                 {
-                    str.insert(str.validate(pos1 + n * maxlinesize), '\n'); // Use a valid UTF-8 position
+                    // Don't insert line break in a middle of a word
+                    int pos3 = str.find(' ', pos1 + n * maxlinesize);
+                    if (pos3 < 0)
+                    {
+                        str.insert(str.validate(pos1 + n * maxlinesize), '\n'); // Use a valid UTF-8 position
+                    }
+                    else
+                    {
+                        // Don't insert line break before '?' or '!' 
+                        if ( (str.find('?', pos3 + 1) < 0) && (str.find('!', pos3 + 1) < 0) )
+                        {
+                            str.insert(str.validate(pos3 + 1), '\n'); // Use a valid UTF-8 position
+                        } 
+                    }
+  
                     pos2++;
                 }
             }
@@ -1839,23 +2021,167 @@ FXString multiLines(FXString str, FXuint maxlinesize)
         }
     }
 
-    return(str);
+    return str;
 }
 
+
 // Helper function to filter out some file systems from the mounts check
-FXbool keepMount(FXString mntdir, FXString mntname)
+FXbool xf_keepmount(FXString mntdir, FXString mntname)
 {
     FXbool ret = false;
 
-    if ( (mntdir.left(4) != "/sys") &&
-         (mntdir.left(4) != "/dev") &&
-         (mntdir.left(5) != "/proc") &&
-         (mntdir.left(4) != "/run") &&
-         (mntname.left(5) != "gvfsd") &&   // gvfsd mounts
-         (mntname.left(6) != "portal") )   // Some fuse mounts
+    if ((mntdir.left(4) != "/sys") &&
+        (mntdir.left(4) != "/dev") &&
+        (mntdir.left(5) != "/proc") &&
+        (mntdir.left(4) != "/run") &&
+        (mntname.left(5) != "gvfsd") &&         // gvfsd mounts
+        (mntname.left(6) != "portal"))          // Some fuse mounts
     {
         ret = true;
     }
 
     return ret;
+}
+
+
+// Return current time in seconds
+FXulong xf_getcurrenttime(void)
+{
+    struct timeval tv;
+
+    gettimeofday(&tv, NULL);
+
+    return (FXulong)tv.tv_sec;
+}
+
+
+// Convert duration in seconds tu human readable format
+FXString xf_secondstotimestring(FXuint seconds)
+{
+    FXuint hour = seconds / 3600;
+    FXuint min = (seconds % 3600) / 60;
+    FXuint sec = seconds % 60;
+
+    char str[64];
+
+    if (hour > 0)
+    {
+        snprintf(str, sizeof(str), _("%u h %u min %u s"), hour, min, sec);
+    }
+    else if (min > 0)
+    {
+        snprintf(str, sizeof(str), _("%u min %u s"), min, sec);
+    }
+    else
+    {
+        snprintf(str, sizeof(str), _("%u s"), sec);
+    }
+
+    return FXString(str);
+}
+
+
+// Functions adapted from FXString class and used to substitute one string by another, case insensitive
+
+// Replace part of string
+void xf_replacestring(FXchar* str, FXint* slen, FXint pos, FXint m, const FXchar* s, FXint n)
+{
+    FXint len = *slen;
+
+    if (pos < 0)
+    {
+        m += pos;
+
+        if (m < 0)
+        {
+            m = 0;
+        }
+
+        pos = 0;
+    }
+
+    if (pos + m > len)
+    {
+        if (pos > len)
+        {
+            pos = len;
+        }
+
+        m = len - pos;
+    }
+
+    if (m < n)
+    {
+        *slen = len + n - m;
+        memmove(str + pos + n, str + pos + m, len - pos - m);
+    }
+    else if (m > n)
+    {
+        memmove(str + pos + n, str + pos + m, len - pos - m);
+        *slen = len + n - m;
+    }
+
+    memcpy(str + pos, s, n);
+}
+
+
+// Substitute one string by another, case insensitive
+FXString xf_substitutecase(const FXString& str, const FXString& org, const FXString& rep, bool all)
+{
+    FXchar* s = (FXchar*)str.text();
+    FXint slen = str.length();
+    FXchar* o = (FXchar*)org.text();
+    FXint olen = org.length();
+    FXchar* r = (FXchar*)rep.text();
+    FXint rlen = rep.length();
+
+    if (0 < olen)
+    {
+        FXint pos = 0;
+
+        while (pos <= slen - olen)
+        {
+            if (::comparecase(s + pos, o, olen) == 0) // Function from FXString
+            {
+                xf_replacestring(s, &slen, pos, olen, r, rlen);
+
+                if (!all)
+                {
+                    break;
+                }
+
+                pos += rlen;
+                continue;
+            }
+            pos++;
+        }
+    }
+
+    return FXString(s, slen);
+}
+
+
+// Function to calculate a simple hash of the file contents
+// Can be used to check if a file has been changed since last check
+// Return 0 if file can't be read
+FXulong xf_hashfile(const FXchar* filename)
+{
+    FXlong hash = 7873;
+    int c;
+    FILE* file = fopen(filename, "r");
+
+    if (!file)
+    {
+        perror("fopen");
+        return 0;
+    }
+
+    while ((c = fgetc(file)) != EOF)
+    {
+        hash = ((hash << 5) + hash) + c; // hash * 33 + c
+    }
+
+    fclose(file);
+
+    return (FXulong)FXMAX(hash, 0);
 }

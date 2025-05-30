@@ -1,6 +1,7 @@
 #ifndef FONTDIALOG_H
 #define FONTDIALOG_H
 
+#include "ComboBox.h"
 #include "DialogBox.h"
 
 class FontSelector;
@@ -10,29 +11,28 @@ class FXAPI FontSelector : public FXPacker
 {
     FXDECLARE(FontSelector)
 protected:
-    FXTextField*   family;
-    FXList*        familylist;
-    FXTextField*   weight;
-    FXList*        weightlist;
-    FXTextField*   style;
-    FXList*        stylelist;
-    FXTextField*   size;
-    FXList*        sizelist;
-    FXComboBox*    charset;
-    FXComboBox*    setwidth;
-    FXComboBox*    pitch;
-    FXCheckButton* scalable;
-    FXCheckButton* allfonts;
-    FXButton*      accept;
-    FXButton*      cancel;
-    FXLabel*       preview;
-    FXFont*        previewfont;
+    FXTextField* family = NULL;
+    FXList* familylist = NULL;
+    FXTextField* weight = NULL;
+    FXList* weightlist = NULL;
+    FXTextField* style = NULL;
+    FXList* stylelist = NULL;
+    FXTextField* size = NULL;
+    FXList* sizelist = NULL;
+    ComboBox* charset = NULL;
+    ComboBox* setwidth = NULL;
+    ComboBox* pitch = NULL;
+    FXCheckButton* scalable = NULL;
+    FXCheckButton* allfonts = NULL;
+    FXButton* accept = NULL;
+    FXButton* cancel = NULL;
+    FXLabel* preview = NULL;
+    FXFont* previewfont = NULL;
     FXFontDesc selected;
 protected:
-    FontSelector() : family(NULL), familylist(NULL), weight(NULL), weightlist(NULL), style(NULL), stylelist(NULL), size(NULL),
-        sizelist(NULL), charset(NULL), setwidth(NULL), pitch(NULL), scalable(NULL), allfonts(NULL), accept(NULL),
-        cancel(NULL), preview(NULL), previewfont(NULL), selected()
-    {}
+    FontSelector()
+    {
+    }
     void listFontFaces();
     void listWeights();
     void listSlants();
@@ -79,7 +79,8 @@ public:
 public:
 
     // Constructor
-    FontSelector(FXComposite* p, FXObject* tgt = NULL, FXSelector sel = 0, FXuint opts = 0, int x = 0, int y = 0, int w = 0, int h = 0);
+    FontSelector(FXComposite* p, FXObject* tgt = NULL, FXSelector sel = 0, FXuint opts = 0,
+                 int x = 0, int y = 0, int w = 0, int h = 0);
 
     // Create server-side resources
     virtual void create();
@@ -87,13 +88,13 @@ public:
     // Return a pointer to the "Accept" button
     FXButton* acceptButton() const
     {
-        return(accept);
+        return accept;
     }
 
     // Return a pointer to the "Cancel" button
     FXButton* cancelButton() const
     {
-        return(cancel);
+        return cancel;
     }
 
     // Set font selection
@@ -119,10 +120,11 @@ class FXAPI FontDialog : public DialogBox
 {
     FXDECLARE(FontDialog)
 protected:
-    FontSelector* fontbox;
+    FontSelector* fontbox = NULL;
 protected:
-    FontDialog() : fontbox(NULL)
-    {}
+    FontDialog()
+    {
+    }
 private:
     FontDialog(const FontDialog&);
     FontDialog& operator=(const FontDialog&);

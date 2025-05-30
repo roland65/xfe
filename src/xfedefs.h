@@ -1,7 +1,22 @@
 // Common Xfe constants
 
+
+#ifndef CLIPBOARD
+#define CLIPBOARD
+
+// Clipboard operations
+enum
+{
+    COPY_CLIPBOARD,
+    COPYNAME_CLIPBOARD,
+    CUT_CLIPBOARD,
+};
+
+#endif
+
+
 #ifndef COPYRIGHT
-#define COPYRIGHT    "Copyright (C) 2002-2022 Roland Baudin (roland65@free.fr)"
+#define COPYRIGHT    "Copyright (C) 2002-2025 Roland Baudin (roland65@free.fr)"
 #endif
 
 // Default normal font
@@ -19,14 +34,19 @@
 #define DEFAULT_TIME_FORMAT    "%x %X"
 #endif
 
+// Default copy suffix
+#ifndef DEFAULT_COPY_SUFFIX
+#define DEFAULT_COPY_SUFFIX    "copy"
+#endif
+
 // Default initial main window width
 #ifndef DEFAULT_WINDOW_WIDTH
-#define DEFAULT_WINDOW_WIDTH    800
+#define DEFAULT_WINDOW_WIDTH    1024
 #endif
 
 // Default initial main window heigth
 #ifndef DEFAULT_WINDOW_HEIGHT
-#define DEFAULT_WINDOW_HEIGHT    600
+#define DEFAULT_WINDOW_HEIGHT    768
 #endif
 
 // Default initial main window X position
@@ -39,37 +59,74 @@
 #define DEFAULT_WINDOW_YPOS    50
 #endif
 
-// Maximum sizes for thumbnail image preview
-#ifndef MAX_BIGTHUMB_SIZE
-#define MAX_BIGTHUMB_SIZE     64
-#endif
-#ifndef MAX_MINITHUMB_SIZE
-#define MAX_MINITHUMB_SIZE    20
+// Minimum width of an horizontal splitter
+#ifndef MIN_SPLITTER_WIDTH
+#define MIN_SPLITTER_WIDTH    100
 #endif
 
-// Minimum width of a file panel or directory panel
-#ifndef MIN_PANEL_WIDTH
-#define MIN_PANEL_WIDTH    100
+// Minimum height of a vertical splitter
+#ifndef MIN_SPLITTER_HEIGHT
+#define MIN_SPLITTER_HEIGHT    150
+#endif
+
+// Maximum number of files that can be opened in a file dialog
+#ifndef MAX_OPEN_FILES
+#define MAX_OPEN_FILES   1000
 #endif
 
 // Maximum length of a file path
 #ifndef MAXPATHLEN
-#define MAXPATHLEN    8192
+#define MAXPATHLEN    4096
 #endif
 
 // Maximum length of a command line
 #ifndef MAX_COMMAND_SIZE
-#define MAX_COMMAND_SIZE    128
+#define MAX_COMMAND_SIZE    256
 #endif
 
 // Maximum length of a filter pattern
 #ifndef MAX_PATTERN_SIZE
-#define MAX_PATTERN_SIZE    64
+#define MAX_PATTERN_SIZE    128
+#endif
+
+// Maximum length of a find string
+#ifndef MAX_FIND_SIZE
+#define MAX_FIND_SIZE    256
+#endif
+
+// Maximum length of a server name
+#ifndef MAX_SERVER_SIZE
+#define MAX_SERVER_SIZE    256
+#endif
+
+// Maximum length of a share name
+#ifndef MAX_SHARE_SIZE
+#define MAX_SHARE_SIZE    256
+#endif
+
+// Maximum length of a domain name
+#ifndef MAX_DOMAIN_SIZE
+#define MAX_DOMAIN_SIZE    256
+#endif
+
+// Maximum length of a user name
+#ifndef MAX_USER_SIZE
+#define MAX_USER_SIZE    256
 #endif
 
 // Maximum number of characters per line for one line messages
 #ifndef MAX_MESSAGE_LENGTH
 #define MAX_MESSAGE_LENGTH    96
+#endif
+
+// Minimum file name size (in pixels) in detailed view
+#ifndef MIN_NAME_SIZE
+#define MIN_NAME_SIZE    250
+#endif
+
+// Maximum file name size (in pixels) in detailed view
+#ifndef MAX_NAME_SIZE
+#define MAX_NAME_SIZE    1000
 #endif
 
 // Root directory string
@@ -87,25 +144,73 @@
 #define PATHSEPCHAR    '/'
 #endif
 
+#ifndef NMAX_COLS
+// Maximum number of columns in file lists
+// In search list => one column more
+// In trash => two columns more
+#define NMAX_COLS  9
+#endif
+
+// Maximum number of tabs
+#ifndef NMAX_TABS
+#define NMAX_TABS    100
+#endif
+
 // Maximum number of path links
-#ifndef MAX_LINKS
-#define MAX_LINKS    128
+#ifndef NMAX_LINKS
+#define NMAX_LINKS    100
 #endif
 
 // Run history size
 #ifndef RUN_HIST_SIZE
-#define RUN_HIST_SIZE    30
+#define RUN_HIST_SIZE    100
 #endif
 
 // Open with history size
 #ifndef OPEN_HIST_SIZE
-#define OPEN_HIST_SIZE    30
+#define OPEN_HIST_SIZE    100
 #endif
 
 // Filter history size
 #ifndef FILTER_HIST_SIZE
-#define FILTER_HIST_SIZE    30
+#define FILTER_HIST_SIZE    100
 #endif
+
+// Find history size
+#ifndef FIND_HIST_SIZE
+#define FIND_HIST_SIZE    100
+#endif
+
+// Server history size
+#ifndef SERVER_HIST_SIZE
+#define SERVER_HIST_SIZE    100
+#endif
+
+// Share history size
+#ifndef SHARE_HIST_SIZE
+#define SHARE_HIST_SIZE    100
+#endif
+
+// Domain history size
+#ifndef DOMAIN_HIST_SIZE
+#define DOMAIN_HIST_SIZE    100
+#endif
+
+// User history size
+#ifndef USER_HIST_SIZE
+#define USER_HIST_SIZE    100
+#endif
+
+// Buffer length for file copy
+#ifndef BUFFER_COPY_SIZE
+#define BUFFER_COPY_SIZE    1048576
+#endif
+
+// Time interval to check for MTP devices (ms)
+#define MTP_CHECK_INTERVAL    1000
+
+// Maximum length of an MTP name string
+#define MAX_MTP_NAME_SIZE     1024
 
 // If startup notification is used, this is the timeout value (seconds)
 #ifdef STARTUP_NOTIFICATION
@@ -178,11 +283,6 @@
 #define XFECONFIGNAME    "xferc"
 #endif
 
-// Default icon path
-#ifndef DEFAULTICONPATH
-#define DEFAULTICONPATH    "~/.config/xfe/icons/default-theme:/usr/local/share/xfe/icons/default-theme:/usr/share/xfe/icons/default-theme"
-#endif
-
 // Command to launch Xfe as root with pkexec
 #ifndef DEFAULT_PKEXEC_CMD
 #define DEFAULT_PKEXEC_CMD    "pkexec xfe"
@@ -210,7 +310,6 @@
 #ifndef DARKEN_SORT
 #define DARKEN_SORT    0.96
 #endif
-
 
 // Default terminal program
 #ifndef DEFAULT_TERMINAL
@@ -247,12 +346,12 @@
 
 // Default archiver program
 #ifndef DEFAULT_ARCHIVER
-#define DEFAULT_ARCHIVER    "xarchiver"
+#define DEFAULT_ARCHIVER    "xfa"
 #endif
 
 // Default PDF viewer program
 #ifndef DEFAULT_PDFVIEWER
-#define DEFAULT_PDFVIEWER    "xpdf"
+#define DEFAULT_PDFVIEWER    "atril"
 #endif
 
 // Default audio player program
@@ -262,7 +361,7 @@
 
 // Default video player program
 #ifndef DEFAULT_VIDEOPLAYER
-#define DEFAULT_VIDEOPLAYER    "mplayer"
+#define DEFAULT_VIDEOPLAYER    "vlc"
 #endif
 
 // Default mount command
@@ -294,6 +393,9 @@
 // Macro to add parentheses before and after a given string
 #define PARS(s)    ((FXString)" (" + (s) + (FXString)")")
 
+#if defined(__FreeBSD__)
+#define OTHER_PKG    2
+#endif
 
 // Linux specials
 

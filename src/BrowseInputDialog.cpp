@@ -23,27 +23,32 @@ FXDEFMAP(BrowseInputDialog) BrowseInputDialogMap[] =
     FXMAPFUNC(SEL_COMMAND, BrowseInputDialog::ID_BROWSE_PATH, BrowseInputDialog::onCmdBrowsePath),
 };
 
+
 // Object implementation
 FXIMPLEMENT(BrowseInputDialog, DialogBox, BrowseInputDialogMap, ARRAYNUMBER(BrowseInputDialogMap))
 
+
 // Construct a dialog box
-BrowseInputDialog::BrowseInputDialog(FXWindow* win, FXString inp, FXString message, FXString title, FXString label, FXIcon* ic, FXuint browse, FXbool option, FXString optiontext) :
+BrowseInputDialog::BrowseInputDialog(FXWindow* win, FXString inp, FXString message, FXString title,
+                                     FXString label, FXIcon* ic, FXuint browse, FXbool option, FXString optiontext) :
     DialogBox(win, title, DECOR_TITLE | DECOR_BORDER | DECOR_STRETCHABLE | DECOR_MAXIMIZE | DECOR_CLOSE)
 {
     // Browse type flag
     browsetype = browse;
 
     // Buttons
-    FXHorizontalFrame* buttons = new FXHorizontalFrame(this, PACK_UNIFORM_WIDTH | LAYOUT_SIDE_BOTTOM | LAYOUT_FILL_X, 0, 0, 0, 0, 10, 10, 5, 5);
+    FXHorizontalFrame* buttons = new FXHorizontalFrame(this, PACK_UNIFORM_WIDTH | LAYOUT_SIDE_BOTTOM | LAYOUT_FILL_X,
+                                                       0, 0, 0, 0, 10, 10, 5, 5);
 
     // Accept
-    new FXButton(buttons, _("&Accept"), NULL, this, ID_ACCEPT, FRAME_RAISED | FRAME_THICK | LAYOUT_RIGHT, 0, 0, 0, 0, 20, 20);
+    new FXButton(buttons, _("&Accept"), NULL, this, ID_ACCEPT, FRAME_GROOVE | LAYOUT_RIGHT, 0, 0, 0, 0, 20, 20);
 
     // Cancel
-    new FXButton(buttons, _("&Cancel"), NULL, this, ID_CANCEL, FRAME_RAISED | FRAME_THICK | LAYOUT_RIGHT, 0, 0, 0, 0, 20, 20);
+    new FXButton(buttons, _("&Cancel"), NULL, this, ID_CANCEL, FRAME_GROOVE | LAYOUT_RIGHT, 0, 0, 0, 0, 20, 20);
 
     // Optional check box
-    checkbutton = new FXHorizontalFrame(this, JUSTIFY_RIGHT | LAYOUT_SIDE_BOTTOM | LAYOUT_FILL_X, 0, 0, 0, 0, 10, 10, 0, 0);
+    checkbutton = new FXHorizontalFrame(this, JUSTIFY_RIGHT | LAYOUT_SIDE_BOTTOM | LAYOUT_FILL_X, 0, 0, 0, 0, 10, 10, 0,
+                                        0);
 
     if (option)
     {
@@ -64,12 +69,16 @@ BrowseInputDialog::BrowseInputDialog(FXWindow* win, FXString inp, FXString messa
     // Label and input field
     FXMatrix* matrix2 = new FXMatrix(contents, 3, MATRIX_BY_COLUMNS | LAYOUT_SIDE_TOP | LAYOUT_FILL_X | LAYOUT_FILL_Y);
     new FXLabel(matrix2, label, NULL, LAYOUT_LEFT | LAYOUT_CENTER_Y | LAYOUT_FILL_ROW);
-    input = new FXTextField(matrix2, 40, 0, 0, LAYOUT_CENTER_Y | LAYOUT_CENTER_X | FRAME_SUNKEN | FRAME_THICK | LAYOUT_FILL_COLUMN | LAYOUT_FILL_ROW | LAYOUT_FILL_X);
+    input = new FXTextField(matrix2, 40, 0, 0,
+                            LAYOUT_CENTER_Y | LAYOUT_CENTER_X | TEXTFIELD_NORMAL | LAYOUT_FILL_COLUMN |
+                            LAYOUT_FILL_ROW | LAYOUT_FILL_X);
     input->setText(inp);
-    new FXButton(matrix2, _("\tSelect destination..."), filedialogicon, this, ID_BROWSE_PATH, FRAME_RAISED | FRAME_THICK | LAYOUT_RIGHT | LAYOUT_CENTER_Y, 0, 0, 0, 0, 20, 20);
-    if (!isUtf8(message.text(), message.length()))
+    new FXButton(matrix2, _("\tSelect Destination..."), minifiledialogicon, this, ID_BROWSE_PATH, FRAME_GROOVE |
+                 LAYOUT_RIGHT | LAYOUT_CENTER_Y, 0, 0, 0, 0, 20, 20);
+    if (!xf_isutf8(message.text(), message.length()))
     {
-        new FXLabel(contents, _("=> Warning: file name is not UTF-8 encoded!"), NULL, LAYOUT_LEFT | LAYOUT_CENTER_Y | LAYOUT_FILL_ROW);
+        new FXLabel(contents, _("=> Warning: file name is not UTF-8 encoded!"), NULL, LAYOUT_LEFT |
+                    LAYOUT_CENTER_Y | LAYOUT_FILL_ROW);
     }
 
     // Initial directory for browsing
@@ -100,36 +109,36 @@ long BrowseInputDialog::onCmdKeyPress(FXObject* sender, FXSelector sel, void* pt
     {
     case KEY_Escape:
         handle(this, FXSEL(SEL_COMMAND, ID_CANCEL), NULL);
-        return(1);
+        return 1;
 
     case KEY_KP_Enter:
     case KEY_Return:
         handle(this, FXSEL(SEL_COMMAND, ID_ACCEPT), NULL);
-        return(1);
+        return 1;
 
     default:
         FXTopWindow::onKeyPress(sender, sel, ptr);
-        return(1);
+        return 1;
     }
-    return(0);
+    return 0;
 }
 
 
-long BrowseInputDialog::onCmdBrowsePath(FXObject* o, FXSelector s, void* p)
+long BrowseInputDialog::onCmdBrowsePath(FXObject* sender, FXSelector sel, void* ptr)
 {
     FXString title;
 
     if (browsetype == BROWSE_INPUT_FOLDER)
     {
-        title = _("Select a destination folder");
+        title = _("Select a Destination Folder");
     }
     else if (browsetype == BROWSE_INPUT_FILE)
     {
-        title = _("Select a file");
+        title = _("Select a File");
     }
     else
     {
-        title = _("Select a file or a destination folder");
+        title = _("Select a File or a Destination Folder");
     }
 
     // File dialog
@@ -163,7 +172,7 @@ long BrowseInputDialog::onCmdBrowsePath(FXObject* o, FXSelector s, void* p)
         input->setText(path);
     }
 
-    return(1);
+    return 1;
 }
 
 
@@ -198,7 +207,7 @@ void BrowseInputDialog::setDirectory(const FXString& path)
 
 FXString BrowseInputDialog::getText()
 {
-    return(input->getText());
+    return input->getText();
 }
 
 

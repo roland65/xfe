@@ -1,6 +1,7 @@
 /* Guard C code in headers, while including them from C++ */
 #ifdef  __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
 int st(int argc, char **argv);

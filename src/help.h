@@ -4,7 +4,8 @@
 #include "config.h"
 #include "i18n.h"
 
-#define HELP_TEXT    _("\n \
+#define HELP_TEXT    _( \
+"\n \
 \n \
 \n \
                                   XFE, X File Explorer File Manager\n \
@@ -29,8 +30,8 @@
 \n \
  X File Explorer (Xfe) is a lightweight file manager for X11, written using the FOX toolkit.\n \
  It is desktop independent and can easily be customized.\n \
- It has Commander or Explorer styles and it is very fast and small.\n \
- Xfe is based on the popular, but discontinued X Win Commander, originally written by Maxim Baranov.\n \
+ It has Commander or Explorer styles and is very fast and small.\n \
+ Xfe is based on X Win Commander, written by Maxim Baranov.\n \
 \n \
 \n \
 \n \
@@ -38,40 +39,44 @@
   =-=-=-=-=\n \
 \n \
     - Very fast graphic user interface\n \
+    - Small memory footprint\n \
     - UTF-8 support\n \
     - HiDPI monitor support\n \
     - Commander/Explorer interface with four file manager modes : a) one panel, b) a folder tree\n \
       and one panel, c) two panels and d) a folder tree and two panels\n \
     - Horizontal or vertical file panels stacking\n \
+    - Dockable toolbars\n \
     - Panels synchronization and switching\n \
+    - Tabs\n \
+    - Places panel with customizable bookmarks\n \
+    - Customizable columns in detailed file list mode\n \
     - Integrated text editor and viewer (X File Write, Xfw)\n \
     - Integrated image viewer (X File Image, Xfi)\n \
+    - Integrated archive viewer and extractor (X File Archive, Xfa)\n \
     - Integrated package (rpm or deb) viewer / installer / uninstaller (X File Package, Xfp)\n \
     - Custom shell scripts (like Nautilus scripts)\n \
+    - Mount/Unmount devices with optional automounter (Linux only, supports MTP devices)\n \
+    - Managing network shares (Windows shares or connecting to SSH server)\n \
     - Search files and directories\n \
+    - Bulk rename files\n \
     - Natural sort order (foo10.txt comes after foo2.txt...)\n \
-    - Copy/Cut/Paste files from and to your favorite desktop (GNOME/KDE/XFCE/ROX)\n \
-    - Drag and Drop files from and to your favorite desktop (GNOME/KDE/XFCE/ROX)\n \
+    - Copy/Cut/Paste files from and to your favorite desktop (GNOME/KDE/XFCE)\n \
+    - Drag and Drop files from and to your favorite desktop (GNOME/KDE/XFCE)\n \
     - Disk usage command \n \
     - Root mode with authentication by pkexec, sudo or su\n \
-    - Status line\n \
     - File associations\n \
     - Optional trash can for file delete operations (compliant with freedesktop.org standards)\n \
-    - Auto save registry\n \
     - Double click or single click file and folder navigation\n \
     - Mouse right click pop-up menu in tree list and file list\n \
     - Change file attributes\n \
-    - Mount/Unmount devices (Linux only)\n \
+    - Customizable color themes (GNOME, KDE, XFCE, Dark, ...)\n \
     - Warn when mount point are not responding (Linux only)\n \
-    - Toolbars\n \
-    - Bookmarks\n \
     - Back and forward history lists for folder navigation\n \
-    - Color themes (GNOME, KDE, XFCE, Dark...)\n \
-    - Icon themes (Default, GNOME, KDE, XFCE...)\n \
-    - Control themes (Standard or Clearlooks like)\n \
-    - Create archives (tar, compress, zip, gzip, bzip2, xz and 7zip formats are supported)\n \
-    - File comparison (through external tool)\n \
-    - Extract archives (tar, compress, zip, gzip, bzip2, xz, lzh, rar, ace, arj and 7zip formats are supported)\n \
+    - Customizable color themes (GNOME, KDE, XFCE, Dark, ...)\n \
+    - Icon themes (Default, GNOME, KDE, XFCE, ...)\n \
+    - Create archives (tar, zip, gzip, bzip2, xz, zst, 7z, ...)\n \
+    - Extract archives (many formats are supported)\n \
+    - File / folder comparison (through external tool, ex: meld)\n \
     - Tooltips with file properties\n \
     - Progress bars or dialogs for lengthy file operations\n \
     - Thumbnails image previews\n \
@@ -108,7 +113,7 @@
     * Detailed file list                 - F12\n \
     * Toggle display hidden files        - Ctrl-F6\n \
     * Toggle display thumbnails          - Ctrl-F7\n \
-    * Vertical panels                    - Ctrl-Ctrl-Shift-N\n \
+    * Vertical panels                    - Ctrl-Shift-F1\n \
     * Horizontal panels                  - Ctrl-Shift-F2\n \
     * Go to working folder               - Shift-F2\n \
     * Go to parent folder                - Backspace\n \
@@ -123,9 +128,9 @@
     * Execute command                   - Ctrl-E\n \
     * Create new symbolic link          - Ctrl-J\n \
     * Switch panels                     - Ctrl-K\n \
-    * Clear location bar                - Ctrl-L\n \
+    * Clear address bar                 - Ctrl-L\n \
     * Mount file system (Linux only)    - Ctrl-M\n \
-    * Rename file                       - F2\n \
+    * Rename files                      - F2\n \
     * Refresh panels                    - Ctrl-R\n \
     * Symlink files to location         - Ctrl-S\n \
     * Launch terminal                   - Ctrl-T\n \
@@ -149,10 +154,15 @@
     * Delete files                      - Shift-Del\n \
     * Copy file names to clipboard      - Ctrl-Shift-N\n \
     * Empty trash can                   - Ctrl-Del\n \
+    * New Tab                           - Shift-F1\n \
+    * Connect to Server                 - Shift-F5\n \
 \n \
 \n \
  Below are the default X File Image key bindings. These key bindings are specific to the Xfi application.\n \
 \n \
+    * View previous image               - Ctrl-J\n \
+    * View next image                   - Ctrl-K\n \
+    * Zoom to fit window                - Ctrl-F\n \
     * Zoom to fit window                - Ctrl-F\n \
     * Mirror image horizontally         - Ctrl-H\n \
     * Zoom image to 100%                - Ctrl-I\n \
@@ -175,13 +185,13 @@
     * Undo last change                  - Ctrl-Z\n \
 \n \
 \n \
- X File Package (Xfp) only use some of the global key bindings.\n \
+ X File Archive (Xfa) and X File Package (Xfp) only use some of the global key bindings.\n \
 \n \
  Note that all the default key bindings listed above can be customized in the Xfe Preferences dialog. However,\n \
  some key actions are hardcoded an cannot be changed. These include:\n \
 \n \
     * Ctrl-+ and Ctrl--                 - zoom in and zoom out image in Xfi\n \
-    * Ctrl-Shift-N0                         - display context menus in Xfe\n \
+    * Ctrl-Shift-F10                    - display context menus in Xfe\n \
     * Space                             - select an item in file list\n \
     * Return                            - enter folders in file lists, open files, select button actions, etc.\n \
     * Esc                               - close current dialog, unselect files, etc.\n \
@@ -200,11 +210,9 @@
   Trash system\n \
   =-=-=-=-=-=-=\n \
 \n \
- Starting with version 1.32, Xfe implements a trash system that is fully compliant with the freedesktop.org\n \
- standards.\n \
- This allows the user to move files to the trash can and to restore files from within Xfe or your favorite\n \
- desktop.\n \
- Note that the trash files location is now: ~/.local/share/Trash/files\n \
+ Xfe implements a trash system that is fully compliant with the freedesktop.org standards.\n \
+ This allows the user to move files to the trash can and to restore files from within Xfe or your favorite desktop.\n \
+ Note that the trash files location is: ~/.local/share/Trash/files\n \
 \n \
 \n \
 \n \
@@ -220,11 +228,8 @@
  The system-wide configuration file xferc is located in /usr/share/xfe, /usr/local/share/xfe\n \
  or /opt/local/share/xfe, in the given order of precedence.\n \
 \n \
- Starting with version 1.32, the location of the local configuration files has changed. This is to be compliant\n \
- with the freedesktop.org standards.\n \
- \n \
- The local configuration files for Xfe, Xfw, Xfi, Xfp are now located in the ~/.config/xfe folder.\n \
- They are named xferc, xfwrc, xfirc and xfprc.\n \
+ The local configuration files for Xfe, Xfw, Xfi, Xfa and Xfp are now located in the ~/.config/xfe folder.\n \
+ They are named xferc, xfwrc, xfirc, xfarc and xfprc.\n \
  \n \
  At the very first Xfe run, the system-wide configuration file is copied into the local configuration file\n \
  ~/.config/xfe/xferc which does not exists yet. If the system-wide configuration file is not found\n \
@@ -232,8 +237,8 @@
  customize Xfe (this is particularly true for the file associations) by hand editing because all the local options\n \
  are located in the same file.\n \
 \n \
- Default PNG icons are located in /usr/share/xfe/icons/xfe-theme or /usr/local/share/xfe/icons/xfe-theme, depending\n \
- on your installation. You can easily change the icon theme path in Preferences dialog.\n \
+ Default PNG icons are located in /usr/share/xfe/icons/default-theme or /usr/local/share/xfe/icons/default-theme,\n \
+ depending on your installation. You can easily change the icon theme path in the Preferences dialog.\n \
 \n \
 \n \
 \n \
@@ -243,6 +248,43 @@
  Starting with version 1.44, Xfe supports HiDPI monitors. All users have to do is to manually adjust the screen\n \
  resolution using the Edit / Preferences / Appearance / DPI option. A value of 200 - 240 dpi should be fine for Ultra\n \
  HD (4K) monitors.\n \
+\n \
+\n \
+\n \
+  Dockable Toolbars\n \
+  =-=-=-=-=-=-=-=-=\n \
+\n \
+ Starting with version 2.1, toolbars can be docked to the four corners of the window and their positions are saved\n \
+ (Xfe only) if the Auto save layout option is enabled in Edit Preferences / General dialog. To dock a toolbar, \n \
+ left click on its handle and drag it to the destination corner, or right click on it and use the popup menu.\n \
+\n \
+\n \
+\n \
+  Places\n \
+  =-=-=-=\n \
+\n \
+ Starting with version 2.0, the folder panel features two tabs: one is the classic Tree view and the other\n \
+ is a Places view. This Places view allows to view desktop folders (home, downloads, documents, music, ...), of\n \
+ drive mounts, network shares and user's bookmarks.\n \
+\n \
+ Network shares mounted from the desktop using gvfs (GNOME or XFCE) appear in the Places view and can be unmounted\n \
+ (KDE network shares are not supported). Mount points for removable devices also appear in the Places view.\n \
+\n \
+ Bookmarks can be added, removed and customized (order, name and icon) using a context menu.\n \
+\n \
+ The Places view is optional as is also the Tree view (related settings are located in the\n \
+ Preferences / General dialog).\n \
+\n \
+\n \
+\n \
+  Tabs\n \
+  =-=-=\n \
+\n \
+ Starting with version 2.1, it is possible to add tabs by pressing Shift-F1 or by clicking on the + icon of the tab\n \
+ toolbar. A right click on a tab displays a popup menu that offers to move a tab or close it.\n \
+\n \
+ The tab toolbar can be always shown or hidden if not used. Options related to tabs usage can be found in the\n \
+ Edit / Preferences / Settings dialog.\n \
 \n \
 \n \
 \n \
@@ -282,8 +324,8 @@
 \n \
 \n \
 \n \
- Search files and directories\n \
- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n \
+  Search files and directories\n \
+  =-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n \
 \n \
 \n \
  Xfe can quickly search files and directories by using find and grep command backends. This is done through the\n \
@@ -298,6 +340,18 @@
 \n \
 \n \
 \n \
+  Bulk rename files\n \
+  =-=-=-=-=-=-=-=-=\n \
+\n \
+ Xfe can perform a bulk rename operation on selected files and folders from the file panels. The rename dialog allows\n \
+ to replace a text pattern or insert / overwrite / remove text at a given position. It is also possible to number\n \
+ files.\n \
+\n \
+ Bulk rename can also be used from the search panel results. However, in that case it is not possible to rename\n \
+ folders to avoid moving file locations.\n \
+\n \
+\n \
+\n \
   Non Latin based languages\n \
   =-=-=-=-=-=-=-=-=-=-=-=-=\n \
 \n \
@@ -305,7 +359,43 @@
  have selected a Unicode font that supports your character set. To select a suitable font, use the\n \
  Edit / Preferences / Font menu item.\n \
 \n \
- Multilingual Unicode TrueType fonts can be found at this address: http://www.slovo.info/unifonts.htm\n \
+ Multilingual Unicode TrueType fonts can be found at this address: http:    //www.slovo.info/unifonts.htm\n \
+\n \
+\n \
+\n \
+  Automounting\n \
+  =-=-=-=-=-=-=\n \
+\n \
+ Starting with version 2.1, Xfe has an integrated automounter program that allows to mount removable disks or media\n \
+ when they are inserted. The automounter also supports MTP devices (ex: Android phones or tablets).\n \
+\n \
+ The automounter is optional and should only be used if your system does not already provides that feature. By\n \
+ default, it is disabled and can be enabled in the Edit / Preferences / Settings dialog.\n \
+\n \
+ The automounter relies on udisks2 and gvfs / gio, so these components must be installed on your system. The process\n \
+ is called xfe-automount and is launched at first startup of Xfe. It can possibly be added to your session startup\n \
+ programs.\n \
+\n \
+\n \
+\n \
+  Network Shares\n \
+  =-=-=-=-=-=-=-=\n \
+\n \
+ Starting with version 2.1, it is possible to mount a Windows network share or to connect to an SSH server\n \
+ (Linux only, gvfs / gio must be installed). For that, use the Tools / Connect to Server menu item (Shift-F5\n \
+ shortcut) or use the Connect to Server toolbar icon. This will display a dialog asking for your connection\n \
+ parameters.\n \
+\n \
+ It is possible to safely retain connection passwords provided that the secret-tool utility is installed on your\n \
+ system. Note that in Debian based distributions this utility is provided by the libsecret-tools package. In other\n \
+ distributions, it is usually included in the libsecret library.\n \
+\n \
+\n \
+\n \
+  Custom Color Themes\n \
+  =-=-=-=-=-=-=-=-=-=\n \
+ Starting with version 2.1, it is possible to save the current theme to a custom theme, that can be renamed\n \
+ or removed. You can thus have different custom color themes and easily switch between them.\n \
 \n \
 \n \
 \n \
@@ -316,6 +406,7 @@
     - Select files and right click to open a context menu on the selected files\n \
     - Press Ctrl + right click to open a context menu on the file panel\n \
     - When dragging a file/folder to a folder, hold on the mouse on the folder to open it\n \
+    - Displayed colums and column order can be selected in the Preferences / File List dialog\n \
 \n \
  Tree list\n \
     - Select a folder and right click to open a context menu on the selected folder\n \
@@ -323,14 +414,15 @@
     - When dragging a file/folder to a folder, hold on the mouse on the folder to expand it\n \
 \n \
  Copy/paste file path or name\n \
-    - Select a file and press Ctrl-C to copy the file path to the clipboard. Then in a dialog or an application, press Ctrl-V \
-      to paste the file path. Use the Copy name menu item (or press Ctrl-Shift-N) to copy the file name (without path) to the clipboard. \
+    - Select a file and press Ctrl-C to copy the file path to the clipboard. Then in a dialog or an application,\n \
+      press Ctrl-V to paste the file path. Use the Copy name menu item (or press Ctrl-Shift-N) to copy the file\n \
+      name (without path) to the clipboard. \n \
     - In a file operation dialog, select a file name in the line containing the source name and paste it directly\n \
       to the destination using the middle button of your mouse. Then modify it to suit your needs.\n \
 \n \
  Add files to the clipboard\n \
-    - You can select files from a directory, copy them to the clipboard by pressing Ctrl-C. This erases the previous\n \
-      clipboard content. Then, you can move to another directory, select other files and add them to the clipboard\n \
+    - You can select files from a folder, copy them to the clipboard by pressing Ctrl-C. This erases the previous\n \
+      clipboard content. Then, you can move to another folder, select other files and add them to the clipboard\n \
       content by pressing Ctrl-Shift-C. This does not erase the previous clipboard content. At last, you can move\n \
       to the destination and press Ctrl-V to copy all the files you have in the clipboard. Of course, this also works\n \
       with Ctrl-X and Ctrl-Shift-X to cut and paste the files.\n \
@@ -345,6 +437,7 @@
       an old application that doesn't support the startup notification protocol (e.g. Xterm).\n \
 \n \
   Root mode\n \
+    - If pkexec is installed and configured on your system, then this is the best way to switch to root mode\n \
     - If you use the sudo root mode, it can be useful to add password feedback to the sudo command. For this purpose,\n \
       edit your sudoers file like this:\n \
           sudo visudo -f /etc/suoders\n \
@@ -377,14 +470,11 @@
 \n \
  If you have coded some interesting patch, please send it to me, I will try to include it in the next release...\n \
 \n \
+ Many thanks to Maxim Baranov for his excellent X Win Commander, to Jeroen van der Zijp for the FOX toolkit\n \
+ and  to all people that have provided useful patches, translations, tests and advices.\n \
 \n \
- Many thanks to Maxim Baranov for his excellent X Win Commander and to all people that have provided useful\n \
- patches, translations, tests and advices.\n \
+ [Last revision: 11/05/2025]\n \
 \n \
- [Last revision: 12/12/2022]\n \
-\n \
- ")
-;
-
+");
 
 #endif

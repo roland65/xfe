@@ -59,8 +59,9 @@ FXIMPLEMENT(TextLabel, FXFrame, TextLabelMap, ARRAYNUMBER(TextLabelMap))
 const char TextLabel::textDelimiters[] = "~.,/\\`'!@#$%^&*()-=+{}|[]\":;<>?";
 
 
-// Construct and init
-TextLabel::TextLabel(FXComposite* p, int ncols, FXObject* tgt, FXSelector sel, FXuint opts, int x, int y, int w, int h, int pl, int pr, int pt, int pb) :
+// Construct
+TextLabel::TextLabel(FXComposite* p, int ncols, FXObject* tgt, FXSelector sel, FXuint opts, int x, int y, int w, int h,
+                     int pl, int pr, int pt, int pb) :
     FXFrame(p, opts, x, y, w, h, pl, pr, pt, pb)
 {
     if (ncols < 0)
@@ -157,14 +158,14 @@ void TextLabel::disable()
 // Get default width
 int TextLabel::getDefaultWidth()
 {
-    return(padleft + padright + (border << 1) + columns * font->getTextWidth("8", 1));
+    return padleft + padright + (border << 1) + columns * font->getTextWidth("8", 1);
 }
 
 
 // Get default height
 int TextLabel::getDefaultHeight()
 {
-    return(padtop + padbottom + (border << 1) + font->getFontHeight());
+    return padtop + padbottom + (border << 1) + font->getFontHeight();
 }
 
 
@@ -186,7 +187,7 @@ long TextLabel::onUpdate(FXObject* sender, FXSelector sel, void* ptr)
             disable();
         }
     }
-    return(1);
+    return 1;
 }
 
 
@@ -195,7 +196,7 @@ long TextLabel::onSelectionGained(FXObject* sender, FXSelector sel, void* ptr)
 {
     FXFrame::onSelectionGained(sender, sel, ptr);
     update();
-    return(1);
+    return 1;
 }
 
 
@@ -204,7 +205,7 @@ long TextLabel::onSelectionLost(FXObject* sender, FXSelector sel, void* ptr)
 {
     FXFrame::onSelectionLost(sender, sel, ptr);
     update();
-    return(1);
+    return 1;
 }
 
 
@@ -223,11 +224,12 @@ long TextLabel::onSelectionRequest(FXObject* sender, FXSelector sel, void* ptr)
     // Perhaps the target wants to supply its own data for the selection
     if (FXFrame::onSelectionRequest(sender, sel, ptr))
     {
-        return(1);
+        return 1;
     }
 
     // Recognize the request?
-    if ((event->target == stringType) || (event->target == textType) || (event->target == utf8Type) || (event->target == utf16Type))
+    if ((event->target == stringType) || (event->target == textType) || (event->target == utf8Type) ||
+        (event->target == utf16Type))
     {
         // Figure selected bytes
         if (anchor < cursor)
@@ -254,7 +256,7 @@ long TextLabel::onSelectionRequest(FXObject* sender, FXSelector sel, void* ptr)
         if (event->target == utf8Type)
         {
             setDNDData(FROM_SELECTION, event->target, string);
-            return(1);
+            return 1;
         }
 
         // Return text of the selection translated to 8859-1
@@ -262,18 +264,18 @@ long TextLabel::onSelectionRequest(FXObject* sender, FXSelector sel, void* ptr)
         {
             FX88591Codec ascii;
             setDNDData(FROM_SELECTION, event->target, ascii.utf2mb(string));
-            return(1);
+            return 1;
         }
 
         // Return text of the selection translated to UTF-16
         if (event->target == utf16Type)
         {
-            FXUTF16LECodec unicode;           // FIXME maybe other endianness for unix
+            FXUTF16LECodec unicode; // FIXME maybe other endianness for unix
             setDNDData(FROM_SELECTION, event->target, unicode.utf2mb(string));
-            return(1);
+            return 1;
         }
     }
-    return(0);
+    return 0;
 }
 
 
@@ -281,7 +283,7 @@ long TextLabel::onSelectionRequest(FXObject* sender, FXSelector sel, void* ptr)
 long TextLabel::onClipboardGained(FXObject* sender, FXSelector sel, void* ptr)
 {
     FXFrame::onClipboardGained(sender, sel, ptr);
-    return(1);
+    return 1;
 }
 
 
@@ -290,7 +292,7 @@ long TextLabel::onClipboardLost(FXObject* sender, FXSelector sel, void* ptr)
 {
     FXFrame::onClipboardLost(sender, sel, ptr);
     clipped.clear();
-    return(1);
+    return 1;
 }
 
 
@@ -303,11 +305,12 @@ long TextLabel::onClipboardRequest(FXObject* sender, FXSelector sel, void* ptr)
     // Perhaps the target wants to supply its own data for the clipboard
     if (FXFrame::onClipboardRequest(sender, sel, ptr))
     {
-        return(1);
+        return 1;
     }
 
     // Recognize the request?
-    if ((event->target == stringType) || (event->target == textType) || (event->target == utf8Type) || (event->target == utf16Type))
+    if ((event->target == stringType) || (event->target == textType) || (event->target == utf8Type) ||
+        (event->target == utf16Type))
     {
         // Get clipped string
         string = clipped;
@@ -322,7 +325,7 @@ long TextLabel::onClipboardRequest(FXObject* sender, FXSelector sel, void* ptr)
         if (event->target == utf8Type)
         {
             setDNDData(FROM_CLIPBOARD, event->target, string);
-            return(1);
+            return 1;
         }
 
         // Return clipped text translated to 8859-1
@@ -330,18 +333,18 @@ long TextLabel::onClipboardRequest(FXObject* sender, FXSelector sel, void* ptr)
         {
             FX88591Codec ascii;
             setDNDData(FROM_CLIPBOARD, event->target, ascii.utf2mb(string));
-            return(1);
+            return 1;
         }
 
         // Return text of the selection translated to UTF-16
         if (event->target == utf16Type)
         {
-            FXUTF16LECodec unicode;             // FIXME maybe other endianness for unix
+            FXUTF16LECodec unicode; // FIXME maybe other endianness for unix
             setDNDData(FROM_CLIPBOARD, event->target, unicode.utf2mb(string));
-            return(1);
+            return 1;
         }
     }
-    return(0);
+    return 0;
 }
 
 
@@ -353,7 +356,7 @@ long TextLabel::onFocusIn(FXObject* sender, FXSelector sel, void* ptr)
     {
         update(border, border, width - (border << 1), height - (border << 1));
     }
-    return(1);
+    return 1;
 }
 
 
@@ -365,7 +368,7 @@ long TextLabel::onFocusOut(FXObject* sender, FXSelector sel, void* ptr)
     {
         update(border, border, width - (border << 1), height - (border << 1));
     }
-    return(1);
+    return 1;
 }
 
 
@@ -379,16 +382,16 @@ long TextLabel::onFocusSelf(FXObject* sender, FXSelector sel, void* ptr)
         {
             handle(this, FXSEL(SEL_COMMAND, ID_SELECT_ALL), NULL);
         }
-        return(1);
+        return 1;
     }
-    return(0);
+    return 0;
 }
 
 
 // If window can have focus
 bool TextLabel::canFocus() const
 {
-    return(true);
+    return true;
 }
 
 
@@ -440,7 +443,7 @@ long TextLabel::onLeftBtnPress(FXObject*, FXSelector, void* ptr)
         grab();
         if (target && target->tryHandle(this, FXSEL(SEL_LEFTBUTTONPRESS, message), ptr))
         {
-            return(1);
+            return 1;
         }
         flags &= ~FLAG_UPDATE;
         if (ev->click_count == 1)
@@ -465,9 +468,9 @@ long TextLabel::onLeftBtnPress(FXObject*, FXSelector, void* ptr)
             extendSelection(contents.length());
             makePositionVisible(cursor);
         }
-        return(1);
+        return 1;
     }
-    return(0);
+    return 0;
 }
 
 
@@ -480,10 +483,10 @@ long TextLabel::onLeftBtnRelease(FXObject*, FXSelector, void* ptr)
         flags &= ~FLAG_PRESSED;
         if (target && target->tryHandle(this, FXSEL(SEL_LEFTBUTTONRELEASE, message), ptr))
         {
-            return(1);
+            return 1;
         }
     }
-    return(0);
+    return 0;
 }
 
 
@@ -512,9 +515,9 @@ long TextLabel::onMotion(FXObject*, FXSelector, void* ptr)
                 extendSelection(cursor);
             }
         }
-        return(1);
+        return 1;
     }
-    return(0);
+    return 0;
 }
 
 
@@ -579,7 +582,6 @@ long TextLabel::onAutoScroll(FXObject*, FXSelector, void* ptr)
                 newcursor = index(rr);
             }
         }
-
         // Text left-aligned
         else if (options & JUSTIFY_LEFT)
         {
@@ -619,7 +621,6 @@ long TextLabel::onAutoScroll(FXObject*, FXSelector, void* ptr)
                 newcursor = index(rr);
             }
         }
-
         // Text centered
         else
         {
@@ -667,7 +668,7 @@ long TextLabel::onAutoScroll(FXObject*, FXSelector, void* ptr)
             extendSelection(cursor);
         }
     }
-    return(1);
+    return 1;
 }
 
 
@@ -675,7 +676,7 @@ long TextLabel::onAutoScroll(FXObject*, FXSelector, void* ptr)
 long TextLabel::onUpdHaveSelection(FXObject* sender, FXSelector, void* ptr)
 {
     sender->handle(this, hasSelection() ? FXSEL(SEL_COMMAND, ID_ENABLE) : FXSEL(SEL_COMMAND, ID_DISABLE), ptr);
-    return(1);
+    return 1;
 }
 
 
@@ -683,7 +684,7 @@ long TextLabel::onUpdHaveSelection(FXObject* sender, FXSelector, void* ptr)
 long TextLabel::onUpdselectAll(FXObject* sender, FXSelector, void* ptr)
 {
     sender->handle(this, contents.empty() ? FXSEL(SEL_COMMAND, ID_DISABLE) : FXSEL(SEL_COMMAND, ID_ENABLE), ptr);
-    return(1);
+    return 1;
 }
 
 
@@ -923,7 +924,7 @@ int TextLabel::index(int x) const
     {
         pos = contents.length();
     }
-    return(pos);
+    return pos;
 }
 
 
@@ -962,14 +963,16 @@ int TextLabel::coord(int i) const
     {
         if (options & TEXTFIELD_PASSWD)
         {
-            pos = mm + font->getTextWidth("*", 1) * contents.index(i) - (font->getTextWidth("*", 1) * contents.count()) / 2;
+            pos = mm + font->getTextWidth("*",
+                                          1) * contents.index(i) - (font->getTextWidth("*", 1) * contents.count()) / 2;
         }
         else
         {
-            pos = mm + font->getTextWidth(contents.text(), i) - font->getTextWidth(contents.text(), contents.length()) / 2;
+            pos = mm + font->getTextWidth(contents.text(), i) - font->getTextWidth(contents.text(),
+                                                                                   contents.length()) / 2;
         }
     }
-    return(pos + shift);
+    return pos + shift;
 }
 
 
@@ -979,16 +982,16 @@ FXbool TextLabel::isPosVisible(int pos) const
     if ((0 <= pos) && (pos <= contents.length()))
     {
         int x = coord(contents.validate(pos));
-        return(border + padleft <= x && x <= width - border - padright);
+        return border + padleft <= x && x <= width - border - padright;
     }
-    return(false);
+    return false;
 }
 
 
 // Return true if position pos is selected
 FXbool TextLabel::isPosSelected(int pos) const
 {
-    return(hasSelection() && FXMIN(anchor, cursor) <= pos && pos <= FXMAX(anchor, cursor));
+    return hasSelection() && FXMIN(anchor, cursor) <= pos && pos <= FXMAX(anchor, cursor);
 }
 
 
@@ -1027,13 +1030,11 @@ void TextLabel::drawTextRange(FXDCWindow& dc, int fm, int to)
     {
         yy = padtop + border;
     }
-
     // Text sticks to bottom of field
     else if (options & JUSTIFY_BOTTOM)
     {
         yy = height - padbottom - border - hh;
     }
-
     // Text centered in y
     else
     {
@@ -1060,13 +1061,11 @@ void TextLabel::drawTextRange(FXDCWindow& dc, int fm, int to)
     {
         xx = shift + rr - ww;
     }
-
     // Text sticks on left of field
     else if (options & JUSTIFY_LEFT)
     {
         xx = shift + ll;
     }
-
     // Text centered in field
     else
     {
@@ -1114,7 +1113,6 @@ void TextLabel::drawTextRange(FXDCWindow& dc, int fm, int to)
     {
         drawTextFragment(dc, xx, yy, fm, to);
     }
-
     // Stuff selected
     else
     {
@@ -1160,7 +1158,7 @@ void TextLabel::drawTextRange(FXDCWindow& dc, int fm, int to)
 // Handle repaint
 long TextLabel::onPaint(FXObject*, FXSelector, void* ptr)
 {
-    FXEvent*   ev = (FXEvent*)ptr;
+    FXEvent* ev = (FXEvent*)ptr;
     FXDCWindow dc(this, ev);
 
     // Draw frame
@@ -1183,7 +1181,7 @@ long TextLabel::onPaint(FXObject*, FXSelector, void* ptr)
     dc.setClipRectangle(border, border, width - (border << 1), height - (border << 1));
     drawTextRange(dc, 0, contents.length());
 
-    return(1);
+    return 1;
 }
 
 
@@ -1192,7 +1190,7 @@ long TextLabel::onCmdCursorHome(FXObject*, FXSelector, void*)
 {
     setCursorPos(0);
     makePositionVisible(0);
-    return(1);
+    return 1;
 }
 
 
@@ -1201,7 +1199,7 @@ long TextLabel::onCmdCursorEnd(FXObject*, FXSelector, void*)
 {
     setCursorPos(contents.length());
     makePositionVisible(cursor);
-    return(1);
+    return 1;
 }
 
 
@@ -1210,7 +1208,7 @@ long TextLabel::onCmdCursorRight(FXObject*, FXSelector, void*)
 {
     setCursorPos(contents.inc(cursor));
     makePositionVisible(cursor);
-    return(1);
+    return 1;
 }
 
 
@@ -1219,14 +1217,14 @@ long TextLabel::onCmdCursorLeft(FXObject*, FXSelector, void*)
 {
     setCursorPos(contents.dec(cursor));
     makePositionVisible(cursor);
-    return(1);
+    return 1;
 }
 
 
 // Check if w is delimiter
 static FXbool isdelimiter(const char* delimiters, FXwchar w)
 {
-    return(w < 256 && strchr(delimiters, w)); // FIXME for w>256
+    return w < 256 && strchr(delimiters, w); // FIXME for w>256
 }
 
 
@@ -1256,7 +1254,7 @@ int TextLabel::leftWord(int pos) const
         pp = p;
     }
 
-    return(pp);
+    return pp;
 }
 
 
@@ -1286,7 +1284,7 @@ int TextLabel::rightWord(int pos) const
         pp = contents.inc(pp);
     }
 
-    return(pp);
+    return pp;
 }
 
 
@@ -1312,12 +1310,13 @@ int TextLabel::wordStart(int pos) const
     }
     else
     {
-        while (0 <= (p = contents.dec(pos)) && !isdelimiter(delimiters, contents.wc(p)) && !Unicode::isSpace(contents.wc(p)))
+        while (0 <= (p = contents.dec(pos)) && !isdelimiter(delimiters,
+                                                            contents.wc(p)) && !Unicode::isSpace(contents.wc(p)))
         {
             pos = p;
         }
     }
-    return(pos);
+    return pos;
 }
 
 
@@ -1341,12 +1340,13 @@ int TextLabel::wordEnd(int pos) const
     }
     else
     {
-        while (pos < contents.length() && !isdelimiter(delimiters, contents.wc(pos)) && !Unicode::isSpace(contents.wc(pos)))
+        while (pos < contents.length() && !isdelimiter(delimiters,
+                                                       contents.wc(pos)) && !Unicode::isSpace(contents.wc(pos)))
         {
             pos = contents.inc(pos);
         }
     }
-    return(pos);
+    return pos;
 }
 
 
@@ -1355,7 +1355,7 @@ long TextLabel::onCmdCursorWordRight(FXObject*, FXSelector, void*)
 {
     setCursorPos(rightWord(cursor));
     makePositionVisible(cursor);
-    return(1);
+    return 1;
 }
 
 
@@ -1364,7 +1364,7 @@ long TextLabel::onCmdCursorWordLeft(FXObject*, FXSelector, void*)
 {
     setCursorPos(leftWord(cursor));
     makePositionVisible(cursor);
-    return(1);
+    return 1;
 }
 
 
@@ -1373,7 +1373,7 @@ long TextLabel::onCmdCursorWordStart(FXObject*, FXSelector, void*)
 {
     setCursorPos(wordStart(cursor));
     makePositionVisible(cursor);
-    return(1);
+    return 1;
 }
 
 
@@ -1382,7 +1382,7 @@ long TextLabel::onCmdCursorWordEnd(FXObject*, FXSelector, void*)
 {
     setCursorPos(wordEnd(cursor));
     makePositionVisible(cursor);
-    return(1);
+    return 1;
 }
 
 
@@ -1390,7 +1390,7 @@ long TextLabel::onCmdCursorWordEnd(FXObject*, FXSelector, void*)
 long TextLabel::onCmdMark(FXObject*, FXSelector, void*)
 {
     setAnchorPos(cursor);
-    return(1);
+    return 1;
 }
 
 
@@ -1398,7 +1398,7 @@ long TextLabel::onCmdMark(FXObject*, FXSelector, void*)
 long TextLabel::onCmdExtend(FXObject*, FXSelector, void*)
 {
     extendSelection(cursor);
-    return(1);
+    return 1;
 }
 
 
@@ -1407,7 +1407,7 @@ long TextLabel::onCmdselectAll(FXObject*, FXSelector, void*)
 {
     selectAll();
     makePositionVisible(cursor);
-    return(1);
+    return 1;
 }
 
 
@@ -1415,7 +1415,7 @@ long TextLabel::onCmdselectAll(FXObject*, FXSelector, void*)
 long TextLabel::onCmdDeselectAll(FXObject*, FXSelector, void*)
 {
     killSelection();
-    return(1);
+    return 1;
 }
 
 
@@ -1441,7 +1441,7 @@ long TextLabel::onCmdCopySel(FXObject*, FXSelector, void*)
             }
         }
     }
-    return(1);
+    return 1;
 }
 
 
@@ -1454,7 +1454,7 @@ long TextLabel::onKeyPress(FXObject*, FXSelector, void* ptr)
     {
         if (target && target->tryHandle(this, FXSEL(SEL_KEYPRESS, message), ptr))
         {
-            return(1);
+            return 1;
         }
         flags &= ~FLAG_UPDATE;
         switch (event->code)
@@ -1481,7 +1481,7 @@ long TextLabel::onKeyPress(FXObject*, FXSelector, void* ptr)
             {
                 handle(this, FXSEL(SEL_COMMAND, ID_MARK), NULL);
             }
-            return(1);
+            return 1;
 
         case KEY_Left:
         case KEY_KP_Left:
@@ -1505,7 +1505,7 @@ long TextLabel::onKeyPress(FXObject*, FXSelector, void* ptr)
             {
                 handle(this, FXSEL(SEL_COMMAND, ID_MARK), NULL);
             }
-            return(1);
+            return 1;
 
         case KEY_Home:
         case KEY_KP_Home:
@@ -1522,7 +1522,7 @@ long TextLabel::onKeyPress(FXObject*, FXSelector, void* ptr)
             {
                 handle(this, FXSEL(SEL_COMMAND, ID_MARK), NULL);
             }
-            return(1);
+            return 1;
 
         case KEY_End:
         case KEY_KP_End:
@@ -1539,12 +1539,12 @@ long TextLabel::onKeyPress(FXObject*, FXSelector, void* ptr)
             {
                 handle(this, FXSEL(SEL_COMMAND, ID_MARK), NULL);
             }
-            return(1);
+            return 1;
 
         case KEY_Return:
         case KEY_KP_Enter:
             getApp()->beep();
-            return(1);
+            return 1;
 
         case KEY_a:
             if (!(event->state & CONTROLMASK))
@@ -1552,7 +1552,7 @@ long TextLabel::onKeyPress(FXObject*, FXSelector, void* ptr)
                 goto ins;
             }
             handle(this, FXSEL(SEL_COMMAND, ID_SELECT_ALL), NULL);
-            return(1);
+            return 1;
 
         case KEY_c:
             if (!(event->state & CONTROLMASK))
@@ -1561,20 +1561,20 @@ long TextLabel::onKeyPress(FXObject*, FXSelector, void* ptr)
             }
             break;
 
-        case KEY_F16:                             // Sun Copy key
+        case KEY_F16:                     // Sun Copy key
             handle(this, FXSEL(SEL_COMMAND, ID_COPY_SEL), NULL);
-            return(1);
+            return 1;
 
         default:
 ins:
             if ((event->state & (CONTROLMASK | ALTMASK)) || ((FXuchar)event->text[0] < 32))
             {
-                return(0);
+                return 0;
             }
-            return(1);
+            return 1;
         }
     }
-    return(0);
+    return 0;
 }
 
 
@@ -1587,7 +1587,7 @@ long TextLabel::onKeyRelease(FXObject*, FXSelector, void* ptr)
     {
         if (target && target->tryHandle(this, FXSEL(SEL_KEYRELEASE, message), ptr))
         {
-            return(1);
+            return 1;
         }
         switch (event->code)
         {
@@ -1605,10 +1605,10 @@ long TextLabel::onKeyRelease(FXObject*, FXSelector, void* ptr)
         case KEY_KP_Delete:
         case KEY_BackSpace:
         case KEY_Return:
-        case KEY_F20:                             // Sun Cut key
-        case KEY_F16:                             // Sun Copy key
-        case KEY_F18:                             // Sun Paste key
-            return(1);
+        case KEY_F20:                           // Sun Cut key
+        case KEY_F16:                           // Sun Copy key
+        case KEY_F18:                           // Sun Paste key
+            return 1;
 
         case KEY_a:
         case KEY_x:
@@ -1616,19 +1616,19 @@ long TextLabel::onKeyRelease(FXObject*, FXSelector, void* ptr)
         case KEY_v:
             if (event->state & CONTROLMASK)
             {
-                return(1);
+                return 1;
             }
             break;
 
         default:
             if ((event->state & (CONTROLMASK | ALTMASK)) || ((FXuchar)event->text[0] < 32))
             {
-                return(0);
+                return 0;
             }
-            return(1);
+            return 1;
         }
     }
-    return(0);
+    return 0;
 }
 
 
@@ -1639,9 +1639,9 @@ FXbool TextLabel::killSelection()
     {
         releaseSelection();
         update(border, border, width - (border << 1), height - (border << 1));
-        return(true);
+        return true;
     }
-    return(false);
+    return false;
 }
 
 
@@ -1651,7 +1651,7 @@ FXbool TextLabel::selectAll()
     setAnchorPos(0);
     setCursorPos(contents.length());
     extendSelection(cursor);
-    return(true);
+    return true;
 }
 
 
@@ -1661,7 +1661,7 @@ FXbool TextLabel::setSelection(int pos, int len)
     setAnchorPos(pos);
     setCursorPos(pos + len);
     extendSelection(cursor);
-    return(true);
+    return true;
 }
 
 
@@ -1671,7 +1671,7 @@ FXbool TextLabel::extendSelection(int pos)
     // Don't select text if ncols=0
     if (columns == 0)
     {
-        return(true);
+        return true;
     }
 
     FXDragType types[4];
@@ -1700,7 +1700,7 @@ FXbool TextLabel::extendSelection(int pos)
     }
 
     update(border, border, width - (border << 1), height - (border << 1));
-    return(true);
+    return true;
 }
 
 
@@ -1780,7 +1780,7 @@ void TextLabel::setNumColumns(int ncols)
     {
         shift = 0;
         columns = ncols;
-        layout();   // This may not be necessary!
+        layout(); // This may not be necessary!
         recalc();
         update();
     }
@@ -1805,7 +1805,7 @@ void TextLabel::setJustify(FXuint style)
 // Get text justify style
 FXuint TextLabel::getJustify() const
 {
-    return(options & JUSTIFY_MASK);
+    return options & JUSTIFY_MASK;
 }
 
 

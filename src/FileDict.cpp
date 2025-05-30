@@ -12,22 +12,18 @@
 #include "FileDict.h"
 
 
+// Global variables
+extern FXString execpath;
+
+
 #define COMMANDLEN      256
 #define EXTENSIONLEN    128
 #define MIMETYPELEN     64
 #define ICONNAMELEN     256
 
 
-// Icon scale factor
-extern double scalefrac;
-
-
 // Object implementation
 FXIMPLEMENT(IconDict, FXDict, NULL, 0)
-
-
-// Default icon path
-const char IconDict::defaultIconPath[] = DEFAULTICONPATH;
 
 
 // Build icon table
@@ -35,19 +31,26 @@ IconDict::IconDict(FXApp* a, const FXString& p) : path(p)
 {
     app = a;
     source = new FXIconSource(a);
+
+    // Fractional scaling factor
+    FXint res = getApp()->reg().readUnsignedEntry("SETTINGS", "screenres", 100);
+    scalefrac = FXMAX(1.0, res / 100.0);
 }
 
 
 // Search for the icon name along the search path, and try to load it
 void* IconDict::createData(const void* ptr)
 {
-    // Load it
+    // Load icon
     FXIcon* icon = source->loadIconFile(FXPath::search(path, (const char*)ptr));
 
-    // Scale it
-    icon->scale(scalefrac * icon->getWidth(), scalefrac * icon->getHeight());
+    // Scale icon
+    if (icon)
+    {
+        icon->scale(scalefrac * icon->getWidth(), scalefrac * icon->getHeight());
+    }
 
-    return(icon);
+    return icon;
 }
 
 
@@ -99,10 +102,12 @@ FXIMPLEMENT(FileDict, FXDict, NULL, 0)
 FileDict::FileDict(FXApp* a) : app(a), settings(&a->reg())
 {
     // Set icon path if it exists, otherwise set icon path to default
-    FXString iconpath = settings->readStringEntry("SETTINGS", "iconpath", DEFAULTICONPATH);
-    if ( !existFile(iconpath) )
+    FXString defaulticonpath = xf_realpath(FXPath::directory(execpath) + "/../share/xfe/icons/default-theme");
+    FXString iconpath = xf_realpath(settings->readStringEntry("SETTINGS", "iconpath", defaulticonpath.text()));
+
+    if (!xf_existfile(iconpath))
     {
-        iconpath = DEFAULTICONPATH;
+        iconpath = defaulticonpath;
     }
     icons = new IconDict(a, iconpath);
 }
@@ -112,10 +117,12 @@ FileDict::FileDict(FXApp* a) : app(a), settings(&a->reg())
 FileDict::FileDict(FXApp* a, FXSettings* db) : app(a), settings(db)
 {
     // Set icon path if it exists, otherwise set icon path to default
-    FXString iconpath = settings->readStringEntry("SETTINGS", "iconpath", DEFAULTICONPATH);
-    if ( !existFile(iconpath) )
+    FXString defaulticonpath = xf_realpath(FXPath::directory(execpath) + "/../share/xfe/icons/default-theme");
+    FXString iconpath = xf_realpath(settings->readStringEntry("SETTINGS", "iconpath", defaulticonpath.text()));
+
+    if (!xf_existfile(iconpath))
     {
-        iconpath = DEFAULTICONPATH;
+        iconpath = defaulticonpath;
     }
     icons = new IconDict(a, iconpath);
 }
@@ -125,7 +132,7 @@ FileDict::FileDict(FXApp* a, FXSettings* db) : app(a), settings(db)
 void* FileDict::createData(const void* ptr)
 {
     const char* p = (const char*)ptr;
-    char*       q;
+    char* q;
     char command[COMMANDLEN];
     char extension[EXTENSIONLEN];
     char mimetype[MIMETYPELEN];
@@ -133,14 +140,15 @@ void* FileDict::createData(const void* ptr)
     char bignameopen[ICONNAMELEN];
     char mininame[ICONNAMELEN];
     char mininameopen[ICONNAMELEN];
-    FileAssoc*           fileassoc;
+    FileAssoc* fileassoc;
 
     // Make association record
     fileassoc = new FileAssoc;
 
     // Parse command
     for (q = command; *p && *p != ';' && q < command + COMMANDLEN - 1; *q++ = *p++)
-    {}
+    {
+    }
     *q = '\0';
 
     // Skip section separator
@@ -151,7 +159,8 @@ void* FileDict::createData(const void* ptr)
 
     // Parse extension type
     for (q = extension; *p && *p != ';' && q < extension + EXTENSIONLEN - 1; *q++ = *p++)
-    {}
+    {
+    }
     *q = '\0';
 
     // Skip section separator
@@ -162,7 +171,8 @@ void* FileDict::createData(const void* ptr)
 
     // Parse big icon name
     for (q = bigname; *p && *p != ';' && *p != ':' && q < bigname + ICONNAMELEN - 1; *q++ = *p++)
-    {}
+    {
+    }
     *q = '\0';
 
     // Skip icon separator
@@ -173,7 +183,8 @@ void* FileDict::createData(const void* ptr)
 
     // Parse big open icon name
     for (q = bignameopen; *p && *p != ';' && q < bignameopen + ICONNAMELEN - 1; *q++ = *p++)
-    {}
+    {
+    }
     *q = '\0';
 
     // Skip section separator
@@ -184,7 +195,8 @@ void* FileDict::createData(const void* ptr)
 
     // Parse mini icon name
     for (q = mininame; *p && *p != ';' && *p != ':' && q < mininame + ICONNAMELEN - 1; *q++ = *p++)
-    {}
+    {
+    }
     *q = '\0';
 
     // Skip icon separator
@@ -195,7 +207,8 @@ void* FileDict::createData(const void* ptr)
 
     // Parse mini open icon name
     for (q = mininameopen; *p && *p != ';' && q < mininameopen + ICONNAMELEN - 1; *q++ = *p++)
-    {}
+    {
+    }
     *q = '\0';
 
     // Skip section separator
@@ -206,7 +219,8 @@ void* FileDict::createData(const void* ptr)
 
     // Parse mime type
     for (q = mimetype; *p && *p != ';' && q < mimetype + MIMETYPELEN - 1; *q++ = *p++)
-    {}
+    {
+    }
     *q = '\0';
 
     // Initialize association data
@@ -241,7 +255,7 @@ void* FileDict::createData(const void* ptr)
     }
 
     // Return the binding
-    return(fileassoc);
+    return fileassoc;
 }
 
 
@@ -266,7 +280,7 @@ void FileDict::setIconPath(const FXString& path)
 // Return current icon search path
 FXString FileDict::getIconPath() const
 {
-    return(icons->getIconPath());
+    return icons->getIconPath();
 }
 
 
@@ -277,7 +291,7 @@ FileAssoc* FileDict::replace(const char* ext, const char* str)
     settings->writeStringEntry("FILETYPES", ext, str);
 
     // Replace record
-    return((FileAssoc*)FXDict::replace(ext, str));
+    return (FileAssoc*)FXDict::replace(ext, str);
 }
 
 
@@ -290,7 +304,7 @@ FileAssoc* FileDict::remove(const char* ext)
     // Remove record
     FXDict::remove(ext);
 
-    return(NULL);
+    return NULL;
 }
 
 
@@ -298,19 +312,19 @@ FileAssoc* FileDict::remove(const char* ext)
 FileAssoc* FileDict::associate(const char* key)
 {
     const char* association;
-    FileAssoc*  record;
+    FileAssoc* record;
     char lowkey[MAXPATHLEN];
 
     // Convert the association key to lower case
     // Uses these functions because they seem to be faster than FXString
-    strlcpy(lowkey, key, strlen(key) + 1);
-    strlow(lowkey);
+    xf_strlcpy(lowkey, key, strlen(key) + 1);
+    xf_tolowercase(lowkey);
 
     // See if we have an existing record already and stores the key extension
     if ((record = find(lowkey)) != NULL)
     {
         record->key = lowkey;
-        return(record);
+        return record;
     }
 
     // See if this entry is known in FILETYPES
@@ -321,11 +335,11 @@ FileAssoc* FileDict::associate(const char* key)
     {
         record = (FileAssoc*)FXDict::insert(lowkey, association);
         record->key = lowkey;
-        return(record);
+        return record;
     }
 
     // Not a known file type
-    return(NULL);
+    return NULL;
 }
 
 
@@ -334,7 +348,7 @@ FileAssoc* FileDict::findFileBinding(const char* pathname)
 {
     const char* filename = pathname;
     const char* p = pathname;
-    FileAssoc*  record;
+    FileAssoc* record;
 
     while (*p)
     {
@@ -347,14 +361,14 @@ FileAssoc* FileDict::findFileBinding(const char* pathname)
 
     if (strlen(filename) == 0)
     {
-        return(associate(defaultFileBinding));
+        return associate(defaultFileBinding);
     }
 
     record = associate(filename);
 
     if (record)
     {
-        return(record);
+        return record;
     }
 
     filename = strchr(filename, '.');
@@ -367,11 +381,11 @@ FileAssoc* FileDict::findFileBinding(const char* pathname)
         }
         if (record)
         {
-            return(record);
+            return record;
         }
         filename = strchr(filename + 1, '.');
     }
-    return(associate(defaultFileBinding));
+    return associate(defaultFileBinding);
 }
 
 
@@ -379,14 +393,14 @@ FileAssoc* FileDict::findFileBinding(const char* pathname)
 FileAssoc* FileDict::findDirBinding(const char* pathname)
 {
     const char* path = pathname;
-    FileAssoc*  record;
+    FileAssoc* record;
 
     while (*path)
     {
         record = associate(path);
         if (record)
         {
-            return(record);
+            return record;
         }
         path++;
         while (*path && !ISPATHSEP(*path))
@@ -394,14 +408,14 @@ FileAssoc* FileDict::findDirBinding(const char* pathname)
             path++;
         }
     }
-    return(associate(defaultDirBinding));
+    return associate(defaultDirBinding);
 }
 
 
 // Find executable association from registry
 FileAssoc* FileDict::findExecBinding(const char* pathname)
 {
-    return(associate(defaultExecBinding));
+    return associate(defaultExecBinding);
 }
 
 

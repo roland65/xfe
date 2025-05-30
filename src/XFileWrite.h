@@ -2,7 +2,6 @@
 #define XFILEWRITE_H
 
 
-
 class Preferences;
 class WriteWindow;
 
@@ -12,10 +11,11 @@ class XFileWrite : public FXApp
 {
     FXDECLARE(XFileWrite)
 public:
-    WriteWindowList windowlist;                    // Window list
+    WriteWindowList windowlist;              // Window list
 private:
     XFileWrite()
-    {}
+    {
+    }
     XFileWrite(const XFileWrite&);
     XFileWrite& operator=(const XFileWrite&);
 

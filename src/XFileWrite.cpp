@@ -26,26 +26,21 @@
 
 // Add FOX hacks
 #include "foxhacks.cpp"
-#include "clearlooks.cpp"
+#include "moderncontrols.cpp"
 
 // Global variables
-FXColor highlightcolor;
-FXbool allowPopupScroll = false;
-FXuint single_click;
-FXbool file_tooltips;
-FXbool relative_resize;
 FXString homedir;
 FXString xdgconfighome;
 FXString xdgdatahome;
-FXbool xim_used = false;
+FXString execpath;
+
+// Integer UI scaling factor
+FXint scaleint = 1;
 
 
 // Main window (not used but necessary for compilation)
 FXMainWindow* mainWindow = NULL;
 
-
-// Scaling factors for the UI
-extern double scalefrac;
 
 // Hand cursor replacement (integer scaling factor = 1)
 #define hand1_width     32
@@ -167,7 +162,7 @@ FXDEFMAP(XFileWrite) XFileWriteMap[] =
 FXIMPLEMENT(XFileWrite, FXApp, XFileWriteMap, ARRAYNUMBER(XFileWriteMap))
 
 
-// Make some windows
+// Construct
 XFileWrite::XFileWrite(const FXString& appname, const FXString& vdrname) : FXApp(appname, vdrname)
 {
     // If interrupt happens, quit gracefully; we may want to
@@ -200,8 +195,9 @@ void XFileWrite::exit(int code)
 long XFileWrite::onCmdCloseAll(FXObject*, FXSelector, void*)
 {
     while (0 < windowlist.no() && windowlist[0]->close(true))
-    {}
-    return(1);
+    {
+    }
+    return 1;
 }
 
 
@@ -213,7 +209,8 @@ XFileWrite::~XFileWrite()
 
 
 // Usage message
-#define USAGE_MSG    _("\
+#define USAGE_MSG    _( \
+            "\
 \nUsage: xfw [options] [file1] [file2] [file3]...\n\
 \n\
     [options] can be any of the following:\n\
@@ -232,9 +229,9 @@ int main(int argc, char* argv[])
     WriteWindow* window = NULL;
     FXString file;
     int i;
-    const char*  appname = "xfw";
-    const char*  xfename = XFEAPPNAME;
-    const char*  vdrname = XFEVDRNAME;
+    const char* appname = "xfw";
+    const char* xfename = XFEAPPNAME;
+    const char* vdrname = XFEVDRNAME;
     FXbool loadicons;
     FXbool readonly = false;
     FXString xmodifiers;
@@ -256,23 +253,12 @@ int main(int argc, char* argv[])
         xdgconfighome = homedir + PATHSEPSTRING CONFIGPATH;
     }
 
-    // Detect if an X input method is used
-    xmodifiers = getenv("XMODIFIERS");
-    if ((xmodifiers == "") || (xmodifiers == "@im=none"))
-    {
-        xim_used = false;
-    }
-    else
-    {
-        xim_used = true;
-    }
-
 #ifdef HAVE_SETLOCALE
     // Set locale via LC_ALL.
     setlocale(LC_ALL, "");
 #endif
 
-#if ENABLE_NLS
+#ifdef ENABLE_NLS
     // Set the text message domain.
     bindtextdomain(PACKAGE, LOCALEDIR);
     bind_textdomain_codeset(PACKAGE, "utf-8");
@@ -292,31 +278,36 @@ int main(int argc, char* argv[])
     // Compute integer and fractional scaling factors depending on the monitor resolution
     FXint res = reg_xfe->readUnsignedEntry("SETTINGS", "screenres", 100);
     scaleint = round(res / 100.0);
-    scalefrac = FXMAX(1.0, res / 100.0);
 
     // Redefine the default hand cursor depending on the integer scaling factor
     FXCursor* hand;
     if (scaleint == 1)
     {
-        hand = new FXCursor(application, hand1_bits, hand1_mask_bits, hand1_width, hand1_height, hand1_x_hot, hand1_y_hot);
+        hand = new FXCursor(application, hand1_bits, hand1_mask_bits, hand1_width, hand1_height, hand1_x_hot,
+                            hand1_y_hot);
     }
     else if (scaleint == 2)
     {
-        hand = new FXCursor(application, hand2_bits, hand2_mask_bits, hand2_width, hand2_height, hand2_x_hot, hand2_y_hot);
+        hand = new FXCursor(application, hand2_bits, hand2_mask_bits, hand2_width, hand2_height, hand2_x_hot,
+                            hand2_y_hot);
     }
     else
     {
-        hand = new FXCursor(application, hand3_bits, hand3_mask_bits, hand3_width, hand3_height, hand3_x_hot, hand3_y_hot);
+        hand = new FXCursor(application, hand3_bits, hand3_mask_bits, hand3_width, hand3_height, hand3_x_hot,
+                            hand3_y_hot);
     }
     application->setDefaultCursor(DEF_HAND_CURSOR, hand);
 
     // Load all application icons
-    FXbool iconpathfound = true;
-    loadicons = loadAppIcons(application, &iconpathfound);
+    FXuint iconpathstatus;
+    execpath = xf_execpath(argv[0]);
+    loadicons = loadAppIcons(application, &iconpathstatus);
 
-    // Set base color (to change the default base color at first run)
-    FXColor basecolor = reg_xfe->readColorEntry("SETTINGS", "basecolor", FXRGB(237, 233, 227));
+    // Set base and border colors (to change the default colors at first run)
+    FXColor basecolor = reg_xfe->readColorEntry("SETTINGS", "basecolor", FXRGB(237, 236, 235));
+    FXColor bordercolor = reg_xfe->readColorEntry("SETTINGS", "bordercolor", FXRGB(125, 125, 125));
     application->setBaseColor(basecolor);
+    application->setBorderColor(bordercolor);
 
     // Set Xfw normal font according to the Xfe registry
     FXString fontspec;
@@ -328,16 +319,23 @@ int main(int argc, char* argv[])
     }
 
     // Set single click navigation according to the Xfe registry
-    single_click = reg_xfe->readUnsignedEntry("SETTINGS", "single_click", SINGLE_CLICK_NONE);
+    FXuint single_click = reg_xfe->readUnsignedEntry("SETTINGS", "single_click", SINGLE_CLICK_NONE);
+    application->reg().writeUnsignedEntry("SETTINGS", "single_click", single_click);
 
     // Set smooth scrolling according to the Xfe registry
     FXbool smoothscroll = reg_xfe->readUnsignedEntry("SETTINGS", "smooth_scroll", true);
 
     // Set file list tooltip flag according to the Xfe registry
-    file_tooltips = reg_xfe->readUnsignedEntry("SETTINGS", "file_tooltips", true);
+    FXbool file_tooltips = reg_xfe->readUnsignedEntry("SETTINGS", "file_tooltips", true);
+    application->reg().writeUnsignedEntry("SETTINGS", "file_tooltips", file_tooltips);
 
     // Set relative resizing flag according to the Xfe registry
-    relative_resize = reg_xfe->readUnsignedEntry("SETTINGS", "relative_resize", true);
+    FXbool relative_resize = reg_xfe->readUnsignedEntry("SETTINGS", "relative_resize", true);
+    application->reg().writeUnsignedEntry("SETTINGS", "relative_resize", relative_resize);
+
+    // Get value of the window position flag
+    FXbool save_win_pos = reg_xfe->readUnsignedEntry("SETTINGS", "save_win_pos", false);
+    application->reg().writeUnsignedEntry("SETTINGS", "save_win_pos", save_win_pos);
 
     // Delete the Xfe registry
     delete reg_xfe;
@@ -348,16 +346,28 @@ int main(int argc, char* argv[])
     // Create application
     application->create();
 
-    // Icon path not found
-    if (!iconpathfound)
+    // Icon path doesn't exist
+    if (iconpathstatus == ICONPATH_NOT_FOUND)
     {
-        MessageBox::error(application, BOX_OK, _("Error loading icons"), _("Icon path doesn't exist, icon theme was set back to default. Please check your icon path!") );
+        MessageBox::error(application->getRootWindow(), BOX_OK, _("Error loading icons"),
+                          _("Icon path doesn't exist, default icon path was selected.\
+\n\nFrom Xfe, please check your icon path in Edit / Preferences / Appearance..."));
     }
 
     // Some icons not found
-    if (!loadicons)
+    if (!loadicons && iconpathstatus == ICONPATH_MISSING_ICONS)
     {
-        MessageBox::error(application, BOX_OK, _("Error loading icons"), _("Unable to load some icons. Please check your icon theme!"));
+        MessageBox::error(application->getRootWindow(), BOX_OK, _("Error loading icons"),
+                          _("Unable to load some icons, default icon theme was selected.\
+\n\nFrom Xfe, please check your icon theme in Edit / Preferences / Appearance..."));       
+    }
+
+    // Default icon path doesn't exist
+    if (iconpathstatus == DEFAULTICONPATH_NOT_FOUND)
+    {
+        MessageBox::error(application->getRootWindow(), BOX_OK, _("Error loading icons"),
+                          _("Unable to load default icons, no icons can be shown.\
+\n\nPlease check your Xfe installation..."));       
     }
 
     // Tooltips setup time and duration
@@ -383,7 +393,6 @@ int main(int argc, char* argv[])
         {
             readonly = true;
         }
-
         // Load the file
         else
         {
@@ -412,5 +421,5 @@ int main(int argc, char* argv[])
     }
 
     // Run
-    return(application->run());
+    return application->run();
 }

@@ -141,7 +141,7 @@ int StringList::getNumItems(void)
         item = item->next;
         num++;
     }
-    return(num);
+    return num;
 }
 
 
@@ -208,7 +208,7 @@ void StringList::removeAllItemsAfter(StringItem* item)
 // Remove all items
 void StringList::removeAllItems(void)
 {
-    StringItem* item, *previtem;
+    StringItem* item, * previtem;
 
     item = this->last;
 
@@ -232,7 +232,7 @@ StringItem* StringList::getItemAtPos(const int pos)
 
     if ((num == 0) || (pos < 0) || (pos > num - 1))
     {
-        return(NULL);
+        return NULL;
     }
 
     StringItem* item;
@@ -240,7 +240,7 @@ StringItem* StringList::getItemAtPos(const int pos)
     item = this->first;
     if (pos == 0)
     {
-        return(item);
+        return item;
     }
 
     num = 0;
@@ -253,7 +253,7 @@ StringItem* StringList::getItemAtPos(const int pos)
             break;
         }
     }
-    return(item);
+    return item;
 }
 
 

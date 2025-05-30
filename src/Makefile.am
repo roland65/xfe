@@ -1,42 +1,48 @@
 AUTOMAKE_OPTIONS = subdir-objects
 
-bin_PROGRAMS = xfe xfp xfw xfi
+bin_PROGRAMS = xfe xfa xfi xfp xfw
 
 xfe_SOURCES = ../st/x.c \
               ../st/st.c \
               icons.cpp \
-			  xfeutils.cpp \
 			  startupnotification.cpp \
-			  StringList.cpp \
-              File.cpp \
-			  FileDict.cpp \
-			  IconList.cpp \
-			  FileList.cpp \
-			  FileDialog.cpp \
-			  DirList.cpp \
-			  DialogBox.cpp \
-			  MessageBox.cpp \
-			  Bookmarks.cpp \
-			  HistInputDialog.cpp \
-			  InputDialog.cpp \
-			  OverwriteBox.cpp \
-			  ExecuteBox.cpp \
-			  TextWindow.cpp \
-			  CommandWindow.cpp \
-              Properties.cpp \
-			  Preferences.cpp \
-			  FilePanel.cpp \
-			  DirPanel.cpp \
-			  DirHistBox.cpp \
-			  PathLinker.cpp \
-			  BrowseInputDialog.cpp \
+			  xfeutils.cpp \
 			  ArchInputDialog.cpp \
+			  BookmarkDialog.cpp \
+			  BrowseInputDialog.cpp \
+			  ColorSelector.cpp \
+			  ComboBox.cpp \
+			  CommandWindow.cpp \
+			  ConnectDialog.cpp \
+			  DialogBox.cpp \
+			  DirHistBox.cpp \
+			  DirList.cpp \
+			  DirPanel.cpp \
+			  ExecuteBox.cpp \
+              File.cpp \
+			  FileDialog.cpp \
+			  FileDict.cpp \
+			  FileList.cpp \
+			  FilePanel.cpp \
 			  FontDialog.cpp \
-			  TextLabel.cpp \
-			  Keybindings.cpp \
-			  KeybindingsDialog.cpp \
-			  SearchWindow.cpp \
+			  HistInputDialog.cpp \
+			  IconList.cpp \
+			  InputDialog.cpp \
+			  KeyBindings.cpp \
+			  KeyBindingsDialog.cpp \
+			  MessageBox.cpp \
+			  OverwriteBox.cpp \
+			  PathLinker.cpp \
+			  Places.cpp \
+			  Preferences.cpp \
+              Properties.cpp \
+			  RenameDialog.cpp \
 			  SearchPanel.cpp \
+			  SearchWindow.cpp \
+			  StringList.cpp \
+			  TabButtons.cpp \
+			  TextLabel.cpp \
+			  TextWindow.cpp \
 			  XFileExplorer.cpp \
               main.cpp
 
@@ -54,26 +60,104 @@ endif
 xfe_LDADD = @LIBINTL@ -lutil
 
 
+xfa_SOURCES = ../st/x.c \
+              ../st/st.c \
+              icons.cpp \
+			  startupnotification.cpp \
+			  xfeutils.cpp \
+			  ComboBox.cpp \
+              CommandWindow.cpp \
+			  DialogBox.cpp \
+ 			  DirHistBox.cpp \
+			  DirList.cpp \
+			  File.cpp \
+              FileDialog.cpp \
+              FileDict.cpp \
+              FileList.cpp \
+			  HistInputDialog.cpp \
+			  IconList.cpp \
+              InputDialog.cpp \
+              MessageBox.cpp \
+              OverwriteBox.cpp \
+			  PathLinker.cpp \
+			  StringList.cpp \
+			  TextLabel.cpp \
+              XFileArchive.cpp
+
+if STARTUPNOTIFY
+xfa_SOURCES += ../libsn/sn-common.c  \
+              ../libsn/sn-launchee.c \
+              ../libsn/sn-launcher.c \
+              ../libsn/sn-list.c \
+              ../libsn/sn-monitor.c \
+              ../libsn/sn-util.c \
+              ../libsn/sn-xmessages.c \
+              ../libsn/sn-xutils.c
+endif
+
+xfa_LDADD = @LIBINTL@ -lutil
+
+
+xfi_SOURCES = ../st/x.c \
+              ../st/st.c \
+              icons.cpp \
+			  startupnotification.cpp \
+			  xfeutils.cpp \
+			  ComboBox.cpp \
+              CommandWindow.cpp \
+			  DialogBox.cpp \
+			  DirList.cpp \
+ 			  DirHistBox.cpp \
+			  File.cpp \
+              FileDialog.cpp \
+              FileDict.cpp \
+              FileList.cpp \
+			  HistInputDialog.cpp \
+			  IconList.cpp \
+              InputDialog.cpp \
+              MessageBox.cpp \
+              OverwriteBox.cpp \
+ 			  PathLinker.cpp \
+ 			  StringList.cpp \
+ 			  TextLabel.cpp \
+              XFileImage.cpp
+
+if STARTUPNOTIFY
+xfi_SOURCES += ../libsn/sn-common.c  \
+              ../libsn/sn-launchee.c \
+              ../libsn/sn-launcher.c \
+              ../libsn/sn-list.c \
+              ../libsn/sn-monitor.c \
+              ../libsn/sn-util.c \
+              ../libsn/sn-xmessages.c \
+              ../libsn/sn-xutils.c
+endif
+
+xfi_LDADD = @LIBINTL@ -lutil
+
+
 xfp_SOURCES = ../st/x.c \
               ../st/st.c \
               icons.cpp \
-			  xfeutils.cpp \
 			  startupnotification.cpp \
-			  StringList.cpp \
+			  xfeutils.cpp \
+			  ComboBox.cpp \
               CommandWindow.cpp \
-              InputDialog.cpp \
 			  DialogBox.cpp \
-              OverwriteBox.cpp \
-              FileDict.cpp \
-			  IconList.cpp \
-			  File.cpp \
-              FileList.cpp \
-			  DirList.cpp \
-              FileDialog.cpp \
-			  PathLinker.cpp \
-			  TextLabel.cpp \
-              MessageBox.cpp \
  			  DirHistBox.cpp \
+			  DirList.cpp \
+			  File.cpp \
+              FileDialog.cpp \
+              FileDict.cpp \
+              FileList.cpp \
+			  HistInputDialog.cpp \
+			  IconList.cpp \
+              InputDialog.cpp \
+              MessageBox.cpp \
+              OverwriteBox.cpp \
+			  PathLinker.cpp \
+			  StringList.cpp \
+			  TextLabel.cpp \
               XFilePackage.cpp
 
 if STARTUPNOTIFY
@@ -93,25 +177,28 @@ xfp_LDADD = @LIBINTL@ -lutil
 xfw_SOURCES = ../st/x.c \
               ../st/st.c \
               icons.cpp \
-			  xfeutils.cpp \
 			  startupnotification.cpp \
-			  StringList.cpp \
+			  xfeutils.cpp \
+			  ComboBox.cpp \
+			  ColorSelector.cpp \
 			  CommandWindow.cpp \
-              OverwriteBox.cpp \
-			  MessageBox.cpp \
-			  IconList.cpp \
-			  File.cpp \
-              FileList.cpp \
-			  DirList.cpp \
-              InputDialog.cpp \
 			  DialogBox.cpp \
-			  FileDict.cpp \
+ 			  DirHistBox.cpp \
+			  DirList.cpp \
+			  File.cpp \
               FileDialog.cpp \
+			  FileDict.cpp \
+              FileList.cpp \
+			  FontDialog.cpp \
+			  HistInputDialog.cpp \
+			  IconList.cpp \
+              InputDialog.cpp \
+			  MessageBox.cpp \
+              OverwriteBox.cpp \
 			  PathLinker.cpp \
+			  StringList.cpp \
 			  TextLabel.cpp \
               WriteWindow.cpp \
- 			  DirHistBox.cpp \
-			  FontDialog.cpp \
               XFileWrite.cpp
 
 if STARTUPNOTIFY
@@ -128,40 +215,6 @@ endif
 xfw_LDADD = @LIBINTL@ -lutil
 
 				
-xfi_SOURCES = ../st/x.c \
-              ../st/st.c \
-              icons.cpp \
-			  xfeutils.cpp \
-			  startupnotification.cpp \
- 			  StringList.cpp \
-              CommandWindow.cpp \
-              InputDialog.cpp \
-			  DialogBox.cpp \
-              OverwriteBox.cpp \
-              FileDict.cpp \
-			  IconList.cpp \
-			  File.cpp \
-              FileList.cpp \
-			  DirList.cpp \
-              FileDialog.cpp \
-              MessageBox.cpp \
- 			  DirHistBox.cpp \
- 			  TextLabel.cpp \
- 			  PathLinker.cpp \
-              XFileImage.cpp
-
-if STARTUPNOTIFY
-xfi_SOURCES += ../libsn/sn-common.c  \
-              ../libsn/sn-launchee.c \
-              ../libsn/sn-launcher.c \
-              ../libsn/sn-list.c \
-              ../libsn/sn-monitor.c \
-              ../libsn/sn-util.c \
-              ../libsn/sn-xmessages.c \
-              ../libsn/sn-xutils.c
-endif
-
-xfi_LDADD = @LIBINTL@ -lutil
 
 
 localedir = $(datadir)/locale
@@ -187,45 +240,51 @@ EXTRA_DIST =  ../libsn/sn-common.h	\
               ../st/x.c \
 			  ../st/x.h \
 			  xfedefs.h \
-              icons.h \
-			  xfeutils.h \
               help.h \
+              icons.h \
 			  startupnotification.h \
-			  StringList.h \
-			  FileDialog.h \
-			  FileDict.h \
-			  IconList.h \
-			  FileList.h \
+			  xfeutils.h \
+			  foxhacks.cpp \
+			  moderncontrols.cpp \
+			  ArchInputDialog.h \
+			  BookmarkDialog.h \
+			  BrowseInputDialog.h \
+			  ColorSelector.h \
+			  ComboBox.h \
+			  CommandWindow.h \
+			  ConnectDialog.h \
+			  DialogBox.h \
+			  DirHistBox.h \
 			  DirList.h \
 			  DirPanel.h \
-			  Properties.h \
-              File.h \
-			  DialogBox.h \
-			  MessageBox.h \
-			  HistInputDialog.h \
-			  InputDialog.h \
-			  Preferences.h \
-			  TextWindow.h \
-			  CommandWindow.h \
-			  OverwriteBox.h \
 			  ExecuteBox.h \
+              File.h \
+			  FileDialog.h \
+			  FileDict.h \
+			  FileList.h \
 			  FilePanel.h \
-			  Bookmarks.h \
-			  XFileExplorer.h \
-			  XFileImage.h \
-			  XFilePackage.h \
-			  WriteWindow.h \
-			  XFileWrite.h \
-			  DirHistBox.h \
-			  PathLinker.h \
-			  BrowseInputDialog.h \
-			  ArchInputDialog.h \
 			  FontDialog.h \
-			  TextLabel.h \
-			  Keybindings.h \
-			  KeybindingsDialog.h \
+			  HistInputDialog.h \
+			  IconList.h \
+			  InputDialog.h \
+			  KeyBindings.h \
+			  KeyBindingsDialog.h \
+			  MessageBox.h \
+			  OverwriteBox.h \
+			  PathLinker.h \
+			  Places.h \
+			  Properties.h \
+			  Preferences.h \
+			  RenameDialog.h \
 			  SearchPanel.h \
 			  SearchWindow.h \
-			  foxhacks.cpp \
-			  clearlooks.cpp
-
+			  StringList.h \
+			  TabButtons.h \
+			  TextLabel.h \
+			  TextWindow.h \
+			  WriteWindow.h \
+			  XFileExplorer.h \
+			  XFileArchive.h \
+			  XFileImage.h \
+			  XFilePackage.h \
+			  XFileWrite.h

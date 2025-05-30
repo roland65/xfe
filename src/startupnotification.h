@@ -8,7 +8,7 @@
 #include "libsn/sn.h"
 
 void startup_completed(void);
-Time gettimestamp(Display *display);
+Time gettimestamp(Display* display);
 
 int runcmd(FXString, FXString, FXString, FXString, FXbool, FXString);
 

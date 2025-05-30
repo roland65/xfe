@@ -1,23 +1,25 @@
 #ifndef FILEDIALOG_H
 #define FILEDIALOG_H
 
+#include "ComboBox.h"
 #include "DialogBox.h"
 #include "FileList.h"
 #include "PathLinker.h"
+#include "HistInputDialog.h"
 
 class FileSelector;
 class FileList;
 
 
-// Additional mode for file selection : same as SELECTFILE_DIRECTORY but with the ability to also select files
+// Additional mode for file selection: same as SELECTFILE_DIRECTORY but with the ability to also select files
 enum
 {
-    SELECT_FILE_ANY,             // A single file, existing or not (to save to)
-    SELECT_FILE_EXISTING,        // An existing file (to load), but not '.' and '..'
-    SELECT_FILE_MULTIPLE,        // Multiple existing files
-    SELECT_FILE_MULTIPLE_ALL,    // Multiple existing files or directories, but not '.' and '..'
-    SELECT_FILE_DIRECTORY,       // Existing directory, including '.' or '..'
-    SELECT_FILE_MIXED,           // An existing file or directory, including '.' and '..'
+    SELECT_FILE_ANY,                            // A single file, existing or not (to save to)
+    SELECT_FILE_EXISTING,                       // An existing file (to load), but not '.' and '..'
+    SELECT_FILE_MULTIPLE,                       // Multiple existing files
+    SELECT_FILE_MULTIPLE_ALL,                   // Multiple existing files or directories, but not '.' and '..'
+    SELECT_FILE_DIRECTORY,                      // Existing directory, including '.' or '..'
+    SELECT_FILE_MIXED,                          // An existing file or directory, including '.' and '..'
 };
 
 
@@ -26,21 +28,29 @@ class FXAPI FileSelector : public FXPacker
 {
     FXDECLARE(FileSelector)
 protected:
-    FileList*      list;            // File list widget
-    FXTextField*   filename;        // File name entry field
-    FXComboBox*    filefilter;      // Combobox for pattern list
-    FXCheckButton* readonly;        // Open file as read only
-    FXButton*      accept;          // Accept button
-    FXButton*      cancel;          // Cancel button
-    FXuint selectmode;              // Select mode
-    FXArrowButton* btnbackhist;     // Back history
-    FXArrowButton* btnforwardhist;  // Forward history
-    PathLinker*    pathlink;
-    TextLabel*     pathtext;
+    FileList* list = NULL;                      // File list widget
+    FXLabel* namelabel = NULL;                  // Name label
+    FXTextField* filename = NULL;               // File name entry field
+    FXLabel* filterlabel = NULL;                // Filter pattern
+    ComboBox* filefilter = NULL;                // Combo box for pattern list
+    FXCheckButton* readonly = NULL;             // Open file as read only
+    FXButton* accept = NULL;                    // Accept button
+    FXButton* cancel = NULL;                    // Cancel button
+    FXuint selectmode = 0;                      // Select mode
+    FXArrowButton* btnbackhist = NULL;          // Back history
+    FXArrowButton* btnforwardhist = NULL;       // Forward history
+    PathLinker* pathlink = NULL;
+    TextLabel* pathtext = NULL;
+    HistInputDialog* filterdialog = NULL;
+    FXButton* closefilter = NULL;
+    FXColor attentioncolor = FXRGB(255, 0, 0);
+
+    FXuint single_click = SINGLE_CLICK_NONE;
+
 protected:
-    FileSelector() : list(NULL), filename(NULL), filefilter(NULL), readonly(NULL), accept(NULL), cancel(NULL),
-        selectmode(0), btnbackhist(NULL), btnforwardhist(NULL), pathlink(NULL), pathtext(NULL)
-    {}
+    FileSelector()
+    {
+    }
     virtual void create();
     static FXString patternFromText(const FXString& pattern);
     static FXString extensionFromPattern(const FXString& pattern);
@@ -73,6 +83,8 @@ public:
     long onCmdPopupMenu(FXObject*, FXSelector, void*);
     long onCmdKeyPress(FXObject*, FXSelector, void*);
     long onCmdKeyRelease(FXObject*, FXSelector, void*);
+    long onCmdItemFilter(FXObject*, FXSelector, void*);
+    long onUpdItemFilter(FXObject*, FXSelector, void*);
 public:
     enum
     {
@@ -89,23 +101,31 @@ public:
         ID_WORK,
         ID_NEWDIR,
         ID_NEWFILE,
+        ID_FILTER,
         ID_LAST
     };
 public:
 
     // Constructor
-    FileSelector(FXComposite* p, FXObject* tgt = NULL, FXSelector sel = 0, FXuint opts = 0, int x = 0, int y = 0, int w = 0, int h = 0);
+    FileSelector(FXComposite* p, FXObject* tgt = NULL, FXSelector sel = 0,
+                 FXuint opts = 0, int x = 0, int y = 0, int w = 0, int h = 0);
 
     // Return a pointer to the "Accept" button
     FXButton* acceptButton() const
     {
-        return(accept);
+        return accept;
     }
 
     // Return a pointer to the "Cancel" button
     FXButton* cancelButton() const
     {
-        return(cancel);
+        return cancel;
+    }
+
+    // Change name label
+    void setNameLabel(const FXString& text)
+    {
+        namelabel->setText(text);
     }
 
     // Change file name
@@ -184,7 +204,7 @@ public:
     // Return file selection mode
     FXuint getSelectMode() const
     {
-        return(selectmode);
+        return selectmode;
     }
 
     // Show readonly button
@@ -221,10 +241,11 @@ class FXAPI FileDialog : public DialogBox
 {
     FXDECLARE(FileDialog)
 protected:
-    FileSelector* list;
+    FileSelector* list = NULL;
 protected:
-    FileDialog() : list(NULL)
-    {}
+    FileDialog()
+    {
+    }
 private:
     FileDialog(const FileDialog&);
     FileDialog& operator=(const FileDialog&);
@@ -333,13 +354,16 @@ public:
     FXbool getReadOnly() const;
 
     // Open existing filename
-    static FXString getOpenFilename(FXWindow* owner, const FXString& caption, const FXString& path, const FXString& patterns = "*", int initial = 0);
+    static FXString getOpenFilename(FXWindow* owner, const FXString& caption, const FXString& path,
+                                    const FXString& patterns = "*", int initial = 0);
 
     // Open multiple existing files
-    static FXString* getOpenFilenames(FXWindow* owner, const FXString& caption, const FXString& path, const FXString& patterns = "*", int initial = 0);
+    static FXString* getOpenFilenames(FXWindow* owner, const FXString& caption, const FXString& path,
+                                      const FXString& patterns = "*", int initial = 0);
 
     // Save to filename
-    static FXString getSaveFilename(FXWindow* owner, const FXString& caption, const FXString& path, const FXString& patterns = "*", int initial = 0);
+    static FXString getSaveFilename(FXWindow* owner, const FXString& caption, const FXString& path,
+                                    const FXString& patterns = "*", int initial = 0);
 
     // Open directory name
     static FXString getOpenDirectory(FXWindow* owner, const FXString& caption, const FXString& path);

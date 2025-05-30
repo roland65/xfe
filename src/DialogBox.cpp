@@ -28,7 +28,8 @@ FXIMPLEMENT(DialogBox, FXTopWindow, DialogBoxMap, ARRAYNUMBER(DialogBoxMap))
 
 
 // Contruct dialog which will stay on top of owner
-DialogBox::DialogBox(FXWindow* win, const FXString& name, FXuint opts, int x, int y, int w, int h, int pl, int pr, int pt, int pb, int hs, int vs) :
+DialogBox::DialogBox(FXWindow* win, const FXString& name, FXuint opts, int x, int y, int w, int h,
+                     int pl, int pr, int pt, int pb, int hs, int vs) :
     FXTopWindow(win, name, NULL, NULL, opts, x, y, w, h, pl, pr, pt, pb, hs, vs)
 {
     _option = 0;
@@ -36,7 +37,8 @@ DialogBox::DialogBox(FXWindow* win, const FXString& name, FXuint opts, int x, in
 
 
 // Contruct free floating dialog
-DialogBox::DialogBox(FXApp* a, const FXString& name, FXuint opts, int x, int y, int w, int h, int pl, int pr, int pt, int pb, int hs, int vs) :
+DialogBox::DialogBox(FXApp* a, const FXString& name, FXuint opts, int x, int y, int w, int h,
+                     int pl, int pr, int pt, int pb, int hs, int vs) :
     FXTopWindow(a, name, NULL, NULL, opts, x, y, w, h, pl, pr, pt, pb, hs, vs)
 {
     _option = 0;
@@ -54,10 +56,10 @@ long DialogBox::onClose(FXObject*, FXSelector, void*)
             mainWindow->setFocus();
         }
 
-        return(1);
+        return 1;
     }
     handle(this, FXSEL(SEL_COMMAND, DialogBox::ID_CANCEL), NULL);
-    return(1);
+    return 1;
 }
 
 
@@ -73,7 +75,7 @@ long DialogBox::onCmdAccept(FXObject*, FXSelector, void*)
         mainWindow->setFocus();
     }
 
-    return(1);
+    return 1;
 }
 
 
@@ -89,7 +91,7 @@ long DialogBox::onCmdCancel(FXObject*, FXSelector, void*)
         mainWindow->setFocus();
     }
 
-    return(1);
+    return 1;
 }
 
 
@@ -97,14 +99,14 @@ long DialogBox::onCmdCancel(FXObject*, FXSelector, void*)
 long DialogBox::onCmdToggleOption(FXObject*, FXSelector, void*)
 {
     _option = !_option;
-    return(1);
+    return 1;
 }
 
 
 // Get option state
 FXuint DialogBox::getOption()
 {
-    return(_option);
+    return _option;
 }
 
 
@@ -183,51 +185,31 @@ void DialogBox::show(FXuint placement)
 // Keyboard press; handle escape and return to close the dialog
 long DialogBox::onKeyPress(FXObject* sender, FXSelector sel, void* ptr)
 {
-    if (FXTopWindow::onKeyPress(sender, sel, ptr))
-    {
-        return(1);
-    }
-    if (((FXEvent*)ptr)->code == KEY_Escape)
-    {
-        handle(this, FXSEL(SEL_COMMAND, ID_CANCEL), NULL);
-        return(1);
-    }
-
-
-
     FXEvent* event = (FXEvent*)ptr;
 
     switch (event->code)
     {
     case KEY_Escape:
         handle(this, FXSEL(SEL_COMMAND, ID_CANCEL), NULL);
-        return(1);
-
-    case KEY_KP_Enter:
-    case KEY_Return:
-        handle(this, FXSEL(SEL_COMMAND, ID_ACCEPT), NULL);
-        return(1);
+        return 1;
 
     default:
         FXTopWindow::onKeyPress(sender, sel, ptr);
-        return(1);
+        return 1;
     }
 
-
-
-
-    return(0);
+    return 0;
 }
 
 // Keyboard release; handle escape to close the dialog
 long DialogBox::onKeyRelease(FXObject* sender, FXSelector sel, void* ptr)
 {
-    if(FXTopWindow::onKeyRelease(sender, sel, ptr))
+    if (FXTopWindow::onKeyRelease(sender, sel, ptr))
     {
         return 1;
     }
 
-    if(((FXEvent*)ptr)->code == KEY_Escape)
+    if (((FXEvent*)ptr)->code == KEY_Escape)
     {
         return 1;
     }
@@ -241,5 +223,5 @@ FXuint DialogBox::execute(FXuint placement)
     create();
     show(placement);
     getApp()->refresh();
-    return(getApp()->runModalFor(this));
+    return getApp()->runModalFor(this);
 }

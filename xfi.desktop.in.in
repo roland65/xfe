@@ -1,7 +1,7 @@
 [Desktop Entry]
-_Name=Xfi
-_GenericName=Image Viewer
-_Comment=A simple image viewer for Xfe
+Name=Xfi
+GenericName=Image Viewer
+Comment=A simple image viewer for Xfe
 Exec=xfi %f
 Terminal=false
 Type=Application

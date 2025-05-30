@@ -21,7 +21,8 @@ FXDEFMAP(DirHistBox) DirHistBoxMap[] =
     FXMAPFUNC(SEL_KEYRELEASE, 0, DirHistBox::onKeyRelease),
     FXMAPFUNC(SEL_FOCUSOUT, 0, DirHistBox::onCmdClose),
     FXMAPFUNC(SEL_COMMAND, DirHistBox::ID_CLOSE, DirHistBox::onCmdClose),
-    FXMAPFUNC(SEL_CLICKED, DirHistBox::ID_CLICKED, DirHistBox::onCmdClicked),
+    FXMAPFUNC(SEL_CLICKED, DirHistBox::ID_LIST, DirHistBox::onCmdClicked),
+    FXMAPFUNC(SEL_QUERY_TIP, DirHistBox::ID_LIST, DirHistBox::onQueryTip),
 };
 
 
@@ -34,9 +35,10 @@ DirHistBox::DirHistBox(FXWindow* owner, const char** choices, FXuint opts, int x
     DialogBox(owner, "", opts, x, y, w, h, 0, 0, 0, 0, 0, 0)
 {
     int n;
-    FXHorizontalFrame* hor = new FXHorizontalFrame(this, FRAME_RAISED | FRAME_THICK | LAYOUT_SIDE_TOP | LAYOUT_FILL_X | LAYOUT_FILL_Y, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+    FXHorizontalFrame* hor = new FXHorizontalFrame(this, FRAME_GROOVE | LAYOUT_SIDE_TOP | LAYOUT_FILL_X |
+                                                   LAYOUT_FILL_Y, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 
-    list = new FXList(hor, this, ID_CLICKED, LIST_BROWSESELECT | LAYOUT_FILL_Y | LAYOUT_FILL_X | HSCROLLING_OFF);
+    list = new FXList(hor, this, ID_LIST, LIST_BROWSESELECT | LAYOUT_FILL_Y | LAYOUT_FILL_X | HSCROLLING_OFF);
     list->setBackColor(this->getBackColor());
     n = list->fillItems(choices);
     list->setNumVisible(FXMIN(n, VISIBLE_LINES));
@@ -48,9 +50,10 @@ DirHistBox::DirHistBox(FXWindow* owner, const FXString& choices, FXuint opts, in
     DialogBox(owner, "", opts, x, y, w, h, 0, 0, 0, 0, 0, 0)
 {
     int n;
-    FXHorizontalFrame* hor = new FXHorizontalFrame(this, FRAME_RAISED | FRAME_THICK | LAYOUT_SIDE_TOP | LAYOUT_FILL_X | LAYOUT_FILL_Y, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+    FXHorizontalFrame* hor = new FXHorizontalFrame(this, FRAME_GROOVE | LAYOUT_SIDE_TOP | LAYOUT_FILL_X | LAYOUT_FILL_Y,
+                                                   0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 
-    list = new FXList(hor, this, ID_CLICKED, LIST_BROWSESELECT | LAYOUT_FILL_Y | LAYOUT_FILL_X | HSCROLLING_OFF);
+    list = new FXList(hor, this, ID_LIST, LIST_BROWSESELECT | LAYOUT_FILL_Y | LAYOUT_FILL_X | HSCROLLING_OFF);
     list->setBackColor(this->getBackColor());
     n = list->fillItems(choices);
     list->setNumVisible(FXMIN(n, VISIBLE_LINES));
@@ -60,9 +63,13 @@ DirHistBox::DirHistBox(FXWindow* owner, const FXString& choices, FXuint opts, in
 // Select item when click in list
 long DirHistBox::onCmdClicked(FXObject*, FXSelector, void*)
 {
-    getApp()->stopModal(this, list->getCurrentItem());
-    hide();
-    return(1);
+    // Set item current except when called from up/down key event
+    if (!updownkey)
+    {
+        getApp()->stopModal(this, list->getCurrentItem());
+        hide();
+    }
+    return 1;
 }
 
 
@@ -71,7 +78,7 @@ long DirHistBox::onCmdClose(FXObject*, FXSelector, void*)
 {
     getApp()->stopModal(this, -1);
     hide();
-    return(1);
+    return 1;
 }
 
 
@@ -87,7 +94,7 @@ int DirHistBox::box(FXWindow* owner, FXuint opts, const char** choices, int x, i
 {
     DirHistBox box(owner, choices, opts, x, y, w, h);
 
-    return(box.execute(PLACEMENT_DEFAULT));
+    return box.execute(PLACEMENT_DEFAULT);
 }
 
 
@@ -96,36 +103,82 @@ int DirHistBox::box(FXWindow* owner, FXuint opts, const FXString& choices, int x
 {
     DirHistBox box(owner, choices, opts, x, y, w, h);
 
-    return(box.execute(PLACEMENT_DEFAULT));
+    return box.execute(PLACEMENT_DEFAULT);
 }
 
 
-// Keyboard press; handle escape to close the dialog
+// Keyboard press
+// Handle escape to close the dialog, up/down key to navigate
+// and return key to enter directory
 long DirHistBox::onKeyPress(FXObject* sender, FXSelector sel, void* ptr)
 {
-    if (FXTopWindow::onKeyPress(sender, sel, ptr))
+    FXEvent* event = (FXEvent*)ptr;
+
+    switch (event->code)
     {
-        return(1);
-    }
-    if (((FXEvent*)ptr)->code == KEY_Escape)
-    {
+    case KEY_Escape:
         handle(this, FXSEL(SEL_COMMAND, ID_CLOSE), NULL);
-        return(1);
+        return 1;
+
+    case KEY_Up:
+    case KEY_Down:
+
+        // Set up/down key event flag
+        updownkey = true;
+
+        list->onKeyPress(sender, sel, ptr);
+        return 1;
+
+    case KEY_Return:
+    case KEY_KP_Enter:
+    case KEY_space:
+        handle(this, FXSEL(SEL_CLICKED, ID_LIST), NULL);
+        return 1;
+
+    default:
+        FXTopWindow::onKeyPress(sender, sel, ptr);
+        return 1;
     }
-    return(0);
+
+    return 0;
 }
 
 
 // Keyboard release; handle escape to close the dialog
 long DirHistBox::onKeyRelease(FXObject* sender, FXSelector sel, void* ptr)
 {
+    // Reset up/down key event flag
+    updownkey = false;
+
     if (FXTopWindow::onKeyRelease(sender, sel, ptr))
     {
-        return(1);
+        return 1;
     }
     if (((FXEvent*)ptr)->code == KEY_Escape)
     {
-        return(1);
+        return 1;
     }
-    return(0);
+
+    return 0;
+}
+
+
+// Display tooltip
+long DirHistBox::onQueryTip(FXObject* sender, FXSelector, void* ptr)
+{
+    int x, y;
+    FXuint state;
+
+    list->getCursorPosition(x, y, state);
+    int index = list->getItemAt(x, y);
+
+    if (index != -1)
+    {
+        FXString tip = "";  // No tooltip
+        sender->handle(list, FXSEL(SEL_COMMAND, ID_SETSTRINGVALUE), (void*)&tip);
+
+        return 1;
+    }
+
+    return 0;
 }

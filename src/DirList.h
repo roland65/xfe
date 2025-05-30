@@ -12,11 +12,14 @@ class FXAPI TreeItem : public FXTreeItem
     friend class DirList;
 protected:
     TreeItem()
-    {}
+    {
+    }
 public:
     // Constructor
-    TreeItem(const FXString& text, FXIcon* oi = NULL, FXIcon* ci = NULL, void* ptr = NULL) : FXTreeItem(text, oi, ci, ptr)
-    {}
+    TreeItem(const FXString& text, FXIcon* oi = NULL, FXIcon* ci = NULL, void* ptr = NULL) :
+        FXTreeItem(text, oi, ci, ptr)
+    {
+    }
 };
 
 // Directory item
@@ -25,29 +28,31 @@ class FXAPI DirItem : public FXTreeItem
     FXDECLARE(DirItem)
     friend class DirList;
 protected:
-    FileAssoc* assoc;               // File association
-    DirItem*   link;                // Link to next item
-    DirItem*   list;                // List of child items
-    FXulong size;                   // File size (if a file)
-    FXTime date;                    // Time of item
-    FXString tdata;                 // Tooltip data
+    FileAssoc* assoc = NULL;                        // File association
+    DirItem* link = NULL;                           // Link to next item
+    DirItem* list = NULL;                           // List of child items
+    FXulong size = 0;                               // File size (if a file)
+    FXTime date = 0;                                // Time of item
+    FXString tdata;                                 // Tooltip data
 protected:
-    DirItem() : assoc(NULL), link(NULL), list(NULL), size(0L), date(0)
-    {}
+    DirItem()
+    {
+    }
 protected:
     enum
     {
-        FOLDER      = 512,                // Directory item
-        EXECUTABLE  = 1024,               // Executable item
-        SYMLINK     = 2048,               // Symbolic linked item
-        CHARDEV     = 4096,               // Character special item
-        BLOCKDEV    = 8192,               // Block special item
-        FIFO        = 16384,              // FIFO item
-        SOCK        = 32768               // Socket item
+        FOLDER        = 512,                        // Directory item
+        EXECUTABLE    = 1024,                       // Executable item
+        SYMLINK       = 2048,                       // Symbolic linked item
+        CHARDEV       = 4096,                       // Character special item
+        BLOCKDEV      = 8192,                       // Block special item
+        FIFO          = 16384,                      // FIFO item
+        SOCK          = 32768                       // Socket item
     };
 public:
     // Constructor
-    DirItem(const FXString& text, FXIcon* oi = NULL, FXIcon* ci = NULL, void* ptr = NULL) : FXTreeItem(text, oi, ci, ptr), assoc(NULL), link(NULL), list(NULL), size(0), date(0)
+    DirItem(const FXString& text, FXIcon* oi = NULL, FXIcon* ci = NULL, void* ptr = NULL) :
+        FXTreeItem(text, oi, ci, ptr), assoc(NULL), link(NULL), list(NULL), size(0), date(0)
     {
         state = HASITEMS;
         tdata = "";
@@ -55,63 +60,63 @@ public:
 
     FXbool isDirectory() const
     {
-        return((state & FOLDER) != 0);
+        return (state & FOLDER) != 0;
     }
 
     FXbool isExecutable() const
     {
-        return((state & EXECUTABLE) != 0);
+        return (state & EXECUTABLE) != 0;
     }
 
     FXbool isSymlink() const
     {
-        return((state & SYMLINK) != 0);
+        return (state & SYMLINK) != 0;
     }
 
     FXbool isChardev() const
     {
-        return((state & CHARDEV) != 0);
+        return (state & CHARDEV) != 0;
     }
 
     FXbool isBlockdev() const
     {
-        return((state & BLOCKDEV) != 0);
+        return (state & BLOCKDEV) != 0;
     }
 
     FXbool isFifo() const
     {
-        return((state & FIFO) != 0);
+        return (state & FIFO) != 0;
     }
 
     FXbool isSocket() const
     {
-        return((state & SOCK) != 0);
+        return (state & SOCK) != 0;
     }
 
     FileAssoc* getAssoc() const
     {
-        return(assoc);
+        return assoc;
     }
 
     FXulong getSize() const
     {
-        return(size);
+        return size;
     }
 
     FXTime getDate() const
     {
-        return(date);
+        return date;
     }
 
     FXString getTooltipData() const
     {
         if (getData() != NULL)
         {
-            return(tdata);
+            return tdata;
         }
         else
         {
-            return("");
+            return "";
         }
     }
 };
@@ -122,21 +127,25 @@ class FXAPI DirList : public FXTreeList
 {
     FXDECLARE(DirList)
 protected:
-    TreeItem*    prevSelItem;
-    DirItem*     list;                      // Root item list
-    FileDict*    associations;              // Association table
-    FXString dropdirectory;                 // Drop directory
-    FXDragAction dropaction;                // Drop action
-    FXString dragfiles;                     // Dragged files
-    FXString pattern;                       // Pattern of file names
-    FXuint matchmode;                       // File wildcard match mode
-    FXuint counter;                         // Refresh counter
-    FXString trashfileslocation;            // Location of the trash files directory
-    FXString trashinfolocation;             // Location of the trash info directory
-    FXWindow*    focuswindow;               // Window used to test focus
+    TreeItem* prevSelItem = NULL;
+    DirItem* list = NULL;                                       // Root item list
+    FileDict* associations = NULL;                              // Association table
+    FXString dropdirectory;                                     // Drop directory
+    FXDragAction dropaction;                                    // Drop action
+    FXString dragfiles;                                         // Dragged files
+    FXString pattern;                                           // Pattern of file names
+    FXuint matchmode = 0;                                       // File wildcard match mode
+    FXuint counter = 0;                                         // Refresh counter
+    FXString trashfileslocation;                                // Location of the trash files directory
+    FXString trashinfolocation;                                 // Location of the trash info directory
+    FXWindow* focuswindow = NULL;                               // Window used to test focus
+
+    FXbool file_tooltips = true;                                // File tooltips
+
 protected:
-    DirList() : prevSelItem(NULL), list(NULL), associations(NULL), dropaction(DRAG_MOVE), matchmode(0), counter(0), focuswindow(NULL)
-    {}
+    DirList()
+    {
+    }
     virtual TreeItem* createItem(const FXString& text, FXIcon* oi, FXIcon* ci, void* ptr);
     TreeItem* getitem(char* pathname);
     void listRootItems();
@@ -184,11 +193,12 @@ public:
     long onUpdSortReverse(FXObject*, FXSelector, void*);
     long onCmdSortCase(FXObject*, FXSelector, void*);
     long onUpdSortCase(FXObject*, FXSelector, void*);
-    long onCmdDragCopy(FXObject* sender, FXSelector, void*);
-    long onCmdDragMove(FXObject* sender, FXSelector, void*);
-    long onCmdDragLink(FXObject* sender, FXSelector, void*);
-    long onCmdDragReject(FXObject* sender, FXSelector, void*);
+    long onCmdDragCopy(FXObject*, FXSelector, void*);
+    long onCmdDragMove(FXObject*, FXSelector, void*);
+    long onCmdDragLink(FXObject*, FXSelector, void*);
+    long onCmdDragReject(FXObject*, FXSelector, void*);
     long onUpdRefreshTimers(FXObject*, FXSelector, void*);
+
 public:
     static int compareItem(const FXTreeItem*, const FXTreeItem*, FXbool, FXbool);
     static int ascending(const FXTreeItem*, const FXTreeItem*);
@@ -224,7 +234,8 @@ public:
 public:
 
     // Construct a directory list
-    DirList(FXWindow* focuswin, FXComposite* p, FXObject* tgt = NULL, FXSelector sel = 0, FXuint opts = 0, int x = 0, int y = 0, int w = 0, int h = 0);
+    DirList(FXWindow* focuswin, FXComposite* p, FXObject* tgt = NULL, FXSelector sel = 0, FXuint opts = 0, int x = 0,
+            int y = 0, int w = 0, int h = 0);
 
     // Create server-side resources
     virtual void create();
@@ -241,11 +252,11 @@ public:
     // Return true if item is executable
     FXbool isItemExecutable(const TreeItem* item) const;
 
-    // Collapse tree
-    virtual FXbool collapseTree(TreeItem* tree, FXbool notify = false);
+    // Collapse directory tree
+    virtual FXbool collapseDirTree(TreeItem* tree, FXbool notify = false);
 
-    // Expand tree
-    virtual FXbool expandTree(TreeItem* tree, FXbool notify = false);
+    // Expand directory tree
+    virtual FXbool expandDirTree(TreeItem* tree, FXbool notify = false);
 
     // Set current file
     void setCurrentFile(const FXString& file, FXbool notify = false);
@@ -274,13 +285,13 @@ public:
     // Return wildcard pattern
     FXString getPattern() const
     {
-        return(pattern);
+        return pattern;
     }
 
     // Return wildcard matching mode
     FXuint getMatchMode() const
     {
-        return(matchmode);
+        return matchmode;
     }
 
     // Change wildcard matching mode
@@ -304,12 +315,17 @@ public:
     // Return file associations
     FileDict* getAssociations() const
     {
-        return(associations);
+        return associations;
     }
+
+    // Remove items
+    void removeItems(TreeItem*, TreeItem*, FXbool);
+
+    // Display tooltip
+    long onQueryTip(FXObject*, FXSelector, void*);
 
     // Destructor
     virtual ~DirList();
 };
-
 
 #endif

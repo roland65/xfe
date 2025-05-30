@@ -31,8 +31,8 @@ enum
 // To search visited inodes
 struct inodelist
 {
-    ino_t st_ino;
-    inodelist* next;
+    ino_t st_ino = 0;
+    inodelist* next = NULL;
 };
 
 
@@ -41,7 +41,11 @@ class File : public DialogBox
     FXDECLARE(File)
 
 private:
-    FXWindow* ownerwin;
+    FXuint op = 0;
+    FXWindow* ownerwin = NULL;
+    FXulong totalsourcesize = 0;
+    FXString copysuffix;
+    FXuint copysuffix_pos = 0;
 
 protected:
 
@@ -49,50 +53,55 @@ protected:
     // Force check of timeout for progress dialog (to avoid latency problems)
     int checkTimeout(void)
     {
-        if (getApp()->hasTimeout(this, File::ID_TIMEOUT))
+        if (getApp()->hasTimeout(this, File::ID_PROGRESSBAR))
         {
-            if (getApp()->remainingTimeout(this, File::ID_TIMEOUT) == 0)
+            if (getApp()->remainingTimeout(this, File::ID_PROGRESSBAR) == 0)
             {
-                getApp()->removeTimeout(this, File::ID_TIMEOUT);
+                getApp()->removeTimeout(this, File::ID_PROGRESSBAR);
                 show(PLACEMENT_OWNER);
 
                 getApp()->forceRefresh();
                 getApp()->flush();
-                return(1);
+                return 1;
             }
         }
-        return(0);
+        return 0;
     }
 
     void forceTimeout(void);
     void restartTimeout(void);
-    FXlong fullread(int fd, FXuchar* ptr, FXlong len);
-    FXlong fullwrite(int fd, const FXuchar* ptr, FXlong len);
+    FXlong fullread(int, FXuchar*, FXlong);
+    FXlong fullwrite(int, const FXuchar*, FXlong);
 
-    FXuint getOverwriteAnswer(FXString, FXString);
-    int copyfile(const FXString& source, const FXString& target, const FXbool preserve_date);
-    int copyrec(const FXString& source, const FXString& target, inodelist* inodes, const FXbool preserve_date);
-    int copydir(const FXString& source, const FXString& target, struct stat& parentstatus, inodelist* inodes, const FXbool preserve_date);
-    int rchmod(char* path, char* file, mode_t mode, const FXbool dironly, const FXbool fileonly);
-    int rchown(char* path, char* file, uid_t uid, gid_t gid, const FXbool dironly, const FXbool fileonly);
+    FXuint getOverwriteAnswer(FXString, FXString, FXbool restart_timeout = true);
+    int copyfile(const FXString&, const FXString&, const FXString&, const FXulong, const FXulong, const FXbool);
+    int copyrec(const FXString&, const FXString&, const FXString&, const FXulong, const FXulong, inodelist*,
+                const FXbool);
+    int copydir(const FXString&, const FXString&, const FXString&, const FXulong, const FXulong, struct stat&,
+                inodelist*, const FXbool);
+    int rchmod(char*, char*, mode_t, const FXbool, const FXbool);
+    int rchown(char*, char*, uid_t, gid_t, const FXbool, const FXbool);
 
-    FXLabel*       uplabel;
-    FXLabel*       downlabel;
+    FXLabel* uplabel = NULL;
+    FXLabel* downlabel = NULL;
+    FXLabel* datalabel = NULL;
+    FXLabel* timelabel = NULL;
     FXString datatext;
-    FXLabel*       datalabel;
-    FXProgressBar* progressbar;
-    FXButton*      cancelButton;
-    FXbool overwrite;
-    FXbool overwrite_all;
-    FXbool skip_all;
-    FXbool cancelled;
-    MessageBox*    mbox;
-    FXlong totaldata;
+    FXString timetext;
+    FXProgressBar* progressbar = NULL;
+    FXButton* cancelButton = NULL;
+    FXbool overwrite = false;
+    FXbool overwrite_all = false;
+    FXbool skip_all = false;
+    FXbool cancelled = false;
+    MessageBox* mbox = NULL;
+    FXlong totaldataread = 0;
     FXuint numsel = 0;
+
 public:
-    File() : uplabel(NULL), downlabel(NULL), datalabel(NULL), progressbar(NULL), cancelButton(NULL), overwrite(false),
-        overwrite_all(false), skip_all(false), cancelled(false), mbox(NULL), totaldata(0)
-    {}
+    File()
+    {
+    }
     ~File();
     void create();
 
@@ -101,13 +110,15 @@ public:
     enum
     {
         ID_CANCEL_BUTTON=DialogBox::ID_LAST,
-        ID_TIMEOUT,
+        ID_PROGRESSBAR,
+        ID_SOURCESIZE,
         ID_LAST
     };
 
+
     FXbool isCancelled()
     {
-        return(cancelled);
+        return cancelled;
     }
 
     void hideProgressDialog()
@@ -120,24 +131,39 @@ public:
         restartTimeout();
     }
 
-    int copy(const FXString& source, const FXString& target, const FXbool confirm_dialog = true, const FXbool preserve_date = true);
-    int rename(const FXString& source, const FXString& target);
-    int move(const FXString& source, const FXString& target, const FXbool restore = false);
-    int symlink(const FXString& source, const FXString& target);
-    int remove(const FXString& file);
+    FXulong getTotalSourceSize() const
+    {
+        return totalsourcesize;
+    }
 
-    int chmod(char* path, char* file, mode_t mode, const FXbool rec, const FXbool dironly = false, const FXbool fileonly = false);
-    int chown(char* path, char* file, uid_t uid, gid_t gid, const FXbool rec, const FXbool dironly = false, const FXbool fileonly = false);
-    int extract(const FXString name, const FXString dir, const FXString cmd);
-    int archive(const FXString name, const FXString cmd);
+    void setTotalSourceSize(FXulong size)
+    {
+        totalsourcesize = size;
+    }
+
+    int copy(const FXString&, const FXString&, const FXString&, const FXulong, const FXulong,
+             const FXbool confirm_dialog = true, const FXbool preserve_date = true);
+    int fmove(const FXString&, const FXString&, const FXString& hsourcesize = "",
+              const FXulong sourcesize = 0, const FXulong tstart = 0, const FXbool restore = false);
+    int rename(const FXString&, const FXString&);
+    int symlink(const FXString&, const FXString&);
+    int remove(const FXString&);
+
+    FXString sourcesize(const FXString, FXulong*, const FXbool url = false);
+
+    int chmod(char*, char*, mode_t, const FXbool, const FXbool dironly = false, const FXbool fileonly = false);
+    int chown(char*, char*, uid_t, gid_t, const FXbool, const FXbool dironly = false, const FXbool fileonly = false);
+    int extract(const FXString, const FXString, const FXString);
+    int archive(const FXString, const FXString);
 
 #if defined(linux)
-    int mount(const FXString dir, const FXString msg, const FXString cmd, const FXuint op);
-    int pkgInstall(const FXString name, const FXString cmd);
-    int pkgUninstall(const FXString name, const FXString cmd);
+    int mount(const FXString, const FXString, const FXString);
+    int pkgInstall(const FXString, const FXString);
+    int pkgUninstall(const FXString, const FXString);
 
 #endif
     long onCmdCancel(FXObject*, FXSelector, void*);
     long onTimeout(FXObject*, FXSelector, void*);
+    long onSourceSizeRefresh(FXObject*, FXSelector, void*);
 };
 #endif

@@ -22,6 +22,7 @@
 #include "icons.h"
 #include "xfeutils.h"
 #include "startupnotification.h"
+#include "ColorSelector.h"
 #include "FileDialog.h"
 #include "FontDialog.h"
 #include "MessageBox.h"
@@ -29,9 +30,9 @@
 #include "WriteWindow.h"
 #include "XFileWrite.h"
 
-
-extern FXbool allowPopupScroll;
-FXbool save_win_pos;
+// Filter history
+char FilterHistory[FILTER_HIST_SIZE][MAX_PATTERN_SIZE];
+int FilterNum = 0;
 
 
 FXIMPLEMENT_ABSTRACT(FXTextCommand, FXCommand, NULL, 0)
@@ -39,7 +40,7 @@ FXIMPLEMENT_ABSTRACT(FXTextCommand, FXCommand, NULL, 0)
 // Return size of record plus any data kept here
 FXuint FXTextCommand::size() const
 {
-    return(sizeof(FXTextCommand) + ndel);
+    return sizeof(FXTextCommand) + ndel;
 }
 
 
@@ -102,7 +103,8 @@ void FXTextDelete::redo()
 FXIMPLEMENT_ABSTRACT(FXTextReplace, FXTextCommand, NULL, 0)
 
 // Replace command
-FXTextReplace::FXTextReplace(FXText* txt, int p, int nd, int ni, const char* del, const char* ins) : FXTextCommand(txt, p, nd, ni)
+FXTextReplace::FXTextReplace(FXText* txt, int p, int nd, int ni, const char* del, const char* ins) :
+    FXTextCommand(txt, p, nd, ni)
 {
     FXMALLOC(&buffer, char, nd + ni);
     memcpy(buffer, del, nd);
@@ -168,7 +170,8 @@ FXDEFMAP(Preferences) PreferencesMap[] =
 FXIMPLEMENT(Preferences, DialogBox, PreferencesMap, ARRAYNUMBER(PreferencesMap))
 
 // Construct
-Preferences::Preferences(WriteWindow* owner) : DialogBox(owner, _("XFileWrite Preferences"), DECOR_TITLE | DECOR_BORDER | DECOR_MAXIMIZE | DECOR_STRETCHABLE | DECOR_CLOSE)
+Preferences::Preferences(WriteWindow* owner) : DialogBox(owner, _("XFileWrite Preferences"),
+                                                         DECOR_TITLE | DECOR_CLOSE | DECOR_BORDER | DECOR_STRETCHABLE)
 {
     // Get the editor text widget from the owner
     editwin = owner;
@@ -178,76 +181,93 @@ Preferences::Preferences(WriteWindow* owner) : DialogBox(owner, _("XFileWrite Pr
     setTitle(_("XFileWrite Preferences"));
 
     // Buttons
-    FXHorizontalFrame* buttons = new FXHorizontalFrame(this, LAYOUT_SIDE_BOTTOM | LAYOUT_FILL_X, 0, 0, 0, 0, 10, 10, 5, 5);
+    FXHorizontalFrame* buttons = new FXHorizontalFrame(this, LAYOUT_SIDE_BOTTOM | LAYOUT_FILL_X,
+                                                       0, 0, 0, 0, 10, 10, 5, 5);
 
     // Contents
-    FXHorizontalFrame* contents = new FXHorizontalFrame(this, LAYOUT_SIDE_TOP | FRAME_NONE | LAYOUT_FILL_X | LAYOUT_FILL_Y | PACK_UNIFORM_WIDTH);
+    FXHorizontalFrame* contents = new FXHorizontalFrame(this, LAYOUT_SIDE_TOP | FRAME_NONE | LAYOUT_FILL_X |
+                                                        LAYOUT_FILL_Y | PACK_UNIFORM_WIDTH);
 
     // Accept
-    FXButton* ok = new FXButton(buttons, _("&Accept"), NULL, this, Preferences::ID_ACCEPT, FRAME_RAISED | FRAME_THICK | LAYOUT_RIGHT | LAYOUT_CENTER_Y, 0, 0, 0, 0, 20, 20);
+    FXButton* ok = new FXButton(buttons, _("&Accept"), NULL, this, Preferences::ID_ACCEPT, FRAME_GROOVE |
+                                LAYOUT_RIGHT | LAYOUT_CENTER_Y, 0, 0, 0, 0, 20, 20);
     ok->addHotKey(KEY_Return);
 
     // Cancel
-    new FXButton(buttons, _("&Cancel"), NULL, this, Preferences::ID_CANCEL, FRAME_RAISED | FRAME_THICK | LAYOUT_RIGHT | LAYOUT_CENTER_Y, 0, 0, 0, 0, 20, 20);
+    new FXButton(buttons, _("&Cancel"), NULL, this, Preferences::ID_CANCEL, FRAME_GROOVE | LAYOUT_RIGHT |
+                 LAYOUT_CENTER_Y, 0, 0, 0, 0, 20, 20);
 
     // Switcher
     FXTabBook* tabbook = new FXTabBook(contents, NULL, 0, LAYOUT_FILL_X | LAYOUT_FILL_Y | LAYOUT_RIGHT);
 
     // First tab - Editor
     new FXTabItem(tabbook, _("&Editor"), NULL);
-    FXVerticalFrame* editor = new FXVerticalFrame(tabbook, FRAME_RAISED);
-    FXGroupBox*      group = new FXGroupBox(editor, _("Text"), GROUPBOX_TITLE_LEFT | FRAME_GROOVE | LAYOUT_FILL_X);
-    FXMatrix*        matrix = new FXMatrix(group, 2, MATRIX_BY_COLUMNS | LAYOUT_SIDE_TOP | LAYOUT_FILL_X | LAYOUT_FILL_Y);
+    FXVerticalFrame* editor = new FXVerticalFrame(tabbook, FRAME_NONE);
+    FXGroupBox* group = new FXGroupBox(editor, _("Text"), GROUPBOX_TITLE_LEFT | FRAME_GROOVE | LAYOUT_FILL_X);
+    FXMatrix* matrix = new FXMatrix(group, 2, MATRIX_BY_COLUMNS | LAYOUT_SIDE_TOP | LAYOUT_FILL_X | LAYOUT_FILL_Y);
 
     new FXLabel(matrix, _("Wrap margin:"), NULL, JUSTIFY_LEFT | LAYOUT_FILL_COLUMN | LAYOUT_FILL_ROW);
-    wrapmargin = new FXTextField(matrix, 10, NULL, 0, TEXTFIELD_INTEGER | JUSTIFY_RIGHT | FRAME_SUNKEN | FRAME_THICK | LAYOUT_CENTER_Y | LAYOUT_FILL_X | LAYOUT_FILL_ROW, 0, 0, 0, 0, 2, 2, 1, 1);
+    wrapmargin = new FXTextField(matrix, 10, NULL, 0, TEXTFIELD_NORMAL | TEXTFIELD_INTEGER | JUSTIFY_RIGHT |
+                                 LAYOUT_CENTER_Y | LAYOUT_FILL_X | LAYOUT_FILL_ROW, 0, 0, 0, 0, 2, 2, 1, 1);
     int wrapcols = getApp()->reg().readIntEntry("OPTIONS", "wrapcols", 80);
     wrapmargin->setText(FXStringVal(wrapcols));
 
     new FXLabel(matrix, _("Tabulation size:"), NULL, JUSTIFY_LEFT | LAYOUT_FILL_COLUMN | LAYOUT_FILL_ROW);
-    tabsize = new FXTextField(matrix, 10, NULL, 0, TEXTFIELD_INTEGER | JUSTIFY_RIGHT | FRAME_SUNKEN | FRAME_THICK | LAYOUT_CENTER_Y | LAYOUT_FILL_X | LAYOUT_FILL_ROW, 0, 0, 0, 0, 2, 2, 1, 1);
+    tabsize = new FXTextField(matrix, 10, NULL, 0, TEXTFIELD_NORMAL | TEXTFIELD_INTEGER | JUSTIFY_RIGHT |
+                              LAYOUT_CENTER_Y | LAYOUT_FILL_X | LAYOUT_FILL_ROW, 0, 0, 0, 0, 2, 2, 1, 1);
     int tabcols = getApp()->reg().readIntEntry("OPTIONS", "tabcols", 8);
     tabsize->setText(FXStringVal(tabcols));
 
-    new FXLabel(matrix, _("Strip carriage returns:") + (FXString)"                ", NULL, JUSTIFY_LEFT | LAYOUT_FILL_COLUMN | LAYOUT_FILL_ROW);
-    stripcr = new FXCheckButton(matrix, FXString(" "), NULL, 0, LAYOUT_LEFT | LAYOUT_CENTER_Y | LAYOUT_FILL_ROW, 0, 0, 0, 0, 0, 0, 0, 0);
+    new FXLabel(matrix, _("Strip carriage returns:") + (FXString)"                ", NULL, JUSTIFY_LEFT |
+                LAYOUT_FILL_COLUMN | LAYOUT_FILL_ROW);
+    stripcr = new FXCheckButton(matrix, FXString(" "), NULL, 0, LAYOUT_LEFT | LAYOUT_CENTER_Y |
+                                LAYOUT_FILL_ROW, 0, 0, 0, 0, 0, 0, 0, 0);
     int stripreturn = getApp()->reg().readIntEntry("OPTIONS", "stripreturn", false);
     stripcr->setCheck(stripreturn);
 
     // Second tab - Colors
     new FXTabItem(tabbook, _("&Colors"), NULL);
-    FXVerticalFrame* colors = new FXVerticalFrame(tabbook, FRAME_RAISED);
+    FXVerticalFrame* colors = new FXVerticalFrame(tabbook, FRAME_NONE);
     group = new FXGroupBox(colors, _("Text"), GROUPBOX_TITLE_LEFT | FRAME_GROOVE | LAYOUT_FILL_X);
     FXMatrix* matrix1 = new FXMatrix(group, 2, MATRIX_BY_COLUMNS | LAYOUT_SIDE_TOP | LAYOUT_FILL_X | LAYOUT_FILL_Y);
     group = new FXGroupBox(colors, _("Lines"), GROUPBOX_TITLE_LEFT | FRAME_GROOVE | LAYOUT_FILL_X);
     FXMatrix* matrix2 = new FXMatrix(group, 2, MATRIX_BY_COLUMNS | LAYOUT_SIDE_TOP | LAYOUT_FILL_X | LAYOUT_FILL_Y);
 
     new FXLabel(matrix1, _("Background:"), NULL, JUSTIFY_LEFT | LAYOUT_FILL_COLUMN | LAYOUT_FILL_ROW);
-    new FXColorWell(matrix1, FXRGB(0, 0, 0), this, Preferences::ID_TEXT_BACK, FRAME_SUNKEN | FRAME_THICK | LAYOUT_LEFT | LAYOUT_CENTER_Y | LAYOUT_FIX_WIDTH | LAYOUT_FIX_HEIGHT | LAYOUT_FILL_ROW, 0, 0, 40, 24);
+    new ColorWell(matrix1, FXRGB(0, 0, 0), this, Preferences::ID_TEXT_BACK, LAYOUT_LEFT | LAYOUT_CENTER_Y |
+                  LAYOUT_FIX_WIDTH | LAYOUT_FIX_HEIGHT | LAYOUT_FILL_ROW, 0, 0, 40, 24);
 
     new FXLabel(matrix1, _("Text:"), NULL, JUSTIFY_LEFT | LAYOUT_FILL_COLUMN | LAYOUT_FILL_ROW);
-    new FXColorWell(matrix1, FXRGB(0, 0, 0), this, Preferences::ID_TEXT_FORE, FRAME_SUNKEN | FRAME_THICK | LAYOUT_LEFT | LAYOUT_CENTER_Y | LAYOUT_FIX_WIDTH | LAYOUT_FIX_HEIGHT | LAYOUT_FILL_ROW, 0, 0, 40, 24);
+    new ColorWell(matrix1, FXRGB(0, 0, 0), this, Preferences::ID_TEXT_FORE, LAYOUT_LEFT | LAYOUT_CENTER_Y |
+                  LAYOUT_FIX_WIDTH | LAYOUT_FIX_HEIGHT | LAYOUT_FILL_ROW, 0, 0, 40, 24);
 
     new FXLabel(matrix1, _("Selected text background:"), NULL, JUSTIFY_LEFT | LAYOUT_FILL_COLUMN | LAYOUT_FILL_ROW);
-    new FXColorWell(matrix1, FXRGB(0, 0, 0), this, Preferences::ID_TEXT_SELBACK, FRAME_SUNKEN | FRAME_THICK | LAYOUT_LEFT | LAYOUT_CENTER_Y | LAYOUT_FIX_WIDTH | LAYOUT_FIX_HEIGHT | LAYOUT_FILL_ROW, 0, 0, 40, 24);
+    new ColorWell(matrix1, FXRGB(0, 0, 0), this, Preferences::ID_TEXT_SELBACK, LAYOUT_LEFT | LAYOUT_CENTER_Y |
+                  LAYOUT_FIX_WIDTH | LAYOUT_FIX_HEIGHT | LAYOUT_FILL_ROW, 0, 0, 40, 24);
 
     new FXLabel(matrix1, _("Selected text:"), NULL, JUSTIFY_LEFT | LAYOUT_FILL_COLUMN | LAYOUT_FILL_ROW);
-    new FXColorWell(matrix1, FXRGB(0, 0, 0), this, Preferences::ID_TEXT_SELFORE, FRAME_SUNKEN | FRAME_THICK | LAYOUT_LEFT | LAYOUT_CENTER_Y | LAYOUT_FIX_WIDTH | LAYOUT_FIX_HEIGHT | LAYOUT_FILL_ROW, 0, 0, 40, 24);
+    new ColorWell(matrix1, FXRGB(0, 0, 0), this, Preferences::ID_TEXT_SELFORE, LAYOUT_LEFT | LAYOUT_CENTER_Y |
+                  LAYOUT_FIX_WIDTH | LAYOUT_FIX_HEIGHT | LAYOUT_FILL_ROW, 0, 0, 40, 24);
 
     new FXLabel(matrix1, _("Highlighted text background:"), NULL, JUSTIFY_LEFT | LAYOUT_FILL_COLUMN | LAYOUT_FILL_ROW);
-    new FXColorWell(matrix1, FXRGB(0, 0, 0), this, Preferences::ID_TEXT_HILITEBACK, FRAME_SUNKEN | FRAME_THICK | LAYOUT_LEFT | LAYOUT_CENTER_Y | LAYOUT_FIX_WIDTH | LAYOUT_FIX_HEIGHT | LAYOUT_FILL_ROW, 0, 0, 40, 24);
+    new ColorWell(matrix1, FXRGB(0, 0, 0), this, Preferences::ID_TEXT_HILITEBACK, LAYOUT_LEFT | LAYOUT_CENTER_Y |
+                  LAYOUT_FIX_WIDTH | LAYOUT_FIX_HEIGHT | LAYOUT_FILL_ROW, 0, 0, 40, 24);
 
     new FXLabel(matrix1, _("Highlighted text:"), NULL, JUSTIFY_LEFT | LAYOUT_FILL_COLUMN | LAYOUT_FILL_ROW);
-    new FXColorWell(matrix1, FXRGB(0, 0, 0), this, Preferences::ID_TEXT_HILITEFORE, FRAME_SUNKEN | FRAME_THICK | LAYOUT_LEFT | LAYOUT_CENTER_Y | LAYOUT_FIX_WIDTH | LAYOUT_FIX_HEIGHT | LAYOUT_FILL_ROW, 0, 0, 40, 24);
+    new ColorWell(matrix1, FXRGB(0, 0, 0), this, Preferences::ID_TEXT_HILITEFORE, LAYOUT_LEFT | LAYOUT_CENTER_Y |
+                  LAYOUT_FIX_WIDTH | LAYOUT_FIX_HEIGHT | LAYOUT_FILL_ROW, 0, 0, 40, 24);
 
     new FXLabel(matrix1, _("Cursor:"), NULL, JUSTIFY_LEFT | LAYOUT_FILL_COLUMN | LAYOUT_FILL_ROW);
-    new FXColorWell(matrix1, FXRGB(0, 0, 0), this, Preferences::ID_TEXT_CURSOR, FRAME_SUNKEN | FRAME_THICK | LAYOUT_LEFT | LAYOUT_CENTER_Y | LAYOUT_FIX_WIDTH | LAYOUT_FIX_HEIGHT | LAYOUT_FILL_ROW, 0, 0, 40, 24);
+    new ColorWell(matrix1, FXRGB(0, 0, 0), this, Preferences::ID_TEXT_CURSOR, LAYOUT_LEFT | LAYOUT_CENTER_Y |
+                  LAYOUT_FIX_WIDTH | LAYOUT_FIX_HEIGHT | LAYOUT_FILL_ROW, 0, 0, 40, 24);
 
     new FXLabel(matrix2, _("Line numbers background:"), NULL, JUSTIFY_LEFT | LAYOUT_FILL_COLUMN | LAYOUT_FILL_ROW);
-    new FXColorWell(matrix2, FXRGB(0, 0, 0), this, Preferences::ID_TEXT_NUMBACK, FRAME_SUNKEN | FRAME_THICK | LAYOUT_LEFT | LAYOUT_CENTER_Y | LAYOUT_FIX_WIDTH | LAYOUT_FIX_HEIGHT | LAYOUT_FILL_ROW, 0, 0, 40, 24);
+    new ColorWell(matrix2, FXRGB(0, 0, 0), this, Preferences::ID_TEXT_NUMBACK, LAYOUT_LEFT | LAYOUT_CENTER_Y |
+                  LAYOUT_FIX_WIDTH | LAYOUT_FIX_HEIGHT | LAYOUT_FILL_ROW, 0, 0, 40, 24);
 
     new FXLabel(matrix2, _("Line numbers foreground:"), NULL, JUSTIFY_LEFT | LAYOUT_FILL_COLUMN | LAYOUT_FILL_ROW);
-    new FXColorWell(matrix2, FXRGB(0, 0, 0), this, Preferences::ID_TEXT_NUMFORE, FRAME_SUNKEN | FRAME_THICK | LAYOUT_LEFT | LAYOUT_CENTER_Y | LAYOUT_FIX_WIDTH | LAYOUT_FIX_HEIGHT | LAYOUT_FILL_ROW, 0, 0, 40, 24);
+    new ColorWell(matrix2, FXRGB(0, 0, 0), this, Preferences::ID_TEXT_NUMFORE, LAYOUT_LEFT | LAYOUT_CENTER_Y |
+                  LAYOUT_FIX_WIDTH | LAYOUT_FIX_HEIGHT | LAYOUT_FILL_ROW, 0, 0, 40, 24);
 
     // Class variable initializations
     stripcr_prev = false;
@@ -263,7 +283,7 @@ Preferences::Preferences(WriteWindow* owner) : DialogBox(owner, _("XFileWrite Pr
 }
 
 
-long Preferences::onCmdAccept(FXObject* o, FXSelector s, void* p)
+long Preferences::onCmdAccept(FXObject* sender, FXSelector sel, void* ptr)
 {
     // Update preferences to their new values
 
@@ -283,13 +303,13 @@ long Preferences::onCmdAccept(FXObject* o, FXSelector s, void* p)
     // Finally, update the registry
     getApp()->reg().write();
 
-    DialogBox::onCmdAccept(o, s, p);
+    DialogBox::onCmdAccept(sender, sel, ptr);
 
-    return(1);
+    return 1;
 }
 
 
-long Preferences::onCmdCancel(FXObject* o, FXSelector s, void* p)
+long Preferences::onCmdCancel(FXObject* sender, FXSelector sel, void* ptr)
 {
     // Reset preferences to their previous values
 
@@ -309,8 +329,8 @@ long Preferences::onCmdCancel(FXObject* o, FXSelector s, void* p)
     editor->setBarColor(barcolor_prev);
     editor->setNumberColor(numbercolor_prev);
 
-    DialogBox::onCmdCancel(o, s, p);
-    return(1);
+    DialogBox::onCmdCancel(sender, sel, ptr);
+    return 1;
 }
 
 
@@ -339,7 +359,7 @@ FXuint Preferences::execute(FXuint placement)
     create();
     show(placement);
     getApp()->refresh();
-    return(getApp()->runModalFor(this));
+    return getApp()->runModalFor(this);
 }
 
 
@@ -347,7 +367,7 @@ FXuint Preferences::execute(FXuint placement)
 long Preferences::onCmdTextForeColor(FXObject*, FXSelector, void* ptr)
 {
     editor->setTextColor((FXColor)(FXuval)ptr);
-    return(1);
+    return 1;
 }
 
 
@@ -357,7 +377,7 @@ long Preferences::onUpdTextForeColor(FXObject* sender, FXSelector, void*)
     FXColor color = editor->getTextColor();
 
     sender->handle(this, FXSEL(SEL_COMMAND, ID_SETINTVALUE), (void*)&color);
-    return(1);
+    return 1;
 }
 
 
@@ -365,7 +385,7 @@ long Preferences::onUpdTextForeColor(FXObject* sender, FXSelector, void*)
 long Preferences::onCmdTextBackColor(FXObject*, FXSelector, void* ptr)
 {
     editor->setBackColor((FXColor)(FXuval)ptr);
-    return(1);
+    return 1;
 }
 
 
@@ -375,7 +395,7 @@ long Preferences::onUpdTextBackColor(FXObject* sender, FXSelector, void*)
     FXColor color = editor->getBackColor();
 
     sender->handle(this, FXSEL(SEL_COMMAND, ID_SETINTVALUE), (void*)&color);
-    return(1);
+    return 1;
 }
 
 
@@ -383,7 +403,7 @@ long Preferences::onUpdTextBackColor(FXObject* sender, FXSelector, void*)
 long Preferences::onCmdTextSelForeColor(FXObject*, FXSelector, void* ptr)
 {
     editor->setSelTextColor((FXColor)(FXuval)ptr);
-    return(1);
+    return 1;
 }
 
 
@@ -393,7 +413,7 @@ long Preferences::onUpdTextSelForeColor(FXObject* sender, FXSelector, void*)
     FXColor color = editor->getSelTextColor();
 
     sender->handle(this, FXSEL(SEL_COMMAND, ID_SETINTVALUE), (void*)&color);
-    return(1);
+    return 1;
 }
 
 
@@ -401,7 +421,7 @@ long Preferences::onUpdTextSelForeColor(FXObject* sender, FXSelector, void*)
 long Preferences::onCmdTextSelBackColor(FXObject*, FXSelector, void* ptr)
 {
     editor->setSelBackColor((FXColor)(FXuval)ptr);
-    return(1);
+    return 1;
 }
 
 
@@ -411,7 +431,7 @@ long Preferences::onUpdTextSelBackColor(FXObject* sender, FXSelector, void*)
     FXColor color = editor->getSelBackColor();
 
     sender->handle(this, FXSEL(SEL_COMMAND, ID_SETINTVALUE), (void*)&color);
-    return(1);
+    return 1;
 }
 
 
@@ -419,7 +439,7 @@ long Preferences::onUpdTextSelBackColor(FXObject* sender, FXSelector, void*)
 long Preferences::onCmdTextHiliteForeColor(FXObject*, FXSelector, void* ptr)
 {
     editor->setHiliteTextColor((FXColor)(FXuval)ptr);
-    return(1);
+    return 1;
 }
 
 
@@ -429,7 +449,7 @@ long Preferences::onUpdTextHiliteForeColor(FXObject* sender, FXSelector, void*)
     FXColor color = editor->getHiliteTextColor();
 
     sender->handle(this, FXSEL(SEL_COMMAND, ID_SETINTVALUE), (void*)&color);
-    return(1);
+    return 1;
 }
 
 
@@ -437,7 +457,7 @@ long Preferences::onUpdTextHiliteForeColor(FXObject* sender, FXSelector, void*)
 long Preferences::onCmdTextHiliteBackColor(FXObject*, FXSelector, void* ptr)
 {
     editor->setHiliteBackColor((FXColor)(FXuval)ptr);
-    return(1);
+    return 1;
 }
 
 
@@ -447,7 +467,7 @@ long Preferences::onUpdTextHiliteBackColor(FXObject* sender, FXSelector, void*)
     FXColor color = editor->getHiliteBackColor();
 
     sender->handle(this, FXSEL(SEL_COMMAND, ID_SETINTVALUE), (void*)&color);
-    return(1);
+    return 1;
 }
 
 
@@ -455,7 +475,7 @@ long Preferences::onUpdTextHiliteBackColor(FXObject* sender, FXSelector, void*)
 long Preferences::onCmdTextCursorColor(FXObject*, FXSelector, void* ptr)
 {
     editor->setCursorColor((FXColor)(FXuval)ptr);
-    return(1);
+    return 1;
 }
 
 
@@ -465,7 +485,7 @@ long Preferences::onUpdTextCursorColor(FXObject* sender, FXSelector, void*)
     FXColor color = editor->getCursorColor();
 
     sender->handle(sender, FXSEL(SEL_COMMAND, FXWindow::ID_SETINTVALUE), (void*)&color);
-    return(1);
+    return 1;
 }
 
 
@@ -473,7 +493,7 @@ long Preferences::onUpdTextCursorColor(FXObject* sender, FXSelector, void*)
 long Preferences::onCmdTextBarColor(FXObject*, FXSelector, void* ptr)
 {
     editor->setBarColor((FXColor)(FXuval)ptr);
-    return(1);
+    return 1;
 }
 
 
@@ -483,7 +503,7 @@ long Preferences::onUpdTextBarColor(FXObject* sender, FXSelector, void*)
     FXColor color = editor->getBarColor();
 
     sender->handle(this, FXSEL(SEL_COMMAND, ID_SETINTVALUE), (void*)&color);
-    return(1);
+    return 1;
 }
 
 
@@ -491,7 +511,7 @@ long Preferences::onUpdTextBarColor(FXObject* sender, FXSelector, void*)
 long Preferences::onCmdTextNumberColor(FXObject*, FXSelector, void* ptr)
 {
     editor->setNumberColor((FXColor)(FXuval)ptr);
-    return(1);
+    return 1;
 }
 
 
@@ -501,7 +521,7 @@ long Preferences::onUpdTextNumberColor(FXObject* sender, FXSelector, void*)
     FXColor color = editor->getNumberColor();
 
     sender->handle(this, FXSEL(SEL_COMMAND, ID_SETINTVALUE), (void*)&color);
-    return(1);
+    return 1;
 }
 
 
@@ -552,7 +572,9 @@ FXDEFMAP(WriteWindow) WriteWindowMap[] =
 FXIMPLEMENT(WriteWindow, FXMainWindow, WriteWindowMap, ARRAYNUMBER(WriteWindowMap))
 
 // Make some windows
-WriteWindow::WriteWindow(XFileWrite* a, const FXString& file, const FXbool _readonly) : FXMainWindow(a, "XFileWrite", NULL, NULL, DECOR_ALL), mrufiles(a)
+WriteWindow::WriteWindow(XFileWrite* a, const FXString& file, const FXbool _readonly) :
+    FXMainWindow(a, "XFileWrite", NULL, NULL, DECOR_TITLE | DECOR_MINIMIZE |
+                 DECOR_MAXIMIZE | DECOR_CLOSE | DECOR_BORDER | DECOR_STRETCHABLE), mrufiles(a)
 {
     FXHotKey hotkey;
     FXString key;
@@ -567,10 +589,10 @@ WriteWindow::WriteWindow(XFileWrite* a, const FXString& file, const FXbool _read
     setIcon(xfwicon);
 
     // Status bar
-    statusbar = new FXStatusBar(this, LAYOUT_SIDE_BOTTOM | LAYOUT_FILL_X | STATUSBAR_WITH_DRAGCORNER | FRAME_RAISED);
+    statusbar = new FXStatusBar(this, LAYOUT_SIDE_BOTTOM | LAYOUT_FILL_X | STATUSBAR_WITH_DRAGCORNER | FRAME_NONE);
 
     // Make menu bar
-    menubar = new FXMenuBar(this, LAYOUT_DOCK_NEXT | LAYOUT_SIDE_TOP | LAYOUT_FILL_X | FRAME_RAISED);
+    menubar = new FXMenuBar(this, LAYOUT_DOCK_NEXT | LAYOUT_SIDE_TOP | LAYOUT_FILL_X | FRAME_NONE);
 
     // Sites where to dock
     FXDockSite* topdock = new FXDockSite(this, LAYOUT_SIDE_TOP | LAYOUT_FILL_X);
@@ -579,8 +601,9 @@ WriteWindow::WriteWindow(XFileWrite* a, const FXString& file, const FXbool _read
     new FXDockSite(this, LAYOUT_SIDE_RIGHT | LAYOUT_FILL_Y);
 
     // Toolbar
-    dragshell = new FXToolBarShell(this, FRAME_RAISED);
-    toolbar = new FXToolBar(topdock, dragshell, LAYOUT_DOCK_NEXT | LAYOUT_SIDE_TOP | LAYOUT_FILL_X | LAYOUT_FILL_Y | FRAME_RAISED);
+    dragshell = new FXToolBarShell(this, FRAME_NONE);
+    toolbar = new FXToolBar(topdock, dragshell,
+                            LAYOUT_DOCK_NEXT | LAYOUT_SIDE_TOP | LAYOUT_FILL_X | LAYOUT_FILL_Y | FRAME_NONE);
     new FXToolBarGrip(toolbar, toolbar, FXToolBar::ID_TOOLBARGRIP, TOOLBARGRIP_DOUBLE);
 
     // File menu
@@ -612,7 +635,8 @@ WriteWindow::WriteWindow(XFileWrite* a, const FXString& file, const FXbool _read
     new FXMenuTitle(menubar, _("&Help"), NULL, helpmenu, LAYOUT_LEFT);
 
     // Make editor window
-    FXHorizontalFrame* textbox = new FXHorizontalFrame(this, FRAME_RAISED | LAYOUT_FILL_X | LAYOUT_FILL_Y, 0, 0, 0, 0, 0, 0, 0, 0);
+    FXHorizontalFrame* textbox = new FXHorizontalFrame(this, FRAME_NONE | LAYOUT_FILL_X | LAYOUT_FILL_Y, 0, 0, 0, 0, 0,
+                                                       0, 0, 0);
     editor = new FXText(textbox, this, ID_TEXT, LAYOUT_FILL_X | LAYOUT_FILL_Y | TEXT_SHOWACTIVE);
     editor->setHiliteMatchTime(2000);
     editor->setTextStyle(editor->getTextStyle() | TEXT_FIXEDWRAP);
@@ -629,26 +653,31 @@ WriteWindow::WriteWindow(XFileWrite* a, const FXString& file, const FXbool _read
     }
 
     // Show insert mode in status bar
-    FXLabel* overstrike = new FXLabel(statusbar, FXString::null, NULL, FRAME_SUNKEN | LAYOUT_RIGHT | LAYOUT_CENTER_Y, 0, 0, 0, 0, 2, 2, 1, 1);
+    FXLabel* overstrike = new FXLabel(statusbar, FXString::null, NULL, LAYOUT_RIGHT | LAYOUT_CENTER_Y, 0, 0, 0, 0, 2, 2,
+                                      1, 1);
     overstrike->setTarget(this);
     overstrike->setSelector(ID_OVERSTRIKE);
 
     // Show size of text in status bar
-    FXTextField* numchars = new FXTextField(statusbar, 7, this, ID_NUM_ROWS, TEXTFIELD_READONLY | FRAME_SUNKEN | JUSTIFY_RIGHT | LAYOUT_RIGHT | LAYOUT_CENTER_Y, 0, 0, 0, 0, 2, 2, 1, 1);
+    FXTextField* numchars = new FXTextField(statusbar, 7, this, ID_NUM_ROWS,
+                                            TEXTFIELD_NORMAL | TEXTFIELD_READONLY | JUSTIFY_RIGHT | LAYOUT_RIGHT |
+                                            LAYOUT_CENTER_Y, 0, 0, 0, 0, 2, 2, 1, 1);
     numchars->setBackColor(statusbar->getBackColor());
 
     // Caption before number
     new FXLabel(statusbar, _("  Lines:"), NULL, LAYOUT_RIGHT | LAYOUT_CENTER_Y);
 
     // Show column number in status bar
-    FXTextField* columnno = new FXTextField(statusbar, 7, editor, FXText::ID_CURSOR_COLUMN, FRAME_SUNKEN | JUSTIFY_RIGHT | LAYOUT_RIGHT | LAYOUT_CENTER_Y, 0, 0, 0, 0, 2, 2, 1, 1);
+    FXTextField* columnno = new FXTextField(statusbar, 7, editor, FXText::ID_CURSOR_COLUMN, TEXTFIELD_NORMAL |
+                                            JUSTIFY_RIGHT | LAYOUT_RIGHT | LAYOUT_CENTER_Y, 0, 0, 0, 0, 2, 2, 1, 1);
     columnno->setBackColor(statusbar->getBackColor());
 
     // Caption before number
     new FXLabel(statusbar, _("  Col:"), NULL, LAYOUT_RIGHT | LAYOUT_CENTER_Y);
 
     // Show line number in status bar
-    FXTextField* rowno = new FXTextField(statusbar, 7, editor, FXText::ID_CURSOR_ROW, FRAME_SUNKEN | JUSTIFY_RIGHT | LAYOUT_RIGHT | LAYOUT_CENTER_Y, 0, 0, 0, 0, 2, 2, 1, 1);
+    FXTextField* rowno = new FXTextField(statusbar, 7, editor, FXText::ID_CURSOR_ROW, TEXTFIELD_NORMAL |
+                                         JUSTIFY_RIGHT | LAYOUT_RIGHT | LAYOUT_CENTER_Y, 0, 0, 0, 0, 2, 2, 1, 1);
     rowno->setBackColor(statusbar->getBackColor());
 
     // Caption before number
@@ -656,79 +685,119 @@ WriteWindow::WriteWindow(XFileWrite* a, const FXString& file, const FXbool _read
 
     // Toolbar buttons: File manipulation
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "new", "Ctrl-N");
-    new FXButton(toolbar, TAB + _("New") + PARS(key) + TAB + _("Create new document.") + PARS(key), newfileicon, this, ID_NEW, ICON_ABOVE_TEXT | BUTTON_TOOLBAR | FRAME_RAISED | LAYOUT_CENTER_Y | LAYOUT_LEFT);
+    new FXButton(toolbar, TAB + _("New") + PARS(key) + TAB + _("Create new document.") + PARS(key), mininewfileicon,
+                 this,
+                 ID_NEW, ICON_ABOVE_TEXT | BUTTON_TOOLBAR | FRAME_GROOVE | LAYOUT_CENTER_Y | LAYOUT_LEFT);
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "open", "Ctrl-O");
-    new FXButton(toolbar, TAB + _("Open") + PARS(key) + TAB + _("Open document file.") + PARS(key), fileopenicon, this, ID_OPEN, ICON_ABOVE_TEXT | BUTTON_TOOLBAR | FRAME_RAISED | LAYOUT_CENTER_Y | LAYOUT_LEFT);
+    new FXButton(toolbar, TAB + _("Open") + PARS(key) + TAB + _("Open document file.") + PARS(key), minifileopenicon,
+                 this,
+                 ID_OPEN, ICON_ABOVE_TEXT | BUTTON_TOOLBAR | FRAME_GROOVE | LAYOUT_CENTER_Y | LAYOUT_LEFT);
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "save", "Ctrl-S");
-    new FXButton(toolbar, TAB + _("Save") + PARS(key) + TAB + _("Save document.") + PARS(key), savefileicon, this, ID_SAVE, ICON_ABOVE_TEXT | BUTTON_TOOLBAR | FRAME_RAISED | LAYOUT_CENTER_Y | LAYOUT_LEFT);
+    new FXButton(toolbar, TAB + _("Save") + PARS(key) + TAB + _("Save document.") + PARS(key), minisavefileicon, this,
+                 ID_SAVE, ICON_ABOVE_TEXT | BUTTON_TOOLBAR | FRAME_GROOVE | LAYOUT_CENTER_Y | LAYOUT_LEFT);
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "close", "Ctrl-W");
-    new FXButton(toolbar, TAB + _("Close") + PARS(key) + TAB + _("Close document file.") + PARS(key), closefileicon, this, ID_CLOSE, ICON_ABOVE_TEXT | BUTTON_TOOLBAR | FRAME_RAISED | LAYOUT_CENTER_Y | LAYOUT_LEFT);
+    new FXButton(toolbar, TAB + _("Close") + PARS(key) + TAB + _("Close document file.") + PARS(key), miniclosefileicon,
+                 this,
+                 ID_CLOSE, ICON_ABOVE_TEXT | BUTTON_TOOLBAR | FRAME_GROOVE | LAYOUT_CENTER_Y | LAYOUT_LEFT);
 
     // Spacer
     new FXSeparator(toolbar, SEPARATOR_GROOVE);
 
     // Toolbar buttons: Print and Quit
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "print", "Ctrl-P");
-    new FXButton(toolbar, TAB + _("Print") + PARS(key) + TAB + _("Print document.") + PARS(key), printicon, this, ID_PRINT, ICON_ABOVE_TEXT | BUTTON_TOOLBAR | FRAME_RAISED | LAYOUT_CENTER_Y | LAYOUT_LEFT);
+    new FXButton(toolbar, TAB + _("Print") + PARS(key) + TAB + _("Print document.") + PARS(key), miniprinticon, this,
+                 ID_PRINT, ICON_ABOVE_TEXT | BUTTON_TOOLBAR | FRAME_GROOVE | LAYOUT_CENTER_Y | LAYOUT_LEFT);
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "quit", "Ctrl-Q");
-    new FXButton(toolbar, TAB + _("Quit") + PARS(key) + TAB + _("Quit X File Write.") + PARS(key), quiticon, getApp(), XFileWrite::ID_CLOSEALL, ICON_ABOVE_TEXT | BUTTON_TOOLBAR | FRAME_RAISED | LAYOUT_CENTER_Y | LAYOUT_LEFT);
+    new FXButton(toolbar, TAB + _("Quit") + PARS(key) + TAB + _("Quit X File Write.") + PARS(key), miniquiticon,
+                 getApp(),
+                 XFileWrite::ID_CLOSEALL,
+                 ICON_ABOVE_TEXT | BUTTON_TOOLBAR | FRAME_GROOVE | LAYOUT_CENTER_Y | LAYOUT_LEFT);
 
     // Spacer
     new FXSeparator(toolbar, SEPARATOR_GROOVE);
 
     // Toolbar buttons: Editing
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "copy", "Ctrl-C");
-    new FXButton(toolbar, TAB + _("Copy") + PARS(key) + TAB + _("Copy selection to clipboard.") + PARS(key), copy_clpicon, editor, FXText::ID_COPY_SEL, ICON_ABOVE_TEXT | BUTTON_TOOLBAR | FRAME_RAISED | LAYOUT_CENTER_Y | LAYOUT_LEFT);
+    new FXButton(toolbar, TAB + _("Copy") + PARS(key) + TAB + _("Copy selection to clipboard.") + PARS(key),
+                 minicopyicon, editor,
+                 FXText::ID_COPY_SEL, ICON_ABOVE_TEXT | BUTTON_TOOLBAR | FRAME_GROOVE | LAYOUT_CENTER_Y | LAYOUT_LEFT);
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "cut", "Ctrl-X");
-    cut = new FXButton(toolbar, TAB + _("Cut") + PARS(key) + TAB + _("Cut selection to clipboard.") + PARS(key), cut_clpicon, editor, FXText::ID_CUT_SEL, ICON_ABOVE_TEXT | BUTTON_TOOLBAR | FRAME_RAISED | LAYOUT_CENTER_Y | LAYOUT_LEFT);
+    cut = new FXButton(toolbar, TAB + _("Cut") + PARS(key) + TAB + _("Cut selection to clipboard.") + PARS(key),
+                       minicuticon, editor,
+                       FXText::ID_CUT_SEL,
+                       ICON_ABOVE_TEXT | BUTTON_TOOLBAR | FRAME_GROOVE | LAYOUT_CENTER_Y | LAYOUT_LEFT);
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "paste", "Ctrl-V");
-    paste = new FXButton(toolbar, TAB + _("Paste") + PARS(key) + TAB + _("Paste clipboard.") + PARS(key), paste_clpicon, editor, FXText::ID_PASTE_SEL, ICON_ABOVE_TEXT | BUTTON_TOOLBAR | FRAME_RAISED | LAYOUT_CENTER_Y | LAYOUT_LEFT);
+    paste = new FXButton(toolbar, TAB + _("Paste") + PARS(key) + TAB + _("Paste clipboard.") + PARS(key), minipasteicon,
+                         editor,
+                         FXText::ID_PASTE_SEL,
+                         ICON_ABOVE_TEXT | BUTTON_TOOLBAR | FRAME_GROOVE | LAYOUT_CENTER_Y | LAYOUT_LEFT);
 
     // Spacer
     new FXSeparator(toolbar, SEPARATOR_GROOVE);
 
     // Goto line
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "goto_line", "Ctrl-L");
-    new FXButton(toolbar, TAB + _("Goto line") + PARS(key) + TAB + _("Goto line number."), gotolineicon, this, WriteWindow::ID_GOTO_LINE, ICON_ABOVE_TEXT | BUTTON_TOOLBAR | FRAME_RAISED | LAYOUT_CENTER_Y | LAYOUT_LEFT);
+    new FXButton(toolbar, TAB + _("Goto Line") + PARS(key) + TAB + _("Goto line number."), minigotoicon, this,
+                 WriteWindow::ID_GOTO_LINE,
+                 ICON_ABOVE_TEXT | BUTTON_TOOLBAR | FRAME_GROOVE | LAYOUT_CENTER_Y | LAYOUT_LEFT);
 
     // Spacer
     new FXSeparator(toolbar, SEPARATOR_GROOVE);
 
     // Undo/redo
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "undo", "Ctrl-Z");
-    new FXButton(toolbar, TAB + _("Undo") + PARS(key) + TAB + _("Undo last change.") + PARS(key), undoicon, &undolist, FXUndoList::ID_UNDO, ICON_ABOVE_TEXT | BUTTON_TOOLBAR | FRAME_RAISED | LAYOUT_CENTER_Y | LAYOUT_LEFT);
+    new FXButton(toolbar, TAB + _("Undo") + PARS(key) + TAB + _("Undo last change.") + PARS(key), miniundoicon,
+                 &undolist,
+                 FXUndoList::ID_UNDO, ICON_ABOVE_TEXT | BUTTON_TOOLBAR | FRAME_GROOVE | LAYOUT_CENTER_Y | LAYOUT_LEFT);
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "redo", "Ctrl-Y");
-    new FXButton(toolbar, TAB + _("Redo") + PARS(key) + TAB + _("Redo last undo.") + PARS(key), redoicon, &undolist, FXUndoList::ID_REDO, ICON_ABOVE_TEXT | BUTTON_TOOLBAR | FRAME_RAISED | LAYOUT_CENTER_Y | LAYOUT_LEFT);
+    new FXButton(toolbar, TAB + _("Redo") + PARS(key) + TAB + _("Redo last undo.") + PARS(key), miniredoicon, &undolist,
+                 FXUndoList::ID_REDO, ICON_ABOVE_TEXT | BUTTON_TOOLBAR | FRAME_GROOVE | LAYOUT_CENTER_Y | LAYOUT_LEFT);
 
     // Spacer
     new FXSeparator(toolbar, SEPARATOR_GROOVE);
 
     // Search
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "search", "Ctrl-F");
-    new FXButton(toolbar, TAB + _("Search") + PARS(key) + TAB + _("Search text.") + PARS(key), searchicon, this, WriteWindow::ID_SEARCH, ICON_ABOVE_TEXT | BUTTON_TOOLBAR | FRAME_RAISED | LAYOUT_CENTER_Y | LAYOUT_LEFT);
+    new FXButton(toolbar, TAB + _("Search") + PARS(key) + TAB + _("Search text.") + PARS(key), minisearchicon, this,
+                 WriteWindow::ID_SEARCH,
+                 ICON_ABOVE_TEXT | BUTTON_TOOLBAR | FRAME_GROOVE | LAYOUT_CENTER_Y | LAYOUT_LEFT);
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "search_prev", "Ctrl-Shift-G");
-    new FXButton(toolbar, TAB + _("Search selection backward") + PARS(key) + TAB + _("Search backward for selected text.") + PARS(key), searchprevicon, this, WriteWindow::ID_SEARCH_BACK_SEL, ICON_ABOVE_TEXT | BUTTON_TOOLBAR | FRAME_RAISED | LAYOUT_CENTER_Y | LAYOUT_LEFT);
+    new FXButton(toolbar,
+                 TAB + _("Search Selection Backward") + PARS(key) + TAB + _("Search backward for selected text.") +
+                 PARS(key),
+                 minisearchprevicon, this, WriteWindow::ID_SEARCH_BACK_SEL,
+                 ICON_ABOVE_TEXT | BUTTON_TOOLBAR | FRAME_GROOVE | LAYOUT_CENTER_Y | LAYOUT_LEFT);
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "search_next", "Ctrl-G");
-    new FXButton(toolbar, TAB + _("Search selection forward") + PARS(key) + TAB + _("Search forward for selected text.") + PARS(key), searchnexticon, this, WriteWindow::ID_SEARCH_FORW_SEL, ICON_ABOVE_TEXT | BUTTON_TOOLBAR | FRAME_RAISED | LAYOUT_CENTER_Y | LAYOUT_LEFT);
+    new FXButton(toolbar,
+                 TAB + _("Search Selection Forward") + PARS(key) + TAB + _("Search forward for selected text.") +
+                 PARS(key),
+                 minisearchnexticon, this, WriteWindow::ID_SEARCH_FORW_SEL,
+                 ICON_ABOVE_TEXT | BUTTON_TOOLBAR | FRAME_GROOVE | LAYOUT_CENTER_Y | LAYOUT_LEFT);
 
     // Spacer
     new FXSeparator(toolbar, SEPARATOR_GROOVE);
 
     // Preferences
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "word_wrap", "Ctrl-K");
-    new FXToggleButton(toolbar, TAB + _("Word wrap on") + PARS(key) + TAB + _("Set word wrap on.") + PARS(key), TAB + _("Word wrap off") + PARS(key) + TAB + _("Set word wrap off.") + PARS(key), wrapofficon, wraponicon, this, ID_TOGGLE_WRAP, BUTTON_TOOLBAR | LAYOUT_LEFT | ICON_BEFORE_TEXT);
+    new FXToggleButton(toolbar, TAB + _("Word Wrap On") + PARS(key) + TAB + _("Set word wrap on.") + PARS(key),
+                       TAB + _("Word Wrap Off") + PARS(key) + TAB + _("Set word wrap off.") + PARS(key),
+                       miniwrapofficon, miniwraponicon, this, ID_TOGGLE_WRAP,
+                       BUTTON_TOOLBAR | LAYOUT_LEFT | ICON_BEFORE_TEXT);
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "line_numbers", "Ctrl-T");
-    new FXToggleButton(toolbar, TAB + _("Show line numbers") + PARS(key) + TAB + _("Show line numbers.") + PARS(key), TAB + _("Hide line numbers") + PARS(key) + TAB + _("Hide line numbers.") + PARS(key), hidenumbersicon, shownumbersicon, this, ID_TOGGLE_LINES_NUM, BUTTON_TOOLBAR | LAYOUT_LEFT | ICON_BEFORE_TEXT);
+    new FXToggleButton(toolbar, TAB + _("Show Line Numbers") + PARS(key) + TAB + _("Show line numbers.") + PARS(key),
+                       TAB + _("Hide Line Numbers") + PARS(key) + TAB + _("Hide line numbers.") + PARS(key),
+                       minihidenumbersicon, minishownumbersicon, this, ID_TOGGLE_LINES_NUM,
+                       BUTTON_TOOLBAR | LAYOUT_LEFT | ICON_BEFORE_TEXT);
 
 
     // File Menu entries
@@ -737,35 +806,36 @@ WriteWindow::WriteWindow(XFileWrite* a, const FXString& file, const FXbool _read
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "new", "Ctrl-N");
     text = _("&New") + TABS(key) + _("Create new document.") + PARS(key);
-    mc = new FXMenuCommand(filemenu, text, newfileicon, this, ID_NEW);
-    hotkey = _parseAccel(key);
+    mc = new FXMenuCommand(filemenu, text, mininewfileicon, this, ID_NEW);
+    hotkey = xf_parseaccel(key);
     getAccelTable()->addAccel(hotkey, mc, FXSEL(SEL_COMMAND, FXMenuCommand::ID_ACCEL));
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "open", "Ctrl-O");
     text = _("&Open...") + TABS(key) + _("Open document file.") + PARS(key);
-    mc = new FXMenuCommand(filemenu, text, fileopenicon, this, ID_OPEN);
-    hotkey = _parseAccel(key);
+    mc = new FXMenuCommand(filemenu, text, minifileopenicon, this, ID_OPEN);
+    hotkey = xf_parseaccel(key);
     getAccelTable()->addAccel(hotkey, mc, FXSEL(SEL_COMMAND, FXMenuCommand::ID_ACCEL));
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "save", "Ctrl-S");
     text = _("&Save") + TABS(key) + _("Save changes to file.") + PARS(key);
-    mc = new FXMenuCommand(filemenu, text, savefileicon, this, ID_SAVE);
-    hotkey = _parseAccel(key);
+    mc = new FXMenuCommand(filemenu, text, minisavefileicon, this, ID_SAVE);
+    hotkey = xf_parseaccel(key);
     getAccelTable()->addAccel(hotkey, mc, FXSEL(SEL_COMMAND, FXMenuCommand::ID_ACCEL));
 
-    new FXMenuCommand(filemenu, _("Save &As...") + TAB2 + _("Save document to another file."), saveasicon, this, ID_SAVEAS);
+    new FXMenuCommand(filemenu, _("Save &As...") + TAB2 + _("Save document to another file."),
+                      minisaveasicon, this, ID_SAVEAS);
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "close", "Ctrl-W");
     text = _("&Close") + TABS(key) + _("Close document.") + PARS(key);
-    mc = new FXMenuCommand(filemenu, text, closefileicon, this, ID_CLOSE);
-    hotkey = _parseAccel(key);
+    mc = new FXMenuCommand(filemenu, text, miniclosefileicon, this, ID_CLOSE);
+    hotkey = xf_parseaccel(key);
     getAccelTable()->addAccel(hotkey, mc, FXSEL(SEL_COMMAND, FXMenuCommand::ID_ACCEL));
 
     new FXMenuSeparator(filemenu);
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "print", "Ctrl-P");
     text = _("&Print...") + TABS(key) + _("Print document.") + PARS(key);
-    mc = new FXMenuCommand(filemenu, text, printicon, this, ID_PRINT);
-    hotkey = _parseAccel(key);
+    mc = new FXMenuCommand(filemenu, text, miniprinticon, this, ID_PRINT);
+    hotkey = xf_parseaccel(key);
     getAccelTable()->addAccel(hotkey, mc, FXSEL(SEL_COMMAND, FXMenuCommand::ID_ACCEL));
 
     // Recent file menu; this automatically hides if there are no files
@@ -784,121 +854,124 @@ WriteWindow::WriteWindow(XFileWrite* a, const FXString& file, const FXbool _read
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "quit", "Ctrl-Q");
     text = _("&Quit") + TABS(key) + _("Quit X File Write.") + PARS(key);
-    mc = new FXMenuCommand(filemenu, text, quiticon, getApp(), XFileWrite::ID_CLOSEALL);
-    hotkey = _parseAccel(key);
+    mc = new FXMenuCommand(filemenu, text, miniquiticon, getApp(), XFileWrite::ID_CLOSEALL);
+    hotkey = xf_parseaccel(key);
     getAccelTable()->addAccel(hotkey, mc, FXSEL(SEL_COMMAND, FXMenuCommand::ID_ACCEL));
 
     // Edit Menu entries
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "undo", "Ctrl-Z");
     text = _("&Undo") + TABS(key) + _("Undo last change.") + PARS(key);
-    mc = new FXMenuCommand(editmenu, text, undoicon, &undolist, FXUndoList::ID_UNDO);
-    hotkey = _parseAccel(key);
+    mc = new FXMenuCommand(editmenu, text, miniundoicon, &undolist, FXUndoList::ID_UNDO);
+    hotkey = xf_parseaccel(key);
     getAccelTable()->addAccel(hotkey, mc, FXSEL(SEL_COMMAND, FXMenuCommand::ID_ACCEL));
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "redo", "Ctrl-Y");
     text = _("&Redo") + TABS(key) + _("Redo last undo.") + PARS(key);
-    mc = new FXMenuCommand(editmenu, text, redoicon, &undolist, FXUndoList::ID_REDO);
-    hotkey = _parseAccel(key);
+    mc = new FXMenuCommand(editmenu, text, miniredoicon, &undolist, FXUndoList::ID_REDO);
+    hotkey = xf_parseaccel(key);
     getAccelTable()->addAccel(hotkey, mc, FXSEL(SEL_COMMAND, FXMenuCommand::ID_ACCEL));
 
-    new FXMenuCommand(editmenu, _("Revert to &saved") + TAB2 + _("Revert to saved document."), reverticon, &undolist, FXUndoList::ID_REVERT);
+    new FXMenuCommand(editmenu, _("Revert to &saved") + TAB2 + _("Revert to saved document."),
+                      minireverticon, &undolist, FXUndoList::ID_REVERT);
 
     new FXMenuSeparator(editmenu);
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "copy", "Ctrl-C");
     text = _("&Copy") + TABS(key) + _("Copy selection to clipboard.") + PARS(key);
-    mc = new FXMenuCommand(editmenu, text, copy_clpicon, editor, FXText::ID_COPY_SEL);
-    hotkey = _parseAccel(key);
+    mc = new FXMenuCommand(editmenu, text, minicopyicon, editor, FXText::ID_COPY_SEL);
+    hotkey = xf_parseaccel(key);
     getAccelTable()->addAccel(hotkey, mc, FXSEL(SEL_COMMAND, FXMenuCommand::ID_ACCEL));
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "cut", "Ctrl-X");
     text = _("Cu&t") + TABS(key) + _("Cut selection to clipboard.") + PARS(key);
-    cutmc = new FXMenuCommand(editmenu, text, cut_clpicon, editor, FXText::ID_CUT_SEL);
-    hotkey = _parseAccel(key);
+    cutmc = new FXMenuCommand(editmenu, text, minicuticon, editor, FXText::ID_CUT_SEL);
+    hotkey = xf_parseaccel(key);
     getAccelTable()->addAccel(hotkey, mc, FXSEL(SEL_COMMAND, FXMenuCommand::ID_ACCEL));
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "paste", "Ctrl-V");
     text = _("&Paste") + TABS(key) + _("Paste from clipboard.") + PARS(key);
-    pastemc = new FXMenuCommand(editmenu, text, paste_clpicon, editor, FXText::ID_PASTE_SEL);
-    hotkey = _parseAccel(key);
+    pastemc = new FXMenuCommand(editmenu, text, minipasteicon, editor, FXText::ID_PASTE_SEL);
+    hotkey = xf_parseaccel(key);
     getAccelTable()->addAccel(hotkey, mc, FXSEL(SEL_COMMAND, FXMenuCommand::ID_ACCEL));
 
     new FXMenuSeparator(editmenu);
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "lower_case", "Ctrl-U");
-    text = _("Lo&wer-case") + TABS(key) + _("Change to lower case.") + PARS(key);
-    mc = new FXMenuCommand(editmenu, text, lowercaseicon, editor, FXText::ID_LOWER_CASE);
-    hotkey = _parseAccel(key);
+    text = _("Lo&wercase") + TABS(key) + _("Change to lowercase.") + PARS(key);
+    mc = new FXMenuCommand(editmenu, text, minilowercaseicon, editor, FXText::ID_LOWER_CASE);
+    hotkey = xf_parseaccel(key);
     getAccelTable()->addAccel(hotkey, mc, FXSEL(SEL_COMMAND, FXMenuCommand::ID_ACCEL));
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "upper_case", "Ctrl-Shift-U");
-    text = _("Upp&er-case") + TABS(key) + _("Change to upper case.") + PARS(key);
-    mc = new FXMenuCommand(editmenu, text, uppercaseicon, editor, FXText::ID_UPPER_CASE);
-    hotkey = _parseAccel(key);
+    text = _("Upp&ercase") + TABS(key) + _("Change to uppercase.") + PARS(key);
+    mc = new FXMenuCommand(editmenu, text, miniuppercaseicon, editor, FXText::ID_UPPER_CASE);
+    hotkey = xf_parseaccel(key);
     getAccelTable()->addAccel(hotkey, mc, FXSEL(SEL_COMMAND, FXMenuCommand::ID_ACCEL));
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "goto_line", "Ctrl-L");
-    text = _("&Goto line...") + TABS(key) + _("Goto line number.") + PARS(key);
-    mc = new FXMenuCommand(editmenu, text, gotolineicon, this, WriteWindow::ID_GOTO_LINE);
-    hotkey = _parseAccel(key);
+    text = _("&Goto Line...") + TABS(key) + _("Goto line number.") + PARS(key);
+    mc = new FXMenuCommand(editmenu, text, minigotoicon, this, WriteWindow::ID_GOTO_LINE);
+    hotkey = xf_parseaccel(key);
     getAccelTable()->addAccel(hotkey, mc, FXSEL(SEL_COMMAND, FXMenuCommand::ID_ACCEL));
 
     // Right mouse popup
     popupmenu = new FXMenuPane(this);
-    new FXMenuCommand(popupmenu, _("&Undo"), undoicon, &undolist, FXUndoList::ID_UNDO);
-    new FXMenuCommand(popupmenu, _("&Redo"), redoicon, &undolist, FXUndoList::ID_REDO);
+    new FXMenuCommand(popupmenu, _("&Undo"), miniundoicon, &undolist, FXUndoList::ID_UNDO);
+    new FXMenuCommand(popupmenu, _("&Redo"), miniredoicon, &undolist, FXUndoList::ID_REDO);
     new FXMenuSeparator(popupmenu);
-    new FXMenuCommand(popupmenu, _("&Copy"), copy_clpicon, editor, FXText::ID_COPY_SEL);
-    new FXMenuCommand(popupmenu, _("Cu&t"), cut_clpicon, editor, FXText::ID_CUT_SEL);
-    new FXMenuCommand(popupmenu, _("&Paste"), paste_clpicon, editor, FXText::ID_PASTE_SEL);
+    new FXMenuCommand(popupmenu, _("&Copy"), minicopyicon, editor, FXText::ID_COPY_SEL);
+    new FXMenuCommand(popupmenu, _("Cu&t"), minicuticon, editor, FXText::ID_CUT_SEL);
+    new FXMenuCommand(popupmenu, _("&Paste"), minipasteicon, editor, FXText::ID_PASTE_SEL);
     new FXMenuCommand(popupmenu, _("Select &All"), NULL, editor, FXText::ID_SELECT_ALL);
-    new FXMenuSeparator(popupmenu);
 
     // View Menu entries
     new FXMenuCheck(viewmenu, _("&Toolbar") + TAB2 + _("Display toolbar."), toolbar, FXWindow::ID_TOGGLESHOWN);
-    new FXMenuCheck(viewmenu, _("&Status line") + TAB2 + _("Display status line."), statusbar, FXWindow::ID_TOGGLESHOWN);
+    new FXMenuCheck(viewmenu, _("&Status Line") + TAB2 + _("Display status line."), statusbar,
+                    FXWindow::ID_TOGGLESHOWN);
 
     // Search Menu entries
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "search", "Ctrl-F");
     text = _("&Search...") + TABS(key) + _("Search for a string.") + PARS(key);
-    mc = new FXMenuCommand(searchmenu, text, searchicon, this, WriteWindow::ID_SEARCH);
-    hotkey = _parseAccel(key);
+    mc = new FXMenuCommand(searchmenu, text, minisearchicon, this, WriteWindow::ID_SEARCH);
+    hotkey = xf_parseaccel(key);
     getAccelTable()->addAccel(hotkey, mc, FXSEL(SEL_COMMAND, FXMenuCommand::ID_ACCEL));
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "replace", "Ctrl-R");
     text = _("&Replace...") + TABS(key) + _("Search for a string and replace with another.") + PARS(key);
-    mc = new FXMenuCommand(searchmenu, text, replaceicon, this, WriteWindow::ID_REPLACE);
-    hotkey = _parseAccel(key);
+    mc = new FXMenuCommand(searchmenu, text, minireplaceicon, this, WriteWindow::ID_REPLACE);
+    hotkey = xf_parseaccel(key);
     getAccelTable()->addAccel(hotkey, mc, FXSEL(SEL_COMMAND, FXMenuCommand::ID_ACCEL));
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "search_prev", "Ctrl-Shift-G");
-    text = _("Search sel. &backward") + TABS(key) + _("Search backward for selected text.") + PARS(key);
-    mc = new FXMenuCommand(searchmenu, text, searchprevicon, this, WriteWindow::ID_SEARCH_BACK_SEL);
-    hotkey = _parseAccel(key);
+    text = _("Search Sel. &Backward") + TABS(key) + _("Search backward for selected text.") + PARS(key);
+    mc = new FXMenuCommand(searchmenu, text, minisearchprevicon, this, WriteWindow::ID_SEARCH_BACK_SEL);
+    hotkey = xf_parseaccel(key);
     getAccelTable()->addAccel(hotkey, mc, FXSEL(SEL_COMMAND, FXMenuCommand::ID_ACCEL));
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "search_next", "Ctrl-G");
-    text = _("Search sel. &forward") + TABS(key) + _("Search forward for selected text.") + PARS(key);
-    mc = new FXMenuCommand(searchmenu, text, searchnexticon, this, WriteWindow::ID_SEARCH_FORW_SEL);
-    hotkey = _parseAccel(key);
+    text = _("Search Sel. &Forward") + TABS(key) + _("Search forward for selected text.") + PARS(key);
+    mc = new FXMenuCommand(searchmenu, text, minisearchnexticon, this, WriteWindow::ID_SEARCH_FORW_SEL);
+    hotkey = xf_parseaccel(key);
     getAccelTable()->addAccel(hotkey, mc, FXSEL(SEL_COMMAND, FXMenuCommand::ID_ACCEL));
 
 
     // Preferences menu
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "word_wrap", "Ctrl-K");
-    text = _("&Word wrap") + TABS(key) + _("Toggle word wrap mode.") + PARS(key);
+    text = _("&Word Wrap") + TABS(key) + _("Toggle word wrap mode.") + PARS(key);
     mc = new FXMenuCheck(prefsmenu, text, this, ID_TOGGLE_WRAP);
-    hotkey = _parseAccel(key);
+    hotkey = xf_parseaccel(key);
     getAccelTable()->addAccel(hotkey, mc, FXSEL(SEL_COMMAND, FXMenuCommand::ID_ACCEL));
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "line_numbers", "Ctrl-T");
-    text = _("&Line numbers") + TABS(key) + _("Toggle line numbers mode.") + PARS(key);
+    text = _("&Line Numbers") + TABS(key) + _("Toggle line numbers mode.") + PARS(key);
     mc = new FXMenuCheck(prefsmenu, text, this, ID_TOGGLE_LINES_NUM);
-    hotkey = _parseAccel(key);
+    hotkey = xf_parseaccel(key);
     getAccelTable()->addAccel(hotkey, mc, FXSEL(SEL_COMMAND, FXMenuCommand::ID_ACCEL));
 
-    new FXMenuCheck(prefsmenu, _("&Overstrike") + TAB2 + _("Toggle overstrike mode."), editor, FXText::ID_TOGGLE_OVERSTRIKE);
+    new FXMenuCheck(prefsmenu, _("&Overstrike") + TAB2 + _("Toggle overstrike mode."), editor,
+                    FXText::ID_TOGGLE_OVERSTRIKE);
     new FXMenuSeparator(prefsmenu);
-    new FXMenuCommand(prefsmenu, _("&Font...") + TAB2 + _("Change text font."), fontsicon, this, ID_FONT);
-    new FXMenuCommand(prefsmenu, _("&More preferences...") + TAB2 + _("Change other options."), prefsicon, this, ID_PREFERENCES);
+    new FXMenuCommand(prefsmenu, _("&Font...") + TAB2 + _("Change text font."), minifontsicon, this, ID_FONT);
+    new FXMenuCommand(prefsmenu, _("&More Preferences...") + TAB2 + _("Change other options."), miniprefsicon, this,
+                      ID_PREFERENCES);
 
     // Window menu
     new FXMenuRadio(windowmenu, FXString::null, this, ID_WINDOW_1);
@@ -956,14 +1029,8 @@ WriteWindow::WriteWindow(XFileWrite* a, const FXString& file, const FXbool _read
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "help", "F1");
     text = _("&About X File Write") + TABS(key) + _("About X File Write.") + PARS(key);
     mc = new FXMenuCommand(helpmenu, text, NULL, this, ID_ABOUT, 0);
-    hotkey = _parseAccel(key);
+    hotkey = xf_parseaccel(key);
     getAccelTable()->addAccel(hotkey, mc, FXSEL(SEL_COMMAND, FXMenuCommand::ID_ACCEL));
-
-    // Dialogs
-    printdialog = NULL;
-    prefsdialog = NULL;
-    searchdialog = NULL;
-    replacedialog = NULL;
 
     // Recent files
     mrufiles.setTarget(this);
@@ -987,13 +1054,6 @@ WriteWindow::WriteWindow(XFileWrite* a, const FXString& file, const FXbool _read
     hh = 0;
     xx = 0;
     yy = 0;
-
-	delete overstrike;
-	delete numchars;
-	delete columnno;
-	delete rowno;
-	delete sep1;
-	delete sep2;
 }
 
 
@@ -1001,6 +1061,33 @@ WriteWindow::WriteWindow(XFileWrite* a, const FXString& file, const FXbool _read
 void WriteWindow::create()
 {
     loadConfig();
+
+    // Read filter history
+    FXString history = getApp()->reg().readStringEntry("HISTORY", "filter", "");
+    FXString histent = "";
+    FilterNum = 0;
+    if (history != "")
+    {
+        int i;
+        for (i = 0; ; i++)
+        {
+            if (i < FILTER_HIST_SIZE)
+            {
+                histent = history.section(':', i);
+                if (xf_strequal(histent.text(), ""))
+                {
+                    break;
+                }
+                xf_strlcpy(FilterHistory[i], histent.text(), histent.length() + 1);
+            }
+            else
+            {
+                break;
+            }
+        }
+        FilterNum = i;
+    }
+
     FXMainWindow::create();
     dragshell->create();
     filemenu->create();
@@ -1017,6 +1104,19 @@ void WriteWindow::create()
     }
     show(PLACEMENT_DEFAULT);
     editor->setFocus();
+
+
+    // Lines numbering
+    if (linesnum)
+    {
+        FXuint size = editor->getNumRows();
+        FXuint cols = FXMAX((FXuint)ceil(log10(size)), 2);
+        editor->setBarColumns(cols);
+    }
+    else
+    {
+        editor->setBarColumns(0);
+    }
 
 #ifdef STARTUP_NOTIFICATION
     startup_completed();
@@ -1060,7 +1160,7 @@ WriteWindow::~WriteWindow()
 // Is it modified
 FXbool WriteWindow::isModified() const
 {
-    return(!undolist.marked());
+    return !undolist.marked();
 }
 
 
@@ -1069,13 +1169,13 @@ FXbool WriteWindow::loadFile(const FXString& file)
 {
     FXFile textfile(file, FXFile::Reading);
     int size, n, i, j, c;
-    char*  text;
+    char* text;
 
     // Opened file?
     if (!textfile.isOpen())
     {
-        MessageBox::error(this, BOX_OK, _("Error Loading File"), _("Unable to open file: %s"), file.text());
-        return(false);
+        MessageBox::error(this, BOX_OK, _("Error"), _("Unable to open file: %s"), file.text());
+        return false;
     }
 
     // Get file size
@@ -1084,8 +1184,9 @@ FXbool WriteWindow::loadFile(const FXString& file)
     // Make buffer to load file
     if (!FXMALLOC(&text, char, size))
     {
-        MessageBox::error(this, BOX_OK, _("Error Loading File"), _("File is too big: %s (%d bytes)"), file.text(), size);
-        return(false);
+        MessageBox::error(this, BOX_OK, _("Error"), _("File is too big: %s (%d bytes)"), file.text(),
+                          size);
+        return false;
     }
 
     // Set wait cursor
@@ -1098,7 +1199,7 @@ FXbool WriteWindow::loadFile(const FXString& file)
         FXFREE(&text);
         MessageBox::error(this, BOX_OK, _("Error Loading File"), _("Unable to read file: %s"), file.text());
         getApp()->endWaitCursor();
-        return(false);
+        return false;
     }
 
     // Strip carriage returns
@@ -1123,7 +1224,7 @@ FXbool WriteWindow::loadFile(const FXString& file)
     if (linesnum)
     {
         FXuint size = editor->getNumRows();
-        FXuint cols = (FXuint)ceil(log10(size));
+        FXuint cols = FXMAX((FXuint)ceil(log10(size)), 2);
         editor->setBarColumns(cols);
     }
     else
@@ -1145,7 +1246,7 @@ FXbool WriteWindow::loadFile(const FXString& file)
     // Mark undo state as clean (saved)
     undolist.mark();
 
-    return(true);
+    return true;
 }
 
 
@@ -1156,38 +1257,39 @@ FXbool WriteWindow::saveFile(const FXString& file)
     int size = editor->getLength();
 
     // Get available space on current file system
-    FXlong space = GetAvailableSpace(file);
+    FXlong space = xf_getavailablespace(file);
 
     // Unknown error
     if (space < 0)
     {
-        MessageBox::error(this, BOX_OK, _("Error Saving File"), _("Unable to save file: %s"), file.text());
-        return(false);
+        MessageBox::error(this, BOX_OK, _("Error"), _("Unable to save file: %s"), file.text());
+        return false;
     }
-
     // Not enough space left on file system to save the file
     else if (space < size)
     {
-        MessageBox::error(this, BOX_OK, _("Error Saving File"), _("Not enough space left on device, unable to save file: %s\n\n\
-=> To prevent losing data, you should save this file to another device before exiting!"), file.text());
-        return(false);
+        MessageBox::error(this, BOX_OK, _("Error"),
+                          _("Not enough space left on device, unable to save file: %s\n\n\
+=> To prevent losing data, you should save this file to another device before exiting!"),
+                          file.text());
+        return false;
     }
 
     FXFile textfile(file, FXFile::Writing);
-    char*  text;
+    char* text;
 
     // Opened file?
     if (!textfile.isOpen())
     {
-        MessageBox::error(this, BOX_OK, _("Error Saving File"), _("Unable to open file: %s"), file.text());
-        return(false);
+        MessageBox::error(this, BOX_OK, _("Error"), _("Unable to open file: %s"), file.text());
+        return false;
     }
 
     // Alloc buffer
     if (!FXMALLOC(&text, char, size + 1))
     {
-        MessageBox::error(this, BOX_OK, _("Error Saving File"), _("File is too big: %s"), file.text());
-        return(false);
+        MessageBox::error(this, BOX_OK, _("Error"), _("File is too big: %s"), file.text());
+        return false;
     }
 
     // Set wait cursor
@@ -1208,8 +1310,8 @@ FXbool WriteWindow::saveFile(const FXString& file)
     // Were we able to write it all?
     if (n != size)
     {
-        MessageBox::error(this, BOX_OK, _("Error Saving File"), _("File: %s truncated."), file.text());
-        return(false);
+        MessageBox::error(this, BOX_OK, _("Error"), _("File: %s truncated."), file.text());
+        return false;
     }
 
     mrufiles.appendFile(file);
@@ -1217,7 +1319,7 @@ FXbool WriteWindow::saveFile(const FXString& file)
     filenameset = true;
     filename = file;
     undolist.mark();
-    return(true);
+    return true;
 }
 
 
@@ -1234,7 +1336,7 @@ FXString WriteWindow::unique() const
         }
         name.format(_("untitled%d"), i);
     }
-    return(name);
+    return name;
 }
 
 
@@ -1245,10 +1347,10 @@ WriteWindow* WriteWindow::findUnused() const
     {
         if (!getApp()->windowlist[w]->isFilenameSet() && !getApp()->windowlist[w]->isModified())
         {
-            return(getApp()->windowlist[w]);
+            return getApp()->windowlist[w];
         }
     }
-    return(NULL);
+    return NULL;
 }
 
 
@@ -1259,10 +1361,10 @@ WriteWindow* WriteWindow::findWindow(const FXString& file) const
     {
         if (getApp()->windowlist[w]->getFilename() == file)
         {
-            return(getApp()->windowlist[w]);
+            return getApp()->windowlist[w];
         }
     }
-    return(NULL);
+    return NULL;
 }
 
 
@@ -1459,6 +1561,18 @@ void WriteWindow::saveConfig()
     fontspec = editor->getFont()->getFont();
     getApp()->reg().writeStringEntry("OPTIONS", "textfont", fontspec.text());
 
+    // Filter history
+    FXString history = "";
+    for (int i = 0; i < FilterNum; i++)
+    {
+        history += FilterHistory[i];
+        history += ":";
+    }
+    if (FilterNum)
+    {
+        getApp()->reg().writeStringEntry("HISTORY", "filter", history.text());
+    }
+
     // Write registry options
     getApp()->reg().write();
 }
@@ -1468,8 +1582,9 @@ void WriteWindow::saveConfig()
 long WriteWindow::onSigHarvest(FXObject*, FXSelector, void*)
 {
     while (waitpid(-1, NULL, WNOHANG) > 0)
-    {}
-    return(1);
+    {
+    }
+    return 1;
 }
 
 
@@ -1481,9 +1596,10 @@ long WriteWindow::onCmdAbout(FXObject*, FXSelector, void*)
     msg.format(_("X File Write Version %s is a simple text editor.\n\n"), VERSION);
     msg += COPYRIGHT;
     MessageBox about(this, _("About X File Write"), msg.text(), xfwicon, BOX_OK | DECOR_TITLE | DECOR_BORDER,
-                     JUSTIFY_CENTER_X | ICON_BEFORE_TEXT | LAYOUT_CENTER_Y | LAYOUT_LEFT | LAYOUT_FILL_X | LAYOUT_FILL_Y);
+                     JUSTIFY_CENTER_X | ICON_BEFORE_TEXT | LAYOUT_CENTER_Y | LAYOUT_LEFT | LAYOUT_FILL_X |
+                     LAYOUT_FILL_Y);
     about.execute(PLACEMENT_OWNER);
-    return(1);
+    return 1;
 }
 
 
@@ -1495,7 +1611,7 @@ long WriteWindow::onCmdMorePrefs(FXObject*, FXSelector, void*)
         prefsdialog = new Preferences(this);
     }
     prefsdialog->execute(PLACEMENT_OWNER);
-    return(1);
+    return 1;
 }
 
 
@@ -1517,7 +1633,7 @@ long WriteWindow::onCmdFont(FXObject*, FXSelector, void*)
         delete oldfont;
     }
     saveConfig();
-    return(1);
+    return 1;
 }
 
 
@@ -1532,9 +1648,8 @@ long WriteWindow::onCmdNew(FXObject*, FXSelector, void*)
     window->create();
     window->raise();
     window->setFocus();
-    
-    delete window;
-    return(1);
+
+    return 1;
 }
 
 
@@ -1560,7 +1675,7 @@ long WriteWindow::onCmdOpen(FXObject*, FXSelector, void*)
     opendialog.setSelectMode(SELECTFILE_MULTIPLE);
     opendialog.setPatternList(patterns);
     opendialog.setDirectory(FXPath::directory(filename));
-    if (opendialog.execute())
+    if (opendialog.execute(PLACEMENT_OWNER))
     {
         FXString* files = opendialog.getFilenames();
         FXuint i = 0;
@@ -1597,7 +1712,7 @@ long WriteWindow::onCmdOpen(FXObject*, FXSelector, void*)
         delete[] files;
     }
 
-    return(1);
+    return 1;
 }
 
 
@@ -1623,16 +1738,15 @@ long WriteWindow::onCmdOpenRecent(FXObject*, FXSelector, void* ptr)
     }
     window->raise();
     window->setFocus();
-    
-    delete window;   
-    return(1);
+
+    return 1;
 }
 
 
 // See if we can get it as a filename
 long WriteWindow::onEditDNDDrop(FXObject*, FXSelector, void*)
 {
-    FXuchar*  data;
+    FXuchar* data;
     FXuint len;
 
     if (getDNDData(FROM_DRAGNDROP, urilistType, data, len))
@@ -1642,16 +1756,16 @@ long WriteWindow::onEditDNDDrop(FXObject*, FXSelector, void*)
         FXFREE(&data);
         if (file.empty())
         {
-            return(1);
+            return 1;
         }
         if (!saveChanges())
         {
-            return(1);
+            return 1;
         }
         loadFile(file);
-        return(1);
+        return 1;
     }
-    return(0);
+    return 0;
 }
 
 
@@ -1661,9 +1775,9 @@ long WriteWindow::onEditDNDMotion(FXObject*, FXSelector, void*)
     if (offeredDNDType(FROM_DRAGNDROP, urilistType))
     {
         acceptDrop(DRAG_COPY);
-        return(1);
+        return 1;
     }
-    return(0);
+    return 0;
 }
 
 
@@ -1675,10 +1789,11 @@ FXbool WriteWindow::saveChanges()
 
     if (isModified())
     {
-        answer = MessageBox::question(this, BOX_YES_NO_CANCEL, _("Unsaved Document"), _("Save %s to file?"), FXPath::name(filename).text());
+        answer = MessageBox::question(this, BOX_YES_NO_CANCEL, _("Unsaved Document"),
+                                      _("Save %s to file?"), FXPath::name(filename).text());
         if (answer == BOX_CLICKED_CANCEL)
         {
-            return(false);
+            return false;
         }
         if (answer == BOX_CLICKED_YES)
         {
@@ -1690,21 +1805,22 @@ FXbool WriteWindow::saveChanges()
                 savedialog.setFilename(file);
                 if (!savedialog.execute())
                 {
-                    return(false);
+                    return false;
                 }
                 file = savedialog.getFilename();
-                if (existFile(file))
+                if (xf_existfile(file))
                 {
-                    if (BOX_CLICKED_NO == MessageBox::question(this, BOX_YES_NO, _("Overwrite Document"), _("Overwrite existing document: %s?"), file.text()))
+                    if (BOX_CLICKED_NO == MessageBox::question(this, BOX_YES_NO, _("Overwrite Document"),
+                                                               _("Overwrite existing document: %s?"), file.text()))
                     {
-                        return(false);
+                        return false;
                     }
                 }
             }
             saveFile(file);
         }
     }
-    return(true);
+    return true;
 }
 
 
@@ -1713,10 +1829,10 @@ long WriteWindow::onCmdSave(FXObject* sender, FXSelector sel, void* ptr)
 {
     if (!filenameset)
     {
-        return(onCmdSaveAs(sender, sel, ptr));
+        return onCmdSaveAs(sender, sel, ptr);
     }
     saveFile(filename);
-    return(1);
+    return 1;
 }
 
 
@@ -1724,7 +1840,7 @@ long WriteWindow::onCmdSave(FXObject* sender, FXSelector sel, void* ptr)
 long WriteWindow::onUpdSave(FXObject* sender, FXSelector, void*)
 {
     sender->handle(this, isModified() ? FXSEL(SEL_COMMAND, ID_ENABLE) : FXSEL(SEL_COMMAND, ID_DISABLE), NULL);
-    return(1);
+    return 1;
 }
 
 
@@ -1740,7 +1856,7 @@ long WriteWindow::onUpdReadOnly(FXObject* sender, FXSelector, void*)
     //cut->disable();
     //cutmc->disable();
 
-    return(1);
+    return 1;
 }
 
 
@@ -1755,17 +1871,18 @@ long WriteWindow::onCmdSaveAs(FXObject*, FXSelector, void*)
     if (savedialog.execute())
     {
         file = savedialog.getFilename();
-        if (existFile(file))
+        if (xf_existfile(file))
         {
-            if (BOX_CLICKED_NO == MessageBox::question(this, BOX_YES_NO, _("Overwrite Document"), _("Overwrite existing document: %s?"), file.text()))
+            if (BOX_CLICKED_NO == MessageBox::question(this, BOX_YES_NO, _("Overwrite Document"),
+                                                       _("Overwrite existing document: %s?"), file.text()))
             {
-                return(1);
+                return 1;
             }
         }
         saveFile(file);
     }
 
-    return(1);
+    return 1;
 }
 
 
@@ -1775,14 +1892,14 @@ FXbool WriteWindow::close(FXbool notify)
     // Prompt to save changes
     if (!saveChanges())
     {
-        return(false);
+        return false;
     }
 
     // Save settings
     saveConfig();
 
     // Perform normal close stuff
-    return(FXMainWindow::close(notify));
+    return FXMainWindow::close(notify);
 }
 
 
@@ -1796,7 +1913,7 @@ long WriteWindow::onCmdWindow(FXObject*, FXSelector sel, void*)
         getApp()->windowlist[which]->raise();
         getApp()->windowlist[which]->setFocus();
     }
-    return(1);
+    return 1;
 }
 
 
@@ -1824,7 +1941,6 @@ long WriteWindow::onUpdWindow(FXObject* sender, FXSelector sel, void*)
         {
             sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_CHECK), NULL);
         }
-
         else
         {
             sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_UNCHECK), NULL);
@@ -1835,7 +1951,7 @@ long WriteWindow::onUpdWindow(FXObject* sender, FXSelector sel, void*)
     {
         sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_HIDE), NULL);
     }
-    return(1);
+    return 1;
 }
 
 
@@ -1860,7 +1976,7 @@ long WriteWindow::onUpdateTitle(FXObject* sender, FXSelector sel, void* ptr)
     }
 
     setTitle(title);
-    return(1);
+    return 1;
 }
 
 
@@ -1876,7 +1992,8 @@ long WriteWindow::onCmdPrint(FXObject*, FXSelector, void*)
     int rc = 1;
     if (printdialog == NULL)
     {
-        printdialog = new InputDialog(this, printcommand, _("Print command: \n(ex: lpr -P <printer>)"), _("Print"), "", printbigicon);
+        printdialog = new InputDialog(this, printcommand, _("Print command: \n(ex: lpr -P <printer>)"),
+                                      _("Print"), "", bigprinticon);
     }
     printdialog->setText(printcommand);
     printdialog->CursorEnd();
@@ -1886,7 +2003,7 @@ long WriteWindow::onCmdPrint(FXObject*, FXSelector, void*)
     // If cancel was pressed, exit
     if (!rc)
     {
-        return(0);
+        return 0;
     }
 
     // Write the new print command to the registry
@@ -1898,10 +2015,10 @@ long WriteWindow::onCmdPrint(FXObject*, FXSelector, void*)
     if (ret < 0)
     {
         MessageBox::error(this, BOX_OK, _("Error"), _("Can't execute command %s"), command.text());
-        return(0);
+        return 0;
     }
 
-    return(1);
+    return 1;
 }
 
 
@@ -1909,7 +2026,7 @@ long WriteWindow::onCmdPrint(FXObject*, FXSelector, void*)
 long WriteWindow::onCmdWrap(FXObject*, FXSelector, void*)
 {
     editor->setTextStyle(editor->getTextStyle() ^ TEXT_WORDWRAP);
-    return(1);
+    return 1;
 }
 
 
@@ -1924,7 +2041,7 @@ long WriteWindow::onUpdWrap(FXObject* sender, FXSelector, void*)
     {
         sender->handle(this, FXSEL(SEL_COMMAND, ID_UNCHECK), NULL);
     }
-    return(1);
+    return 1;
 }
 
 
@@ -1935,7 +2052,7 @@ long WriteWindow::onCmdLinesNum(FXObject*, FXSelector, void*)
     if (linesnum)
     {
         FXuint size = editor->getNumRows();
-        FXuint cols = (FXuint)ceil(log10(size));
+        FXuint cols = FXMAX((FXuint)ceil(log10(size)), 2);
         editor->setBarColumns(cols);
     }
     else
@@ -1943,7 +2060,7 @@ long WriteWindow::onCmdLinesNum(FXObject*, FXSelector, void*)
         editor->setBarColumns(0);
     }
 
-    return(1);
+    return 1;
 }
 
 
@@ -1958,7 +2075,7 @@ long WriteWindow::onUpdLinesNum(FXObject* sender, FXSelector, void*)
     {
         sender->handle(this, FXSEL(SEL_COMMAND, ID_UNCHECK), NULL);
     }
-    return(1);
+    return 1;
 }
 
 
@@ -1976,7 +2093,7 @@ long WriteWindow::onUpdOverstrike(FXObject* sender, FXSelector, void*)
         sender->handle(this, FXSEL(SEL_COMMAND, ID_SETSTRINGVALUE), (void*)&mode);
     }
 
-    return(1);
+    return 1;
 }
 
 
@@ -1986,7 +2103,7 @@ long WriteWindow::onUpdNumRows(FXObject* sender, FXSelector, void*)
     FXuint size = editor->getNumRows();
 
     sender->handle(this, FXSEL(SEL_COMMAND, ID_SETINTVALUE), (void*)&size);
-    return(1);
+    return 1;
 }
 
 
@@ -2006,7 +2123,7 @@ long WriteWindow::onTextInserted(FXObject*, FXSelector, void* ptr)
     }
 
 
-    return(1);
+    return 1;
 }
 
 
@@ -2025,7 +2142,7 @@ long WriteWindow::onTextDeleted(FXObject*, FXSelector, void* ptr)
         }
     }
 
-    return(1);
+    return 1;
 }
 
 
@@ -2044,7 +2161,7 @@ long WriteWindow::onTextReplaced(FXObject*, FXSelector, void* ptr)
         }
     }
 
-    return(1);
+    return 1;
 }
 
 
@@ -2055,12 +2172,10 @@ long WriteWindow::onTextRightMouse(FXObject*, FXSelector, void* ptr)
 
     if (!event->moved)
     {
-        allowPopupScroll = true; // Allow keyboard scrolling
         popupmenu->popup(NULL, event->root_x, event->root_y);
         getApp()->runModalWhileShown(popupmenu);
-        allowPopupScroll = false;
     }
-    return(1);
+    return 1;
 }
 
 
@@ -2076,7 +2191,9 @@ long WriteWindow::onFocusIn(FXObject* sender, FXSelector sel, void* ptr)
         if (t && (t != filetime))
         {
             filetime = t;
-            if (BOX_CLICKED_OK == MessageBox::warning(this, BOX_OK_CANCEL, _("File Was Changed"), _("%s\nwas changed by another program. Reload this file from disk?"), filename.text()))
+            if (BOX_CLICKED_OK == MessageBox::warning(this, BOX_OK_CANCEL, _("File Was Changed"),
+                                  _("%s\nwas changed by another program. Reload this file from disk?"),
+                                   filename.text()))
             {
                 int top = editor->getTopLine();
                 int pos = editor->getCursorPos();
@@ -2086,7 +2203,7 @@ long WriteWindow::onFocusIn(FXObject* sender, FXSelector sel, void* ptr)
             }
         }
     }
-    return(1);
+    return 1;
 }
 
 
@@ -2095,7 +2212,7 @@ long WriteWindow::onCmdSearch(FXObject*, FXSelector, void*)
 {
     if (searchdialog == NULL)
     {
-        searchdialog = new FXSearchDialog(this, _("Search"), searchicon, options | DECOR_CLOSE);
+        searchdialog = new FXSearchDialog(this, _("Search"), bigsearchicon, options | DECOR_CLOSE);
     }
     searchdialog->setSearchMode(SEARCH_IGNORECASE);
 
@@ -2110,11 +2227,12 @@ long WriteWindow::onCmdSearch(FXObject*, FXSelector, void*)
         code = searchdialog->execute();
         if (code == FXSearchDialog::DONE)
         {
-            return(1);
+            return 1;
         }
         searchstring = searchdialog->getSearchText();
         searchflags = searchdialog->getSearchMode();
-        pos = editor->isPosSelected(editor->getCursorPos()) ? (searchflags & SEARCH_BACKWARD) ? editor->getSelStartPos() - 1 : editor->getSelEndPos() : editor->getCursorPos();
+        pos = editor->isPosSelected(editor->getCursorPos()) ? (searchflags & SEARCH_BACKWARD) ?
+              editor->getSelStartPos() - 1 : editor->getSelEndPos() : editor->getCursorPos();
         if (editor->findText(searchstring, beg, end, pos, searchflags | SEARCH_WRAP, 10))
         {
             editor->setAnchorPos(beg[0]);
@@ -2127,8 +2245,9 @@ long WriteWindow::onCmdSearch(FXObject*, FXSelector, void*)
         {
             getApp()->beep();
         }
-    } while (code == FXSearchDialog::SEARCH_NEXT);
-    return(1);
+    }
+    while (code == FXSearchDialog::SEARCH_NEXT);
+    return 1;
 }
 
 
@@ -2137,7 +2256,7 @@ long WriteWindow::onCmdReplace(FXObject*, FXSelector, void*)
 {
     if (replacedialog == NULL)
     {
-        replacedialog = new FXReplaceDialog(this, _("Replace"), replaceicon, options | DECOR_CLOSE);
+        replacedialog = new FXReplaceDialog(this, _("Replace"), bigreplaceicon, options | DECOR_CLOSE);
     }
     replacedialog->setSearchMode(SEARCH_IGNORECASE);
 
@@ -2191,7 +2310,8 @@ long WriteWindow::onCmdReplace(FXObject*, FXSelector, void*)
         }
         else
         {
-            pos = editor->isPosSelected(editor->getCursorPos()) ? (searchflags & SEARCH_BACKWARD) ? editor->getSelStartPos() - 1 : editor->getSelEndPos() : editor->getCursorPos();
+            pos = editor->isPosSelected(editor->getCursorPos()) ? (searchflags & SEARCH_BACKWARD) ?
+                  editor->getSelStartPos() - 1 : editor->getSelEndPos() : editor->getCursorPos();
             if (editor->findText(searchstring, beg, end, pos, searchflags | SEARCH_WRAP, 10))
             {
                 replacevalue = FXRex::substitute(buffer, length, beg, end, replacestring, 10);
@@ -2211,11 +2331,12 @@ long WriteWindow::onCmdReplace(FXObject*, FXSelector, void*)
         {
             getApp()->beep();
         }
-    } while (code == FXReplaceDialog::REPLACE_NEXT);
+    }
+    while (code == FXReplaceDialog::REPLACE_NEXT);
 
 ret:
     FXFREE(&buffer);
-    return(1);
+    return 1;
 }
 
 
@@ -2233,21 +2354,18 @@ long WriteWindow::onCmdSearchSel(FXObject*, FXSelector sel, void*)
     {
         searchstring = string;
     }
-
     // Next, try UTF-16
     else if (getDNDData(FROM_SELECTION, utf16Type, string))
     {
-        FXUTF16LECodec unicode;                 // FIXME maybe other endianness for unix
+        FXUTF16LECodec unicode;         // FIXME maybe other endianness for unix
         searchstring = unicode.mb2utf(string);
     }
-
     // Finally, try good old 8859-1
     else if (getDNDData(FROM_SELECTION, stringType, string))
     {
         FX88591Codec ascii;
         searchstring = ascii.mb2utf(string);
     }
-
     // No dice!
     else
     {
@@ -2282,14 +2400,14 @@ long WriteWindow::onCmdSearchSel(FXObject*, FXSelector sel, void*)
             editor->setCursorPos(end);
             editor->makePositionVisible(beg);
             editor->makePositionVisible(end);
-            return(1);
+            return 1;
         }
     }
 
     // Beep
 x:
     getApp()->beep();
-    return(1);
+    return 1;
 }
 
 
@@ -2298,11 +2416,11 @@ long WriteWindow::onCmdGotoLine(FXObject*, FXSelector, void*)
 {
     int row = editor->getCursorRow() + 1;
 
-    if (FXInputDialog::getInteger(row, this, _("Goto Line"), _("&Goto line number:"), gotobigicon, 1, 2147483647))
+    if (FXInputDialog::getInteger(row, this, _("Goto Line"), _("&Goto line number:"), biggotoicon, 1, 2147483647))
     {
         update();
         editor->setCursorRow(row - 1, true);
         editor->makePositionVisible(editor->getCursorPos());
     }
-    return(1);
+    return 1;
 }

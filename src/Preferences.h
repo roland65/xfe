@@ -3,31 +3,36 @@
 
 #include <string.h>
 
+#include "ColorSelector.h"
+#include "ComboBox.h"
 #include "DialogBox.h"
-#include "Keybindings.h"
+#include "KeyBindings.h"
 
 
 // Number of modifiable colors
 #define NUM_COLORS    12
 
-// Number of themes
-#define NUM_THEMES    10
+// Number of default themes
+#define NUM_DEFAULT_THEMES    9
 
 
 struct Theme
 {
-    //const char *name;
     FXString name;
+    FXString tip;
     FXColor color[NUM_COLORS];
     Theme()
     {
         name = "";
+        tip = "";
     }
 
-    Theme(const char* n, FXColor base = 0, FXColor bdr = 0, FXColor bg = 0, FXColor fg = 0,
-          FXColor selbg = 0, FXColor selfg = 0, FXColor listbg = 0, FXColor listfg = 0, FXColor listhl = 0, FXColor pbarfg = 0, FXColor attenfg = 0, FXColor scrollfg = 0)
+    Theme(const char* n, const char* t, FXColor base = 0, FXColor bdr = 0, FXColor bg = 0, FXColor fg = 0,
+          FXColor selbg = 0, FXColor selfg = 0, FXColor listbg = 0, FXColor listfg = 0,
+          FXColor listhl = 0, FXColor pbarfg = 0, FXColor attenfg = 0, FXColor scrollfg = 0)
     {
         name = FXString(n);
+        tip = FXString(t);
         color[0] = base;
         color[1] = bdr;
         color[2] = bg;
@@ -46,39 +51,49 @@ struct Theme
 };
 
 
+// Vector of themes
+typedef std::vector<Theme>   vector_Theme;
+
+
+
 class PreferencesBox : public DialogBox
 {
     FXDECLARE(PreferencesBox)
 private:
-    FXComboBox*    colorsBox;
-    FXComboBox*    themesBox;
-    FXList*        themesList;
-    FXTextField*   iconpath;
-    FXTextField*   txtviewer;
-    FXTextField*   txteditor;
-    FXTextField*   filecomparator;
-    FXTextField*   timeformat;
-    FXTextField*   imgviewer;
-    FXTextField*   xterm;
-    FXTextField*   imgeditor;
-    FXTextField*   archiver;
-    FXTextField*   pdfviewer;
-    FXTextField*   videoplayer;
-    FXTextField*   audioplayer;
-    FXTextField*   normalfont;
-    FXTextField*   textfont;
-    FXTextField*   mountcmd;
-    FXTextField*   umountcmd;
-    FXGroupBox*    rootgroup;
-    FXLabel*       sulabel;
-    FXLabel*       sudolabel;
-    FXTextField*   sudocmd;
-    FXTextField*   sucmd;
+    ComboBox* colorsBox = NULL;
+    ComboBox* themesBox = NULL;
+    FXList* themesList = NULL;
+    FXTextField* iconpath = NULL;
+    FXTextField* txtviewer = NULL;
+    FXTextField* txteditor = NULL;
+    FXTextField* filecomparator = NULL;
+    FXTextField* timeformat = NULL;
+    FXTextField* copysuffix = NULL;
+    FXTextField* imgviewer = NULL;
+    FXTextField* xterm = NULL;
+    FXTextField* imgeditor = NULL;
+    FXTextField* archiver = NULL;
+    FXTextField* pdfviewer = NULL;
+    FXTextField* videoplayer = NULL;
+    FXTextField* audioplayer = NULL;
+    FXTextField* normalfont = NULL;
+    FXTextField* textfont = NULL;
+    FXTextField* mountcmd = NULL;
+    FXTextField* umountcmd = NULL;
+#if defined(linux) && defined(XFE_AUTOMOUNTER)
+    FXGroupBox* automountgroup = NULL;
+#endif
+    FXGroupBox* rootgroup = NULL;
+    FXLabel* sulabel = NULL;
+    FXLabel* sudolabel = NULL;
+    FXTextField* sudocmd = NULL;
+    FXTextField* sucmd = NULL;
     FXString oldiconpath;
     FXString oldtxtviewer;
     FXString oldtxteditor;
     FXString oldfilecomparator;
     FXString oldtimeformat;
+    FXString oldcopysuffix;
     FXString oldimgviewer;
     FXString oldxterm;
     FXString oldnormalfont;
@@ -90,121 +105,152 @@ private:
     FXString oldvideoplayer;
     FXString oldmountcmd;
     FXString oldumountcmd;
-    FXCheckButton* autosave;
-    FXCheckButton* savewinpos;
-    FXCheckButton* diropen;
-    FXCheckButton* fileopen;
-    FXCheckButton* filetooltips;
-    FXCheckButton* relativeresize;
-    FXCheckButton* showpathlink;
-    FXCheckButton* rootmode;
-    FXCheckButton* trashcan;
-    FXCheckButton* trashbypass;
-    FXCheckButton* dnd;
-    FXCheckButton* trashmv;
-    FXCheckButton* del;
-    FXCheckButton* properties;
-    FXCheckButton* del_emptydir;
-    FXCheckButton* overwrite;
-    FXCheckButton* exec;
-    FXCheckButton* ask;
-    FXCheckButton* bg;
-    FXCheckButton* folder_warning;
-    FXCheckButton* preserve_date_warning;
-    FXCheckButton* root_warning;
-    FXCheckButton* mountwarn;
-    FXCheckButton* show_mount;
-    FXCheckButton* scroll;
-    FXCheckButton* controls;
-    FXSpinner*     spindpi;
-    FXDataTarget startdirtarget;
-    int startdirmode;
-    int oldstartdirmode;
-#ifdef STARTUP_NOTIFICATION
-    FXCheckButton* usesn;
+    FXCheckButton* autosave = NULL;
+    FXCheckButton* savewinpos = NULL;
+    FXCheckButton* diropen = NULL;
+    FXCheckButton* fileopen = NULL;
+    FXCheckButton* filetooltips = NULL;
+    FXCheckButton* relativeresize = NULL;
+    FXCheckButton* alwaysshowtabbar = NULL;
+    FXCheckButton* restoretabs = NULL;
+    FXCheckButton* showpathlink = NULL;
+#if defined(linux) && defined(XFE_AUTOMOUNTER)
+    FXCheckButton* automountbutton = NULL;
+    FXCheckButton* autoopenbutton = NULL;
+    FXLabel* automountlabel = NULL;
 #endif
-    FXCheckButton* noscript;
-    FXColorWell* cwell;
-    Theme Themes[NUM_THEMES];
+    FXCheckButton* rootmode = NULL;
+    FXCheckButton* trashcan = NULL;
+    FXCheckButton* trashbypass = NULL;
+    FXCheckButton* dnd = NULL;
+    FXCheckButton* trashmv = NULL;
+    FXCheckButton* del = NULL;
+    FXCheckButton* properties = NULL;
+    FXCheckButton* del_emptydir = NULL;
+    FXCheckButton* overwrite = NULL;
+    FXCheckButton* exec = NULL;
+    FXCheckButton* ask = NULL;
+    FXCheckButton* bg = NULL;
+    FXCheckButton* folder_warning = NULL;
+    FXCheckButton* preserve_date_warning = NULL;
+    FXCheckButton* root_warning = NULL;
+    FXCheckButton* mountwarn = NULL;
+    FXCheckButton* show_mount = NULL;
+    FXCheckButton* scroll = NULL;
+    FXRadioButton* dirpanel_places_tree = NULL;
+    FXRadioButton* dirpanel_places = NULL;
+    FXRadioButton* dirpanel_tree = NULL;
+    FXLabel* dirpanel_startup = NULL;
+    FXRadioButton* dirpanel_placesstartup = NULL;
+    FXRadioButton* dirpanel_treestartup = NULL;
+    FXSpinner* spindpi = NULL;
+    FXSpinner* bigthumb_spin = NULL;
+    FXSpinner* minithumb_spin = NULL;
+    FXDataTarget startdirtarget;
+    FXDataTarget newtabdirtarget;
+    FXuint startdirmode = 0;
+    FXuint oldstartdirmode = 0;
+    FXuint newtabdirmode = 0;
+    FXuint oldnewtabdirmode = 0;
+#ifdef STARTUP_NOTIFICATION
+    FXCheckButton* usesn = NULL;
+#endif
+    FXCheckButton* noscript = NULL;
+    FXCheckButton* sizecol = NULL;
+    FXCheckButton* typecol = NULL;
+    FXCheckButton* extcol = NULL;
+    FXCheckButton* datecol = NULL;
+    FXCheckButton* usercol = NULL;
+    FXCheckButton* groupcol = NULL;
+    FXCheckButton* permscol = NULL;
+    FXCheckButton* linkcol = NULL;
+    FXList* listcol = NULL;
+    FXButton* listcol_up = NULL;
+    FXButton* listcol_down = NULL;
+    FXbool sizecol_prev = false;
+    FXbool typecol_prev = false;
+    FXbool extcol_prev = false;
+    FXbool datecol_prev = false;
+    FXbool usercol_prev = false;
+    FXbool groupcol_prev = false;
+    FXbool permscol_prev = false;
+    FXbool linkcol_prev = false;
+
+    FXbool colShown[FileList::ID_COL_NAME + NMAX_COLS];
+    FXuint idCol[NMAX_COLS] = { 0 };
+    FXuint nbCols = 0;
+    FXuint idCol_prev[NMAX_COLS] = { 0 };
+    FXuint nbCols_prev = 0;
+
+    ColorWell* cwell = NULL;
+    vector_Theme Themes;
     Theme currTheme;
     Theme currTheme_prev;
-    FXuint root_auth;
-    FXuint root_auth_prev;
-    FXbool trashcan_prev;
-    FXbool trashbypass_prev;
-    FXbool autosave_prev;
-    FXbool savewinpos_prev;
-    FXbool diropen_prev;
-    FXbool fileopen_prev;
-    FXbool filetooltips_prev;
-    FXbool relativeresize_prev;
-    FXbool show_pathlink;
-    FXbool show_pathlink_prev;
-    FXuint wheellines_prev;
-    FXint scrollbarsize_prev;
-    FXbool ask_prev;
-    FXbool dnd_prev;
-    FXbool trashmv_prev;
-    FXbool del_prev;
-    FXbool properties_prev;
-    FXbool del_emptydir_prev;
-    FXbool overwrite_prev;
-    FXbool exec_prev;
-    FXbool use_clearlooks;
-    FXbool use_clearlooks_prev;
-    FXbool rootmode_prev;
+    FXuint root_auth = 0;
+    FXuint root_auth_prev = 0;
+    FXbool trashcan_prev = false;
+    FXbool trashbypass_prev = false;
+    FXbool autosave_prev = false;
+    FXbool savewinpos_prev = false;
+    FXbool diropen_prev = false;
+    FXbool fileopen_prev = false;
+    FXbool filetooltips_prev = false;
+    FXbool relativeresize_prev = false;
+    FXbool alwaysshowtabbar_prev = false;
+    FXbool restoretabs_prev = false;
+    FXbool show_pathlink_prev = false;
+    FXuint wheellines_prev = 0;
+    FXint scrollbarsize_prev = 0;
+    FXbool ask_prev = false;
+    FXbool dnd_prev = false;
+    FXbool trashmv_prev = false;
+    FXbool del_prev = false;
+    FXbool properties_prev = false;
+    FXbool del_emptydir_prev = false;
+    FXbool overwrite_prev = false;
+    FXbool exec_prev = false;
+#if defined(linux) && defined(XFE_AUTOMOUNTER)
+    FXbool automount_prev = false;
+    FXbool autoopen_prev = false;
+#endif
+    FXbool rootmode_prev = false;
     FXString sudocmd_prev;
     FXString sucmd_prev;
     FXint uidpi = 0;
     FXint uidpi_prev = 0;
-#ifdef STARTUP_NOTIFICATION
-    FXbool usesn_prev;
-#endif
-    FXbool noscript_prev;
-#if defined(linux)
-    FXbool mountwarn_prev;
-    FXbool show_mount_prev;
-#endif
-    FXbool root_warning_prev;
-    FXbool folder_warning_prev;
-    FXbool preserve_date_warning_prev;
-    FXuint themelist_prev;
-    FXbool smoothscroll_prev;
-    KeybindingsBox* bindingsbox;
-    FXStringDict*   glbBindingsDict;
-    FXStringDict*   xfeBindingsDict;
-    FXStringDict*   xfiBindingsDict;
-    FXStringDict*   xfwBindingsDict;
+    FXint bigthumb_size = 0;
+    FXint minithumb_size = 0;
+    FXint bigthumb_size_prev = 0;
+    FXint minithumb_size_prev = 0;
+    FXuint copysuffix_pos = 0;
+    FXuint copysuffix_pos_prev = 0;
+    FXuint dirpanel_list_startup = 0;
+    FXuint dirpanel_list_startup_prev = 0;
+    FXuint dirpanel_mode = 0;
+    FXuint dirpanel_mode_prev = 0;
 
-    PreferencesBox() : colorsBox(NULL), themesBox(NULL), themesList(NULL), iconpath(NULL), txtviewer(NULL), txteditor(NULL),
-        filecomparator(NULL), timeformat(NULL), imgviewer(NULL), xterm(NULL), imgeditor(NULL), archiver(NULL),
-        pdfviewer(NULL), videoplayer(NULL), audioplayer(NULL), normalfont(NULL), textfont(NULL), mountcmd(NULL), umountcmd(NULL), rootgroup(NULL),
-        sulabel(NULL), sudolabel(NULL), sudocmd(NULL), sucmd(NULL), autosave(NULL), savewinpos(NULL),
-        diropen(NULL), fileopen(NULL), filetooltips(NULL), relativeresize(NULL), showpathlink(NULL), rootmode(NULL), trashcan(NULL),
-        trashbypass(NULL), dnd(NULL), trashmv(NULL), del(NULL), properties(NULL), del_emptydir(NULL),
-        overwrite(NULL), exec(NULL), ask(NULL), bg(NULL), folder_warning(NULL), preserve_date_warning(NULL),
-        root_warning(NULL), mountwarn(NULL), show_mount(NULL), scroll(NULL), controls(NULL), spindpi(NULL), startdirmode(0), oldstartdirmode(0),
 #ifdef STARTUP_NOTIFICATION
-        usesn(NULL),
+    FXbool usesn_prev = 0;
 #endif
-        noscript(NULL), cwell(NULL), root_auth(0), root_auth_prev(0),
-        trashcan_prev(false), trashbypass_prev(false),
-        autosave_prev(false), savewinpos_prev(false), diropen_prev(false), fileopen_prev(false),
-        filetooltips_prev(false), relativeresize_prev(false), show_pathlink(false), show_pathlink_prev(false),
-        wheellines_prev(0), scrollbarsize_prev(0), ask_prev(false), dnd_prev(false), trashmv_prev(false), del_prev(false),
-        properties_prev(false), del_emptydir_prev(false), overwrite_prev(false), exec_prev(false),
-        use_clearlooks(false), use_clearlooks_prev(false), rootmode_prev(false),
-#ifdef STARTUP_NOTIFICATION
-        usesn_prev(false),
-#endif
-        noscript_prev(false),
+    FXbool noscript_prev = false;
 #if defined(linux)
-        mountwarn_prev(false), show_mount_prev(false),
+    FXbool mountwarn_prev = false;
+    FXbool show_mount_prev = false;
 #endif
-        root_warning_prev(false), folder_warning_prev(false), preserve_date_warning_prev(false),
-        themelist_prev(0), smoothscroll_prev(false), bindingsbox(NULL), glbBindingsDict(NULL),
-        xfeBindingsDict(NULL), xfiBindingsDict(NULL), xfwBindingsDict(NULL)
-    {}
+    FXbool root_warning_prev = false;
+    FXbool folder_warning_prev = false;
+    FXbool preserve_date_warning_prev = false;
+    FXbool smoothscroll_prev = false;
+    FXuint themelist_prev = 0;
+    KeyBindingsBox* bindingsbox = NULL;
+    FXStringDict* glbBindingsDict = NULL;
+    FXStringDict* xfeBindingsDict = NULL;
+    FXStringDict* xfiBindingsDict = NULL;
+    FXStringDict* xfwBindingsDict = NULL;
+
+    PreferencesBox()
+    {
+    }
 
 public:
     enum
@@ -223,9 +269,12 @@ public:
         ID_BROWSE_MOUNTCMD,
         ID_BROWSE_UMOUNTCMD,
         ID_COLOR,
+        ID_THEME,
+        ID_THEME_SAVEAS,
+        ID_THEME_RENAME,
+        ID_THEME_REMOVE,
         ID_NORMALFONT,
         ID_TEXTFONT,
-        ID_THEME,
         ID_BROWSE_ICON_PATH,
         ID_TRASH_BYPASS,
         ID_CONFIRM_TRASH,
@@ -233,11 +282,12 @@ public:
         ID_PKEXEC_CMD,
         ID_SU_CMD,
         ID_SUDO_CMD,
-        ID_STANDARD_CONTROLS,
-        ID_CLEARLOOKS_CONTROLS,
+        ID_COPY_SUFFIX_BEFORE,
+        ID_COPY_SUFFIX_AFTER,
         ID_WHEELADJUST,
         ID_SCROLLBARSIZE,
         ID_MOUNT_TIMEOUT,
+        ID_AUTO_OPEN,
         ID_UIDPI,
         ID_SINGLE_CLICK_FILEOPEN,
         ID_EXEC_TEXT_FILES,
@@ -249,38 +299,78 @@ public:
         ID_START_HOMEDIR,
         ID_START_CURRENTDIR,
         ID_START_LASTDIR,
-        ID_LAST
+        ID_NEWTAB_HOMEDIR,
+        ID_NEWTAB_CURRENTDIR,
+        ID_NEWTAB_ROOTDIR,
+        ID_SHOW_TABBAR,
+        ID_RESTORE_TABS,
+        ID_DIRPANEL_PLACES_TREE,
+        ID_DIRPANEL_PLACES,
+        ID_DIRPANEL_TREE,
+        ID_DIRPANEL_TREE_STARTUP,
+        ID_DIRPANEL_PLACES_STARTUP,
+        ID_VIEW_COL,
+        ID_LISTCOL,
+        ID_LISTCOL_UP,
+        ID_LISTCOL_DOWN,
+        ID_BIGTHUMB_SIZE,
+        ID_MINITHUMB_SIZE,
+        ID_LAST,
     };
 
 public:
-    PreferencesBox(FXWindow* win, FXColor listbackcolor = FXRGB(255, 255, 255), FXColor listforecolor = FXRGB(0, 0, 0), FXColor highlightcolor = FXRGB(238, 238, 238), FXColor pbarcolor = FXRGB(0, 0, 255), FXColor attentioncolor = FXRGB(255, 0, 0), FXColor scrollbackcolor = FXRGB(237, 233, 227));
-    long   onCmdAccept(FXObject*, FXSelector, void*);
-    long   onCmdBrowse(FXObject*, FXSelector, void*);
-    long   onCmdColor(FXObject*, FXSelector, void*);
-    long   onUpdColor(FXObject*, FXSelector, void*);
-    long   onCmdTheme(FXObject*, FXSelector, void*);
-    long   onCmdBrowsePath(FXObject*, FXSelector, void*);
-    long   onCmdNormalFont(FXObject*, FXSelector, void*);
-    long   onCmdTextFont(FXObject*, FXSelector, void*);
-    long   onUpdTrash(FXObject*, FXSelector, void*);
-    long   onUpdConfirmDelEmptyDir(FXObject*, FXSelector, void*);
-    long   onCmdSuMode(FXObject*, FXSelector, void*);
-    long   onUpdSuMode(FXObject*, FXSelector, void*);
-    long   onCmdWheelAdjust(FXObject*, FXSelector, void*);
-    long   onUpdWheelAdjust(FXObject*, FXSelector, void*);
-    long   onCmdScrollBarSize(FXObject*, FXSelector, void*);
-    long   onUpdScrollBarSize(FXObject*, FXSelector, void*);
-    long   onCmdMountTimeout(FXObject*, FXSelector, void*);
-    long   onUpdMountTimeout(FXObject*, FXSelector, void*);
-    long   onUpdSingleClickFileopen(FXObject*, FXSelector, void*);
-    long   onUpdExecTextFiles(FXObject*, FXSelector, void*);
+    PreferencesBox(FXWindow* win, FXColor listbackcolor = FXRGB(255, 255, 255), FXColor listforecolor = FXRGB(0, 0, 0),
+                   FXColor highlightcolor = FXRGB(238, 238, 238), FXColor pbarcolor = FXRGB(10, 36, 106),
+                   FXColor attentioncolor = FXRGB(255, 0, 0), FXColor scrollbackcolor = FXRGB(237, 236, 235));
+
     FXuint execute(FXuint);
-    long   onCmdCancel(FXObject*, FXSelector, void*);
-    long   onCmdControls(FXObject*, FXSelector, void*);
-    long   onUpdControls(FXObject*, FXSelector, void*);
-    long   onCmdChangeKeyBindings(FXObject*, FXSelector, void*);
-    long   onCmdRestoreKeyBindings(FXObject*, FXSelector, void*);
-    long   onCmdStartDir(FXObject*, FXSelector, void*);
-    long   onUpdStartDir(FXObject*, FXSelector, void*);
+
+    long onCmdAccept(FXObject*, FXSelector, void*);
+    long onCmdBrowse(FXObject*, FXSelector, void*);
+    long onCmdColor(FXObject*, FXSelector, void*);
+    long onUpdColor(FXObject*, FXSelector, void*);
+    long onCmdPopupMenu(FXObject*, FXSelector, void*);
+    long onCmdTheme(FXObject*, FXSelector, void*);
+    long onCmdThemeSaveAs(FXObject*, FXSelector, void*);
+    long onCmdThemeRename(FXObject*, FXSelector, void*);
+    long onCmdThemeRemove(FXObject*, FXSelector, void*);
+    long onCmdBrowsePath(FXObject*, FXSelector, void*);
+    long onCmdNormalFont(FXObject*, FXSelector, void*);
+    long onCmdTextFont(FXObject*, FXSelector, void*);
+    long onUpdTrash(FXObject*, FXSelector, void*);
+    long onUpdConfirmDelEmptyDir(FXObject*, FXSelector, void*);
+    long onCmdSuMode(FXObject*, FXSelector, void*);
+    long onUpdSuMode(FXObject*, FXSelector, void*);
+    long onCmdWheelAdjust(FXObject*, FXSelector, void*);
+    long onUpdWheelAdjust(FXObject*, FXSelector, void*);
+    long onCmdScrollBarSize(FXObject*, FXSelector, void*);
+    long onUpdScrollBarSize(FXObject*, FXSelector, void*);
+    long onCmdMountTimeout(FXObject*, FXSelector, void*);
+    long onUpdMountTimeout(FXObject*, FXSelector, void*);
+    long onUpdSingleClickFileopen(FXObject*, FXSelector, void*);
+    long onUpdExecTextFiles(FXObject*, FXSelector, void*);
+    long onCmdCancel(FXObject*, FXSelector, void*);
+    long onCmdChangeKeyBindings(FXObject*, FXSelector, void*);
+    long onCmdRestoreKeyBindings(FXObject*, FXSelector, void*);
+    long onCmdStartDir(FXObject*, FXSelector, void*);
+    long onUpdStartDir(FXObject*, FXSelector, void*);
+    long onCmdNewTabDir(FXObject*, FXSelector, void*);
+    long onUpdNewTabDir(FXObject*, FXSelector, void*);
+    long onCmdCopySuffixPos(FXObject*, FXSelector, void*);
+    long onUpdCopySuffixPos(FXObject*, FXSelector, void*);
+    long onCmdDirPanelStartup(FXObject*, FXSelector, void*);
+    long onUpdDirPanelStartup(FXObject*, FXSelector, void*);
+    long onCmdDirPanelMode(FXObject*, FXSelector, void*);
+    long onUpdDirPanelMode(FXObject*, FXSelector, void*);
+    long onCmdColUp(FXObject*, FXSelector, void*);
+    long onCmdColDown(FXObject*, FXSelector, void*);
+    long onCmdViewCol(FXObject*, FXSelector, void*);
+    long onUpdListColUpDown(FXObject*, FXSelector, void*);
+#if defined(linux) && defined(XFE_AUTOMOUNTER)
+    long onUpdAutoOpen(FXObject*, FXSelector, void*);
+#endif
+
+    // Display tooltip for themes list
+    long onQueryTip(FXObject*, FXSelector, void*);
 };
 #endif

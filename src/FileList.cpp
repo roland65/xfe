@@ -1,4 +1,4 @@
-// File list. Taken from the FOX library and slightly modified.
+// File list. Taken from the FOX library and heavily modified.
 // The compare(), compare_nolocale() and compare_locale() functions are adapted from a patch
 // submitted by Vladimir Támara Patiño
 
@@ -27,18 +27,6 @@
 #include "FileList.h"
 
 
-// Icon scale factor
-extern double scalefrac;
-
-
-// Number of columns in detailed view, in the general case
-#define NB_HEADERS    8
-
-// Minimum file name size in detailed view
-#ifndef MIN_NAME_SIZE
-#define MIN_NAME_SIZE    75
-#endif
-
 // Time interval before refreshing the view
 #define REFRESH_INTERVAL     1000
 #define REFRESH_FREQUENCY    30
@@ -49,9 +37,12 @@ extern double scalefrac;
 // Counter limit for image refreshing
 #define REFRESH_COUNT        100
 
-#define HASH1(x, n)    (((FXuint)(x) * 13) % (n))         // Probe Position [0..n-1]
-#define HASH2(x, n)    (1 | (((FXuint)(x) * 17) % ((n) - 1))) // Probe Distance [1..n-1]
+#define HASH1(x, n)    (((FXuint)(x) * 13) % (n))               // Probe Position [0..n-1]
+#define HASH2(x, n)    (1 | (((FXuint)(x) * 17) % ((n) - 1)))   // Probe Distance [1..n-1]
 
+
+// Global variables
+extern FXString xdgdatahome;
 
 #if defined(linux)
 FXStringDict* fsdevices = NULL; // Devices from fstab
@@ -59,9 +50,20 @@ FXStringDict* mtdevices = NULL; // Mounted devices
 FXStringDict* updevices = NULL; // Responding devices
 #endif
 
-extern FXbool allowPopupScroll;
-extern FXString xdgdatahome;
 
+// Initialize static variables
+int FileList::name_index = -1;
+int FileList::size_index = -1;
+int FileList::type_index = -1;
+int FileList::ext_index = -1;
+int FileList::date_index = -1;
+int FileList::user_index = -1;
+int FileList::group_index = -1;
+int FileList::perms_index = -1;
+int FileList::link_index = -1;
+int FileList::origpath_index = -1;
+int FileList::deldate_index = -1;
+int FileList::dirname_index = -1;
 
 
 // Object implementation
@@ -86,17 +88,18 @@ FXDEFMAP(FileList) FileListMap[] =
     FXMAPFUNC(SEL_COMMAND, FileList::ID_DRAG_LINK, FileList::onCmdDragLink),
     FXMAPFUNC(SEL_COMMAND, FileList::ID_DRAG_REJECT, FileList::onCmdDragReject),
     FXMAPFUNC(SEL_COMMAND, FileList::ID_DIRECTORY_UP, FileList::onCmdDirectoryUp),
-    FXMAPFUNC(SEL_COMMAND, FileList::ID_SORT_BY_NAME, FileList::onCmdSortByName),
-    FXMAPFUNC(SEL_COMMAND, FileList::ID_SORT_BY_DIRNAME, FileList::onCmdSortByDirName),
-    FXMAPFUNC(SEL_COMMAND, FileList::ID_SORT_BY_TYPE, FileList::onCmdSortByType),
-    FXMAPFUNC(SEL_COMMAND, FileList::ID_SORT_BY_SIZE, FileList::onCmdSortBySize),
-    FXMAPFUNC(SEL_COMMAND, FileList::ID_SORT_BY_EXT, FileList::onCmdSortByExt),
-    FXMAPFUNC(SEL_COMMAND, FileList::ID_SORT_BY_TIME, FileList::onCmdSortByTime),
-    FXMAPFUNC(SEL_COMMAND, FileList::ID_SORT_BY_USER, FileList::onCmdSortByUser),
-    FXMAPFUNC(SEL_COMMAND, FileList::ID_SORT_BY_GROUP, FileList::onCmdSortByGroup),
-    FXMAPFUNC(SEL_COMMAND, FileList::ID_SORT_BY_PERM, FileList::onCmdSortByPerm),
-    FXMAPFUNC(SEL_COMMAND, FileList::ID_SORT_BY_DELTIME, FileList::onCmdSortByDeltime),
-    FXMAPFUNC(SEL_COMMAND, FileList::ID_SORT_BY_ORIGPATH, FileList::onCmdSortByOrigpath),
+    FXMAPFUNC(SEL_COMMAND, FileList::ID_COL_NAME, FileList::onCmdSortByName),
+    FXMAPFUNC(SEL_COMMAND, FileList::ID_COL_DIRNAME, FileList::onCmdSortByDirName),
+    FXMAPFUNC(SEL_COMMAND, FileList::ID_COL_TYPE, FileList::onCmdSortByType),
+    FXMAPFUNC(SEL_COMMAND, FileList::ID_COL_SIZE, FileList::onCmdSortBySize),
+    FXMAPFUNC(SEL_COMMAND, FileList::ID_COL_EXT, FileList::onCmdSortByExt),
+    FXMAPFUNC(SEL_COMMAND, FileList::ID_COL_DATE, FileList::onCmdSortByDate),
+    FXMAPFUNC(SEL_COMMAND, FileList::ID_COL_USER, FileList::onCmdSortByUser),
+    FXMAPFUNC(SEL_COMMAND, FileList::ID_COL_GROUP, FileList::onCmdSortByGroup),
+    FXMAPFUNC(SEL_COMMAND, FileList::ID_COL_PERMS, FileList::onCmdSortByPerms),
+    FXMAPFUNC(SEL_COMMAND, FileList::ID_COL_LINK, FileList::onCmdSortByLink),
+    FXMAPFUNC(SEL_COMMAND, FileList::ID_COL_DELDATE, FileList::onCmdSortByDeldate),
+    FXMAPFUNC(SEL_COMMAND, FileList::ID_COL_ORIGPATH, FileList::onCmdSortByOrigpath),
     FXMAPFUNC(SEL_COMMAND, FileList::ID_SORT_REVERSE, FileList::onCmdSortReverse),
     FXMAPFUNC(SEL_COMMAND, FileList::ID_SORT_CASE, FileList::onCmdSortCase),
     FXMAPFUNC(SEL_COMMAND, FileList::ID_DIRS_FIRST, FileList::onCmdDirsFirst),
@@ -107,19 +110,21 @@ FXDEFMAP(FileList) FileListMap[] =
     FXMAPFUNC(SEL_COMMAND, FileList::ID_TOGGLE_THUMBNAILS, FileList::onCmdToggleThumbnails),
     FXMAPFUNC(SEL_COMMAND, FileList::ID_HEADER_CHANGE, FileList::onCmdHeader),
     FXMAPFUNC(SEL_COMMAND, FileList::ID_REFRESH, FileList::onCmdRefresh),
+    FXMAPFUNC(SEL_COMMAND, FileList::ID_CLOSE_FILTER, FileList::onCmdCloseFilter),
     FXMAPFUNC(SEL_UPDATE, FileList::ID_HEADER_CHANGE, FileList::onUpdHeader),
     FXMAPFUNC(SEL_UPDATE, FileList::ID_DIRECTORY_UP, FileList::onUpdDirectoryUp),
-    FXMAPFUNC(SEL_UPDATE, FileList::ID_SORT_BY_NAME, FileList::onUpdSortByName),
-    FXMAPFUNC(SEL_UPDATE, FileList::ID_SORT_BY_DIRNAME, FileList::onUpdSortByDirName),
-    FXMAPFUNC(SEL_UPDATE, FileList::ID_SORT_BY_TYPE, FileList::onUpdSortByType),
-    FXMAPFUNC(SEL_UPDATE, FileList::ID_SORT_BY_SIZE, FileList::onUpdSortBySize),
-    FXMAPFUNC(SEL_UPDATE, FileList::ID_SORT_BY_EXT, FileList::onUpdSortByExt),
-    FXMAPFUNC(SEL_UPDATE, FileList::ID_SORT_BY_TIME, FileList::onUpdSortByTime),
-    FXMAPFUNC(SEL_UPDATE, FileList::ID_SORT_BY_USER, FileList::onUpdSortByUser),
-    FXMAPFUNC(SEL_UPDATE, FileList::ID_SORT_BY_GROUP, FileList::onUpdSortByGroup),
-    FXMAPFUNC(SEL_UPDATE, FileList::ID_SORT_BY_PERM, FileList::onUpdSortByPerm),
-    FXMAPFUNC(SEL_UPDATE, FileList::ID_SORT_BY_DELTIME, FileList::onUpdSortByDeltime),
-    FXMAPFUNC(SEL_UPDATE, FileList::ID_SORT_BY_ORIGPATH, FileList::onUpdSortByOrigpath),
+    FXMAPFUNC(SEL_UPDATE, FileList::ID_COL_NAME, FileList::onUpdSortByName),
+    FXMAPFUNC(SEL_UPDATE, FileList::ID_COL_DIRNAME, FileList::onUpdSortByDirName),
+    FXMAPFUNC(SEL_UPDATE, FileList::ID_COL_TYPE, FileList::onUpdSortByType),
+    FXMAPFUNC(SEL_UPDATE, FileList::ID_COL_SIZE, FileList::onUpdSortBySize),
+    FXMAPFUNC(SEL_UPDATE, FileList::ID_COL_EXT, FileList::onUpdSortByExt),
+    FXMAPFUNC(SEL_UPDATE, FileList::ID_COL_DATE, FileList::onUpdSortByDate),
+    FXMAPFUNC(SEL_UPDATE, FileList::ID_COL_USER, FileList::onUpdSortByUser),
+    FXMAPFUNC(SEL_UPDATE, FileList::ID_COL_GROUP, FileList::onUpdSortByGroup),
+    FXMAPFUNC(SEL_UPDATE, FileList::ID_COL_PERMS, FileList::onUpdSortByPerms),
+    FXMAPFUNC(SEL_UPDATE, FileList::ID_COL_LINK, FileList::onUpdSortByLink),
+    FXMAPFUNC(SEL_UPDATE, FileList::ID_COL_DELDATE, FileList::onUpdSortByDeldate),
+    FXMAPFUNC(SEL_UPDATE, FileList::ID_COL_ORIGPATH, FileList::onUpdSortByOrigpath),
     FXMAPFUNC(SEL_UPDATE, FileList::ID_SORT_REVERSE, FileList::onUpdSortReverse),
     FXMAPFUNC(SEL_UPDATE, FileList::ID_SORT_CASE, FileList::onUpdSortCase),
     FXMAPFUNC(SEL_UPDATE, FileList::ID_DIRS_FIRST, FileList::onUpdDirsFirst),
@@ -137,24 +142,63 @@ FXIMPLEMENT(FileList, IconList, FileListMap, ARRAYNUMBER(FileListMap))
 
 
 
-// File List
-FileList::FileList(FXWindow* focuswin, FXComposite* p, FXObject* tgt, FXSelector sel, FXbool showthumbs, FXuint opts, int x, int y, int w, int h) :
-    IconList(p, tgt, sel, opts, x, y, w, h), directory(ROOTDIR), orgdirectory(ROOTDIR), pattern("*")
+// // Construct
+FileList::FileList(FXWindow* focuswin, FXComposite* p, FXuint* ic, FXuint nc,
+                   FXObject* tgt, FXSelector sel, FXbool showthumbs,
+                   FXuint ds, FXuint os, FXuint opts, int x, int y, int w, int h) :
+    IconList(p, ic, nc, tgt, sel, opts | ICONLIST_FILELIST, x, y, w, h),
+    directory(ROOTDIR), orgdirectory(ROOTDIR), pattern("*")
 {
     flags |= FLAG_ENABLED | FLAG_DROPTARGET;
     associations = NULL;
-    appendHeader(_("Name"), NULL, 200);
-    if (options & _FILELIST_SEARCH)
+    deldate_size = ds;
+    origpath_size = os;
+
+    // Columns id
+    nbCols = nc;
+    for (FXuint i = 0; i < nbCols; i++)
     {
-        appendHeader(_("Folder"), NULL, 150);
+        idCol[i] = ic[i];
     }
-    appendHeader(_("Size"), NULL, 60);
-    appendHeader(_("Type"), NULL, 100);
-    appendHeader(_("Extension"), NULL, 100);
-    appendHeader(_("Modified date"), NULL, 150);
-    appendHeader(_("User"), NULL, 50);
-    appendHeader(_("Group"), NULL, 50);
-    appendHeader(_("Permissions"), NULL, 100);
+    idCol[0] = ID_COL_NAME; // Force first column to name
+
+    // Append headers
+    for (FXuint i = 0; i < nbCols; i++)
+    {
+        appendHeader(getHeaderName(idCol[i]));
+    }
+
+    // Not in a search list
+    if (!(options & FILELIST_SEARCH))
+    {
+        // Column ids when in Trash
+        idColTrash[0] = ID_COL_NAME; // Force to name
+        idColTrash[1] = ID_COL_ORIGPATH;
+        idColTrash[2] = ID_COL_DELDATE;
+        for (FXuint i = 1; i < nbCols; i++)
+        {
+            idColTrash[i + 2] = idCol[i];
+        }
+        nbColsTrash = nbCols + 2;
+    }
+
+    // Header indices by name
+    name_index = 0; // Always 0
+    size_index = getHeaderIndex(ID_COL_SIZE);
+    type_index = getHeaderIndex(ID_COL_TYPE);
+    ext_index = getHeaderIndex(ID_COL_EXT);
+    date_index = getHeaderIndex(ID_COL_DATE);
+    user_index = getHeaderIndex(ID_COL_USER);
+    group_index = getHeaderIndex(ID_COL_GROUP);
+    perms_index = getHeaderIndex(ID_COL_PERMS);
+    link_index = getHeaderIndex(ID_COL_LINK);
+    origpath_index = getHeaderIndex(ID_COL_ORIGPATH);
+    deldate_index = getHeaderIndex(ID_COL_DELDATE);
+    dirname_index = getHeaderIndex(ID_COL_DIRNAME);
+
+    // Fractional scaling factor
+    FXint res = getApp()->reg().readUnsignedEntry("SETTINGS", "screenres", 100);
+    scalefrac = FXMAX(1.0, res / 100.0);
 
     // Initializations
     matchmode = FILEMATCH_FILE_NAME | FILEMATCH_NOESCAPE;
@@ -162,6 +206,7 @@ FileList::FileList(FXWindow* focuswin, FXComposite* p, FXObject* tgt, FXSelector
     dropaction = DRAG_MOVE;
     sortfunc = ascendingCase;
     dirsfirst = true;
+    filter_folders = false;
     allowrefresh = true;
     timestamp = 0;
     counter = 1;
@@ -171,8 +216,6 @@ FileList::FileList(FXWindow* focuswin, FXComposite* p, FXObject* tgt, FXSelector
     backhist = NULL;
     forwardhist = NULL;
     focuswindow = focuswin;
-    deldatesize = 0;
-    origpathsize = 0;
 
 #if defined(linux)
     // Initialize the fsdevices, mtdevices and updevices lists
@@ -187,8 +230,8 @@ FileList::FileList(FXWindow* focuswin, FXComposite* p, FXObject* tgt, FXSelector
         {
             while ((mnt = getmntent(fstab)))
             {
-                if (!streq(mnt->mnt_type, MNTTYPE_IGNORE) && !streq(mnt->mnt_type, MNTTYPE_SWAP) &&
-                    !streq(mnt->mnt_dir, "/"))
+                if (!xf_strequal(mnt->mnt_type, MNTTYPE_IGNORE) && !xf_strequal(mnt->mnt_type, MNTTYPE_SWAP) &&
+                    !xf_strequal(mnt->mnt_dir, "/"))
                 {
                     if (!strncmp(mnt->mnt_fsname, "/dev/fd", 7))
                     {
@@ -202,17 +245,17 @@ FileList::FileList(FXWindow* focuswin, FXComposite* p, FXObject* tgt, FXSelector
                     {
                         fsdevices->insert(mnt->mnt_dir, "zip");
                     }
-                    else if (streq(mnt->mnt_type, "nfs"))
+                    else if (!strncmp(mnt->mnt_type, "nfs", 3))
                     {
                         fsdevices->insert(mnt->mnt_dir, "nfsdisk");
                     }
-                    else if (streq(mnt->mnt_type, "smbfs") || streq(mnt->mnt_type, "cifs"))
+                    else if (xf_strequal(mnt->mnt_type, "smbfs") || xf_strequal(mnt->mnt_type, "cifs"))
                     {
                         fsdevices->insert(mnt->mnt_dir, "smbdisk");
                     }
                     else
                     {
-                        fsdevices->insert(mnt->mnt_dir, "harddisk");
+                        fsdevices->insert(mnt->mnt_dir, "harddrive");
                     }
                 }
             }
@@ -230,7 +273,8 @@ FileList::FileList(FXWindow* focuswin, FXComposite* p, FXObject* tgt, FXSelector
             {
                 // Filter out some file systems
                 FXString mntdir = mnt->mnt_dir;
-                if ((mntdir != "/dev/.static/dev") && (mntdir.rfind("gvfs", 4, mntdir.length()) == -1) && (mntdir.left(4) != "/sys") && (mntdir.left(5) != "/proc") )
+                if ((mntdir != "/dev/.static/dev") && (mntdir.rfind("gvfs", 4, mntdir.length()) == -1) &&
+                    (mntdir.left(4) != "/sys") && (mntdir.left(5) != "/proc"))
                 {
                     mtdevices->insert(mnt->mnt_dir, mnt->mnt_type);
                 }
@@ -243,7 +287,7 @@ FileList::FileList(FXWindow* focuswin, FXComposite* p, FXObject* tgt, FXSelector
         // To mark mount points that are up or down
         updevices = new FXStringDict();
         FXString mtstate;
-        FILE*       mtab = setmntent(MTAB_PATH, "r");
+        FILE* mtab = setmntent(MTAB_PATH, "r");
 
         if (mtab)
         {
@@ -251,7 +295,7 @@ FileList::FileList(FXWindow* focuswin, FXComposite* p, FXObject* tgt, FXSelector
             while ((mnt = getmntent(mtab)))
             {
                 // Filter out some file systems
-                if (keepMount(mnt->mnt_dir, mnt->mnt_fsname))
+                if (xf_keepmount(mnt->mnt_dir, mnt->mnt_fsname))
                 {
                     mntlist.push_back(mnt->mnt_dir);
                 }
@@ -262,7 +306,7 @@ FileList::FileList(FXWindow* focuswin, FXComposite* p, FXObject* tgt, FXSelector
 
             for (FXuint i = 0; i < mntlist.size(); i++)
             {
-                if (statvfsTimeout(mntlist[i].text(), timeout) == 1)
+                if (xf_statvfs_timeout(mntlist[i].text(), timeout) == 1)
                 {
                     mtstate = "down";
                 }
@@ -276,9 +320,60 @@ FileList::FileList(FXWindow* focuswin, FXComposite* p, FXObject* tgt, FXSelector
     }
 #endif
 
-    // Trahscan location
+    // Trashcan location
     trashfileslocation = xdgdatahome + PATHSEPSTRING TRASHFILESPATH;
     trashinfolocation = xdgdatahome + PATHSEPSTRING TRASHINFOPATH;
+}
+
+
+// Get header position from column id
+// Return -1 if column id was not found
+int FileList::getHeaderIndex(FXuint id)
+{
+    int index = -1;
+
+    // In a search list
+    if (options & FILELIST_SEARCH)
+    {
+        for (FXuint i = 0; i < nbCols; i++)
+        {
+            if (idCol[i] == id)
+            {
+                index = i;
+                break;
+            }
+        }
+    }
+    // In a normal list
+    else
+    {
+        // In trash
+        if (getNumHeaders() == (int)nbColsTrash)
+        {
+            for (FXuint i = 0; i < nbColsTrash; i++)
+            {
+                if (idColTrash[i] == id)
+                {
+                    index = i;
+                    break;
+                }
+            }
+        }
+        // Not in trash
+        else
+        {
+            for (FXuint i = 0; i < nbCols; i++)
+            {
+                if (idCol[i] == id)
+                {
+                    index = i;
+                    break;
+                }
+            }
+        }
+    }
+
+    return index;
 }
 
 
@@ -288,15 +383,15 @@ FileList::FileList(FXWindow* focuswin, FXComposite* p, FXObject* tgt, FXSelector
 void FileList::refreshMtdevices(void)
 {
     struct mntent* mnt;
-    FXStringDict*  tmpdict = new FXStringDict();
-    FILE*          mtab = setmntent(MTAB_PATH, "r");
+    FXStringDict* tmpdict = new FXStringDict();
+    FILE* mtab = setmntent(MTAB_PATH, "r");
 
     if (mtab)
     {
         while ((mnt = getmntent(mtab)))
         {
             // Filter out some file systems
-            if (keepMount(mnt->mnt_dir, mnt->mnt_fsname))
+            if (xf_keepmount(mnt->mnt_dir, mnt->mnt_fsname))
             {
                 tmpdict->insert(mnt->mnt_dir, "");
                 if (mtdevices->find(mnt->mnt_dir))
@@ -322,11 +417,10 @@ void FileList::refreshMtdevices(void)
     delete tmpdict;
 }
 
-
 #endif
 
 
-// Create the file list
+// Create file list
 void FileList::create()
 {
     IconList::create();
@@ -371,7 +465,7 @@ long FileList::onOpenTimer(FXObject*, FXSelector, void*)
         getApp()->addTimeout(this, ID_OPEN_TIMER, OPEN_INTERVAL);
         prevIndex = -1;
     }
-    return(1);
+    return 1;
 }
 
 
@@ -383,7 +477,7 @@ long FileList::onDNDEnter(FXObject* sender, FXSelector sel, void* ptr)
     // Keep original directory
     orgdirectory = getDirectory();
 
-    return(1);
+    return 1;
 }
 
 
@@ -407,7 +501,7 @@ long FileList::onDNDLeave(FXObject* sender, FXSelector sel, void* ptr)
 
     // Restore original directory
     setDirectory(orgdirectory);
-    return(1);
+    return 1;
 }
 
 
@@ -423,13 +517,13 @@ long FileList::onDNDMotion(FXObject* sender, FXSelector sel, void* ptr)
     // Start autoscrolling
     if (startAutoScroll(event, false))
     {
-        return(1);
+        return 1;
     }
 
     // Give base class a shot
     if (IconList::onDNDMotion(sender, sel, ptr))
     {
-        return(1);
+        return 1;
     }
 
     // Dropping list of filenames
@@ -441,8 +535,8 @@ long FileList::onDNDMotion(FXObject* sender, FXSelector sel, void* ptr)
             // Symlink folders have a different icon
             if (isItemLink(prevIndex))
             {
-                setItemMiniIcon(prevIndex, minilinkicon);
-                setItemBigIcon(prevIndex, biglinkicon);
+                setItemMiniIcon(prevIndex, minifolderlinkicon);
+                setItemBigIcon(prevIndex, bigfolderlinkicon);
                 deselectItem(prevIndex);
             }
             else
@@ -475,13 +569,13 @@ long FileList::onDNDMotion(FXObject* sender, FXSelector sel, void* ptr)
         }
 
         // See if dropdirectory is writable
-        if (::isWritable(dropdirectory))
+        if (xf_iswritable(dropdirectory))
         {
             acceptDrop(DRAG_ACCEPT);
         }
-        return(1);
+        return 1;
     }
-    return(0);
+    return 0;
 }
 
 
@@ -489,7 +583,7 @@ long FileList::onDNDMotion(FXObject* sender, FXSelector sel, void* ptr)
 long FileList::onCmdDragCopy(FXObject* sender, FXSelector sel, void* ptr)
 {
     dropaction = DRAG_COPY;
-    return(1);
+    return 1;
 }
 
 
@@ -497,7 +591,7 @@ long FileList::onCmdDragCopy(FXObject* sender, FXSelector sel, void* ptr)
 long FileList::onCmdDragMove(FXObject* sender, FXSelector sel, void* ptr)
 {
     dropaction = DRAG_MOVE;
-    return(1);
+    return 1;
 }
 
 
@@ -505,7 +599,7 @@ long FileList::onCmdDragMove(FXObject* sender, FXSelector sel, void* ptr)
 long FileList::onCmdDragLink(FXObject* sender, FXSelector sel, void* ptr)
 {
     dropaction = DRAG_LINK;
-    return(1);
+    return 1;
 }
 
 
@@ -513,7 +607,7 @@ long FileList::onCmdDragLink(FXObject* sender, FXSelector sel, void* ptr)
 long FileList::onCmdDragReject(FXObject* sender, FXSelector sel, void* ptr)
 {
     dropaction = DRAG_REJECT;
-    return(1);
+    return 1;
 }
 
 
@@ -523,12 +617,11 @@ long FileList::onDNDDrop(FXObject* sender, FXSelector sel, void* ptr)
     FXuchar* data;
     FXuint len;
     FXbool showdialog = true;
-    File*    f = NULL;
+    File* f = NULL;
     int ret;
 
     FXbool ask_before_copy = getApp()->reg().readUnsignedEntry("OPTIONS", "ask_before_copy", true);
     FXbool confirm_dnd = getApp()->reg().readUnsignedEntry("OPTIONS", "confirm_drag_and_drop", true);
-
 
     // Cancel open up timer
     getApp()->removeTimeout(this, ID_OPEN_TIMER);
@@ -539,7 +632,7 @@ long FileList::onDNDDrop(FXObject* sender, FXSelector sel, void* ptr)
     // Perhaps target wants to deal with it
     if (IconList::onDNDDrop(sender, sel, ptr))
     {
-        return(1);
+        return 1;
     }
 
     // Check if control key or shift key were pressed
@@ -559,7 +652,8 @@ long FileList::onDNDDrop(FXObject* sender, FXSelector sel, void* ptr)
     }
 
     // Get DND data
-    // This is done before displaying the popup menu to fix a drag and drop problem with konqueror and dolphin file managers
+    // This is done before displaying the popup menu to fix a drag and drop problem
+    // with Konqueror and Dolphin file managers
     FXbool dnd = getDNDData(FROM_DRAGNDROP, urilistType, data, len);
 
     int xx, yy, index = -1;
@@ -577,40 +671,40 @@ long FileList::onDNDDrop(FXObject* sender, FXSelector sel, void* ptr)
         FXMenuPane menu(this);
         int x, y;
         getRoot()->getCursorPosition(x, y, state);
-        new FXMenuCommand(&menu, _("Copy here"), copy_clpicon, this, FileList::ID_DRAG_COPY);
-        new FXMenuCommand(&menu, _("Move here"), moveiticon, this, FileList::ID_DRAG_MOVE);
-        new FXMenuCommand(&menu, _("Link here"), minilinkicon, this, FileList::ID_DRAG_LINK);
+        new FXMenuCommand(&menu, _("Copy Here"), minicopyicon, this, FileList::ID_DRAG_COPY);
+        new FXMenuCommand(&menu, _("Move Here"), minimoveicon, this, FileList::ID_DRAG_MOVE);
+        new FXMenuCommand(&menu, _("Link Here"), minilinktoicon, this, FileList::ID_DRAG_LINK);
         new FXMenuSeparator(&menu);
         new FXMenuCommand(&menu, _("Cancel"), NULL, this, FileList::ID_DRAG_REJECT);
+
         menu.create();
-        allowPopupScroll = true;  // Allow keyboard scrolling
         menu.popup(NULL, x, y);
         getApp()->runModalWhileShown(&menu);
-        allowPopupScroll = false;
     }
 
     if (prevIndex != -1)
     {
         setItemMiniIcon(prevIndex, minifoldericon);
         setItemBigIcon(prevIndex, bigfoldericon);
+        deselectItem(prevIndex);
         prevIndex = -1;
     }
     // Restore original directory
     setDirectory(orgdirectory);
 
     // Get uri-list of files being dropped
-    if (dnd)  // See comment upper
+    if (dnd) // See comment upper
     {
         FXRESIZE(&data, FXuchar, len + 1);
         data[len] = '\0';
-        char* p, *q;
+        char* p, * q;
         p = q = (char*)data;
 
         // Number of selected items
         FXString buf = p;
         int num = buf.contains('\n') + 1;
 
-        // Eventually correct the number of selected items
+        // Possibly correct the number of selected items
         // because sometimes there is another '\n' at the end of the string
         int pos = buf.rfind('\n');
         if (pos == buf.length() - 1)
@@ -621,15 +715,18 @@ long FileList::onDNDDrop(FXObject* sender, FXSelector sel, void* ptr)
         // File object
         if (dropaction == DRAG_COPY)
         {
-            f = new File(this, _("File copy"), COPY, num);
+            f = new File(this, _("Copy Files"), COPY, num);
+            f->create();
         }
         else if (dropaction == DRAG_MOVE)
         {
-            f = new File(this, _("File move"), MOVE, num);
+            f = new File(this, _("Move Files"), MOVE, num);
+            f->create();
         }
         else if (dropaction == DRAG_LINK)
         {
-            f = new File(this, _("File symlink"), SYMLINK, num);
+            f = new File(this, _("Symlink Files"), SYMLINK, num);
+            f->create();
         }
         else
         {
@@ -639,12 +736,38 @@ long FileList::onDNDDrop(FXObject* sender, FXSelector sel, void* ptr)
                 deselectItem(index);
             }
             FXFREE(&data);
-            return(0);
+            return 0;
         }
 
         // Target directory
         FXString targetdir = dropdirectory;
 
+        // Get total source size
+        FXString hsourcesize;
+        FXulong sourcesize = 0, tstart = 0;
+
+        if (dropaction == DRAG_COPY || dropaction == DRAG_MOVE)
+        {
+            hsourcesize = f->sourcesize(buf, &sourcesize, true);
+            tstart = xf_getcurrenttime();
+
+            // If action is cancelled in progress dialog
+            if (f->isCancelled())
+            {
+                f->hideProgressDialog();
+                if (dropaction == DRAG_COPY)
+                {
+                    MessageBox::error(this, BOX_OK, _("Warning"), _("Copy file operation cancelled!"));
+                }
+                else
+                {
+                    MessageBox::error(this, BOX_OK, _("Warning"), _("Move file operation cancelled!"));
+                }
+                goto out;
+            }
+        }
+
+        // Process sources
         while (*p)
         {
             while (*q && *q != '\r')
@@ -659,38 +782,42 @@ long FileList::onDNDDrop(FXObject* sender, FXSelector sel, void* ptr)
             // File operation dialog, if needed
             if (((!confirm_dnd) | ctrlshiftkey) & ask_before_copy & showdialog)
             {
-                FXIcon*  icon = NULL;
+                f->hideProgressDialog();
+                
+                FXIcon* icon = NULL;
                 FXString title, message;
                 if (dropaction == DRAG_COPY)
                 {
                     title = _("Copy");
-                    icon = copy_bigicon;
+                    icon = bigcopyicon;
                     if (num == 1)
                     {
                         message = title + source;
                     }
                     else
                     {
-                        message.format(_("Copy %s files/folders.\nFrom: %s"), FXStringVal(num).text(), sourcedir.text());
+                        message.format(_("Copy %s files/folders from: %s"), FXStringVal(num).text(),
+                                       sourcedir.text());
                     }
                 }
                 else if (dropaction == DRAG_MOVE)
                 {
                     title = _("Move");
-                    icon = move_bigicon;
+                    icon = bigmoveicon;
                     if (num == 1)
                     {
                         message = title + source;
                     }
                     else
                     {
-                        message.format(_("Move %s files/folders.\nFrom: %s"), FXStringVal(num).text(), sourcedir.text());
+                        message.format(_("Move %s files/folders from: %s"), FXStringVal(num).text(),
+                                       sourcedir.text());
                     }
                 }
                 else if ((dropaction == DRAG_LINK) && (num == 1))
                 {
                     title = _("Symlink");
-                    icon = link_bigicon;
+                    icon = biglinktoicon;
                     message = title + source;
                 }
 
@@ -698,7 +825,7 @@ long FileList::onDNDDrop(FXObject* sender, FXSelector sel, void* ptr)
                 dialog->CursorEnd();
                 int rc = dialog->execute();
                 target = dialog->getText();
-                target = ::filePath(target);
+                target = xf_filepath(target);
 
                 if (num > 1)
                 {
@@ -708,14 +835,16 @@ long FileList::onDNDDrop(FXObject* sender, FXSelector sel, void* ptr)
                 if (!rc)
                 {
                     delete f;
-                    return(0);
+                    return 0;
                 }
             }
+
+            f->showProgressDialog();
+            getApp()->beginWaitCursor();
+
             // Move the source file
             if (dropaction == DRAG_MOVE)
             {
-                // Move file
-                f->create();
 
                 // If target file is located at trash location, also create the corresponding trashinfo file
                 // Do it silently and don't report any error if it fails
@@ -723,38 +852,39 @@ long FileList::onDNDDrop(FXObject* sender, FXSelector sel, void* ptr)
                 if (use_trash_can && (FXPath::directory(target) == trashfileslocation))
                 {
                     // Trash files path name
-                    FXString trashpathname = createTrashpathname(source, trashfileslocation);
+                    FXString trashpathname = xf_create_trashpathname(source, trashfileslocation);
 
                     // Adjust target name to get the _N suffix if any
                     FXString trashtarget = FXPath::directory(target) + PATHSEPSTRING + FXPath::name(trashpathname);
 
                     // Create trashinfo file
-                    createTrashinfo(source, trashpathname, trashfileslocation, trashinfolocation);
+                    xf_create_trashinfo(source, trashpathname, trashfileslocation, trashinfolocation);
 
                     // Move source to trash target
-                    ret = f->move(source, trashtarget);
+                    ret = f->fmove(source, trashtarget, hsourcesize, sourcesize, tstart);
                 }
-
                 // Move source to target
                 else
                 {
-                    //target=FXPath::directory(target);
-                    ret = f->move(source, target);
+                    ret = f->fmove(source, target, hsourcesize, sourcesize, tstart);
                 }
 
-                // If source file is located at trash location, try to also remove the corresponding trashinfo file if it exists
+                // If source file is located at trash location, try to also remove the corresponding
+                // trashinfo file if it exists
                 // Do it silently and don't report any error if it fails
                 if (use_trash_can && ret && (source.left(trashfileslocation.length()) == trashfileslocation))
                 {
-                    FXString trashinfopathname = trashinfolocation + PATHSEPSTRING + FXPath::name(source) + ".trashinfo";
-                    ::unlink(trashinfopathname.text());
+                    FXString trashinfopathname = trashinfolocation + PATHSEPSTRING + FXPath::name(source) +
+                                                 ".trashinfo";
+                    unlink(trashinfopathname.text());
                 }
 
                 // An error has occurred
                 if ((ret == 0) && !f->isCancelled())
                 {
                     f->hideProgressDialog();
-                    MessageBox::error(this, BOX_OK, _("Error"), _("An error has occurred during the move file operation!"));
+                    MessageBox::error(this, BOX_OK, _("Error"),
+                                      _("An error has occurred during the move file operation!"));
                     break;
                 }
 
@@ -769,39 +899,35 @@ long FileList::onDNDDrop(FXObject* sender, FXSelector sel, void* ptr)
             // Copy the source file
             else if (dropaction == DRAG_COPY)
             {
-                // Copy file
-                f->create();
-
                 // If target file is located at trash location, also create the corresponding trashinfo file
                 // Do it silently and don't report any error if it fails
                 FXbool use_trash_can = getApp()->reg().readUnsignedEntry("OPTIONS", "use_trash_can", true);
                 if (use_trash_can && (FXPath::directory(target) == trashfileslocation))
                 {
                     // Trash files path name
-                    FXString trashpathname = createTrashpathname(source, trashfileslocation);
+                    FXString trashpathname = xf_create_trashpathname(source, trashfileslocation);
 
                     // Adjust target name to get the _N suffix if any
                     FXString trashtarget = FXPath::directory(target) + PATHSEPSTRING + FXPath::name(trashpathname);
 
                     // Create trashinfo file
-                    createTrashinfo(source, trashpathname, trashfileslocation, trashinfolocation);
+                    xf_create_trashinfo(source, trashpathname, trashfileslocation, trashinfolocation);
 
                     // Copy source to trash target
-                    ret = f->copy(source, trashtarget);
+                    ret = f->copy(source, trashtarget, hsourcesize, sourcesize, tstart);
                 }
-
                 // Copy source to target
                 else
                 {
-                    //target=FXPath::directory(target);
-                    ret = f->copy(source, target);
+                    ret = f->copy(source, target, hsourcesize, sourcesize, tstart);
                 }
 
                 // An error has occurred
                 if ((ret == 0) && !f->isCancelled())
                 {
                     f->hideProgressDialog();
-                    MessageBox::error(this, BOX_OK, _("Error"), _("An error has occurred during the copy file operation!"));
+                    MessageBox::error(this, BOX_OK, _("Error"),
+                                      _("An error has occurred during the copy file operation!"));
                     break;
                 }
 
@@ -817,7 +943,6 @@ long FileList::onDNDDrop(FXObject* sender, FXSelector sel, void* ptr)
             else if (dropaction == DRAG_LINK)
             {
                 // Link file
-                f->create();
                 f->symlink(source, target);
             }
             if (*q == '\r')
@@ -825,13 +950,16 @@ long FileList::onDNDDrop(FXObject* sender, FXSelector sel, void* ptr)
                 q += 2;
             }
             p = q;
+
+            getApp()->endWaitCursor();
         }
+out:
         delete f;
         FXFREE(&data);
-        return(1);
+        return 1;
     }
 
-    return(0);
+    return 0;
 }
 
 
@@ -845,7 +973,7 @@ long FileList::onDNDRequest(FXObject* sender, FXSelector sel, void* ptr)
     // Perhaps the target wants to supply its own data
     if (IconList::onDNDRequest(sender, sel, ptr))
     {
-        return(1);
+        return 1;
     }
 
     // Return list of filenames as a uri-list
@@ -857,16 +985,16 @@ long FileList::onDNDRequest(FXObject* sender, FXSelector sel, void* ptr)
             FXMEMDUP(&data, dragfiles.text(), FXuchar, len);
             setDNDData(FROM_DRAGNDROP, event->target, data, len);
         }
-        return(1);
+        return 1;
     }
 
     // Delete selected files
     if (event->target == deleteType)
     {
-        return(1);
+        return 1;
     }
 
-    return(0);
+    return 0;
 }
 
 
@@ -877,7 +1005,7 @@ long FileList::onBeginDrag(FXObject* sender, FXSelector sel, void* ptr)
 
     if (IconList::onBeginDrag(sender, sel, ptr))
     {
-        return(1);
+        return 1;
     }
     if (beginDrag(&urilistType, 1))
     {
@@ -892,14 +1020,14 @@ long FileList::onBeginDrag(FXObject* sender, FXSelector sel, void* ptr)
                 }
                 else
                 {
-                    dragfiles += FXURL::encode(::fileToURI(getItemFullPathname(i)));
+                    dragfiles += FXURL::encode(::xf_filetouri(getItemFullPathname(i)));
                     dragfiles += "\r\n";
                 }
             }
         }
-        return(1);
+        return 1;
     }
-    return(0);
+    return 0;
 }
 
 
@@ -908,24 +1036,24 @@ long FileList::onEndDrag(FXObject* sender, FXSelector sel, void* ptr)
 {
     if (IconList::onEndDrag(sender, sel, ptr))
     {
-        return(1);
+        return 1;
     }
     endDrag((didAccept() != DRAG_REJECT));
     setDragCursor(getDefaultCursor());
     dragfiles = FXString::null;
-    return(1);
+    return 1;
 }
 
 
 // Dragged stuff around
 long FileList::onDragged(FXObject* sender, FXSelector sel, void* ptr)
 {
-    FXEvent*     event = (FXEvent*)ptr;
+    FXEvent* event = (FXEvent*)ptr;
     FXDragAction action;
 
     if (IconList::onDragged(sender, sel, ptr))
     {
-        return(1);
+        return 1;
     }
     action = DRAG_MOVE;
 
@@ -943,7 +1071,7 @@ long FileList::onDragged(FXObject* sender, FXSelector sel, void* ptr)
     }
 
     // If source directory is read-only, convert move action to copy
-    if (!::isWritable(orgdirectory) && (action == DRAG_MOVE))
+    if (!xf_iswritable(orgdirectory) && (action == DRAG_MOVE))
     {
         action = DRAG_COPY;
     }
@@ -968,7 +1096,7 @@ long FileList::onDragged(FXObject* sender, FXSelector sel, void* ptr)
     {
         setDragCursor(getApp()->getDefaultCursor(DEF_DNDSTOP_CURSOR));
     }
-    return(1);
+    return 1;
 }
 
 
@@ -976,7 +1104,17 @@ long FileList::onDragged(FXObject* sender, FXSelector sel, void* ptr)
 long FileList::onCmdToggleHidden(FXObject*, FXSelector, void*)
 {
     showHiddenFiles(!shownHiddenFiles());
-    return(1);
+    return 1;
+}
+
+
+// Close filter
+long FileList::onCmdCloseFilter(FXObject*, FXSelector, void*)
+{
+    setPattern("*");
+    onCmdRefresh(0, 0, 0);
+
+    return 1;
 }
 
 
@@ -984,7 +1122,7 @@ long FileList::onCmdToggleHidden(FXObject*, FXSelector, void*)
 long FileList::onCmdToggleThumbnails(FXObject*, FXSelector, void*)
 {
     showThumbnails(!displaythumbnails);
-    return(1);
+    return 1;
 }
 
 
@@ -999,7 +1137,7 @@ long FileList::onUpdToggleThumbnails(FXObject* sender, FXSelector, void*)
     {
         sender->handle(this, FXSEL(SEL_COMMAND, ID_UNCHECK), NULL);
     }
-    return(1);
+    return 1;
 }
 
 
@@ -1014,7 +1152,7 @@ long FileList::onUpdToggleHidden(FXObject* sender, FXSelector, void*)
     {
         sender->handle(this, FXSEL(SEL_COMMAND, ID_UNCHECK), NULL);
     }
-    return(1);
+    return 1;
 }
 
 
@@ -1022,7 +1160,7 @@ long FileList::onUpdToggleHidden(FXObject* sender, FXSelector, void*)
 long FileList::onCmdShowHidden(FXObject*, FXSelector, void*)
 {
     showHiddenFiles(true);
-    return(1);
+    return 1;
 }
 
 
@@ -1037,7 +1175,7 @@ long FileList::onUpdShowHidden(FXObject* sender, FXSelector, void*)
     {
         sender->handle(this, FXSEL(SEL_COMMAND, ID_UNCHECK), NULL);
     }
-    return(1);
+    return 1;
 }
 
 
@@ -1045,7 +1183,7 @@ long FileList::onUpdShowHidden(FXObject* sender, FXSelector, void*)
 long FileList::onCmdHideHidden(FXObject*, FXSelector, void*)
 {
     showHiddenFiles(false);
-    return(1);
+    return 1;
 }
 
 
@@ -1060,7 +1198,7 @@ long FileList::onUpdHideHidden(FXObject* sender, FXSelector, void*)
     {
         sender->handle(this, FXSEL(SEL_COMMAND, ID_UNCHECK), NULL);
     }
-    return(1);
+    return 1;
 }
 
 
@@ -1069,7 +1207,7 @@ long FileList::onCmdDirectoryUp(FXObject*, FXSelector, void*)
 {
     setFocus();
     setDirectory(FXPath::upLevel(directory), true, directory);
-    return(1);
+    return 1;
 }
 
 
@@ -1079,7 +1217,7 @@ long FileList::onUpdDirectoryUp(FXObject* sender, FXSelector, void* ptr)
     FXuint msg = FXPath::isTopDirectory(directory) ? ID_DISABLE : ID_ENABLE;
 
     sender->handle(this, FXSEL(SEL_COMMAND, msg), ptr);
-    return(1);
+    return 1;
 }
 
 
@@ -1088,10 +1226,10 @@ long FileList::onCmdSetPattern(FXObject*, FXSelector, void* ptr)
 {
     if (!ptr)
     {
-        return(0);
+        return 0;
     }
     setPattern((const char*)ptr);
-    return(1);
+    return 1;
 }
 
 
@@ -1099,13 +1237,15 @@ long FileList::onCmdSetPattern(FXObject*, FXSelector, void* ptr)
 long FileList::onUpdSetPattern(FXObject* sender, FXSelector, void*)
 {
     sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_SETVALUE), (void*)pattern.text());
-    return(1);
+    return 1;
 }
 
 
 // Sort by name
 long FileList::onCmdSortByName(FXObject*, FXSelector, void*)
 {
+    name_index = getHeaderIndex(ID_COL_NAME);
+
     if (dirsfirst == false)
     {
         if (getIgnoreCase() == true)
@@ -1128,24 +1268,29 @@ long FileList::onCmdSortByName(FXObject*, FXSelector, void*)
             sortfunc = (sortfunc == ascending) ? descending : ascending;
         }
     }
-    setSortHeader(0);
+    setSortHeader(name_index);
     scan(true);
-    return(1);
+    return 1;
 }
 
 
 // Update sender
 long FileList::onUpdSortByName(FXObject* sender, FXSelector, void*)
 {
-    sender->handle(this, (sortfunc == ascending || sortfunc == descending || sortfunc == ascendingCase || sortfunc == descendingCase ||
-                          sortfunc == ascendingMix || sortfunc == descendingMix || sortfunc == ascendingCaseMix || sortfunc == descendingCaseMix) ? FXSEL(SEL_COMMAND, ID_CHECK) : FXSEL(SEL_COMMAND, ID_UNCHECK), NULL);
-    return(1);
+    sender->handle(this,
+                   (sortfunc == ascending || sortfunc == descending || sortfunc == ascendingCase ||
+                    sortfunc == descendingCase || sortfunc == ascendingMix || sortfunc == descendingMix ||
+                    sortfunc == ascendingCaseMix || sortfunc == descendingCaseMix) ?
+                    FXSEL(SEL_COMMAND, ID_CHECK) : FXSEL(SEL_COMMAND, ID_UNCHECK), NULL);
+    return 1;
 }
 
 
 // Sort by directory name (for search list)
 long FileList::onCmdSortByDirName(FXObject*, FXSelector, void*)
 {
+    dirname_index = getHeaderIndex(ID_COL_DIRNAME);
+
     if (dirsfirst == false)
     {
         if (getIgnoreCase() == true)
@@ -1168,23 +1313,31 @@ long FileList::onCmdSortByDirName(FXObject*, FXSelector, void*)
             sortfunc = (sortfunc == ascendingDir) ? descendingDir : ascendingDir;
         }
     }
+
+    setSortHeader(dirname_index);
+
     scan(true);
-    return(1);
+    return 1;
 }
 
 
 // Update sender
 long FileList::onUpdSortByDirName(FXObject* sender, FXSelector, void*)
 {
-    sender->handle(this, (sortfunc == ascendingDir || sortfunc == descendingDir || sortfunc == ascendingDirCase || sortfunc == descendingDirCase ||
-                          sortfunc == ascendingDirMix || sortfunc == descendingDirMix || sortfunc == ascendingDirCaseMix || sortfunc == descendingDirCaseMix) ? FXSEL(SEL_COMMAND, ID_CHECK) : FXSEL(SEL_COMMAND, ID_UNCHECK), NULL);
-    return(1);
+    sender->handle(this, (sortfunc == ascendingDir || sortfunc == descendingDir || sortfunc == ascendingDirCase ||
+                          sortfunc == descendingDirCase || sortfunc == ascendingDirMix ||
+                          sortfunc == descendingDirMix || sortfunc == ascendingDirCaseMix ||
+                          sortfunc == descendingDirCaseMix) ?
+                          FXSEL(SEL_COMMAND, ID_CHECK) : FXSEL(SEL_COMMAND, ID_UNCHECK), NULL);
+    return 1;
 }
 
 
 // Sort by type
 long FileList::onCmdSortByType(FXObject*, FXSelector, void*)
 {
+    type_index = getHeaderIndex(ID_COL_TYPE);
+
     if (dirsfirst == false)
     {
         sortfunc = (sortfunc == ascendingTypeMix) ? descendingTypeMix : ascendingTypeMix;
@@ -1194,31 +1347,40 @@ long FileList::onCmdSortByType(FXObject*, FXSelector, void*)
         sortfunc = (sortfunc == ascendingType) ? descendingType : ascendingType;
     }
 
-    if (options & _FILELIST_SEARCH)
-    {
-        setSortHeader(3);
-    }
-    else
-    {
-        setSortHeader(2);
-    }
+    setSortHeader(type_index);
 
     scan(true);
-    return(1);
+    return 1;
 }
 
 
 // Update sender
 long FileList::onUpdSortByType(FXObject* sender, FXSelector, void*)
 {
-    sender->handle(this, (sortfunc == ascendingType || sortfunc == descendingType || sortfunc == ascendingTypeMix || sortfunc == descendingTypeMix) ? FXSEL(SEL_COMMAND, ID_CHECK) : FXSEL(SEL_COMMAND, ID_UNCHECK), NULL);
-    return(1);
+    sender->handle(this, (sortfunc == ascendingType || sortfunc == descendingType || sortfunc == ascendingTypeMix ||
+                          sortfunc == descendingTypeMix) ?
+                          FXSEL(SEL_COMMAND, ID_CHECK) : FXSEL(SEL_COMMAND, ID_UNCHECK), NULL);
+
+    FXbool isShown = getApp()->reg().readUnsignedEntry("SETTINGS", "view_col_type", 1);
+
+    if (isShown)
+    {
+        sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_ENABLE), NULL);
+    }
+    else
+    {
+        sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_DISABLE), NULL);
+    }
+
+    return 1;
 }
 
 
 // Sort by size
 long FileList::onCmdSortBySize(FXObject*, FXSelector, void*)
 {
+    size_index = getHeaderIndex(ID_COL_SIZE);
+
     if (dirsfirst == false)
     {
         sortfunc = (sortfunc == ascendingSizeMix) ? descendingSizeMix : ascendingSizeMix;
@@ -1228,31 +1390,40 @@ long FileList::onCmdSortBySize(FXObject*, FXSelector, void*)
         sortfunc = (sortfunc == ascendingSize) ? descendingSize : ascendingSize;
     }
 
-    if (options & _FILELIST_SEARCH)
-    {
-        setSortHeader(2);
-    }
-    else
-    {
-        setSortHeader(1);
-    }
+    setSortHeader(size_index);
 
     scan(true);
-    return(1);
+    return 1;
 }
 
 
 // Update sender
 long FileList::onUpdSortBySize(FXObject* sender, FXSelector, void*)
 {
-    sender->handle(this, (sortfunc == ascendingSize || sortfunc == descendingSize || sortfunc == ascendingSizeMix || sortfunc == descendingSizeMix) ? FXSEL(SEL_COMMAND, ID_CHECK) : FXSEL(SEL_COMMAND, ID_UNCHECK), NULL);
-    return(1);
+    sender->handle(this, (sortfunc == ascendingSize || sortfunc == descendingSize || sortfunc == ascendingSizeMix ||
+                          sortfunc == descendingSizeMix) ?
+                          FXSEL(SEL_COMMAND, ID_CHECK) : FXSEL(SEL_COMMAND, ID_UNCHECK), NULL);
+
+    FXbool isShown = getApp()->reg().readUnsignedEntry("SETTINGS", "view_col_size", 1);
+
+    if (isShown)
+    {
+        sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_ENABLE), NULL);
+    }
+    else
+    {
+        sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_DISABLE), NULL);
+    }
+
+    return 1;
 }
 
 
 // Sort by ext
 long FileList::onCmdSortByExt(FXObject*, FXSelector, void*)
 {
+    ext_index = getHeaderIndex(ID_COL_EXT);
+
     if (dirsfirst == false)
     {
         sortfunc = (sortfunc == ascendingExtMix) ? descendingExtMix : ascendingExtMix;
@@ -1262,103 +1433,180 @@ long FileList::onCmdSortByExt(FXObject*, FXSelector, void*)
         sortfunc = (sortfunc == ascendingExt) ? descendingExt : ascendingExt;
     }
 
-    if (options & _FILELIST_SEARCH)
-    {
-        setSortHeader(4);
-    }
-    else
-    {
-        setSortHeader(3);
-    }
+    setSortHeader(ext_index);
 
     scan(true);
-    return(1);
-}
-
-
-// Sort by original path
-long FileList::onCmdSortByOrigpath(FXObject*, FXSelector, void*)
-{
-    if (dirsfirst == false)
-    {
-        sortfunc = (sortfunc == ascendingOrigpathMix) ? descendingOrigpathMix : ascendingOrigpathMix;
-    }
-    else
-    {
-        sortfunc = (sortfunc == ascendingOrigpath) ? descendingOrigpath : ascendingOrigpath;
-    }
-
-    setSortHeader(8);
-
-    scan(true);
-    return(1);
-}
-
-
-// Sort by deletion time
-long FileList::onCmdSortByDeltime(FXObject*, FXSelector, void*)
-{
-    if (dirsfirst == false)
-    {
-        sortfunc = (sortfunc == ascendingDeltimeMix) ? descendingDeltimeMix : ascendingDeltimeMix;
-    }
-    else
-    {
-        sortfunc = (sortfunc == ascendingDeltime) ? descendingDeltime : ascendingDeltime;
-    }
-
-    setSortHeader(9);
-
-    scan(true);
-    return(1);
+    return 1;
 }
 
 
 // Update sender
 long FileList::onUpdSortByExt(FXObject* sender, FXSelector, void*)
 {
-    sender->handle(this, (sortfunc == ascendingExt || sortfunc == descendingExt || sortfunc == ascendingExtMix || sortfunc == descendingExtMix) ? FXSEL(SEL_COMMAND, ID_CHECK) : FXSEL(SEL_COMMAND, ID_UNCHECK), NULL);
-    return(1);
+    sender->handle(this, (sortfunc == ascendingExt || sortfunc == descendingExt || sortfunc == ascendingExtMix ||
+                          sortfunc == descendingExtMix) ?
+                          FXSEL(SEL_COMMAND, ID_CHECK) : FXSEL(SEL_COMMAND, ID_UNCHECK), NULL);
+
+    FXbool isShown = getApp()->reg().readUnsignedEntry("SETTINGS", "view_col_ext", 1);
+
+    if (isShown)
+    {
+        sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_ENABLE), NULL);
+    }
+    else
+    {
+        sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_DISABLE), NULL);
+    }
+
+    return 1;
 }
 
 
-// Sort by time
-long FileList::onCmdSortByTime(FXObject*, FXSelector, void*)
+// Sort by original path
+long FileList::onCmdSortByOrigpath(FXObject*, FXSelector, void*)
 {
+    origpath_index = getHeaderIndex(ID_COL_ORIGPATH);
+
     if (dirsfirst == false)
     {
-        sortfunc = (sortfunc == ascendingTimeMix) ? descendingTimeMix : ascendingTimeMix;
+        if (getIgnoreCase() == true)
+        {
+            sortfunc = (sortfunc == ascendingOrigpathCaseMix) ? descendingOrigpathCaseMix : ascendingOrigpathCaseMix;
+        }
+        else
+        {
+            sortfunc = (sortfunc == ascendingOrigpathMix) ? descendingOrigpathMix : ascendingOrigpathMix;
+        }
     }
     else
     {
-        sortfunc = (sortfunc == ascendingTime) ? descendingTime : ascendingTime;
+        if (getIgnoreCase() == true)
+        {
+            sortfunc = (sortfunc == ascendingOrigpathCase) ? descendingOrigpathCase : ascendingOrigpathCase;
+        }
+        else
+        {
+            sortfunc = (sortfunc == ascendingOrigpath) ? descendingOrigpath : ascendingOrigpath;
+        }
     }
 
-    if (options & _FILELIST_SEARCH)
-    {
-        setSortHeader(5);
-    }
-    else
-    {
-        setSortHeader(4);
-    }
+    setSortHeader(origpath_index);
 
     scan(true);
-    return(1);
+    return 1;
 }
 
 
 // Update sender
-long FileList::onUpdSortByTime(FXObject* sender, FXSelector, void*)
+long FileList::onUpdSortByOrigpath(FXObject* sender, FXSelector, void*)
 {
-    sender->handle(this, (sortfunc == ascendingTime || sortfunc == descendingTime || sortfunc == ascendingTimeMix || sortfunc == descendingTimeMix) ? FXSEL(SEL_COMMAND, ID_CHECK) : FXSEL(SEL_COMMAND, ID_UNCHECK), NULL);
-    return(1);
+    sender->handle(this, (sortfunc == ascendingOrigpath || sortfunc == descendingOrigpath ||
+                   sortfunc == ascendingOrigpathCase || sortfunc == descendingOrigpathCase ||
+                   sortfunc == ascendingOrigpathMix || sortfunc == descendingOrigpathMix ||
+                   sortfunc == ascendingOrigpathCaseMix || sortfunc == descendingOrigpathCaseMix) ?
+                   FXSEL(SEL_COMMAND, ID_CHECK) : FXSEL(SEL_COMMAND, ID_UNCHECK), NULL);
+
+    if (!(options & FILELIST_SEARCH) && (getNumHeaders() == (int)nbColsTrash))
+    {
+        sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_ENABLE), NULL);
+    }
+    else
+    {
+        sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_DISABLE), NULL);
+    }
+
+    return 1;
+}
+
+
+// Sort by deletion date
+long FileList::onCmdSortByDeldate(FXObject*, FXSelector, void*)
+{
+    deldate_index = getHeaderIndex(ID_COL_DELDATE);
+
+    if (dirsfirst == false)
+    {
+        sortfunc = (sortfunc == ascendingDeldateMix) ? descendingDeldateMix : ascendingDeldateMix;
+    }
+    else
+    {
+        sortfunc = (sortfunc == ascendingDeldate) ? descendingDeldate : ascendingDeldate;
+    }
+
+    setSortHeader(deldate_index);
+
+    scan(true);
+    return 1;
+}
+
+
+// Update sender
+long FileList::onUpdSortByDeldate(FXObject* sender, FXSelector, void*)
+{
+    sender->handle(this, (sortfunc == ascendingDeldate || sortfunc == descendingDeldate ||
+                   sortfunc == ascendingDeldateMix || sortfunc == descendingDeldateMix) ?
+                   FXSEL(SEL_COMMAND, ID_CHECK) : FXSEL(SEL_COMMAND, ID_UNCHECK), NULL);
+
+    if (!(options & FILELIST_SEARCH) && (getNumHeaders() == (int)nbColsTrash))
+    {
+        sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_ENABLE), NULL);
+    }
+    else
+    {
+        sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_DISABLE), NULL);
+    }
+
+    return 1;
+}
+
+
+// Sort by date
+long FileList::onCmdSortByDate(FXObject*, FXSelector, void*)
+{
+    date_index = getHeaderIndex(ID_COL_DATE);
+    if (dirsfirst == false)
+    {
+        sortfunc = (sortfunc == ascendingDateMix) ? descendingDateMix : ascendingDateMix;
+    }
+    else
+    {
+        sortfunc = (sortfunc == ascendingDate) ? descendingDate : ascendingDate;
+    }
+
+    setSortHeader(date_index);
+
+    scan(true);
+    return 1;
+}
+
+
+// Update sender
+long FileList::onUpdSortByDate(FXObject* sender, FXSelector, void*)
+{
+    sender->handle(this, (sortfunc == ascendingDate || sortfunc == descendingDate ||
+                   sortfunc == ascendingDateMix || sortfunc == descendingDateMix) ?
+                   FXSEL(SEL_COMMAND, ID_CHECK) : FXSEL(SEL_COMMAND, ID_UNCHECK), NULL);
+
+    FXbool isShown = getApp()->reg().readUnsignedEntry("SETTINGS", "view_col_date", 1);
+
+    if (isShown)
+    {
+        sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_ENABLE), NULL);
+    }
+    else
+    {
+        sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_DISABLE), NULL);
+    }
+
+    return 1;
 }
 
 
 // Sort by user
 long FileList::onCmdSortByUser(FXObject*, FXSelector, void*)
 {
+    user_index = getHeaderIndex(ID_COL_USER);
+
     if (dirsfirst == false)
     {
         sortfunc = (sortfunc == ascendingUserMix) ? descendingUserMix : ascendingUserMix;
@@ -1368,31 +1616,40 @@ long FileList::onCmdSortByUser(FXObject*, FXSelector, void*)
         sortfunc = (sortfunc == ascendingUser) ? descendingUser : ascendingUser;
     }
 
-    if (options & _FILELIST_SEARCH)
-    {
-        setSortHeader(6);
-    }
-    else
-    {
-        setSortHeader(5);
-    }
+    setSortHeader(user_index);
 
     scan(true);
-    return(1);
+    return 1;
 }
 
 
 // Update sender
 long FileList::onUpdSortByUser(FXObject* sender, FXSelector, void*)
 {
-    sender->handle(this, (sortfunc == ascendingUser || sortfunc == descendingUser || sortfunc == ascendingUserMix || sortfunc == descendingUserMix) ? FXSEL(SEL_COMMAND, ID_CHECK) : FXSEL(SEL_COMMAND, ID_UNCHECK), NULL);
-    return(1);
+    sender->handle(this, (sortfunc == ascendingUser || sortfunc == descendingUser ||
+                   sortfunc == ascendingUserMix || sortfunc == descendingUserMix) ?
+                   FXSEL(SEL_COMMAND, ID_CHECK) : FXSEL(SEL_COMMAND, ID_UNCHECK), NULL);
+
+    FXbool isShown = getApp()->reg().readUnsignedEntry("SETTINGS", "view_col_user", 1);
+
+    if (isShown)
+    {
+        sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_ENABLE), NULL);
+    }
+    else
+    {
+        sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_DISABLE), NULL);
+    }
+
+    return 1;
 }
 
 
 // Sort by group
 long FileList::onCmdSortByGroup(FXObject*, FXSelector, void*)
 {
+    group_index = getHeaderIndex(ID_COL_GROUP);
+
     if (dirsfirst == false)
     {
         sortfunc = (sortfunc == ascendingGroupMix) ? descendingGroupMix : ascendingGroupMix;
@@ -1402,68 +1659,124 @@ long FileList::onCmdSortByGroup(FXObject*, FXSelector, void*)
         sortfunc = (sortfunc == ascendingGroup) ? descendingGroup : ascendingGroup;
     }
 
-    if (options & _FILELIST_SEARCH)
-    {
-        setSortHeader(7);
-    }
-    else
-    {
-        setSortHeader(6);
-    }
+    setSortHeader(group_index);
 
     scan(true);
-    return(1);
+    return 1;
 }
 
 
 // Update sender
 long FileList::onUpdSortByGroup(FXObject* sender, FXSelector, void*)
 {
-    sender->handle(this, (sortfunc == ascendingGroup || sortfunc == descendingGroup || sortfunc == ascendingGroupMix || sortfunc == descendingGroupMix) ? FXSEL(SEL_COMMAND, ID_CHECK) : FXSEL(SEL_COMMAND, ID_UNCHECK), NULL);
-    return(1);
+    sender->handle(this, (sortfunc == ascendingGroup || sortfunc == descendingGroup ||
+                   sortfunc == ascendingGroupMix || sortfunc == descendingGroupMix) ?
+                   FXSEL(SEL_COMMAND, ID_CHECK) : FXSEL(SEL_COMMAND, ID_UNCHECK), NULL);
+
+    FXbool isShown = getApp()->reg().readUnsignedEntry("SETTINGS", "view_col_group", 1);
+
+    if (isShown)
+    {
+        sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_ENABLE), NULL);
+    }
+    else
+    {
+        sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_DISABLE), NULL);
+    }
+
+    return 1;
 }
 
 
 // Sort by permissions
-long FileList::onCmdSortByPerm(FXObject*, FXSelector, void*)
+long FileList::onCmdSortByPerms(FXObject*, FXSelector, void*)
 {
+    perms_index = getHeaderIndex(ID_COL_PERMS);
+
     if (dirsfirst == false)
     {
-        sortfunc = (sortfunc == ascendingPermMix) ? descendingPermMix : ascendingPermMix;
+        sortfunc = (sortfunc == ascendingPermsMix) ? descendingPermsMix : ascendingPermsMix;
     }
     else
     {
-        sortfunc = (sortfunc == ascendingPerm) ? descendingPerm : ascendingPerm;
+        sortfunc = (sortfunc == ascendingPerms) ? descendingPerms : ascendingPerms;
     }
 
-    if (options & _FILELIST_SEARCH)
-    {
-        setSortHeader(8);
-    }
-    else
-    {
-        setSortHeader(7);
-    }
+    setSortHeader(perms_index);
 
     scan(true);
-    return(1);
+    return 1;
 }
 
 
 // Update sender
-long FileList::onUpdSortByPerm(FXObject* sender, FXSelector, void*)
+long FileList::onUpdSortByPerms(FXObject* sender, FXSelector, void*)
 {
-    sender->handle(this, (sortfunc == ascendingPerm || sortfunc == descendingPerm || sortfunc == ascendingPermMix || sortfunc == descendingPermMix) ? FXSEL(SEL_COMMAND, ID_CHECK) : FXSEL(SEL_COMMAND, ID_UNCHECK), NULL);
-    return(1);
+    sender->handle(this, (sortfunc == ascendingPerms || sortfunc == descendingPerms ||
+                   sortfunc == ascendingPermsMix || sortfunc == descendingPermsMix) ?
+                   FXSEL(SEL_COMMAND, ID_CHECK) : FXSEL(SEL_COMMAND, ID_UNCHECK), NULL);
+
+    FXbool isShown = getApp()->reg().readUnsignedEntry("SETTINGS", "view_col_perms", 1);
+
+    if (isShown)
+    {
+        sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_ENABLE), NULL);
+    }
+    else
+    {
+        sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_DISABLE), NULL);
+    }
+    return 1;
+}
+
+
+// Sort by link
+long FileList::onCmdSortByLink(FXObject*, FXSelector, void*)
+{
+    link_index = getHeaderIndex(ID_COL_LINK);
+
+    if (dirsfirst == false)
+    {
+        if (getIgnoreCase() == true)
+        {
+            sortfunc = (sortfunc == ascendingLinkCaseMix) ? descendingLinkCaseMix : ascendingLinkCaseMix;
+        }
+        else
+        {
+            sortfunc = (sortfunc == ascendingLinkMix) ? descendingLinkMix : ascendingLinkMix;
+        }
+    }
+    else
+    {
+        if (getIgnoreCase() == true)
+        {
+            sortfunc = (sortfunc == ascendingLinkCase) ? descendingLinkCase : ascendingLinkCase;
+        }
+        else
+        {
+            sortfunc = (sortfunc == ascendingLink) ? descendingLink : ascendingLink;
+        }
+    }
+
+    setSortHeader(link_index);
+
+    scan(true);
+    return 1;
 }
 
 
 // Update sender
-long FileList::onUpdSortByDeltime(FXObject* sender, FXSelector, void*)
+long FileList::onUpdSortByLink(FXObject* sender, FXSelector, void*)
 {
-    sender->handle(this, (sortfunc == ascendingDeltime || sortfunc == descendingDeltime || sortfunc == ascendingDeltimeMix || sortfunc == descendingDeltimeMix) ? FXSEL(SEL_COMMAND, ID_CHECK) : FXSEL(SEL_COMMAND, ID_UNCHECK), NULL);
+    sender->handle(this, (sortfunc == ascendingLink || sortfunc == descendingLink ||
+                   sortfunc == ascendingLinkCase || sortfunc == descendingLinkCase ||
+                   sortfunc == ascendingLinkMix || sortfunc == descendingLinkMix ||
+                   sortfunc == ascendingLinkCaseMix || sortfunc == descendingLinkCaseMix) ?
+                   FXSEL(SEL_COMMAND, ID_CHECK) : FXSEL(SEL_COMMAND, ID_UNCHECK), NULL);
 
-    if (!(options & _FILELIST_SEARCH) && (getNumHeaders() == NB_HEADERS + 2))
+    FXbool isShown = getApp()->reg().readUnsignedEntry("SETTINGS", "view_col_link", 1);
+
+    if (isShown)
     {
         sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_ENABLE), NULL);
     }
@@ -1472,25 +1785,7 @@ long FileList::onUpdSortByDeltime(FXObject* sender, FXSelector, void*)
         sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_DISABLE), NULL);
     }
 
-    return(1);
-}
-
-
-// Update sender
-long FileList::onUpdSortByOrigpath(FXObject* sender, FXSelector, void*)
-{
-    sender->handle(this, (sortfunc == ascendingOrigpath || sortfunc == descendingOrigpath || sortfunc == ascendingOrigpathMix || sortfunc == descendingOrigpathMix) ? FXSEL(SEL_COMMAND, ID_CHECK) : FXSEL(SEL_COMMAND, ID_UNCHECK), NULL);
-
-    if (!(options & _FILELIST_SEARCH) && (getNumHeaders() == NB_HEADERS + 2))
-    {
-        sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_ENABLE), NULL);
-    }
-    else
-    {
-        sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_DISABLE), NULL);
-    }
-
-    return(1);
+    return 1;
 }
 
 
@@ -1501,264 +1796,245 @@ long FileList::onCmdSortReverse(FXObject*, FXSelector, void*)
     {
         sortfunc = descending;
     }
-
     else if (sortfunc == ascendingMix)
     {
         sortfunc = descendingMix;
     }
-
     else if (sortfunc == descending)
     {
         sortfunc = ascending;
     }
-
     else if (sortfunc == descendingMix)
     {
         sortfunc = ascendingMix;
     }
-
     else if (sortfunc == ascendingCase)
     {
         sortfunc = descendingCase;
     }
-
     else if (sortfunc == ascendingCaseMix)
     {
         sortfunc = descendingCaseMix;
     }
-
     else if (sortfunc == descendingCase)
     {
         sortfunc = ascendingCase;
     }
-
     else if (sortfunc == descendingCaseMix)
     {
         sortfunc = ascendingCaseMix;
     }
-
     else if (sortfunc == ascendingType)
     {
         sortfunc = descendingType;
     }
-
     else if (sortfunc == ascendingTypeMix)
     {
         sortfunc = descendingTypeMix;
     }
-
     else if (sortfunc == descendingType)
     {
         sortfunc = ascendingType;
     }
-
     else if (sortfunc == descendingTypeMix)
     {
         sortfunc = ascendingTypeMix;
     }
-
     else if (sortfunc == ascendingExt)
     {
         sortfunc = descendingExt;
     }
-
     else if (sortfunc == ascendingExtMix)
     {
         sortfunc = descendingExtMix;
     }
-
     else if (sortfunc == descendingExt)
     {
         sortfunc = ascendingExt;
     }
-
     else if (sortfunc == descendingExtMix)
     {
         sortfunc = ascendingExtMix;
     }
-
     else if (sortfunc == ascendingSize)
     {
         sortfunc = descendingSize;
     }
-
     else if (sortfunc == ascendingSizeMix)
     {
         sortfunc = descendingSizeMix;
     }
-
     else if (sortfunc == descendingSize)
     {
         sortfunc = ascendingSize;
     }
-
     else if (sortfunc == descendingSizeMix)
     {
         sortfunc = ascendingSizeMix;
     }
-
-    else if (sortfunc == ascendingTime)
+    else if (sortfunc == ascendingDate)
     {
-        sortfunc = descendingTime;
+        sortfunc = descendingDate;
     }
-
-    else if (sortfunc == ascendingTimeMix)
+    else if (sortfunc == ascendingDateMix)
     {
-        sortfunc = descendingTimeMix;
+        sortfunc = descendingDateMix;
     }
-
-    else if (sortfunc == descendingTime)
+    else if (sortfunc == descendingDate)
     {
-        sortfunc = ascendingTime;
+        sortfunc = ascendingDate;
     }
-
-    else if (sortfunc == descendingTimeMix)
+    else if (sortfunc == descendingDateMix)
     {
-        sortfunc = ascendingTimeMix;
+        sortfunc = ascendingDateMix;
     }
-
     else if (sortfunc == ascendingUser)
     {
         sortfunc = descendingUser;
     }
-
     else if (sortfunc == ascendingUserMix)
     {
         sortfunc = descendingUserMix;
     }
-
     else if (sortfunc == descendingUser)
     {
         sortfunc = ascendingUser;
     }
-
     else if (sortfunc == descendingUserMix)
     {
         sortfunc = ascendingUserMix;
     }
-
     else if (sortfunc == ascendingGroup)
     {
         sortfunc = descendingGroup;
     }
-
     else if (sortfunc == ascendingGroupMix)
     {
         sortfunc = descendingGroupMix;
     }
-
     else if (sortfunc == descendingGroup)
     {
         sortfunc = ascendingGroup;
     }
-
     else if (sortfunc == descendingGroupMix)
     {
         sortfunc = ascendingGroupMix;
     }
-
-    else if (sortfunc == ascendingPerm)
+    else if (sortfunc == ascendingPerms)
     {
-        sortfunc = descendingPerm;
+        sortfunc = descendingPerms;
     }
-
-    else if (sortfunc == ascendingPermMix)
+    else if (sortfunc == ascendingPermsMix)
     {
-        sortfunc = descendingPermMix;
+        sortfunc = descendingPermsMix;
     }
-
-    else if (sortfunc == descendingPerm)
+    else if (sortfunc == descendingPerms)
     {
-        sortfunc = ascendingPerm;
+        sortfunc = ascendingPerms;
     }
-
-    else if (sortfunc == descendingPermMix)
+    else if (sortfunc == descendingPermsMix)
     {
-        sortfunc = ascendingPermMix;
+        sortfunc = ascendingPermsMix;
     }
-
+    else if (sortfunc == ascendingLink)
+    {
+        sortfunc = descendingLink;
+    }
+    else if (sortfunc == ascendingLinkMix)
+    {
+        sortfunc = descendingLinkMix;
+    }
+    else if (sortfunc == descendingLink)
+    {
+        sortfunc = ascendingLink;
+    }
+    else if (sortfunc == descendingLinkMix)
+    {
+        sortfunc = ascendingLinkMix;
+    }
+    else if (sortfunc == ascendingLinkCase)
+    {
+        sortfunc = descendingLinkCase;
+    }
+    else if (sortfunc == ascendingLinkCaseMix)
+    {
+        sortfunc = descendingLinkCaseMix;
+    }
+    else if (sortfunc == descendingLinkCase)
+    {
+        sortfunc = ascendingLinkCase;
+    }
+    else if (sortfunc == descendingLinkCaseMix)
+    {
+        sortfunc = ascendingLinkCaseMix;
+    }
     else if (sortfunc == ascendingDir)
     {
         sortfunc = descendingDir;
     }
-
     else if (sortfunc == ascendingDirMix)
     {
         sortfunc = descendingDirMix;
     }
-
     else if (sortfunc == descendingDir)
     {
         sortfunc = ascendingDir;
     }
-
     else if (sortfunc == descendingDirMix)
     {
         sortfunc = ascendingDirMix;
     }
-
     else if (sortfunc == ascendingDirCase)
     {
         sortfunc = descendingDirCase;
     }
-
     else if (sortfunc == ascendingDirCaseMix)
     {
         sortfunc = descendingDirCaseMix;
     }
-
     else if (sortfunc == descendingDirCase)
     {
         sortfunc = ascendingDirCase;
     }
-
     else if (sortfunc == descendingDirCaseMix)
     {
         sortfunc = ascendingDirCaseMix;
     }
-
-    else if (sortfunc == ascendingOrigpath)
+    else if (sortfunc == ascendingOrigpathCase)
     {
-        sortfunc = descendingOrigpath;
+        sortfunc = descendingOrigpathCase;
     }
-
-    else if (sortfunc == ascendingOrigpathMix)
+    else if (sortfunc == ascendingOrigpathCaseMix)
     {
-        sortfunc = descendingOrigpathMix;
+        sortfunc = descendingOrigpathCaseMix;
     }
-
-    else if (sortfunc == descendingOrigpath)
+    else if (sortfunc == descendingOrigpathCase)
     {
-        sortfunc = ascendingOrigpath;
+        sortfunc = ascendingOrigpathCase;
     }
-
-    else if (sortfunc == descendingOrigpathMix)
+    else if (sortfunc == descendingOrigpathCaseMix)
     {
-        sortfunc = ascendingOrigpathMix;
+        sortfunc = ascendingOrigpathCaseMix;
     }
-
-    else if (sortfunc == ascendingDeltime)
+    else if (sortfunc == ascendingDeldate)
     {
-        sortfunc = descendingDeltime;
+        sortfunc = descendingDeldate;
     }
-
-    else if (sortfunc == ascendingDeltimeMix)
+    else if (sortfunc == ascendingDeldateMix)
     {
-        sortfunc = descendingDeltimeMix;
+        sortfunc = descendingDeldateMix;
     }
-
-    else if (sortfunc == descendingDeltime)
+    else if (sortfunc == descendingDeldate)
     {
-        sortfunc = ascendingDeltime;
+        sortfunc = ascendingDeldate;
     }
-
-    else if (sortfunc == descendingDeltimeMix)
+    else if (sortfunc == descendingDeldateMix)
     {
-        sortfunc = ascendingDeltimeMix;
+        sortfunc = ascendingDeldateMix;
     }
 
     scan(true);
-    return(1);
+    return 1;
 }
 
 
@@ -1771,135 +2047,134 @@ long FileList::onUpdSortReverse(FXObject* sender, FXSelector, void*)
     {
         selector = FXSEL(SEL_COMMAND, ID_CHECK);
     }
-
     else if (sortfunc == descendingMix)
     {
         selector = FXSEL(SEL_COMMAND, ID_CHECK);
     }
-
     else if (sortfunc == descendingCase)
     {
         selector = FXSEL(SEL_COMMAND, ID_CHECK);
     }
-
     else if (sortfunc == descendingCaseMix)
     {
         selector = FXSEL(SEL_COMMAND, ID_CHECK);
     }
-
     else if (sortfunc == descendingType)
     {
         selector = FXSEL(SEL_COMMAND, ID_CHECK);
     }
-
     else if (sortfunc == descendingTypeMix)
     {
         selector = FXSEL(SEL_COMMAND, ID_CHECK);
     }
-
     else if (sortfunc == descendingExt)
     {
         selector = FXSEL(SEL_COMMAND, ID_CHECK);
     }
-
     else if (sortfunc == descendingExtMix)
     {
         selector = FXSEL(SEL_COMMAND, ID_CHECK);
     }
-
     else if (sortfunc == descendingSize)
     {
         selector = FXSEL(SEL_COMMAND, ID_CHECK);
     }
-
     else if (sortfunc == descendingSizeMix)
     {
         selector = FXSEL(SEL_COMMAND, ID_CHECK);
     }
-
-    else if (sortfunc == descendingTime)
+    else if (sortfunc == descendingDate)
     {
         selector = FXSEL(SEL_COMMAND, ID_CHECK);
     }
-
-    else if (sortfunc == descendingTimeMix)
+    else if (sortfunc == descendingDateMix)
     {
         selector = FXSEL(SEL_COMMAND, ID_CHECK);
     }
-
     else if (sortfunc == descendingUser)
     {
         selector = FXSEL(SEL_COMMAND, ID_CHECK);
     }
-
     else if (sortfunc == descendingUserMix)
     {
         selector = FXSEL(SEL_COMMAND, ID_CHECK);
     }
-
     else if (sortfunc == descendingGroup)
     {
         selector = FXSEL(SEL_COMMAND, ID_CHECK);
     }
-
     else if (sortfunc == descendingGroupMix)
     {
         selector = FXSEL(SEL_COMMAND, ID_CHECK);
     }
-
-    else if (sortfunc == descendingPerm)
+    else if (sortfunc == descendingPerms)
     {
         selector = FXSEL(SEL_COMMAND, ID_CHECK);
     }
-
-    else if (sortfunc == descendingPermMix)
+    else if (sortfunc == descendingPermsMix)
     {
         selector = FXSEL(SEL_COMMAND, ID_CHECK);
     }
-
+    else if (sortfunc == descendingLink)
+    {
+        selector = FXSEL(SEL_COMMAND, ID_CHECK);
+    }
+    else if (sortfunc == descendingLinkMix)
+    {
+        selector = FXSEL(SEL_COMMAND, ID_CHECK);
+    }
+    else if (sortfunc == descendingLinkCase)
+    {
+        selector = FXSEL(SEL_COMMAND, ID_CHECK);
+    }
+    else if (sortfunc == descendingLinkCaseMix)
+    {
+        selector = FXSEL(SEL_COMMAND, ID_CHECK);
+    }
     else if (sortfunc == descendingDir)
     {
         selector = FXSEL(SEL_COMMAND, ID_CHECK);
     }
-
     else if (sortfunc == descendingDirMix)
     {
         selector = FXSEL(SEL_COMMAND, ID_CHECK);
     }
-
     else if (sortfunc == descendingDirCase)
     {
         selector = FXSEL(SEL_COMMAND, ID_CHECK);
     }
-
     else if (sortfunc == descendingDirCaseMix)
     {
         selector = FXSEL(SEL_COMMAND, ID_CHECK);
     }
-
     else if (sortfunc == descendingOrigpath)
     {
         selector = FXSEL(SEL_COMMAND, ID_CHECK);
     }
-
     else if (sortfunc == descendingOrigpathMix)
     {
         selector = FXSEL(SEL_COMMAND, ID_CHECK);
     }
-
-    else if (sortfunc == descendingDeltime)
+    else if (sortfunc == descendingOrigpathCase)
     {
         selector = FXSEL(SEL_COMMAND, ID_CHECK);
     }
-
-    else if (sortfunc == descendingDeltimeMix)
+    else if (sortfunc == descendingOrigpathCaseMix)
+    {
+        selector = FXSEL(SEL_COMMAND, ID_CHECK);
+    }
+    else if (sortfunc == descendingDeldate)
+    {
+        selector = FXSEL(SEL_COMMAND, ID_CHECK);
+    }
+    else if (sortfunc == descendingDeldateMix)
     {
         selector = FXSEL(SEL_COMMAND, ID_CHECK);
     }
 
     sender->handle(this, selector, NULL);
 
-    return(1);
+    return 1;
 }
 
 
@@ -1911,46 +2186,89 @@ long FileList::onCmdSortCase(FXObject*, FXSelector, void*)
     {
         if (getIgnoreCase() == true)
         {
-            if ((sortfunc == ascending) || (sortfunc == ascendingMix) || (sortfunc == ascendingCase))
+            if ((sortfunc == ascending) || (sortfunc == ascendingMix) ||
+                (sortfunc == ascendingCase))
             {
                 sortfunc = ascendingCaseMix;
             }
-
-            else if ((sortfunc == descending) || (sortfunc == descendingMix) || (sortfunc == descendingCase))
+            else if ((sortfunc == descending) || (sortfunc == descendingMix) ||
+                     (sortfunc == descendingCase))
             {
                 sortfunc = descendingCaseMix;
             }
 
-            else if ((sortfunc == ascendingDir) || (sortfunc == ascendingDirMix) || (sortfunc == ascendingDirCase))
+            else if ((sortfunc == ascendingDir) || (sortfunc == ascendingDirMix) ||
+                     (sortfunc == ascendingDirCase))
             {
                 sortfunc = ascendingDirCaseMix;
             }
-
-            else if ((sortfunc == descendingDir) || (sortfunc == descendingDirMix) || (sortfunc == descendingDirCase))
+            else if ((sortfunc == descendingDir) || (sortfunc == descendingDirMix) ||
+                     (sortfunc == descendingDirCase))
             {
                 sortfunc = descendingDirCaseMix;
+            }
+            else if ((sortfunc == ascendingLink) || (sortfunc == ascendingLinkMix) ||
+                     (sortfunc == ascendingLinkCase))
+            {
+                sortfunc = ascendingLinkCaseMix;
+            }
+            else if ((sortfunc == descendingLink) || (sortfunc == descendingLinkMix) ||
+                     (sortfunc == descendingLinkCase))
+            {
+                sortfunc = descendingLinkCaseMix;
+            }
+            else if ((sortfunc == ascendingOrigpath) || (sortfunc == ascendingOrigpathMix) ||
+                     (sortfunc == ascendingOrigpathCase))
+            {
+                sortfunc = ascendingOrigpathCaseMix;
+            }
+            else if ((sortfunc == descendingOrigpath) || (sortfunc == descendingOrigpathMix) ||
+                     (sortfunc == descendingOrigpathCase))
+            {
+                sortfunc = descendingOrigpathCaseMix;
             }
         }
         else
         {
-            if ((sortfunc == ascending) || (sortfunc == ascendingCase) || (sortfunc == ascendingCaseMix))
+            if ((sortfunc == ascending) || (sortfunc == ascendingCase) ||
+                (sortfunc == ascendingCaseMix))
             {
                 sortfunc = ascendingMix;
             }
-
-            else if ((sortfunc == descending) || (sortfunc == descendingCase) || (sortfunc == descendingCaseMix))
+            else if ((sortfunc == descending) || (sortfunc == descendingCase) ||
+                     (sortfunc == descendingCaseMix))
             {
                 sortfunc = descendingMix;
             }
-
-            else if ((sortfunc == ascendingDir) || (sortfunc == ascendingDirCase) || (sortfunc == ascendingDirCaseMix))
+            else if ((sortfunc == ascendingDir) || (sortfunc == ascendingDirCase) ||
+                     (sortfunc == ascendingDirCaseMix))
             {
                 sortfunc = ascendingDirMix;
             }
-
-            else if ((sortfunc == descendingDir) || (sortfunc == descendingDirCase) || (sortfunc == descendingDirCaseMix))
+            else if ((sortfunc == descendingDir) || (sortfunc == descendingDirCase) ||
+                     (sortfunc == descendingDirCaseMix))
             {
                 sortfunc = descendingDirMix;
+            }
+            else if ((sortfunc == ascendingLink) || (sortfunc == ascendingLinkCase) ||
+                     (sortfunc == ascendingLinkCaseMix))
+            {
+                sortfunc = ascendingLinkMix;
+            }
+            else if ((sortfunc == descendingLink) || (sortfunc == descendingLinkCase) ||
+                     (sortfunc == descendingLinkCaseMix))
+            {
+                sortfunc = descendingLinkMix;
+            }
+            else if ((sortfunc == ascendingOrigpath) || (sortfunc == ascendingOrigpathCase) ||
+                     (sortfunc == ascendingOrigpathCaseMix))
+            {
+                sortfunc = ascendingOrigpathMix;
+            }
+            else if ((sortfunc == descendingOrigpath) || (sortfunc == descendingOrigpathCase) ||
+                     (sortfunc == descendingOrigpathCaseMix))
+            {
+                sortfunc = descendingOrigpathMix;
             }
         }
     }
@@ -1958,59 +2276,103 @@ long FileList::onCmdSortCase(FXObject*, FXSelector, void*)
     {
         if (getIgnoreCase() == true)
         {
-            if ((sortfunc == ascending) || (sortfunc == ascendingMix) || (sortfunc == ascendingCaseMix))
+            if ((sortfunc == ascending) || (sortfunc == ascendingMix) ||
+                (sortfunc == ascendingCaseMix))
             {
                 sortfunc = ascendingCase;
             }
-
-            else if ((sortfunc == descending) || (sortfunc == descendingMix) || (sortfunc == descendingCaseMix))
+            else if ((sortfunc == descending) || (sortfunc == descendingMix) ||
+                     (sortfunc == descendingCaseMix))
             {
                 sortfunc = descendingCase;
             }
 
-            else if ((sortfunc == ascendingDir) || (sortfunc == ascendingDirMix) || (sortfunc == ascendingDirCaseMix))
+            else if ((sortfunc == ascendingDir) || (sortfunc == ascendingDirMix) ||
+                     (sortfunc == ascendingDirCaseMix))
             {
                 sortfunc = ascendingDirCase;
             }
-
-            else if ((sortfunc == descendingDir) || (sortfunc == descendingDirMix) || (sortfunc == descendingDirCaseMix))
+            else if ((sortfunc == descendingDir) || (sortfunc == descendingDirMix) ||
+                     (sortfunc == descendingDirCaseMix))
             {
                 sortfunc = descendingDirCase;
+            }
+            else if ((sortfunc == ascendingLink) || (sortfunc == ascendingLinkMix) ||
+                     (sortfunc == ascendingLinkCaseMix))
+            {
+                sortfunc = ascendingLinkCase;
+            }
+            else if ((sortfunc == descendingLink) || (sortfunc == descendingLinkMix) ||
+                     (sortfunc == descendingLinkCaseMix))
+            {
+                sortfunc = descendingLinkCase;
+            }
+            else if ((sortfunc == ascendingOrigpath) || (sortfunc == ascendingOrigpathMix) ||
+                     (sortfunc == ascendingOrigpathCaseMix))
+            {
+                sortfunc = ascendingOrigpathCase;
+            }
+            else if ((sortfunc == descendingOrigpath) || (sortfunc == descendingOrigpathMix) ||
+                     (sortfunc == descendingOrigpathCaseMix))
+            {
+                sortfunc = descendingOrigpathCase;
             }
         }
         else
         {
-            if ((sortfunc == ascendingMix) || (sortfunc == ascendingCase) || (sortfunc == ascendingCaseMix))
+            if ((sortfunc == ascendingMix) || (sortfunc == ascendingCase) ||
+                (sortfunc == ascendingCaseMix))
             {
                 sortfunc = ascending;
             }
-
-            else if ((sortfunc == descendingMix) || (sortfunc == descendingCase) || (sortfunc == descendingCaseMix))
+            else if ((sortfunc == descendingMix) || (sortfunc == descendingCase) ||
+                     (sortfunc == descendingCaseMix))
             {
                 sortfunc = descending;
             }
-
-            else if ((sortfunc == ascendingDirMix) || (sortfunc == ascendingDirCase) || (sortfunc == ascendingDirCaseMix))
+            else if ((sortfunc == ascendingDirMix) || (sortfunc == ascendingDirCase) ||
+                     (sortfunc == ascendingDirCaseMix))
             {
                 sortfunc = ascendingDir;
             }
-
-            else if ((sortfunc == descendingDirMix) || (sortfunc == descendingDirCase) || (sortfunc == descendingDirCaseMix))
+            else if ((sortfunc == descendingDirMix) || (sortfunc == descendingDirCase) ||
+                     (sortfunc == descendingDirCaseMix))
             {
                 sortfunc = descendingDir;
+            }
+            else if ((sortfunc == ascendingLinkMix) || (sortfunc == ascendingLinkCase) ||
+                     (sortfunc == ascendingLinkCaseMix))
+            {
+                sortfunc = ascendingLink;
+            }
+            else if ((sortfunc == descendingLinkMix) || (sortfunc == descendingLinkCase) ||
+                     (sortfunc == descendingLinkCaseMix))
+            {
+                sortfunc = descendingLink;
+            }
+            else if ((sortfunc == ascendingOrigpathMix) || (sortfunc == ascendingOrigpathCase) ||
+                     (sortfunc == ascendingOrigpathCaseMix))
+            {
+                sortfunc = ascendingOrigpath;
+            }
+            else if ((sortfunc == descendingOrigpathMix) || (sortfunc == descendingOrigpathCase) ||
+                     (sortfunc == descendingOrigpathCaseMix))
+            {
+                sortfunc = descendingOrigpath;
             }
         }
     }
     scan(true);
-    return(1);
+    return 1;
 }
 
 
 // Update case sensitivity
 long FileList::onUpdSortCase(FXObject* sender, FXSelector, void* ptr)
 {
-    if ((sortfunc == ascending) || (sortfunc == descending) || (sortfunc == ascendingMix) || (sortfunc == descendingMix) ||
-        (sortfunc == ascendingCase) || (sortfunc == descendingCase) || (sortfunc == ascendingCaseMix) || (sortfunc == descendingCaseMix))
+    if ((sortfunc == ascending) || (sortfunc == descending) || (sortfunc == ascendingMix) ||
+        (sortfunc == descendingMix) || (sortfunc == ascendingCase) || (sortfunc == descendingCase) ||
+        (sortfunc == ascendingCaseMix) || (sortfunc == descendingCaseMix))
     {
         sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_ENABLE), ptr);
 
@@ -2023,8 +2385,40 @@ long FileList::onUpdSortCase(FXObject* sender, FXSelector, void* ptr)
             sender->handle(this, FXSEL(SEL_COMMAND, ID_UNCHECK), ptr);
         }
     }
-    else if ((sortfunc == ascendingDir) || (sortfunc == descendingDir) || (sortfunc == ascendingDirMix) || (sortfunc == descendingDirMix) ||
-             (sortfunc == ascendingDirCase) || (sortfunc == descendingDirCase) || (sortfunc == ascendingDirCaseMix) || (sortfunc == descendingDirCaseMix))
+    else if ((sortfunc == ascendingDir) || (sortfunc == descendingDir) || (sortfunc == ascendingDirMix) ||
+             (sortfunc == descendingDirMix) || (sortfunc == ascendingDirCase) || (sortfunc == descendingDirCase) ||
+             (sortfunc == ascendingDirCaseMix) || (sortfunc == descendingDirCaseMix))
+    {
+        sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_ENABLE), ptr);
+
+        if (getIgnoreCase() == true)
+        {
+            sender->handle(this, FXSEL(SEL_COMMAND, ID_CHECK), ptr);
+        }
+        else
+        {
+            sender->handle(this, FXSEL(SEL_COMMAND, ID_UNCHECK), ptr);
+        }
+    }
+    else if ((sortfunc == ascendingLink) || (sortfunc == descendingLink) || (sortfunc == ascendingLinkMix) ||
+             (sortfunc == descendingLinkMix) || (sortfunc == ascendingLinkCase) || (sortfunc == descendingLinkCase) ||
+             (sortfunc == ascendingLinkCaseMix) || (sortfunc == descendingLinkCaseMix))
+    {
+        sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_ENABLE), ptr);
+
+        if (getIgnoreCase() == true)
+        {
+            sender->handle(this, FXSEL(SEL_COMMAND, ID_CHECK), ptr);
+        }
+        else
+        {
+            sender->handle(this, FXSEL(SEL_COMMAND, ID_UNCHECK), ptr);
+        }
+    }
+    else if ((sortfunc == ascendingOrigpath) || (sortfunc == descendingOrigpath) ||
+             (sortfunc == ascendingOrigpathMix) || (sortfunc == descendingOrigpathMix) ||
+             (sortfunc == ascendingOrigpathCase) || (sortfunc == descendingOrigpathCase) ||
+             (sortfunc == ascendingOrigpathCaseMix) || (sortfunc == descendingOrigpathCaseMix))
     {
         sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_ENABLE), ptr);
 
@@ -2042,7 +2436,7 @@ long FileList::onUpdSortCase(FXObject* sender, FXSelector, void* ptr)
         sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_DISABLE), ptr);
     }
 
-    return(1);
+    return 1;
 }
 
 
@@ -2056,130 +2450,129 @@ long FileList::onCmdDirsFirst(FXObject*, FXSelector, void*)
         {
             sortfunc = ascendingMix;
         }
-
         else if (sortfunc == descending)
         {
             sortfunc = descendingMix;
         }
-
         else if (sortfunc == ascendingCase)
         {
             sortfunc = ascendingCaseMix;
         }
-
         else if (sortfunc == descendingCase)
         {
             sortfunc = descendingCaseMix;
         }
-
         else if (sortfunc == ascendingType)
         {
             sortfunc = ascendingTypeMix;
         }
-
         else if (sortfunc == descendingType)
         {
             sortfunc = descendingTypeMix;
         }
-
         else if (sortfunc == ascendingExt)
         {
             sortfunc = ascendingExtMix;
         }
-
         else if (sortfunc == descendingExt)
         {
             sortfunc = descendingExtMix;
         }
-
         else if (sortfunc == ascendingSize)
         {
             sortfunc = ascendingSizeMix;
         }
-
         else if (sortfunc == descendingSize)
         {
             sortfunc = descendingSizeMix;
         }
-
-        else if (sortfunc == ascendingTime)
+        else if (sortfunc == ascendingDate)
         {
-            sortfunc = ascendingTimeMix;
+            sortfunc = ascendingDateMix;
         }
-
-        else if (sortfunc == descendingTime)
+        else if (sortfunc == descendingDate)
         {
-            sortfunc = descendingTimeMix;
+            sortfunc = descendingDateMix;
         }
-
         else if (sortfunc == ascendingUser)
         {
             sortfunc = ascendingUserMix;
         }
-
         else if (sortfunc == descendingUser)
         {
             sortfunc = descendingUserMix;
         }
-
         else if (sortfunc == ascendingGroup)
         {
             sortfunc = ascendingGroupMix;
         }
-
         else if (sortfunc == descendingGroup)
         {
             sortfunc = descendingGroupMix;
         }
-
-        else if (sortfunc == ascendingPerm)
+        else if (sortfunc == ascendingPerms)
         {
-            sortfunc = ascendingPermMix;
+            sortfunc = ascendingPermsMix;
         }
-
-        else if (sortfunc == descendingPerm)
+        else if (sortfunc == descendingPerms)
         {
-            sortfunc = descendingPermMix;
+            sortfunc = descendingPermsMix;
         }
-
+        else if (sortfunc == ascendingLink)
+        {
+            sortfunc = ascendingLinkMix;
+        }
+        else if (sortfunc == descendingLink)
+        {
+            sortfunc = descendingLinkMix;
+        }
+        else if (sortfunc == ascendingLinkCase)
+        {
+            sortfunc = ascendingLinkCaseMix;
+        }
+        else if (sortfunc == descendingLinkCase)
+        {
+            sortfunc = descendingLinkCaseMix;
+        }
         else if (sortfunc == ascendingDir)
         {
             sortfunc = ascendingDirMix;
         }
-
         else if (sortfunc == descendingDir)
         {
             sortfunc = descendingDirMix;
         }
-
         else if (sortfunc == ascendingDirCase)
         {
             sortfunc = ascendingDirCaseMix;
         }
-
         else if (sortfunc == descendingDirCase)
         {
             sortfunc = descendingDirCaseMix;
         }
-
         else if (sortfunc == ascendingOrigpath)
         {
             sortfunc = ascendingOrigpathMix;
         }
-
         else if (sortfunc == descendingOrigpath)
         {
             sortfunc = descendingOrigpathMix;
         }
-
-        else if (sortfunc == ascendingDeltime)
+        else if (sortfunc == ascendingOrigpathCase)
         {
-            sortfunc = ascendingDeltimeMix;
+            sortfunc = ascendingOrigpathCaseMix;
         }
-
-        else if (sortfunc == descendingDeltime)
+        else if (sortfunc == descendingOrigpathCase)
         {
-            sortfunc = descendingDeltimeMix;
+            sortfunc = descendingOrigpathCaseMix;
+        }
+        else if (sortfunc == ascendingDeldate)
+        {
+            sortfunc = ascendingDeldateMix;
+        }
+        else if (sortfunc == descendingDeldate)
+        {
+            sortfunc = descendingDeldateMix;
         }
     }
     else
@@ -2188,134 +2581,133 @@ long FileList::onCmdDirsFirst(FXObject*, FXSelector, void*)
         {
             sortfunc = ascending;
         }
-
         else if (sortfunc == descendingMix)
         {
             sortfunc = descending;
         }
-
         else if (sortfunc == ascendingCaseMix)
         {
             sortfunc = ascendingCase;
         }
-
         else if (sortfunc == descendingCaseMix)
         {
             sortfunc = descendingCase;
         }
-
         else if (sortfunc == ascendingTypeMix)
         {
             sortfunc = ascendingType;
         }
-
         else if (sortfunc == descendingTypeMix)
         {
             sortfunc = descendingType;
         }
-
         else if (sortfunc == ascendingExtMix)
         {
             sortfunc = ascendingExt;
         }
-
         else if (sortfunc == descendingExtMix)
         {
             sortfunc = descendingExt;
         }
-
         else if (sortfunc == ascendingSizeMix)
         {
             sortfunc = ascendingSize;
         }
-
         else if (sortfunc == descendingSizeMix)
         {
             sortfunc = descendingSize;
         }
-
-        else if (sortfunc == ascendingTimeMix)
+        else if (sortfunc == ascendingDateMix)
         {
-            sortfunc = ascendingTime;
+            sortfunc = ascendingDate;
         }
-
-        else if (sortfunc == descendingTimeMix)
+        else if (sortfunc == descendingDateMix)
         {
-            sortfunc = descendingTime;
+            sortfunc = descendingDate;
         }
-
         else if (sortfunc == ascendingUserMix)
         {
             sortfunc = ascendingUser;
         }
-
         else if (sortfunc == descendingUserMix)
         {
             sortfunc = descendingUser;
         }
-
         else if (sortfunc == ascendingGroupMix)
         {
             sortfunc = ascendingGroup;
         }
-
         else if (sortfunc == descendingGroupMix)
         {
             sortfunc = descendingGroup;
         }
-
-        else if (sortfunc == ascendingPermMix)
+        else if (sortfunc == ascendingPermsMix)
         {
-            sortfunc = ascendingPerm;
+            sortfunc = ascendingPerms;
         }
-
-        else if (sortfunc == descendingPermMix)
+        else if (sortfunc == descendingPermsMix)
         {
-            sortfunc = descendingPerm;
+            sortfunc = descendingPerms;
         }
-
+        else if (sortfunc == ascendingLinkMix)
+        {
+            sortfunc = ascendingLink;
+        }
+        else if (sortfunc == descendingLinkMix)
+        {
+            sortfunc = descendingLink;
+        }
+        else if (sortfunc == ascendingLinkCaseMix)
+        {
+            sortfunc = ascendingLinkCase;
+        }
+        else if (sortfunc == descendingLinkCaseMix)
+        {
+            sortfunc = descendingLinkCase;
+        }
         else if (sortfunc == ascendingDirMix)
         {
             sortfunc = ascendingDir;
         }
-
         else if (sortfunc == descendingDirMix)
         {
             sortfunc = descendingDir;
         }
-
         else if (sortfunc == ascendingDirCaseMix)
         {
             sortfunc = ascendingDirCase;
         }
-
         else if (sortfunc == descendingDirCaseMix)
         {
             sortfunc = descendingDirCase;
         }
-
         else if (sortfunc == ascendingOrigpathMix)
         {
             sortfunc = ascendingOrigpath;
         }
-
         else if (sortfunc == descendingOrigpathMix)
         {
             sortfunc = descendingOrigpath;
         }
-
-        else if (sortfunc == ascendingDeltimeMix)
+        else if (sortfunc == ascendingOrigpathCaseMix)
         {
-            sortfunc = ascendingDeltime;
+            sortfunc = ascendingOrigpathCase;
         }
-
-        else if (sortfunc == descendingDeltimeMix)
+        else if (sortfunc == descendingOrigpathCaseMix)
         {
-            sortfunc = descendingDeltime;
+            sortfunc = descendingOrigpathCase;
+        }
+        else if (sortfunc == ascendingDeldateMix)
+        {
+            sortfunc = ascendingDeldate;
+        }
+        else if (sortfunc == descendingDeldateMix)
+        {
+            sortfunc = descendingDeldate;
         }
     }
     scan(true);
-    return(1);
+    return 1;
 }
 
 
@@ -2331,214 +2723,201 @@ long FileList::onUpdDirsFirst(FXObject* sender, FXSelector, void* ptr)
         sender->handle(this, FXSEL(SEL_COMMAND, ID_UNCHECK), ptr);
     }
 
-    return(1);
+    return 1;
 }
 
 
 // Clicked header button
 long FileList::onCmdHeader(FXObject*, FXSelector, void* ptr)
 {
-    // List is a search list (a directory name column is inserted between name and file size)
-    if (options & _FILELIST_SEARCH)
-    {
-        FXuint num = (FXuint)(FXuval)ptr;
-        if (num < NB_HEADERS + 1)
-        {
-            if (num == 0)
-            {
-                handle(this, FXSEL(SEL_COMMAND, ID_SORT_BY_NAME), NULL);
-            }
-            else if (num == 1)
-            {
-                handle(this, FXSEL(SEL_COMMAND, ID_SORT_BY_DIRNAME), NULL);
-            }
-            else
-            {
-                handle(this, FXSEL(SEL_COMMAND, (ID_SORT_BY_NAME + num - 1)), NULL);
-            }
+    FXuint index = (FXuint)(FXuval)ptr;
 
-            setSortHeader(num);
-        }
-        if (getHeaderSize(0) < MIN_NAME_SIZE)
-        {
-            setHeaderSize(0, MIN_NAME_SIZE);
-        }
+    handle(this, FXSEL(SEL_COMMAND, getHeaderId(index)), NULL);
+
+    setSortHeader(index);
+
+    // Limit header size
+    if ((FXuint)getHeaderSize(getHeaderIndex(ID_COL_NAME)) < MIN_NAME_SIZE)
+    {
+        setHeaderSize((FXuint)getHeaderIndex(ID_COL_NAME), MIN_NAME_SIZE);
+    }
+    if ((FXuint)getHeaderSize(getHeaderIndex(ID_COL_NAME)) > MAX_NAME_SIZE)
+    {
+        setHeaderSize((FXuint)getHeaderIndex(ID_COL_NAME), MAX_NAME_SIZE);
     }
 
-    // List is a file list
-    else
-    {
-        FXuint num = (FXuint)(FXuval)ptr;
-
-        // Deletion date and original path columns are displayed
-        if (getNumHeaders() == NB_HEADERS + 2)
-        {
-            if (num < NB_HEADERS + 2)
-            {
-                handle(this, FXSEL(SEL_COMMAND, (ID_SORT_BY_NAME + num)), NULL);
-                setSortHeader(num);
-            }
-        }
-
-        // Standard case
-        else
-        {
-            if (num < NB_HEADERS)
-            {
-                handle(this, FXSEL(SEL_COMMAND, (ID_SORT_BY_NAME + num)), NULL);
-                setSortHeader(num);
-            }
-        }
-        if (getHeaderSize(0) < MIN_NAME_SIZE)
-        {
-            setHeaderSize(0, MIN_NAME_SIZE);
-        }
-    }
-    return(1);
+    return 1;
 }
 
 
 // Update header button
-long FileList::onUpdHeader(FXObject*, FXSelector, void*)
+long FileList::onUpdHeader(FXObject*, FXSelector, void* ptr)
 {
-    // List is a search list (a directory name column is inserted between name and file size)
-    if (options & _FILELIST_SEARCH)
+    // Set arrow on header, depending on the sort function
+
+    // Column always displayed
+    header->setArrowDir(getHeaderIndex(ID_COL_NAME), (sortfunc == ascending || sortfunc == ascendingCase ||
+                        sortfunc == ascendingMix || sortfunc == ascendingCaseMix)  ?
+                        false : (sortfunc == descending || sortfunc == descendingCase ||
+                        sortfunc == descendingMix || sortfunc == descendingCaseMix) ? true : MAYBE);                       // Name
+
+    if (getHeaderIndex(ID_COL_SIZE) >= 0)
     {
-        header->setArrowDir(0, (sortfunc == ascending || sortfunc == ascendingCase ||
-                                sortfunc == ascendingMix || sortfunc == ascendingCaseMix)  ? false : (sortfunc == descending || sortfunc == descendingCase ||
-                                                                                                      sortfunc == descendingMix || sortfunc == descendingCaseMix) ? true : MAYBE);         // Name
-
-        header->setArrowDir(1, (sortfunc == ascendingDir || sortfunc == ascendingDirCase ||
-                                sortfunc == ascendingDirMix || sortfunc == ascendingDirCaseMix)  ? false : (sortfunc == descendingDir || sortfunc == descendingDirCase ||
-                                                                                                            sortfunc == descendingDirMix || sortfunc == descendingDirCaseMix) ? true : MAYBE); // Name
-
-        header->setArrowDir(2, (sortfunc == ascendingSize || sortfunc == ascendingSizeMix)  ? false : (sortfunc == descendingSize || sortfunc == descendingSizeMix) ? true : MAYBE);           // Size
-        header->setArrowDir(3, (sortfunc == ascendingType || sortfunc == ascendingTypeMix)  ? false : (sortfunc == descendingType || sortfunc == descendingTypeMix) ? true : MAYBE);           // Type
-        header->setArrowDir(4, (sortfunc == ascendingExt || sortfunc == ascendingExtMix)   ? false : (sortfunc == descendingExt || sortfunc == descendingExtMix)  ? true : MAYBE);             // Extension
-        header->setArrowDir(5, (sortfunc == ascendingTime || sortfunc == ascendingTimeMix)  ? false : (sortfunc == descendingTime || sortfunc == descendingTimeMix) ? true : MAYBE);           // Date
-        header->setArrowDir(6, (sortfunc == ascendingUser || sortfunc == ascendingUserMix)  ? false : (sortfunc == descendingUser || sortfunc == descendingUserMix) ? true : MAYBE);           // User
-        header->setArrowDir(7, (sortfunc == ascendingGroup || sortfunc == ascendingGroupMix) ? false : (sortfunc == descendingGroup || sortfunc == descendingGroupMix) ? true : MAYBE);        // Group
-        header->setArrowDir(8, (sortfunc == ascendingPerm || sortfunc == ascendingPermMix)  ? false : (sortfunc == descendingPerm || sortfunc == descendingPermMix) ? true : MAYBE);           // Permissions
-        if (getHeaderSize(0) < MIN_NAME_SIZE)
-        {
-            setHeaderSize(0, MIN_NAME_SIZE);
-        }
-
-        if ((sortfunc == ascending) || (sortfunc == ascendingCase) || (sortfunc == ascendingMix) || (sortfunc == ascendingCaseMix) || (sortfunc == descending) || (sortfunc == descendingCase) || (sortfunc == descendingMix) || (sortfunc == descendingCaseMix))
-        {
-            setSortHeader(0);
-        }
-        else if ((sortfunc == ascendingDir) || (sortfunc == ascendingDirCase) || (sortfunc == ascendingDirMix) || (sortfunc == ascendingDirCaseMix) || (sortfunc == descendingDir) || (sortfunc == descendingDirCase) || (sortfunc == descendingDirMix) || (sortfunc == descendingDirCaseMix))
-        {
-            setSortHeader(1);
-        }
-        else if ((sortfunc == ascendingSize) || (sortfunc == ascendingSizeMix) || (sortfunc == descendingSize) || (sortfunc == descendingSizeMix))
-        {
-            setSortHeader(2);
-        }
-        else if ((sortfunc == ascendingType) || (sortfunc == ascendingTypeMix) || (sortfunc == descendingType) || (sortfunc == descendingTypeMix))
-        {
-            setSortHeader(3);
-        }
-        else if ((sortfunc == ascendingExt) || (sortfunc == ascendingExtMix) || (sortfunc == descendingExt) || (sortfunc == descendingExtMix))
-        {
-            setSortHeader(4);
-        }
-        else if ((sortfunc == ascendingTime) || (sortfunc == ascendingTimeMix) || (sortfunc == descendingTime) || (sortfunc == descendingTimeMix))
-        {
-            setSortHeader(5);
-        }
-        else if ((sortfunc == ascendingUser) || (sortfunc == ascendingUserMix) || (sortfunc == descendingUser) || (sortfunc == descendingUserMix))
-        {
-            setSortHeader(6);
-        }
-        else if ((sortfunc == ascendingGroup) || (sortfunc == ascendingGroupMix) || (sortfunc == descendingGroup) || (sortfunc == descendingGroupMix))
-        {
-            setSortHeader(7);
-        }
-        else if ((sortfunc == ascendingPerm) || (sortfunc == ascendingPermMix) || (sortfunc == descendingPerm) || (sortfunc == descendingPermMix))
-        {
-            setSortHeader(8);
-        }
+        header->setArrowDir(getHeaderIndex(ID_COL_SIZE), (sortfunc == ascendingSize || sortfunc == ascendingSizeMix) ?
+                            false : (sortfunc == descendingSize || sortfunc == descendingSizeMix) ? true : MAYBE);         // Size
     }
 
-    // List is a file list
+    if (getHeaderIndex(ID_COL_TYPE) >= 0)
+    {
+        header->setArrowDir(getHeaderIndex(ID_COL_TYPE), (sortfunc == ascendingType || sortfunc == ascendingTypeMix) ?
+                            false : (sortfunc == descendingType || sortfunc == descendingTypeMix) ? true : MAYBE);         // Type
+    }
+
+    if (getHeaderIndex(ID_COL_EXT) >= 0)
+    {
+        header->setArrowDir(getHeaderIndex(ID_COL_EXT), (sortfunc == ascendingExt || sortfunc == ascendingExtMix) ?
+                            false : (sortfunc == descendingExt || sortfunc == descendingExtMix)  ? true : MAYBE);          // Extension
+    }
+
+    if (getHeaderIndex(ID_COL_DATE) >= 0)
+    {
+        header->setArrowDir(getHeaderIndex(ID_COL_DATE), (sortfunc == ascendingDate || sortfunc == ascendingDateMix) ?
+                            false : (sortfunc == descendingDate || sortfunc == descendingDateMix) ? true : MAYBE);         // Date
+    }
+
+    if (getHeaderIndex(ID_COL_USER) >= 0)
+    {
+        header->setArrowDir(getHeaderIndex(ID_COL_USER), (sortfunc == ascendingUser || sortfunc == ascendingUserMix) ?
+                            false : (sortfunc == descendingUser || sortfunc == descendingUserMix) ? true : MAYBE);         // User
+    }
+
+    if (getHeaderIndex(ID_COL_GROUP) >= 0)
+    {
+        header->setArrowDir(getHeaderIndex(ID_COL_GROUP), (sortfunc == ascendingGroup || sortfunc == ascendingGroupMix) ?
+                            false : (sortfunc == descendingGroup || sortfunc == descendingGroupMix) ? true : MAYBE);       // Group
+    }
+
+    if (getHeaderIndex(ID_COL_PERMS) >= 0)
+    {
+        header->setArrowDir(getHeaderIndex(ID_COL_PERMS), (sortfunc == ascendingPerms || sortfunc == ascendingPermsMix)  ?
+                            false : (sortfunc == descendingPerms || sortfunc == descendingPermsMix) ? true : MAYBE);       // Permissions
+    }
+
+    if (getHeaderIndex(ID_COL_LINK) >= 0)
+    {
+        header->setArrowDir(getHeaderIndex(ID_COL_LINK), (sortfunc == ascendingLink || sortfunc == ascendingLinkCase ||
+                            sortfunc == ascendingLinkMix || sortfunc == ascendingLinkCaseMix)  ? false :
+                            (sortfunc == descendingLink || sortfunc == descendingLinkCase ||
+                            sortfunc == descendingLinkMix || sortfunc == descendingLinkCaseMix) ? true : MAYBE);           // Link
+    }
+
+    if (options & FILELIST_SEARCH)
+    {
+        // Column always displayed in a search list
+        header->setArrowDir(getHeaderIndex(ID_COL_DIRNAME), (sortfunc == ascendingDir || sortfunc == ascendingDirCase ||
+                            sortfunc == ascendingDirMix || sortfunc == ascendingDirCaseMix)  ? false :
+                            (sortfunc == descendingDir || sortfunc == descendingDirCase ||
+                            sortfunc == descendingDirMix || sortfunc == descendingDirCaseMix) ? true : MAYBE);            // Dir Name
+    }
     else
     {
-        header->setArrowDir(0, (sortfunc == ascending || sortfunc == ascendingCase ||
-                                sortfunc == ascendingMix || sortfunc == ascendingCaseMix)  ? false : (sortfunc == descending || sortfunc == descendingCase ||
-                                                                                                      sortfunc == descendingMix || sortfunc == descendingCaseMix) ? true : MAYBE);      // Name
-        header->setArrowDir(1, (sortfunc == ascendingSize || sortfunc == ascendingSizeMix)  ? false : (sortfunc == descendingSize || sortfunc == descendingSizeMix) ? true : MAYBE);    // Size
-        header->setArrowDir(2, (sortfunc == ascendingType || sortfunc == ascendingTypeMix)  ? false : (sortfunc == descendingType || sortfunc == descendingTypeMix) ? true : MAYBE);    // Type
-        header->setArrowDir(3, (sortfunc == ascendingExt || sortfunc == ascendingExtMix)   ? false : (sortfunc == descendingExt || sortfunc == descendingExtMix)  ? true : MAYBE);      // Extension
-        header->setArrowDir(4, (sortfunc == ascendingTime || sortfunc == ascendingTimeMix)  ? false : (sortfunc == descendingTime || sortfunc == descendingTimeMix) ? true : MAYBE);    // Date
-        header->setArrowDir(5, (sortfunc == ascendingUser || sortfunc == ascendingUserMix)  ? false : (sortfunc == descendingUser || sortfunc == descendingUserMix) ? true : MAYBE);    // User
-        header->setArrowDir(6, (sortfunc == ascendingGroup || sortfunc == ascendingGroupMix) ? false : (sortfunc == descendingGroup || sortfunc == descendingGroupMix) ? true : MAYBE); // Group
-        header->setArrowDir(7, (sortfunc == ascendingPerm || sortfunc == ascendingPermMix)  ? false : (sortfunc == descendingPerm || sortfunc == descendingPermMix) ? true : MAYBE);    // Permissions
-        if (getNumHeaders() == NB_HEADERS + 2)
+        // Columns always displayed in a file list, when in Trash
+        if (!(options & FILELIST_SEARCH) && (getNumHeaders() == (int)nbColsTrash))
         {
-            header->setArrowDir(8, (sortfunc == ascendingOrigpath || sortfunc == ascendingOrigpathMix) ? false : (sortfunc == descendingOrigpath || sortfunc == descendingOrigpathMix) ? true : MAYBE);   // Original path
-            origpathsize = header->getItemSize(NB_HEADERS);
+            header->setArrowDir(getHeaderIndex(ID_COL_ORIGPATH), (sortfunc == ascendingOrigpath ||
+                                sortfunc == ascendingOrigpathCase || sortfunc == ascendingOrigpathMix ||
+                                sortfunc == ascendingOrigpathCaseMix)  ? false :
+                                (sortfunc == descendingOrigpath || sortfunc == descendingOrigpathCase ||
+                                sortfunc == descendingOrigpathMix || sortfunc == descendingOrigpathCaseMix) ?
+                                true : MAYBE);                                                                            // Original path
+            origpath_size = header->getItemSize(getHeaderIndex(ID_COL_ORIGPATH));
 
-            header->setArrowDir(9, (sortfunc == ascendingDeltime || sortfunc == ascendingDeltimeMix) ? false : (sortfunc == descendingDeltime || sortfunc == descendingDeltimeMix) ? true : MAYBE);   // Deletion date
-            deldatesize = header->getItemSize(NB_HEADERS + 1);
-        }
-        if (getHeaderSize(0) < MIN_NAME_SIZE)
-        {
-            setHeaderSize(0, MIN_NAME_SIZE);
-        }
-
-        if ((sortfunc == ascending) || (sortfunc == ascendingCase) || (sortfunc == ascendingMix) || (sortfunc == ascendingCaseMix) || (sortfunc == descending) || (sortfunc == descendingCase) || (sortfunc == descendingMix) || (sortfunc == descendingCaseMix))
-        {
-            setSortHeader(0);
-        }
-        else if ((sortfunc == ascendingSize) || (sortfunc == ascendingSizeMix) || (sortfunc == descendingSize) || (sortfunc == descendingSizeMix))
-        {
-            setSortHeader(1);
-        }
-        else if ((sortfunc == ascendingType) || (sortfunc == ascendingTypeMix) || (sortfunc == descendingType) || (sortfunc == descendingTypeMix))
-        {
-            setSortHeader(2);
-        }
-        else if ((sortfunc == ascendingExt) || (sortfunc == ascendingExtMix) || (sortfunc == descendingExt) || (sortfunc == descendingExtMix))
-        {
-            setSortHeader(3);
-        }
-        else if ((sortfunc == ascendingTime) || (sortfunc == ascendingTimeMix) || (sortfunc == descendingTime) || (sortfunc == descendingTimeMix))
-        {
-            setSortHeader(4);
-        }
-        else if ((sortfunc == ascendingUser) || (sortfunc == ascendingUserMix) || (sortfunc == descendingUser) || (sortfunc == descendingUserMix))
-        {
-            setSortHeader(5);
-        }
-        else if ((sortfunc == ascendingGroup) || (sortfunc == ascendingGroupMix) || (sortfunc == descendingGroup) || (sortfunc == descendingGroupMix))
-        {
-            setSortHeader(6);
-        }
-        else if ((sortfunc == ascendingPerm) || (sortfunc == ascendingPermMix) || (sortfunc == descendingPerm) || (sortfunc == descendingPermMix))
-        {
-            setSortHeader(7);
-        }
-        else if ((sortfunc == ascendingOrigpath) || (sortfunc == ascendingOrigpathMix) || (sortfunc == descendingOrigpath) || (sortfunc == descendingOrigpathMix))
-        {
-            setSortHeader(8);
-        }
-        else if ((sortfunc == ascendingDeltime) || (sortfunc == ascendingDeltimeMix) || (sortfunc == descendingDeltime) || (sortfunc == descendingDeltimeMix))
-        {
-            setSortHeader(9);
+            header->setArrowDir(getHeaderIndex(ID_COL_DELDATE), (sortfunc == ascendingDeldate ||
+                                sortfunc == ascendingDeldateMix) ? false : (sortfunc == descendingDeldate ||
+                                sortfunc == descendingDeldateMix) ? true : MAYBE);                                        // Deletion date
+            deldate_size = header->getItemSize(getHeaderIndex(ID_COL_DELDATE));
         }
     }
-    return(1);
+
+    // Set sort header, depending on the sort function
+    if ((sortfunc == ascending) || (sortfunc == ascendingCase) || (sortfunc == ascendingMix) ||
+        (sortfunc == ascendingCaseMix) ||
+        (sortfunc == descending) || (sortfunc == descendingCase) || (sortfunc == descendingMix) ||
+        (sortfunc == descendingCaseMix))
+    {
+        setSortHeader(getHeaderIndex(ID_COL_NAME));
+    }
+    else if ((sortfunc == ascendingDir) || (sortfunc == ascendingDirCase) || (sortfunc == ascendingDirMix) ||
+             (sortfunc == ascendingDirCaseMix) ||
+             (sortfunc == descendingDir) || (sortfunc == descendingDirCase) || (sortfunc == descendingDirMix) ||
+             (sortfunc == descendingDirCaseMix))
+    {
+        setSortHeader(getHeaderIndex(ID_COL_DIRNAME));
+    }
+    else if ((sortfunc == ascendingSize) || (sortfunc == ascendingSizeMix) || (sortfunc == descendingSize) ||
+             (sortfunc == descendingSizeMix))
+    {
+        setSortHeader(getHeaderIndex(ID_COL_SIZE));
+    }
+    else if ((sortfunc == ascendingType) || (sortfunc == ascendingTypeMix) || (sortfunc == descendingType) ||
+             (sortfunc == descendingTypeMix))
+    {
+        setSortHeader(getHeaderIndex(ID_COL_TYPE));
+    }
+    else if ((sortfunc == ascendingExt) || (sortfunc == ascendingExtMix) || (sortfunc == descendingExt) ||
+             (sortfunc == descendingExtMix))
+    {
+        setSortHeader(getHeaderIndex(ID_COL_EXT));
+    }
+    else if ((sortfunc == ascendingDate) || (sortfunc == ascendingDateMix) || (sortfunc == descendingDate) ||
+             (sortfunc == descendingDateMix))
+    {
+        setSortHeader(getHeaderIndex(ID_COL_DATE));
+    }
+    else if ((sortfunc == ascendingUser) || (sortfunc == ascendingUserMix) || (sortfunc == descendingUser) ||
+             (sortfunc == descendingUserMix))
+    {
+        setSortHeader(getHeaderIndex(ID_COL_USER));
+    }
+    else if ((sortfunc == ascendingGroup) || (sortfunc == ascendingGroupMix) || (sortfunc == descendingGroup) ||
+             (sortfunc == descendingGroupMix))
+    {
+        setSortHeader(getHeaderIndex(ID_COL_GROUP));
+    }
+    else if ((sortfunc == ascendingPerms) || (sortfunc == ascendingPermsMix) || (sortfunc == descendingPerms) ||
+             (sortfunc == descendingPermsMix))
+    {
+        setSortHeader(getHeaderIndex(ID_COL_PERMS));
+    }
+    else if ((sortfunc == ascendingLink) || (sortfunc == ascendingLinkCase) || (sortfunc == ascendingLinkMix) ||
+             (sortfunc == ascendingLinkCaseMix) || (sortfunc == descendingLink) || (sortfunc == descendingLinkCase) ||
+             (sortfunc == descendingLinkMix) || (sortfunc == descendingLinkCaseMix))
+    {
+        setSortHeader(getHeaderIndex(ID_COL_LINK));
+    }
+    else if ((sortfunc == ascendingOrigpath) || (sortfunc == ascendingOrigpathCase) ||
+             (sortfunc == ascendingOrigpathMix) || (sortfunc == ascendingOrigpathCaseMix) ||
+             (sortfunc == descendingOrigpath) || (sortfunc == descendingOrigpathCase) ||
+             (sortfunc == descendingOrigpathMix) || (sortfunc == descendingOrigpathCaseMix))
+    {
+        setSortHeader(getHeaderIndex(ID_COL_ORIGPATH));
+    }
+    else if ((sortfunc == ascendingDeldate) || (sortfunc == ascendingDeldateMix) ||
+             (sortfunc == descendingDeldate) || (sortfunc == descendingDeldateMix))
+    {
+        setSortHeader(getHeaderIndex(ID_COL_DELDATE));
+    }
+
+    return 1;
 }
 
 
 /**
  * Compares fields of p and q, supposing they are single byte strings
  * without using the current locale.
- * @param  igncase	Ignore upper/lower-case?
- * @param  asc		Ascending?  If false is descending order
- * @param  jmp		Field to compare (separated with \t)
+ * @param  igncase    Ignore upper/lower-case?
+ * @param  asc        Ascending?  If false is descending order
+ * @param  jmp        Field to compare (separated with \t)
  *
  * @return 0 if equal, negative if p<q, positive if p>q
  * If jmp has an invalid value returns 0 and errno will be EINVAL
@@ -2572,58 +2951,35 @@ static inline int compare_nolocale(char* p, char* q, FXbool igncase, FXbool asc,
     *qq = '\0';
 
     // Compare strings
-    retnames = comparenat(p, q, igncase);
+    retnames = xf_comparenat(p, q, igncase);
 
     // Restore saved characters
     *pp = pw;
     *qq = qw;
 
+    // Name column
     if (jmp == 0)
     {
         ret = retnames;
         goto end;
     }
 
-    // Compare other fields
-    // Find where to start comparison
-    if (jmp == 1)
+    // Other columns
+    else if (jmp < NMAX_COLS + 2)
     {
-        for (i = 1; *pp && i; i -= (*pp++ == '\t'))
-        {}
-        for (i = 1; *qq && i; i -= (*qq++ == '\t'))
-        {}
+        for (i = jmp; *pp && i; i -= (*pp++ == '\t'))
+        {
+        }
+        for (i = jmp; *qq && i; i -= (*qq++ == '\t'))
+        {
+        }
     }
 
-    else if (jmp < 8)
-    {
-        // 2->type, 3->ext, 5->user, 6->group, 7->perm,
-        // Adjust the header index depending on the list type
-        if (pp[1] == '/')
-        {
-            for (i = jmp + 1; *pp && i; i -= (*pp++ == '\t'))
-            {}
-            for (i = jmp + 1; *qq && i; i -= (*qq++ == '\t'))
-            {}
-        }
-        else
-        {
-            for (i = jmp; *pp && i; i -= (*pp++ == '\t'))
-            {}
-            for (i = jmp; *qq && i; i -= (*qq++ == '\t'))
-            {}
-        }
-    }
-    else if (jmp == 8)
-    {
-        for (i = 8; *pp && i; i -= (*pp++ == '\t'))
-        {}
-        for (i = 8; *qq && i; i -= (*qq++ == '\t'))
-        {}
-    }
+    // Error
     else
     {
         errno = EINVAL;
-        return(0);
+        return 0;
     }
 
     // This part between brackets to make the compiler happy!
@@ -2651,7 +3007,7 @@ static inline int compare_nolocale(char* p, char* q, FXbool igncase, FXbool asc,
         *qq = '\0';
 
         // Compare wide strings
-        ret = comparenat(sp, sq, igncase);
+        ret = xf_comparenat(sp, sq, igncase);
 
         // Restore saved characters
         *pp = pw;
@@ -2671,16 +3027,16 @@ end:
         ret = ret * -1;
     }
 
-    return(ret);
+    return ret;
 }
 
 
 /**
  * Compares fields of p and q, supposing they are wide strings
  * and using the current locale.
- * @param  igncase	Ignore upper/lower-case?
- * @param  asc		Ascending?  If false is descending order
- * @param  jmp		Field to compare (separated with \t)
+ * @param  igncase    Ignore upper/lower-case?
+ * @param  asc        Ascending?  If false is descending order
+ * @param  jmp        Field to compare (separated with \t)
  *
  * @return 0 if equal, negative if p<q, positive if p>q
  * If jmp has an invalid value returns 0 and errno will be EINVAL
@@ -2714,59 +3070,36 @@ static inline int compare_locale(wchar_t* p, wchar_t* q, FXbool igncase, FXbool 
     *qq = '\0';
 
     // Compare wide strings
-    retnames = comparewnat(p, q, igncase);
+    retnames = xf_comparewnat(p, q, igncase);
 
     // Restore saved characters
     *pp = pw;
     *qq = qw;
 
+
+    // Name column
     if (jmp == 0)
     {
         ret = retnames;
         goto end;
     }
 
-    // Compare other fields
-    // Find where to start comparison
-    if (jmp == 1)
+    // Other columns
+    else if (jmp < NMAX_COLS + 2)
     {
-        for (i = 1; *pp && i; i -= (*pp++ == '\t'))
-        {}
-        for (i = 1; *qq && i; i -= (*qq++ == '\t'))
-        {}
-    }
-
-    else if ((jmp > 1) && (jmp < 8))
-    {
-        // 2->type, 3->ext, 5->user, 6->group, 7->perm,
-        // Adjust the header index depending on the list type
-        if (pp[1] == '/')
+        for (i = jmp; *pp && i; i -= (*pp++ == '\t'))
         {
-            for (i = jmp + 1; *pp && i; i -= (*pp++ == '\t'))
-            {}
-            for (i = jmp + 1; *qq && i; i -= (*qq++ == '\t'))
-            {}
         }
-        else
+        for (i = jmp; *qq && i; i -= (*qq++ == '\t'))
         {
-            for (i = jmp; *pp && i; i -= (*pp++ == '\t'))
-            {}
-            for (i = jmp; *qq && i; i -= (*qq++ == '\t'))
-            {}
         }
     }
 
-    else if (jmp == 8)
-    {
-        for (i = 8; *pp && i; i -= (*pp++ == '\t'))
-        {}
-        for (i = 8; *qq && i; i -= (*qq++ == '\t'))
-        {}
-    }
+    // Error
     else
     {
         errno = EINVAL;
-        return(0);
+        return 0;
     }
 
     // This part between brackets to make the compiler happy!
@@ -2794,7 +3127,7 @@ static inline int compare_locale(wchar_t* p, wchar_t* q, FXbool igncase, FXbool 
         *qq = '\0';
 
         // Compare wide strings
-        ret = comparewnat(sp, sq, igncase);
+        ret = xf_comparewnat(sp, sq, igncase);
 
         // Restore saved characters
         *pp = pw;
@@ -2814,17 +3147,17 @@ end:
         ret = ret * -1;
     }
 
-    return(ret);
+    return ret;
 }
 
 
 /**
  * Compares a field of pa with the same field of pb, if the fields are
  * equal compare by name
- * @param  igncase	Ignore upper/lower-case?
- * @param  asc		Ascending?  If false is descending order
- * @param  mixdir	Mix directories with files?
- * @param  jmp		Field to compare (separated with \t)
+ * @param  igncase    Ignore upper/lower-case?
+ * @param  asc        Ascending?  If false is descending order
+ * @param  mixdir    Mix directories with files?
+ * @param  jmp        Field to compare (separated with \t)
  *
  * @return 0 if equal, negative if pa<pb, positive if pa>pb
  * Requires to allocate some space, if there is no memory this
@@ -2836,19 +3169,19 @@ int FileList::compare(const IconItem* pa, const IconItem* pb,
 {
     const FileItem* a = (FileItem*)pa;
     const FileItem* b = (FileItem*)pb;
-    char*           p = (char*)a->label.text();
-    char*           q = (char*)b->label.text();
+    char* p = (char*)a->label.text();
+    char* q = (char*)b->label.text();
 
     // Common cases
     // Directory '..' should always be on top
     if ((p[0] == '.') && (p[1] == '.') && (p[2] == '\t'))
     {
-        return(-1);
+        return -1;
     }
 
     if ((q[0] == '.') && (q[1] == '.') && (q[2] == '\t'))
     {
-        return(1);
+        return 1;
     }
 
     if (!mixdir)
@@ -2856,7 +3189,7 @@ int FileList::compare(const IconItem* pa, const IconItem* pb,
         int diff = (int)b->isDirectory() - (int)a->isDirectory();
         if (diff)
         {
-            return(diff);
+            return diff;
         }
     }
 
@@ -2867,27 +3200,27 @@ int FileList::compare(const IconItem* pa, const IconItem* pb,
     an = mbstowcs(NULL, (const char*)p, 0);
     if (an == (size_t)-1)
     {
-        return(compare_nolocale(p, q, igncase, asc, jmp)); // If error, fall back to no locale comparison
+        return compare_nolocale(p, q, igncase, asc, jmp); // If error, fall back to no locale comparison
     }
     wa = (wchar_t*)calloc(an + 1, sizeof(wchar_t));
     if (wa == NULL)
     {
         errno = ENOMEM;
-        return(0);
+        return 0;
     }
     mbstowcs(wa, p, an + 1);
     bn = mbstowcs(NULL, (const char*)q, 0);
     if (bn == (size_t)-1)
     {
         free(wa);
-        return(compare_nolocale(p, q, igncase, asc, jmp)); // If error, fall back to no locale comparison
+        return compare_nolocale(p, q, igncase, asc, jmp); // If error, fall back to no locale comparison
     }
     wb = (wchar_t*)calloc(bn + 1, sizeof(wchar_t));
     if (wb == NULL)
     {
         errno = ENOMEM;
         free(wa);
-        return(0);
+        return 0;
     }
     mbstowcs(wb, q, bn + 1);
 
@@ -2904,91 +3237,91 @@ int FileList::compare(const IconItem* pa, const IconItem* pb,
         free(wb);
     }
 
-    return(ret);
+    return ret;
 }
 
 
 // Compare file names
 int FileList::ascending(const IconItem* pa, const IconItem* pb)
 {
-    return(compare(pa, pb, false, true, false, 0));
+    return compare(pa, pb, false, true, false, name_index);
 }
 
 
 // Compare file names, mixing files and directories
 int FileList::ascendingMix(const IconItem* pa, const IconItem* pb)
 {
-    return(compare(pa, pb, false, true, true, 0));
+    return compare(pa, pb, false, true, true, name_index);
 }
 
 
 // Compare file names, case insensitive
 int FileList::ascendingCase(const IconItem* pa, const IconItem* pb)
 {
-    return(compare(pa, pb, true, true, false, 0));
+    return compare(pa, pb, true, true, false, name_index);
 }
 
 
 // Compare file names, case insensitive, mixing files and directories
 int FileList::ascendingCaseMix(const IconItem* pa, const IconItem* pb)
 {
-    return(compare(pa, pb, true, true, true, 0));
+    return compare(pa, pb, true, true, true, name_index);
 }
 
 
 // Compare directory names
 int FileList::ascendingDir(const IconItem* pa, const IconItem* pb)
 {
-    return(compare(pa, pb, false, true, false, 1));
+    return compare(pa, pb, false, true, false, dirname_index);
 }
 
 
 // Compare directory names, mixing files and directories
 int FileList::ascendingDirMix(const IconItem* pa, const IconItem* pb)
 {
-    return(compare(pa, pb, false, true, true, 1));
+    return compare(pa, pb, false, true, true, dirname_index);
 }
 
 
 // Compare directory names, case insensitive
 int FileList::ascendingDirCase(const IconItem* pa, const IconItem* pb)
 {
-    return(compare(pa, pb, true, true, false, 1));
+    return compare(pa, pb, true, true, false, dirname_index);
 }
 
 
 // Compare directory names, case insensitive, mixing files and directories
 int FileList::ascendingDirCaseMix(const IconItem* pa, const IconItem* pb)
 {
-    return(compare(pa, pb, true, true, true, 1));
+    return compare(pa, pb, true, true, true, dirname_index);
 }
 
 
 // Compare file types
 int FileList::ascendingType(const IconItem* pa, const IconItem* pb)
 {
-    return(compare(pa, pb, false, true, false, 2));
+    return compare(pa, pb, false, true, false, type_index);
 }
 
 
 // Compare file types, mixing files and directories
 int FileList::ascendingTypeMix(const IconItem* pa, const IconItem* pb)
 {
-    return(compare(pa, pb, false, true, true, 2));
+    return compare(pa, pb, false, true, true, type_index);
 }
 
 
 // Compare file extension
 int FileList::ascendingExt(const IconItem* pa, const IconItem* pb)
 {
-    return(compare(pa, pb, false, true, false, 3));
+    return compare(pa, pb, false, true, false, ext_index);
 }
 
 
 // Compare file extension, mixing files and directories
 int FileList::ascendingExtMix(const IconItem* pa, const IconItem* pb)
 {
-    return(compare(pa, pb, false, true, true, 3));
+    return compare(pa, pb, false, true, true, ext_index);
 }
 
 
@@ -3004,11 +3337,11 @@ int FileList::ascendingSize(const IconItem* pa, const IconItem* pb)
     // Directory '..' should always be on top
     if ((p[0] == '.') && (p[1] == '.') && (p[2] == '\t'))
     {
-        return(-1);
+        return -1;
     }
     if ((q[0] == '.') && (q[1] == '.') && (q[2] == '\t'))
     {
-        return(1);
+        return 1;
     }
 
     int diff = (int)b->isDirectory() - (int)a->isDirectory();
@@ -3016,11 +3349,11 @@ int FileList::ascendingSize(const IconItem* pa, const IconItem* pb)
 
     if (diff)
     {
-        return(diff);
+        return diff;
     }
     if (sum == 2)
     {
-        return(ascendingCase(pa, pb));
+        return ascendingCase(pa, pb);
     }
 
     FXlong l = a->size - b->size;
@@ -3028,18 +3361,18 @@ int FileList::ascendingSize(const IconItem* pa, const IconItem* pb)
     {
         if (l >= 0)
         {
-            return(1);
+            return 1;
         }
         else
         {
-            return(-1);
+            return -1;
         }
     }
-    return(ascendingCase(pa, pb));
+    return ascendingCase(pa, pb);
 }
 
 
-// Compare file size - Warning : only returns the sign of the comparison!!!
+// Compare file size - Warning: only returns the sign of the comparison!!!
 // Mixing files and directories
 int FileList::ascendingSizeMix(const IconItem* pa, const IconItem* pb)
 {
@@ -3054,24 +3387,24 @@ int FileList::ascendingSizeMix(const IconItem* pa, const IconItem* pb)
     // Directory '..' should always be on top
     if ((p[0] == '.') && (p[1] == '.') && (p[2] == '\t'))
     {
-        return(-1);
+        return -1;
     }
     if ((q[0] == '.') && (q[1] == '.') && (q[2] == '\t'))
     {
-        return(1);
+        return 1;
     }
 
     if (adir && bdir)
     {
-        return(ascendingCaseMix(pa, pb));
+        return ascendingCaseMix(pa, pb);
     }
     if (adir && !bdir)
     {
-        return(-1);
+        return -1;
     }
     if (!adir && bdir)
     {
-        return(1);
+        return 1;
     }
 
     FXlong l = a->size - b->size;
@@ -3079,19 +3412,19 @@ int FileList::ascendingSizeMix(const IconItem* pa, const IconItem* pb)
     {
         if (l >= 0)
         {
-            return(1);
+            return 1;
         }
         else
         {
-            return(-1);
+            return -1;
         }
     }
-    return(ascendingCaseMix(pa, pb));
+    return ascendingCaseMix(pa, pb);
 }
 
 
 // Compare file time
-int FileList::ascendingTime(const IconItem* pa, const IconItem* pb)
+int FileList::ascendingDate(const IconItem* pa, const IconItem* pb)
 {
     const FileItem* a = (FileItem*)pa;
     const FileItem* b = (FileItem*)pb;
@@ -3102,30 +3435,30 @@ int FileList::ascendingTime(const IconItem* pa, const IconItem* pb)
     // Directory '..' should always be on top
     if ((p[0] == '.') && (p[1] == '.') && (p[2] == '\t'))
     {
-        return(-1);
+        return -1;
     }
     if ((q[0] == '.') && (q[1] == '.') && (q[2] == '\t'))
     {
-        return(1);
+        return 1;
     }
 
     int diff = (int)b->isDirectory() - (int)a->isDirectory();
     if (diff)
     {
-        return(diff);
+        return diff;
     }
 
     FXlong l = (FXlong)a->date - (FXlong)b->date;
     if (l)
     {
-        return(l);
+        return l;
     }
-    return(ascendingCase(pa, pb));
+    return ascendingCase(pa, pb);
 }
 
 
 // Compare file time, mixing files and directories
-int FileList::ascendingTimeMix(const IconItem* pa, const IconItem* pb)
+int FileList::ascendingDateMix(const IconItem* pa, const IconItem* pb)
 {
     const FileItem* a = (FileItem*)pa;
     const FileItem* b = (FileItem*)pb;
@@ -3136,66 +3469,94 @@ int FileList::ascendingTimeMix(const IconItem* pa, const IconItem* pb)
     // Directory '..' should always be on top
     if ((p[0] == '.') && (p[1] == '.') && (p[2] == '\t'))
     {
-        return(-1);
+        return -1;
     }
     if ((q[0] == '.') && (q[1] == '.') && (q[2] == '\t'))
     {
-        return(1);
+        return 1;
     }
 
     FXlong l = (FXlong)a->date - (FXlong)b->date;
     if (l)
     {
-        return(l);
+        return l;
     }
-    return(ascendingCaseMix(pa, pb));
+    return ascendingCaseMix(pa, pb);
 }
 
 
 // Compare file user
 int FileList::ascendingUser(const IconItem* pa, const IconItem* pb)
 {
-    return(compare(pa, pb, false, true, false, 5));
+    return compare(pa, pb, false, true, false, user_index);
 }
 
 
 // Compare file user, mixing files and directories
 int FileList::ascendingUserMix(const IconItem* pa, const IconItem* pb)
 {
-    return(compare(pa, pb, false, true, true, 5));
+    return compare(pa, pb, false, true, true, user_index);
 }
 
 
 // Compare file group
 int FileList::ascendingGroup(const IconItem* pa, const IconItem* pb)
 {
-    return(compare(pa, pb, false, true, false, 6));
+    return compare(pa, pb, false, true, false, group_index);
 }
 
 
 // Compare file group, mixing files and directories
 int FileList::ascendingGroupMix(const IconItem* pa, const IconItem* pb)
 {
-    return(compare(pa, pb, false, true, true, 6));
+    return compare(pa, pb, false, true, true, group_index);
 }
 
 
 // Compare file permissions
-int FileList::ascendingPerm(const IconItem* pa, const IconItem* pb)
+int FileList::ascendingPerms(const IconItem* pa, const IconItem* pb)
 {
-    return(compare(pa, pb, false, true, false, 7));
+    return compare(pa, pb, false, true, false, perms_index);
 }
 
 
 // Compare file permissions, mixing files and directories
-int FileList::ascendingPermMix(const IconItem* pa, const IconItem* pb)
+int FileList::ascendingPermsMix(const IconItem* pa, const IconItem* pb)
 {
-    return(compare(pa, pb, false, true, true, 7));
+    return compare(pa, pb, false, true, true, perms_index);
+}
+
+
+// Compare link
+int FileList::ascendingLink(const IconItem* pa, const IconItem* pb)
+{
+    return compare(pa, pb, false, true, false, link_index);
+}
+
+
+// Compare link, case insensitive
+int FileList::ascendingLinkCase(const IconItem* pa, const IconItem* pb)
+{
+    return compare(pa, pb, true, true, false, link_index);
+}
+
+
+// Compare link, mixing files and directories
+int FileList::ascendingLinkMix(const IconItem* pa, const IconItem* pb)
+{
+    return compare(pa, pb, false, true, true, link_index);
+}
+
+
+// Compare link, mixing files and directories, case insensitive
+int FileList::ascendingLinkCaseMix(const IconItem* pa, const IconItem* pb)
+{
+    return compare(pa, pb, true, true, true, link_index);
 }
 
 
 // Compare file deletion time
-int FileList::ascendingDeltime(const IconItem* pa, const IconItem* pb)
+int FileList::ascendingDeldate(const IconItem* pa, const IconItem* pb)
 {
     const FileItem* a = (FileItem*)pa;
     const FileItem* b = (FileItem*)pb;
@@ -3206,29 +3567,29 @@ int FileList::ascendingDeltime(const IconItem* pa, const IconItem* pb)
     // Directory '..' should always be on top
     if ((p[0] == '.') && (p[1] == '.') && (p[2] == '\t'))
     {
-        return(-1);
+        return -1;
     }
     if ((q[0] == '.') && (q[1] == '.') && (q[2] == '\t'))
     {
-        return(1);
+        return 1;
     }
 
     int diff = (int)b->isDirectory() - (int)a->isDirectory();
     if (diff)
     {
-        return(diff);
+        return diff;
     }
     FXlong l = (FXlong)a->deldate - (FXlong)b->deldate;
     if (l)
     {
-        return(l);
+        return l;
     }
-    return(ascendingCase(pa, pb));
+    return ascendingCase(pa, pb);
 }
 
 
 // Compare file deletion time, mixing files and directories
-int FileList::ascendingDeltimeMix(const IconItem* pa, const IconItem* pb)
+int FileList::ascendingDeldateMix(const IconItem* pa, const IconItem* pb)
 {
     const FileItem* a = (FileItem*)pa;
     const FileItem* b = (FileItem*)pb;
@@ -3239,117 +3600,131 @@ int FileList::ascendingDeltimeMix(const IconItem* pa, const IconItem* pb)
     // Directory '..' should always be on top
     if ((p[0] == '.') && (p[1] == '.') && (p[2] == '\t'))
     {
-        return(-1);
+        return -1;
     }
     if ((q[0] == '.') && (q[1] == '.') && (q[2] == '\t'))
     {
-        return(1);
+        return 1;
     }
 
     FXlong l = (FXlong)a->deldate - (FXlong)b->deldate;
     if (l)
     {
-        return(l);
+        return l;
     }
-    return(ascendingCaseMix(pa, pb));
+    return ascendingCaseMix(pa, pb);
 }
 
 
 // Compare original path
 int FileList::ascendingOrigpath(const IconItem* pa, const IconItem* pb)
 {
-    return(compare(pa, pb, false, true, false, 8));
+    return compare(pa, pb, false, true, false, origpath_index);
+}
+
+
+// Compare original path, case insensitive
+int FileList::ascendingOrigpathCase(const IconItem* pa, const IconItem* pb)
+{
+    return compare(pa, pb, true, true, false, origpath_index);
 }
 
 
 // Compare original path, mixing files and directories
 int FileList::ascendingOrigpathMix(const IconItem* pa, const IconItem* pb)
 {
-    return(compare(pa, pb, false, true, true, 8));
+    return compare(pa, pb, false, true, true, origpath_index);
+}
+
+
+// Compare original path, mixing files and directories, case insensitive
+int FileList::ascendingOrigpathCaseMix(const IconItem* pa, const IconItem* pb)
+{
+    return compare(pa, pb, true, true, true, origpath_index);
 }
 
 
 // Reversed compare file name, case insensitive
 int FileList::descendingCase(const IconItem* pa, const IconItem* pb)
 {
-    return(compare(pa, pb, true, false, false, 0));
+    return compare(pa, pb, true, false, false, name_index);
 }
 
 
 // Reversed compare file name, case insensitive, mixing files and directories
 int FileList::descendingCaseMix(const IconItem* pa, const IconItem* pb)
 {
-    return(compare(pa, pb, true, false, true, 0));
+    return compare(pa, pb, true, false, true, name_index);
 }
 
 
 // Reversed compare file name
 int FileList::descending(const IconItem* pa, const IconItem* pb)
 {
-    return(compare(pa, pb, false, false, false, 0));
+    return compare(pa, pb, false, false, false, name_index);
 }
 
 
 // Reversed compare file name, mixing files and directories
 int FileList::descendingMix(const IconItem* pa, const IconItem* pb)
 {
-    return(compare(pa, pb, false, false, true, 0));
+    return compare(pa, pb, false, false, true, name_index);
 }
 
 
 // Reversed compare directory names, case insensitive
 int FileList::descendingDirCase(const IconItem* pa, const IconItem* pb)
 {
-    return(compare(pa, pb, true, false, false, 1));
+    return compare(pa, pb, true, false, false, dirname_index);
 }
 
 
 // Reversed compare directory names, case insensitive, mixing files and directories
 int FileList::descendingDirCaseMix(const IconItem* pa, const IconItem* pb)
 {
-    return(compare(pa, pb, true, false, true, 1));
+    return compare(pa, pb, true, false, true, dirname_index);
 }
 
 
 // Reversed compare directory names
 int FileList::descendingDir(const IconItem* pa, const IconItem* pb)
 {
-    return(compare(pa, pb, false, false, false, 1));
+    return compare(pa, pb, false, false, false, dirname_index);
 }
 
 
 // Reversed compare directory names, mixing files and directories
 int FileList::descendingDirMix(const IconItem* pa, const IconItem* pb)
 {
-    return(compare(pa, pb, false, false, true, 1));
+    return compare(pa, pb, false, false, true, dirname_index);
 }
 
 
 // Reversed compare file type
 int FileList::descendingType(const IconItem* pa, const IconItem* pb)
 {
-    return(compare(pa, pb, false, false, false, 2));
+    return compare(pa, pb, false, false, false, type_index);
 }
 
 
 // Reversed compare file type, mixing files and directories
 int FileList::descendingTypeMix(const IconItem* pa, const IconItem* pb)
 {
-    return(compare(pa, pb, false, false, true, 2));
+    return compare(pa, pb, false, false, true, type_index);
 }
 
 
 // Reversed compare file extension
 int FileList::descendingExt(const IconItem* pa, const IconItem* pb)
 {
-    return(compare(pa, pb, false, false, false, 3));
+    return compare(pa, pb, false, false, false, ext_index);
 }
 
 
 // Reversed compare file extension, mixing files and directories
 int FileList::descendingExtMix(const IconItem* pa, const IconItem* pb)
 {
-    return(compare(pa, pb, false, false, true, 3));
+    return compare(pa, pb, false, false, true, ext_index);
 }
 
 
@@ -3365,36 +3740,36 @@ int FileList::descendingSize(const IconItem* pa, const IconItem* pb)
     // Directory '..' should always be on top
     if ((p[0] == '.') && (p[1] == '.') && (p[2] == '\t'))
     {
-        return(-1);
+        return -1;
     }
     if ((q[0] == '.') && (q[1] == '.') && (q[2] == '\t'))
     {
-        return(1);
+        return 1;
     }
 
     int diff = (int)b->isDirectory() - (int)a->isDirectory();
     int sum = (int)b->isDirectory() + (int)a->isDirectory();
     if (diff)
     {
-        return(diff);
+        return diff;
     }
     if (sum == 2)
     {
-        return(-ascendingCase(pa, pb));
+        return -ascendingCase(pa, pb);
     }
     FXlong l = a->size - b->size;
     if (l)
     {
         if (l >= 0)
         {
-            return(-1);
+            return -1;
         }
         else
         {
-            return(1);
+            return 1;
         }
     }
-    return(-ascendingCase(pa, pb));
+    return -ascendingCase(pa, pb);
 }
 
 
@@ -3412,24 +3787,24 @@ int FileList::descendingSizeMix(const IconItem* pa, const IconItem* pb)
     // Directory '..' should always be on top
     if ((p[0] == '.') && (p[1] == '.') && (p[2] == '\t'))
     {
-        return(-1);
+        return -1;
     }
     if ((q[0] == '.') && (q[1] == '.') && (q[2] == '\t'))
     {
-        return(1);
+        return 1;
     }
 
     if (adir && bdir)
     {
-        return(-ascendingCaseMix(pa, pb));
+        return -ascendingCaseMix(pa, pb);
     }
     if (adir && !bdir)
     {
-        return(1);
+        return 1;
     }
     if (!adir && bdir)
     {
-        return(-1);
+        return -1;
     }
 
     FXlong l = a->size - b->size;
@@ -3437,19 +3812,19 @@ int FileList::descendingSizeMix(const IconItem* pa, const IconItem* pb)
     {
         if (l >= 0)
         {
-            return(-1);
+            return -1;
         }
         else
         {
-            return(1);
+            return 1;
         }
     }
-    return(-ascendingCaseMix(pa, pb));
+    return -ascendingCaseMix(pa, pb);
 }
 
 
 // Reversed compare file time
-int FileList::descendingTime(const IconItem* pa, const IconItem* pb)
+int FileList::descendingDate(const IconItem* pa, const IconItem* pb)
 {
     const FileItem* a = (FileItem*)pa;
     const FileItem* b = (FileItem*)pb;
@@ -3460,29 +3835,29 @@ int FileList::descendingTime(const IconItem* pa, const IconItem* pb)
     // Directory '..' should always be on top
     if ((p[0] == '.') && (p[1] == '.') && (p[2] == '\t'))
     {
-        return(-1);
+        return -1;
     }
     if ((q[0] == '.') && (q[1] == '.') && (q[2] == '\t'))
     {
-        return(1);
+        return 1;
     }
 
     int diff = (int)b->isDirectory() - (int)a->isDirectory();
     if (diff)
     {
-        return(diff);
+        return diff;
     }
     FXlong l = (FXlong)a->date - (FXlong)b->date;
     if (l)
     {
-        return(-l);
+        return -l;
     }
-    return(-ascendingCase(pa, pb));
+    return -ascendingCase(pa, pb);
 }
 
 
 // Reversed compare file time, mixing files and directories
-int FileList::descendingTimeMix(const IconItem* pa, const IconItem* pb)
+int FileList::descendingDateMix(const IconItem* pa, const IconItem* pb)
 {
     const FileItem* a = (FileItem*)pa;
     const FileItem* b = (FileItem*)pb;
@@ -3493,66 +3868,93 @@ int FileList::descendingTimeMix(const IconItem* pa, const IconItem* pb)
     // Directory '..' should always be on top
     if ((p[0] == '.') && (p[1] == '.') && (p[2] == '\t'))
     {
-        return(-1);
+        return -1;
     }
     if ((q[0] == '.') && (q[1] == '.') && (q[2] == '\t'))
     {
-        return(1);
+        return 1;
     }
 
     FXlong l = (FXlong)a->date - (FXlong)b->date;
     if (l)
     {
-        return(-l);
+        return -l;
     }
-    return(-ascendingCaseMix(pa, pb));
+    return -ascendingCaseMix(pa, pb);
 }
 
 
 // Reversed compare file user
 int FileList::descendingUser(const IconItem* pa, const IconItem* pb)
 {
-    return(compare(pa, pb, false, false, false, 5));
+    return compare(pa, pb, false, false, false, user_index);
 }
 
 
 // Reversed compare file user, mixing files and directories
 int FileList::descendingUserMix(const IconItem* pa, const IconItem* pb)
 {
-    return(compare(pa, pb, false, false, true, 5));
+    return compare(pa, pb, false, false, true, user_index);
 }
 
 
 // Reversed compare file group
 int FileList::descendingGroup(const IconItem* pa, const IconItem* pb)
 {
-    return(compare(pa, pb, false, false, false, 6));
+    return compare(pa, pb, false, false, false, group_index);
 }
 
 
 // Reversed compare file group, mixing files and directories
 int FileList::descendingGroupMix(const IconItem* pa, const IconItem* pb)
 {
-    return(compare(pa, pb, false, false, true, 6));
+    return compare(pa, pb, false, false, true, group_index);
 }
 
 
 // Reversed compare file permission
-int FileList::descendingPerm(const IconItem* pa, const IconItem* pb)
+int FileList::descendingPerms(const IconItem* pa, const IconItem* pb)
 {
-    return(compare(pa, pb, false, false, false, 7));
+    return compare(pa, pb, false, false, false, perms_index);
+}
+
+// Reversed compare file permission, mixing files and directories
+int FileList::descendingPermsMix(const IconItem* pa, const IconItem* pb)
+{
+    return compare(pa, pb, false, false, true, perms_index);
 }
 
 
-// Reversed compare file permission, mixing files and directories
-int FileList::descendingPermMix(const IconItem* pa, const IconItem* pb)
+// Reversed compare link
+int FileList::descendingLink(const IconItem* pa, const IconItem* pb)
 {
-    return(compare(pa, pb, false, false, true, 7));
+    return compare(pa, pb, false, false, false, link_index);
+}
+
+
+// Reversed compare link, case insensitive
+int FileList::descendingLinkCase(const IconItem* pa, const IconItem* pb)
+{
+    return compare(pa, pb, true, false, false, link_index);
+}
+
+
+// Reversed compare link, mixing files and directories
+int FileList::descendingLinkMix(const IconItem* pa, const IconItem* pb)
+{
+    return compare(pa, pb, false, false, true, link_index);
+}
+
+
+// Reversed compare link, mixing files and directories, case insensitive
+int FileList::descendingLinkCaseMix(const IconItem* pa, const IconItem* pb)
+{
+    return compare(pa, pb, true, false, true, link_index);
 }
 
 
 // Reversed compare file deletion time
-int FileList::descendingDeltime(const IconItem* pa, const IconItem* pb)
+int FileList::descendingDeldate(const IconItem* pa, const IconItem* pb)
 {
     const FileItem* a = (FileItem*)pa;
     const FileItem* b = (FileItem*)pb;
@@ -3563,29 +3965,29 @@ int FileList::descendingDeltime(const IconItem* pa, const IconItem* pb)
     // Directory '..' should always be on top
     if ((p[0] == '.') && (p[1] == '.') && (p[2] == '\t'))
     {
-        return(-1);
+        return -1;
     }
     if ((q[0] == '.') && (q[1] == '.') && (q[2] == '\t'))
     {
-        return(1);
+        return 1;
     }
 
     int diff = (int)b->isDirectory() - (int)a->isDirectory();
     if (diff)
     {
-        return(diff);
+        return diff;
     }
     FXlong l = (FXlong)a->deldate - (FXlong)b->deldate;
     if (l)
     {
-        return(-l);
+        return -l;
     }
-    return(-ascendingCase(pa, pb));
+    return -ascendingCase(pa, pb);
 }
 
 
 // Reversed compare file deletion time, mixing files and directories
-int FileList::descendingDeltimeMix(const IconItem* pa, const IconItem* pb)
+int FileList::descendingDeldateMix(const IconItem* pa, const IconItem* pb)
 {
     const FileItem* a = (FileItem*)pa;
     const FileItem* b = (FileItem*)pb;
@@ -3596,33 +3998,47 @@ int FileList::descendingDeltimeMix(const IconItem* pa, const IconItem* pb)
     // Directory '..' should always be on top
     if ((p[0] == '.') && (p[1] == '.') && (p[2] == '\t'))
     {
-        return(-1);
+        return -1;
     }
     if ((q[0] == '.') && (q[1] == '.') && (q[2] == '\t'))
     {
-        return(1);
+        return 1;
     }
 
     FXlong l = (FXlong)a->deldate - (FXlong)b->deldate;
     if (l)
     {
-        return(-l);
+        return -l;
     }
-    return(-ascendingCaseMix(pa, pb));
+    return -ascendingCaseMix(pa, pb);
 }
 
 
 // Reversed compare original path
 int FileList::descendingOrigpath(const IconItem* pa, const IconItem* pb)
 {
-    return(compare(pa, pb, false, false, false, 8));
+    return compare(pa, pb, false, false, false, origpath_index);
 }
 
 
 // Reversed original path, mixing files and directories
 int FileList::descendingOrigpathMix(const IconItem* pa, const IconItem* pb)
 {
-    return(compare(pa, pb, false, false, true, 8));
+    return compare(pa, pb, false, false, true, origpath_index);
+}
+
+
+// Reversed compare original path, case insensitive
+int FileList::descendingOrigpathCase(const IconItem* pa, const IconItem* pb)
+{
+    return compare(pa, pb, true, false, false, origpath_index);
+}
+
+
+// Reversed compare original path, mixing files and directories, case insensitive
+int FileList::descendingOrigpathCaseMix(const IconItem* pa, const IconItem* pb)
+{
+    return compare(pa, pb, true, false, true, origpath_index);
 }
 
 
@@ -3637,7 +4053,7 @@ long FileList::onCmdRefresh(FXObject*, FXSelector, void*)
     }
     allowrefresh = true;
     scan(true);
-    return(1);
+    return 1;
 }
 
 
@@ -3661,7 +4077,7 @@ long FileList::onCmdRefreshTimer(FXObject*, FXSelector, void*)
     // Don't refresh if window is minimized
     if (((FXTopWindow*)focuswindow)->isMinimized())
     {
-        return(0);
+        return 0;
     }
 
     // Don't refresh if not allowed
@@ -3671,9 +4087,9 @@ long FileList::onCmdRefreshTimer(FXObject*, FXSelector, void*)
         counter = (counter + 1) % REFRESH_FREQUENCY;
     }
 
-    // Reset timer again
+    // Restart timer
     getApp()->addTimeout(this, ID_REFRESH_TIMER, REFRESH_INTERVAL);
-    return(0);
+    return 0;
 }
 
 
@@ -3694,9 +4110,9 @@ FXString FileList::getCurrentFile() const
 {
     if (current < 0)
     {
-        return(FXString::null);
+        return FXString::null;
     }
-    return(getItemPathname(current));
+    return getItemPathname(current);
 }
 
 
@@ -3715,7 +4131,6 @@ void FileList::setDirectory(const FXString& pathname, const FXbool histupdate, F
         {
             backhist = new StringList();
         }
-
         // Update the history
         else
         {
@@ -3731,13 +4146,13 @@ void FileList::setDirectory(const FXString& pathname, const FXbool histupdate, F
     {
         path = FXPath::absolute(directory, pathname);
 
-        while (!FXPath::isTopDirectory(path) && !::isDirectory(path))
+        while (!FXPath::isTopDirectory(path) && !xf_isdirectory(path))
         {
             path = FXPath::upLevel(path);
         }
         if (directory != path)
         {
-            directory = ::cleanPath(path);
+            directory = xf_cleanpath(path);
             clearItems();
             list = NULL;
             scan(true);
@@ -3768,6 +4183,9 @@ void FileList::setDirectory(const FXString& pathname, const FXbool histupdate, F
             setCurrentItem(sel_index);
         }
     }
+
+    // Autosize name column in detailed mode
+    IconList::autosizeNameHeader();
 }
 
 
@@ -3802,14 +4220,14 @@ void FileList::setMatchMode(FXuint mode)
 // Return true if showing hidden files
 FXbool FileList::shownHiddenFiles() const
 {
-    return((options & _FILELIST_SHOWHIDDEN) != 0);
+    return (options & FILELIST_SHOWHIDDEN) != 0;
 }
 
 
 // Change show hidden files mode
 void FileList::showHiddenFiles(FXbool shown)
 {
-    FXuint opts = shown ? (options | _FILELIST_SHOWHIDDEN) : (options & ~_FILELIST_SHOWHIDDEN);
+    FXuint opts = shown ? (options | FILELIST_SHOWHIDDEN) : (options & ~FILELIST_SHOWHIDDEN);
 
     if (opts != options)
     {
@@ -3823,7 +4241,7 @@ void FileList::showHiddenFiles(FXbool shown)
 // Return true if showing thumbnails
 FXbool FileList::shownThumbnails() const
 {
-    return(displaythumbnails);
+    return displaythumbnails;
 }
 
 
@@ -3841,14 +4259,14 @@ void FileList::showThumbnails(FXbool display)
 // Return true if showing directories only
 FXbool FileList::showOnlyDirectories() const
 {
-    return((options & _FILELIST_SHOWDIRS) != 0);
+    return (options & FILELIST_SHOWDIRS) != 0;
 }
 
 
 // Change show directories only mode
 void FileList::showOnlyDirectories(FXbool shown)
 {
-    FXuint opts = shown ? (options | _FILELIST_SHOWDIRS) : (options & ~_FILELIST_SHOWDIRS);
+    FXuint opts = shown ? (options | FILELIST_SHOWDIRS) : (options & ~FILELIST_SHOWDIRS);
 
     if (opts != options)
     {
@@ -3870,15 +4288,16 @@ static FXbool fileequal(const FXString& a, const FXString& b)
     {
         c1 = *p1++;
         c2 = *p2++;
-    } while (c1 != '\0' && c1 != '\t' && c1 == c2);
-    return((c1 == '\0' || c1 == '\t') && (c2 == '\0' || c2 == '\t'));
+    }
+    while (c1 != '\0' && c1 != '\t' && c1 == c2);
+    return (c1 == '\0' || c1 == '\t') && (c2 == '\0' || c2 == '\t');
 }
 
 
 // Create custom item
 IconItem* FileList::createItem(const FXString& text, FXIcon* big, FXIcon* mini, void* ptr)
 {
-    return(new FileItem(text, big, mini, ptr));
+    return new FileItem(getApp(), text, big, mini, ptr);
 }
 
 
@@ -3890,7 +4309,7 @@ FXbool FileList::isItemDirectory(int index) const
         fprintf(stderr, "%s::isItemDirectory: index out of range.\n", getClassName());
         exit(EXIT_FAILURE);
     }
-    return((((FileItem*)items[index])->state & FileItem::FOLDER) != 0);
+    return (((FileItem*)items[index])->state & FileItem::FOLDER) != 0;
 }
 
 
@@ -3902,7 +4321,8 @@ FXbool FileList::isItemFile(int index) const
         fprintf(stderr, "%s::isItemFile: index out of range.\n", getClassName());
         exit(EXIT_FAILURE);
     }
-    return((((FileItem*)items[index])->state & (FileItem::FOLDER | FileItem::CHARDEV | FileItem::BLOCKDEV | FileItem::FIFO | FileItem::SOCK)) == 0);
+    return (((FileItem*)items[index])->state &
+            (FileItem::FOLDER | FileItem::CHARDEV | FileItem::BLOCKDEV | FileItem::FIFO | FileItem::SOCK)) == 0;
 }
 
 
@@ -3914,7 +4334,7 @@ FXbool FileList::isItemExecutable(int index) const
         fprintf(stderr, "%s::isItemExecutable: index out of range.\n", getClassName());
         exit(EXIT_FAILURE);
     }
-    return((((FileItem*)items[index])->state & FileItem::EXECUTABLE) != 0);
+    return (((FileItem*)items[index])->state & FileItem::EXECUTABLE) != 0;
 }
 
 
@@ -3926,7 +4346,7 @@ FXbool FileList::isItemLink(int index) const
         fprintf(stderr, "%s::isItemLink: index out of range.\n", getClassName());
         exit(EXIT_FAILURE);
     }
-    return((((FileItem*)items[index])->state & FileItem::SYMLINK) != 0);
+    return (((FileItem*)items[index])->state & FileItem::SYMLINK) != 0;
 }
 
 
@@ -3939,7 +4359,7 @@ FXString FileList::getItemFilename(int index) const
         exit(EXIT_FAILURE);
     }
     FXString label = items[index]->getText();
-    return(label.section('\t', 0));
+    return label.section('\t', 0);
 }
 
 
@@ -3952,7 +4372,7 @@ FXString FileList::getItemPathname(int index) const
         exit(EXIT_FAILURE);
     }
     FXString label = items[index]->getText();
-    return(FXPath::absolute(directory, label.section('\t', 0)));
+    return FXPath::absolute(directory, label.section('\t', 0));
 }
 
 
@@ -3965,7 +4385,7 @@ FXString FileList::getItemFullPathname(int index) const
         exit(EXIT_FAILURE);
     }
     FXString label = items[index]->getText();
-    return(label.rafter('\t'));
+    return label.rafter('\t');
 }
 
 
@@ -3977,7 +4397,7 @@ FileAssoc* FileList::getItemAssoc(int index) const
         fprintf(stderr, "%s::getItemAssoc: index out of range.\n", getClassName());
         exit(EXIT_FAILURE);
     }
-    return(((FileItem*)items[index])->assoc);
+    return ((FileItem*)items[index])->assoc;
 }
 
 
@@ -3989,7 +4409,7 @@ FXulong FileList::getItemFileSize(int index) const
         fprintf(stderr, "%s::getItemFileSize: index out of range.\n", getClassName());
         exit(EXIT_FAILURE);
     }
-    return(((FileItem*)items[index])->size);
+    return ((FileItem*)items[index])->size;
 }
 
 
@@ -4007,15 +4427,15 @@ void FileList::setAssociations(FileDict* assocs)
 
 
 // Change header size
-void FileList::setHeaderSize(int index, int size)
+void FileList::setHeaderSize(FXuint index, FXuint size)
 {
-    if (index == NB_HEADERS)
+    if (getHeaderId(index) == ID_COL_ORIGPATH)
     {
-        origpathsize = size;
+        origpath_size = size;
     }
-    else if (index == NB_HEADERS + 1)
+    else if (getHeaderId(index) == ID_COL_DELDATE)
     {
-        deldatesize = size;
+        deldate_size = size;
     }
     else
     {
@@ -4024,22 +4444,25 @@ void FileList::setHeaderSize(int index, int size)
             fprintf(stderr, "%s::setHeaderSize: index out of range.\n", getClassName());
             exit(EXIT_FAILURE);
         }
-        header->setItemSize(index, size);
+        else
+        {
+            header->setItemSize(index, size);
+        }
     }
 }
 
 
 // Get header size
-int FileList::getHeaderSize(int index) const
+int FileList::getHeaderSize(FXuint index)
 {
-    if (index == NB_HEADERS)
+    if (getHeaderId(index) == ID_COL_ORIGPATH)
     {
-        return(origpathsize);
+        return origpath_size;
     }
 
-    if (index == NB_HEADERS + 1)
+    if (getHeaderId(index) == ID_COL_DELDATE)
     {
-        return(deldatesize);
+        return deldate_size;
     }
 
     if ((FXuint)index >= (FXuint)header->getNumItems())
@@ -4048,7 +4471,7 @@ int FileList::getHeaderSize(int index) const
         exit(EXIT_FAILURE);
     }
 
-    return(header->getItemSize(index));
+    return header->getItemSize(index);
 }
 
 
@@ -4074,7 +4497,7 @@ long FileList::onUpdRefreshTimer(FXObject*, FXSelector, void*)
         onCmdRefreshTimer(0, 0, 0);
     }
 
-    return(1);
+    return 1;
 }
 
 
@@ -4084,11 +4507,11 @@ void FileList::scan(FXbool force)
     // Start wait cursor if refresh forced (use custom function)
     if (force)
     {
-        ::setWaitCursor(getApp(), BEGIN_CURSOR);
+        xf_setwaitcursor(getApp(), BEGIN_CURSOR);
     }
 
     // Special case where the file list is a search list
-    if (options & _FILELIST_SEARCH)
+    if (options & FILELIST_SEARCH)
     {
         FXbool updated = updateItems(force);
         if (updated)
@@ -4096,14 +4519,13 @@ void FileList::scan(FXbool force)
             sortItems(); // Only sort if search list was updated
         }
     }
-
     // Normal case
     else
     {
         struct stat info;
 
         // Stat the current directory
-        if (::info(directory, info))
+        if (xf_info(directory, info))
         {
             // New date of directory
             FXTime newdate = (FXTime)FXMAX(info.st_mtime, info.st_ctime);
@@ -4122,7 +4544,6 @@ void FileList::scan(FXbool force)
                 timestamp = newdate;
             }
         }
-
         // Move to higher directory
         else
         {
@@ -4133,7 +4554,138 @@ void FileList::scan(FXbool force)
     // Stop wait cursor if refresh forced (use custom function)
     if (force)
     {
-        ::setWaitCursor(getApp(), END_CURSOR);
+        xf_setwaitcursor(getApp(), END_CURSOR);
+    }
+}
+
+
+// Set labels for file and search lists
+void FileList::setItemLabels(FXuint* idCol, FXuint* idColTrash, FXbool inTrash, FXString filename, FXString dirname,
+                             FXString hsize, FXString filetype, FXString ext, FXString mod, FXString usrid,
+                             FXString grpid, FXString perms, FXString linkpath, FXString origpath, FXString del,
+                             FXString pathname, FXString* labels)
+{
+    // In Trash
+    if (!(options & FILELIST_SEARCH) && inTrash)
+    {
+        for (FXuint i = 0; i < nbColsTrash; i++)
+        {
+            switch (idColTrash[i])
+            {
+            case ID_COL_NAME:
+                labels[i] = filename;
+                break;
+
+            case ID_COL_ORIGPATH:
+                labels[i] = origpath;
+                break;
+
+            case ID_COL_SIZE:
+                labels[i] = hsize;
+                break;
+
+            case ID_COL_TYPE:
+                labels[i] = filetype;
+                break;
+
+            case ID_COL_EXT:
+                labels[i] = ext;
+                break;
+
+            case ID_COL_DATE:
+                labels[i] = mod;
+                break;
+
+            case ID_COL_DELDATE:
+                labels[i] = del;
+                break;
+
+            case ID_COL_USER:
+                labels[i] = usrid;
+                break;
+
+            case ID_COL_GROUP:
+                labels[i] = grpid;
+                break;
+
+            case ID_COL_PERMS:
+                labels[i] = perms;
+                break;
+
+            case ID_COL_LINK:
+                if (linkpath.length() != 0)
+                {
+                    labels[i] = "-> " + linkpath;
+                }
+                else
+                {
+                    labels[i] = linkpath;                    
+                }
+                break;
+            }
+        }
+
+        // Pathname is always at last position
+        labels[NMAX_COLS + 2] = pathname;
+    }
+    // Not in Trash
+    else
+    {
+        for (FXuint i = 0; i < nbCols; i++)
+        {
+            switch (idCol[i])
+            {
+            case ID_COL_NAME:
+                labels[i] = filename;
+                break;
+
+            case ID_COL_DIRNAME:
+                labels[i] = dirname;
+                break;
+
+            case ID_COL_SIZE:
+                labels[i] = hsize;
+                break;
+
+            case ID_COL_TYPE:
+                labels[i] = filetype;
+                break;
+
+            case ID_COL_EXT:
+                labels[i] = ext;
+                break;
+
+            case ID_COL_DATE:
+                labels[i] = mod;
+                break;
+
+            case ID_COL_USER:
+                labels[i] = usrid;
+                break;
+
+            case ID_COL_GROUP:
+                labels[i] = grpid;
+                break;
+
+            case ID_COL_PERMS:
+                labels[i] = perms;
+                break;
+
+            case ID_COL_LINK:
+                if (linkpath.length() != 0)
+                {
+                    labels[i] = "-> " + linkpath;
+                }
+                else
+                {
+                    labels[i] = linkpath;                    
+                }
+                break;
+            }
+        }
+
+        // Pathname is always at last position
+        labels[NMAX_COLS + 2] = pathname;
     }
 }
 
@@ -4141,17 +4693,17 @@ void FileList::scan(FXbool force)
 // Update the list (used in a search list)
 FXbool FileList::updateItems(FXbool force)
 {
-    FXString grpid, usrid, atts, mod, ext, del;
+    FXString grpid, usrid, perms, linkpath, mod, ext, del;
     FXString filename, dirname, pathname;
-    FileItem*     item;
-    FileAssoc*    fileassoc;
+    FileItem* item;
+    FileAssoc* fileassoc;
     FXString filetype, lowext;
-    FXIcon*       big, *mini;
-    FXIcon*       bigthumb = NULL, *minithumb = NULL;
+    FXIcon* big, * mini;
+    FXIcon* bigthumb = NULL, * minithumb = NULL;
     FXIconSource* source;
     time_t filemtime, filectime;
     struct stat info, linfo;
-    FXbool isLink, isBrokenLink;
+    FXbool isLink, isBrokenLink, isLinkToDir;
     FXbool updated = false;
 
     // Loop over the item list
@@ -4164,19 +4716,39 @@ FXbool FileList::updateItems(FXbool force)
         filename = FXPath::name(pathname);
 
         // Get file/link info and indicate if it is a link
-        if (lstatrep(pathname.text(), &linfo) != 0)
+        if (xf_lstat(pathname.text(), &linfo) != 0)
         {
             removeItem(u, true);
             u--;
             continue;
         }
         isLink = S_ISLNK(linfo.st_mode);
-        isBrokenLink = false;
 
-        // Find if it is a broken link
-        if (isLink && (statrep(pathname.text(), &info) != 0))
+        // Find if it is a broken link or a link to a directory
+        isBrokenLink = false;
+        isLinkToDir = false;
+        if (isLink)
         {
-            isBrokenLink = true;
+            if (xf_stat(pathname.text(), &info) != 0)
+            {
+                isBrokenLink = true;
+            }
+            else if (S_ISDIR(info.st_mode))
+            {
+                isLinkToDir = true;
+            }
+
+            linkpath = xf_cleanpath(xf_readlink(pathname));
+        }
+        else
+        {
+            linkpath = "";
+        }
+
+        // If not a directory, nor a link to a directory and we want only directories, skip it
+        if (!isLinkToDir && !S_ISDIR(linfo.st_mode) && (options & FILELIST_SHOWDIRS))
+        {
+            continue;
         }
 
         // File times
@@ -4197,7 +4769,7 @@ FXbool FileList::updateItems(FXbool force)
 
             // Permissions (caution : we don't use the FXSystem::modeString() function because
             // it seems to be incompatible with the info.st_mode format)
-            atts = ::permissions(linfo.st_mode);
+            perms = xf_permissions(linfo.st_mode);
 
             // Mod time
             mod = FXSystem::time("%x %X", filemtime);
@@ -4208,7 +4780,8 @@ FXbool FileList::updateItems(FXbool force)
             if (!S_ISDIR(linfo.st_mode))
             {
                 ext = FXPath::name(pathname).rafter('.', 2).lower();
-                if ((ext == "tar.gz") || (ext == "tar.bz2") || (ext == "tar.xz") || (ext == "tar.z")) // Special cases
+                if ((ext == "tar.gz") || (ext == "tar.bz2") || (ext == "tar.xz") || (ext == "tar.zst") ||
+                    (ext == "tar.z")) // Special cases
                 {
                     // Do nothing
                 }
@@ -4219,12 +4792,16 @@ FXbool FileList::updateItems(FXbool force)
             }
 
             // Obtain the stat info on the file itself
-            if (statrep(pathname.text(), &info) != 0)
+            if (xf_stat(pathname.text(), &info) != 0)
             {
                 // Except in the case of a broken link
                 if (isBrokenLink)
                 {
-                    lstatrep(pathname.text(), &info);
+                    int ret = xf_lstat(pathname.text(), &info);
+                    if (ret < 0)  // Should not happen
+                    {
+                        fprintf(stderr, "%s", strerror(errno));
+                    }
                 }
                 else
                 {
@@ -4283,7 +4860,9 @@ FXbool FileList::updateItems(FXbool force)
             {
                 item->state &= ~FileItem::SOCK;
             }
-            if ((info.st_mode & (S_IXUSR | S_IXGRP | S_IXOTH)) && !(S_ISDIR(info.st_mode) || S_ISCHR(info.st_mode) || S_ISBLK(info.st_mode) || S_ISFIFO(info.st_mode) || S_ISSOCK(info.st_mode)))
+            if ((info.st_mode & (S_IXUSR | S_IXGRP | S_IXOTH)) && !(S_ISDIR(info.st_mode) || S_ISCHR(info.st_mode) ||
+                                                                    S_ISBLK(info.st_mode) || S_ISFIFO(info.st_mode) ||
+                                                                    S_ISSOCK(info.st_mode)))
             {
                 item->state |= FileItem::EXECUTABLE;
             }
@@ -4301,7 +4880,7 @@ FXbool FileList::updateItems(FXbool force)
             // Determine icons and type
             if (item->state & FileItem::FOLDER)
             {
-                if (!::isReadExecutable(pathname))
+                if (!xf_isreadexecutable(pathname))
                 {
                     big = bigfolderlockedicon;
                     mini = minifolderlockedicon;
@@ -4363,7 +4942,8 @@ FXbool FileList::updateItems(FXbool force)
             if (fileassoc)
             {
                 // Don't use associations when the file name is also an extension name (ex: zip, rar, tar, etc.)
-                if (fileassoc->key != FXPath::name(pathname))
+                // and is not executable
+                if (!(FXPath::name(pathname) == fileassoc->key) || !(item->state & FileItem::EXECUTABLE))
                 {
                     filetype = fileassoc->extension.text();
 
@@ -4381,22 +4961,68 @@ FXbool FileList::updateItems(FXbool force)
             // Symbolic links have a specific type
             if (isBrokenLink)
             {
-                filetype = _("Broken link");
+                filetype = _("Broken Link");
             }
-
             else if (isLink)
             {
-                if (associations)
+                // Referred file is executable
+                if (item->state & FileItem::EXECUTABLE)
                 {
-                    // Don't forget to remove trailing '/' here!
-                    fileassoc = associations->findFileBinding(::cleanPath(::readLink(pathname)).text());
-                    if (fileassoc)
+                    filetype = FXString(_("Link to ")) + _("Executable");
+                }
+                else
+                {
+                    if (associations)
                     {
-                        filetype = _("Link to ") + fileassoc->extension;
-                    }
-                    else
-                    {
-                        filetype = _("Link to ") + filetype;
+                        // Don't forget to remove trailing '/' here!
+                        fileassoc = associations->findFileBinding(linkpath.text());
+                        if (fileassoc && (fileassoc->extension != ""))
+                        {
+                            filetype = _("Link to ") + fileassoc->extension;
+
+                            if (fileassoc->bigicon)
+                            {
+                                big = fileassoc->bigicon;
+                            }
+                            if (fileassoc->miniicon)
+                            {
+                                mini = fileassoc->miniicon;
+                            }
+                        }
+                        // If no association found, get the link file type from the referred file type
+                        else
+                        {
+                            if (item->state & FileItem::FOLDER)
+                            {
+                                filetype = _("Folder");
+                            }
+                            else if (item->state & FileItem::CHARDEV)
+                            {
+                                filetype = _("Character Device");
+                            }
+                            else if (item->state & FileItem::BLOCKDEV)
+                            {
+                                filetype = _("Block Device");
+                            }
+                            else if (item->state & FileItem::FIFO)
+                            {
+                                filetype = _("Named Pipe");
+                            }
+                            else if (item->state & FileItem::SOCK)
+                            {
+                                filetype = _("Socket");
+                            }
+                            else if (item->state & FileItem::EXECUTABLE)
+                            {
+                                filetype = _("Executable");
+                            }
+                            else
+                            {
+                                filetype = _("Document");
+                            }
+
+                            filetype = _("Link to ") + filetype;
+                        }
                     }
                 }
             }
@@ -4411,23 +5037,41 @@ FXbool FileList::updateItems(FXbool force)
             {
                 char size[64];
 #if __WORDSIZE == 64
-                snprintf(size, sizeof(size) - 1, "%lu", (FXulong)linfo.st_size);
+                snprintf(size, sizeof(size), "%lu", (FXulong)linfo.st_size);
 #else
-                snprintf(size, sizeof(size) - 1, "%llu", (FXulong)linfo.st_size);
+                snprintf(size, sizeof(size), "%llu", (FXulong)linfo.st_size);
 #endif
-                hsize = ::hSize(size);
+                hsize = xf_humansize(size);
             }
 
             // Set item icons
-            item->setBigIcon(big);
-            item->setMiniIcon(mini);
+            if (isLink)
+            {
+                if (isBrokenLink)
+                {
+                    item->setBigIcon(bigbrokenlinkicon);
+                    item->setMiniIcon(minibrokenlinkicon);
+                }
+                else
+                {
+                    item->setBigIcon(big, false, biglinkbadgeicon);
+                    item->setMiniIcon(mini, false, minilinkbadgeicon);
+                }
+            }
+            else
+            {
+                item->setBigIcon(big);
+                item->setMiniIcon(mini);
+            }
 
             // Attempt to load thumbnails for image files
             if (displaythumbnails)
             {
                 // Scaled max sizes
-                FXuint max_bigthumb_size = scalefrac * MAX_BIGTHUMB_SIZE;
-                FXuint max_minithumb_size = scalefrac * MAX_MINITHUMB_SIZE;
+                FXuint bigthumb_size = getApp()->reg().readUnsignedEntry("SETTINGS", "bigthumb_size", 32);
+                FXuint minithumb_size = getApp()->reg().readUnsignedEntry("SETTINGS", "minithumb_size", 16);
+                FXuint max_bigthumb_size = scalefrac * bigthumb_size;
+                FXuint max_minithumb_size = scalefrac * minithumb_size;
 
                 // Load big icon from file
                 bigthumb = NULL;
@@ -4446,7 +5090,7 @@ FXbool FileList::updateItems(FXbool force)
                     FXuint w = bigthumb->getWidth();
                     FXuint h = bigthumb->getHeight();
 
-                    // Eventually scale the big icon (best quality)
+                    // Possibly scale the big icon (best quality)
                     if ((w > max_bigthumb_size) || (h > max_bigthumb_size))
                     {
                         if (w > h)
@@ -4469,11 +5113,10 @@ FXbool FileList::updateItems(FXbool force)
                     if (!FXMEMDUP(&tmpdata, bigthumb->getData(), FXColor, w * h))
                     {
                         throw FXMemoryException(_("Unable to load image"));
-                        delete minithumb;
                     }
                     minithumb->setData(tmpdata, IMAGE_OWNED, w, h);
 
-                    // Eventually scale the mini icon (best quality)
+                    // Possibly scale the mini icon (best quality)
                     w = minithumb->getWidth();
                     h = minithumb->getHeight();
                     if ((w > max_minithumb_size) || (h > max_minithumb_size))
@@ -4489,10 +5132,18 @@ FXbool FileList::updateItems(FXbool force)
                     }
 
                     // Set thumbnail icons as owned
-                    if (!isLink && !isBrokenLink)
+                    if (!isBrokenLink)
                     {
-                        item->setBigIcon(bigthumb, true);
-                        item->setMiniIcon(minithumb, true);
+                        if (isLink)
+                        {
+                            item->setBigIcon(bigthumb, true, biglinkbadgeicon);
+                            item->setMiniIcon(minithumb, true, minilinkbadgeicon);
+                        }
+                        else
+                        {
+                            item->setBigIcon(bigthumb, true);
+                            item->setMiniIcon(minithumb, true);
+                        }
                     }
                 }
             }
@@ -4507,37 +5158,37 @@ FXbool FileList::updateItems(FXbool force)
             // Devices have a specific icon
             if (fsdevices->find(pathname.text()))
             {
-                filetype = _("Mount point");
+                filetype = _("Mount Point");
 
-                if (streq(fsdevices->find(pathname.text()), "harddisk"))
+                if (xf_strequal(fsdevices->find(pathname.text()), "harddrive"))
                 {
-                    item->setBigIcon(bigharddiskicon);
-                    item->setMiniIcon(harddiskicon);
+                    item->setBigIcon(bigharddriveicon);
+                    item->setMiniIcon(miniharddriveicon);
                 }
-                else if (streq(fsdevices->find(pathname.text()), "nfsdisk"))
+                else if (xf_strequal(fsdevices->find(pathname.text()), "nfsdisk"))
                 {
-                    item->setBigIcon(bignfsdriveicon);
-                    item->setMiniIcon(nfsdriveicon);
+                    item->setBigIcon(bignetdriveicon);
+                    item->setMiniIcon(mininetdriveicon);
                 }
-                else if (streq(fsdevices->find(pathname.text()), "smbdisk"))
+                else if (xf_strequal(fsdevices->find(pathname.text()), "smbdisk"))
                 {
-                    item->setBigIcon(bignfsdriveicon);
-                    item->setMiniIcon(nfsdriveicon);
+                    item->setBigIcon(bignetdriveicon);
+                    item->setMiniIcon(mininetdriveicon);
                 }
-                else if (streq(fsdevices->find(pathname.text()), "floppy"))
+                else if (xf_strequal(fsdevices->find(pathname.text()), "floppy"))
                 {
                     item->setBigIcon(bigfloppyicon);
-                    item->setMiniIcon(floppyicon);
+                    item->setMiniIcon(minifloppyicon);
                 }
-                else if (streq(fsdevices->find(pathname.text()), "cdrom"))
+                else if (xf_strequal(fsdevices->find(pathname.text()), "cdrom"))
                 {
                     item->setBigIcon(bigcdromicon);
-                    item->setMiniIcon(cdromicon);
+                    item->setMiniIcon(minicdromicon);
                 }
-                else if (streq(fsdevices->find(pathname.text()), "zip"))
+                else if (xf_strequal(fsdevices->find(pathname.text()), "zip"))
                 {
-                    item->setBigIcon(bigzipicon);
-                    item->setMiniIcon(zipicon);
+                    item->setBigIcon(bigzipdiskicon);
+                    item->setMiniIcon(minizipdiskicon);
                 }
             }
 #endif
@@ -4545,49 +5196,39 @@ FXbool FileList::updateItems(FXbool force)
             // Update item label
             // NB : Item del is empty if we are not in trash can
             //      Item pathname is not displayed but is used in the tooltip
-
             if (dirname.length() > 256)
             {
-                dirname = dirname.trunc(256) + "[...]";   // Truncate directory path name to 25 characters to prevent overflow
+                dirname = dirname.trunc(256) + "[...]"; // Truncate directory path name to 256 characters
+                                                        // to prevent overflow
             }
-            item->label.format("%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s",
-                               filename.text(), dirname.text(), hsize.text(), filetype.text(), ext.text(),
-                               mod.text(), usrid.text(), grpid.text(), atts.text(),
-                               del.text(), pathname.text());
 
-            // Symbolic links have a specific icon
-            if (isLink)
-            {
-                // Broken link
-                if (isBrokenLink)
-                {
-                    item->setBigIcon(bigbrokenlinkicon);
-                    item->setMiniIcon(minibrokenlinkicon);
-                }
-                else
-                {
-                    item->setBigIcon(biglinkicon);
-                    item->setMiniIcon(minilinkicon);
-                }
-            }
+            // Order labels
+            setItemLabels(idCol, idColTrash, false, filename, dirname, hsize, filetype, ext, mod, usrid, grpid, perms,
+                          linkpath, "", del, pathname, labels);
+
+            // Set labels
+            item->label.format("%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s",
+                               labels[0].text(), labels[1].text(), labels[2].text(), labels[3].text(),
+                               labels[4].text(), labels[5].text(), labels[6].text(), labels[7].text(),
+                               labels[8].text(), labels[9].text(), labels[10].text(), labels[11].text());
         }
 
         // Finally don't forget to create the item!
         item->create();
 
-/*
         // Refresh the GUI if an image has to be drawn and recompute the icon height
-        if (displaythumbnails)
-        {
-            if (updated && bigthumb && minithumb && (u < REFRESH_COUNT))
-            {
-                update();
-                recompute();
-                makeItemVisible(0); // Fix some refresh problems
-                repaint();
-            }
-        }
- */
+        /*
+         * if (displaythumbnails)
+         * {
+         *  if (updated && bigthumb && minithumb && (u < REFRESH_COUNT))
+         *  {
+         *      update();
+         *      recompute();
+         *      makeItemVisible(0); // Fix some refresh problems
+         *      repaint();
+         *  }
+         * }
+         */
     }
 
     // Gotta recalc size of content
@@ -4596,29 +5237,29 @@ FXbool FileList::updateItems(FXbool force)
         recalc();
     }
 
-    return(updated);
+    return updated;
 }
 
 
 // List directory (used in a standard file list)
 void FileList::listItems(FXbool force)
 {
-    FileItem       *oldlist, *newlist;
-    FileItem       **po, **pn, **pp;
-    FXString grpid, usrid, atts, mod, ext, del, origpath;
+    FileItem* oldlist, * newlist;
+    FileItem** po, ** pn, ** pp;
+    FXString grpid, usrid, perms, linkpath, mod, ext, del, origpath;
     FXString name, dirname, pathname;
-    FileItem       *curitem = NULL;
-    FileItem       *item, *link;
-    FileAssoc      *fileassoc;
+    FileItem* curitem = NULL;
+    FileItem* item, * link;
+    FileAssoc* fileassoc;
     FXString filetype, lowext, timeformat;
-    FXIconSource   *source;
-    FXIcon         *big, *mini;
-    FXIcon         *bigthumb = NULL, *minithumb = NULL;
+    FXIconSource* source;
+    FXIcon* big, * mini;
+    FXIcon* bigthumb = NULL, * minithumb = NULL;
     time_t filemtime, filectime;
     struct stat info, linfo;
-    struct dirent  *dp;
-    DIR*           dirp;
-    FXbool isInTrash, isLink, isBrokenLink, isLinkToDir;
+    struct dirent* dp;
+    DIR* dirp;
+    FXbool isLink, isBrokenLink, isLinkToDir;
     FXlong deldate;
 
     // Read time format
@@ -4642,7 +5283,7 @@ void FileList::listItems(FXbool force)
     items.clear();
 
     // Get info about directory
-    if (statrep(directory.text(), &info) == 0)
+    if (xf_stat(directory.text(), &info) == 0)
     {
         // Need latest change no matter what actually changed!
         timestamp = FXMAX(info.st_mtime, info.st_ctime);
@@ -4656,40 +5297,67 @@ void FileList::listItems(FXbool force)
         }
 
         // Add the deletion time and original path headers if we are in trash can
-        if (dirname.left(trashfileslocation.length()) == trashfileslocation)
+        if (!(options & FILELIST_SEARCH) && (dirname.left(trashfileslocation.length()) == trashfileslocation))
         {
-            if (getNumHeaders() == NB_HEADERS)
+            if (getNumHeaders() == (int)nbCols)
             {
-                appendHeader(_("Original path"), NULL, origpathsize);
-                appendHeader(_("Deletion date"), NULL, deldatesize);
+                // Remove all headers and get their size
+                FXuint size[NMAX_COLS + 2];
+                for (FXuint i = 0; i < nbCols; i++)
+                {
+                    size[i] = header->getItemSize(0);
+                    removeHeader(0);
+                }
+
+                // Append headers and set their size
+                FXuint j = 0;
+                for (FXuint i = 0; i < nbColsTrash; i++)
+                {
+                    if (idColTrash[i] == ID_COL_ORIGPATH)
+                    {
+                        appendHeader(getHeaderName(idColTrash[i]), NULL, origpath_size);
+                    }
+                    else if (idColTrash[i] == ID_COL_DELDATE)
+                    {
+                        appendHeader(getHeaderName(idColTrash[i]), NULL, deldate_size);
+                    }
+                    else
+                    {
+                        appendHeader(getHeaderName(idColTrash[i]), NULL, size[j]);
+                        j++;
+                    }
+                }
             }
-            isInTrash = true;
+            inTrash = true;
+            onUpdHeader(0, 0, 0); // Force update header
         }
-        // Eventually remove the deletion and original path headers if we are not in trash can
+        // If needed remove the deletion and original path headers if we are not in trash can
         else
         {
-            if (getNumHeaders() == NB_HEADERS + 2)
+            // Not in a search list
+            if (!(options & FILELIST_SEARCH) && (getNumHeaders() == (int)nbColsTrash))
             {
-                deldatesize = header->getItemSize(NB_HEADERS + 1);
-                removeHeader(NB_HEADERS);
-                origpathsize = header->getItemSize(NB_HEADERS);
-                removeHeader(NB_HEADERS);
+                origpath_size = header->getItemSize(1);
+                deldate_size = header->getItemSize(2);
+                removeHeader(1);
+                removeHeader(1);
 
                 // Change back the sort function to default if necessary
                 if ((sortfunc == ascendingOrigpath) || (sortfunc == ascendingOrigpathMix) ||
                     (sortfunc == descendingOrigpath) || (sortfunc == descendingOrigpathMix))
                 {
                     sortfunc = ascendingCase;
-                    setSortHeader(0);
+                    setSortHeader(getHeaderIndex(ID_COL_NAME));
                 }
-                if ((sortfunc == ascendingDeltime) || (sortfunc == ascendingDeltimeMix) ||
-                    (sortfunc == descendingDeltime) || (sortfunc == descendingDeltimeMix))
+                if ((sortfunc == ascendingDeldate) || (sortfunc == ascendingDeldateMix) ||
+                    (sortfunc == descendingDeldate) || (sortfunc == descendingDeldateMix))
                 {
                     sortfunc = ascendingCase;
-                    setSortHeader(0);
+                    setSortHeader(getHeaderIndex(ID_COL_NAME));
                 }
             }
-            isInTrash = false;
+            inTrash = false;
+            onUpdHeader(0, 0, 0); // Force update header
         }
 
         // Get directory stream pointer
@@ -4707,7 +5375,8 @@ void FileList::listItems(FXbool force)
                 // Hidden file (.xxx) or directory (. or .yyy) normally not shown,
                 // but directory .. is always shown so we can navigate up or down
                 // Hidden files in the trash can base directory are always shown
-                if ((name[0] == '.') && ((name[1] == 0) || (!((name[1] == '.') && (name[2] == 0)) && !(options & _FILELIST_SHOWHIDDEN) &&
+                if ((name[0] == '.') && ((name[1] == 0) || (!((name[1] == '.') && (name[2] == 0)) &&
+                                                            !(options & FILELIST_SHOWHIDDEN) &&
                                                             (dirname != trashfileslocation + PATHSEPSTRING))))
                 {
                     continue;
@@ -4717,18 +5386,18 @@ void FileList::listItems(FXbool force)
                 pathname = dirname + name;
 
                 // Get file/link info and indicate if it is a link
-                if (lstatrep(pathname.text(), &linfo) != 0)
+                if (xf_lstat(pathname.text(), &linfo) != 0)
                 {
                     continue;
                 }
                 isLink = S_ISLNK(linfo.st_mode);
-                isBrokenLink = false;
-                isLinkToDir = false;
 
                 // Find if it is a broken link or a link to a directory
+                isBrokenLink = false;
+                isLinkToDir = false;
                 if (isLink)
                 {
-                    if (statrep(pathname.text(), &info) != 0)
+                    if (xf_stat(pathname.text(), &info) != 0)
                     {
                         isBrokenLink = true;
                     }
@@ -4736,16 +5405,30 @@ void FileList::listItems(FXbool force)
                     {
                         isLinkToDir = true;
                     }
+
+                    linkpath = xf_cleanpath(xf_readlink(pathname));
+                }
+                else
+                {
+                    linkpath = "";
                 }
 
                 // If not a directory, nor a link to a directory and we want only directories, skip it
-                if (!isLinkToDir && !S_ISDIR(linfo.st_mode) && (options & _FILELIST_SHOWDIRS))
+                if (!isLinkToDir && !S_ISDIR(linfo.st_mode) && (options & FILELIST_SHOWDIRS))
                 {
                     continue;
                 }
 
-                // Is it a directory or does it match the pattern?
-                if (!S_ISDIR(linfo.st_mode) && !FXPath::match(pattern, name, matchmode))
+                // If directory or link to directory and filter folders option, skip it
+                if ((name != "..") && (isLinkToDir || S_ISDIR(linfo.st_mode)) && filter_folders &&
+                    !FXPath::match(pattern, name, matchmode))
+                {
+                    continue;
+                }
+
+                // Does it match the filter pattern?
+                if ((!isLinkToDir && !S_ISDIR(linfo.st_mode)) && (name != ".." &&
+                    !FXPath::match(pattern, name, matchmode)))
                 {
                     continue;
                 }
@@ -4792,7 +5475,7 @@ fnd:
 
                     // Permissions (caution : we don't use the FXSystem::modeString() function because
                     // it seems to be incompatible with the info.st_mode format)
-                    atts = ::permissions(linfo.st_mode);
+                    perms = xf_permissions(linfo.st_mode);
 
                     // Mod time
                     mod = FXSystem::time(timeformat.text(), filemtime);
@@ -4803,7 +5486,7 @@ fnd:
                     ext = "";
                     origpath = "";
                     FXString delstr = "";
-                    if (isInTrash)
+                    if (inTrash)
                     {
                         // Obtain trash base name and sub path
                         FXString subpath = dirname;
@@ -4816,7 +5499,7 @@ fnd:
                         subpath.erase(0, trashbasename.length());
 
                         // Read the .trashinfo file
-                        FILE*    fp;
+                        FILE* fp;
                         char line[1024];
                         FXbool success = true;
                         FXString trashinfopathname = trashinfolocation + PATHSEPSTRING + trashbasename + ".trashinfo";
@@ -4850,7 +5533,7 @@ fnd:
                             fclose(fp);
                         }
 
-                        // Eventually include sub path in the original path
+                        // Possibly include sub path in the original path
                         if (subpath == "")
                         {
                             origpath = origpath + subpath;
@@ -4872,7 +5555,7 @@ fnd:
                         }
 
                         // Convert date
-                        deldate = deltime(delstr);
+                        deldate = xf_deltime(delstr);
                         if (deldate != 0)
                         {
                             del = FXSystem::time(timeformat.text(), deldate);
@@ -4889,7 +5572,8 @@ fnd:
                             if (ext == "")
                             {
                                 ext = FXPath::name(pathname).rafter('.', 2).lower();
-                                if ((ext == "tar.gz") || (ext == "tar.bz2") || (ext == "tar.xz") || (ext == "tar.z")) // Special cases
+                                if ((ext == "tar.gz") || (ext == "tar.bz2") || (ext == "tar.xz") ||
+                                    (ext == "tar.zst") || (ext == "tar.z")) // Special cases
                                 {
                                     // Do nothing
                                 }
@@ -4906,7 +5590,8 @@ fnd:
                         if (!S_ISDIR(linfo.st_mode))
                         {
                             ext = FXPath::name(pathname).rafter('.', 2).lower();
-                            if ((ext == "tar.gz") || (ext == "tar.bz2") || (ext == "tar.xz") || (ext == "tar.z")) // Special cases
+                            if ((ext == "tar.gz") || (ext == "tar.bz2") || (ext == "tar.xz") ||
+                                (ext == "tar.zst") || (ext == "tar.z")) // Special cases
                             {
                                 // Do nothing
                             }
@@ -4918,12 +5603,12 @@ fnd:
                     }
 
                     // Obtain the stat info on the file or the referred file if it is a link
-                    if (statrep(pathname.text(), &info) != 0)
+                    if (xf_stat(pathname.text(), &info) != 0)
                     {
                         // Except in the case of a broken link
                         if (isBrokenLink)
                         {
-                            lstatrep(pathname.text(), &info);
+                            xf_lstat(pathname.text(), &info);
                         }
                         else
                         {
@@ -4980,7 +5665,10 @@ fnd:
                     {
                         item->state &= ~FileItem::SOCK;
                     }
-                    if ((info.st_mode & (S_IXUSR | S_IXGRP | S_IXOTH)) && !(S_ISDIR(info.st_mode) || S_ISCHR(info.st_mode) || S_ISBLK(info.st_mode) || S_ISFIFO(info.st_mode) || S_ISSOCK(info.st_mode)))
+                    if ((info.st_mode & (S_IXUSR | S_IXGRP | S_IXOTH)) &&
+                        !(S_ISDIR(info.st_mode) || S_ISCHR(info.st_mode) ||
+                          S_ISBLK(info.st_mode) ||
+                          S_ISFIFO(info.st_mode) || S_ISSOCK(info.st_mode)))
                     {
                         item->state |= FileItem::EXECUTABLE;
                     }
@@ -4998,7 +5686,7 @@ fnd:
                     // Determine icons and type
                     if (item->state & FileItem::FOLDER)
                     {
-                        if (!::isReadExecutable(pathname))
+                        if (!xf_isreadexecutable(pathname))
                         {
                             big = bigfolderlockedicon;
                             mini = minifolderlockedicon;
@@ -5052,7 +5740,7 @@ fnd:
                         filetype = _("Document");
                         if (associations)
                         {
-                            // Eventually strip the '_' suffix when we are in trash root
+                            // Possibly strip the '_' suffix when we are in trash root
                             if (dirname == trashfileslocation)
                             {
                                 FXString stripname = pathname.rbefore('_');
@@ -5076,7 +5764,8 @@ fnd:
                     if (fileassoc)
                     {
                         // Don't use associations when the file name is also an extension name (ex: zip, rar, tar, etc.)
-                        if (fileassoc->key != FXPath::name(pathname))
+                        // and is not executable
+                        if (!(FXPath::name(pathname) == fileassoc->key) || !(item->state & FileItem::EXECUTABLE))
                         {
                             if ((fileassoc->extension != "") || !(item->state & FileItem::EXECUTABLE))
                             {
@@ -5096,53 +5785,68 @@ fnd:
                     // Symbolic links have a specific type
                     if (isBrokenLink)
                     {
-                        filetype = _("Broken link");
+                        filetype = _("Broken Link");
                     }
-
                     else if (isLink)
                     {
-                        if (associations)
+                        // Referred file is executable
+                        if (item->state & FileItem::EXECUTABLE)
                         {
-                            // Don't forget to remove trailing '/' here!
-                            fileassoc = associations->findFileBinding(::cleanPath(::readLink(pathname)).text());
-                            if (fileassoc && (fileassoc->extension != ""))
+                            filetype = FXString(_("Link to ")) + _("Executable");
+                        }
+                        else
+                        {
+                            if (associations)
                             {
-                                filetype = _("Link to ") + fileassoc->extension;
-                            }
+                                // Don't forget to remove trailing '/' here!
+                                fileassoc = associations->findFileBinding(linkpath.text());
+                                if (fileassoc && (fileassoc->extension != ""))
+                                {
+                                    filetype = _("Link to ") + fileassoc->extension;
 
-                            // If no association found, get the link file type from the referred file type
-                            else
-                            {
-                                if (item->state & FileItem::FOLDER)
-                                {
-                                    filetype = _("Folder");
+                                    if (fileassoc->bigicon)
+                                    {
+                                        big = fileassoc->bigicon;
+                                    }
+                                    if (fileassoc->miniicon)
+                                    {
+                                        mini = fileassoc->miniicon;
+                                    }
                                 }
-                                else if (item->state & FileItem::CHARDEV)
-                                {
-                                    filetype = _("Character Device");
-                                }
-                                else if (item->state & FileItem::BLOCKDEV)
-                                {
-                                    filetype = _("Block Device");
-                                }
-                                else if (item->state & FileItem::FIFO)
-                                {
-                                    filetype = _("Named Pipe");
-                                }
-                                else if (item->state & FileItem::SOCK)
-                                {
-                                    filetype = _("Socket");
-                                }
-                                else if (item->state & FileItem::EXECUTABLE)
-                                {
-                                    filetype = _("Executable");
-                                }
+                                // If no association found, get the link file type from the referred file type
                                 else
                                 {
-                                    filetype = _("Document");
-                                }
+                                    if (item->state & FileItem::FOLDER)
+                                    {
+                                        filetype = _("Folder");
+                                    }
+                                    else if (item->state & FileItem::CHARDEV)
+                                    {
+                                        filetype = _("Character Device");
+                                    }
+                                    else if (item->state & FileItem::BLOCKDEV)
+                                    {
+                                        filetype = _("Block Device");
+                                    }
+                                    else if (item->state & FileItem::FIFO)
+                                    {
+                                        filetype = _("Named Pipe");
+                                    }
+                                    else if (item->state & FileItem::SOCK)
+                                    {
+                                        filetype = _("Socket");
+                                    }
+                                    else if (item->state & FileItem::EXECUTABLE)
+                                    {
+                                        filetype = _("Executable");
+                                    }
+                                    else
+                                    {
+                                        filetype = _("Document");
+                                    }
 
-                                filetype = _("Link to ") + filetype;
+                                    filetype = _("Link to ") + filetype;
+                                }
                             }
                         }
                     }
@@ -5157,23 +5861,41 @@ fnd:
                     {
                         char size[64];
 #if __WORDSIZE == 64
-                        snprintf(size, sizeof(size) - 1, "%lu", (FXulong)linfo.st_size);
+                        snprintf(size, sizeof(size), "%lu", (FXulong)linfo.st_size);
 #else
-                        snprintf(size, sizeof(size) - 1, "%llu", (FXulong)linfo.st_size);
+                        snprintf(size, sizeof(size), "%llu", (FXulong)linfo.st_size);
 #endif
-                        hsize = ::hSize(size);
+                        hsize = xf_humansize(size);
                     }
 
                     // Set item icons
-                    item->setBigIcon(big);
-                    item->setMiniIcon(mini);
+                    if (isLink)
+                    {
+                        if (isBrokenLink)
+                        {
+                            item->setBigIcon(bigbrokenlinkicon);
+                            item->setMiniIcon(minibrokenlinkicon);
+                        }
+                        else
+                        {
+                            item->setBigIcon(big, false, biglinkbadgeicon);
+                            item->setMiniIcon(mini, false, minilinkbadgeicon);
+                        }
+                    }
+                    else
+                    {
+                        item->setBigIcon(big);
+                        item->setMiniIcon(mini);
+                    }
 
                     // Attempt to load thumbnails for image files
                     if (displaythumbnails)
                     {
                         // Scaled max sizes
-                        FXuint max_bigthumb_size = scalefrac * MAX_BIGTHUMB_SIZE;
-                        FXuint max_minithumb_size = scalefrac * MAX_MINITHUMB_SIZE;
+                        FXuint bigthumb_size = getApp()->reg().readUnsignedEntry("SETTINGS", "bigthumb_size", 32);
+                        FXuint minithumb_size = getApp()->reg().readUnsignedEntry("SETTINGS", "minithumb_size", 16);
+                        FXuint max_bigthumb_size = scalefrac * bigthumb_size;
+                        FXuint max_minithumb_size = scalefrac * minithumb_size;
 
                         // Load big icon from file
                         bigthumb = NULL;
@@ -5192,7 +5914,7 @@ fnd:
                             FXuint w = bigthumb->getWidth();
                             FXuint h = bigthumb->getHeight();
 
-                            // Eventually scale the big icon (best quality)
+                            // Possibly scale the big icon (best quality)
                             if ((w > max_bigthumb_size) || (h > max_bigthumb_size))
                             {
                                 if (w > h)
@@ -5218,7 +5940,7 @@ fnd:
                             }
                             minithumb->setData(tmpdata, IMAGE_OWNED, w, h);
 
-                            // Eventually scale the mini icon (best quality)
+                            // Possibly scale the mini icon (best quality)
                             w = minithumb->getWidth();
                             h = minithumb->getHeight();
                             if ((w > max_minithumb_size) || (h > max_minithumb_size))
@@ -5234,10 +5956,18 @@ fnd:
                             }
 
                             // Set thumbnail icons as owned
-                            if (!isLink && !isBrokenLink)
+                            if (!isBrokenLink)
                             {
-                                item->setBigIcon(bigthumb, true);
-                                item->setMiniIcon(minithumb, true);
+                                if (isLink)
+                                {
+                                    item->setBigIcon(bigthumb, true, biglinkbadgeicon);
+                                    item->setMiniIcon(minithumb, true, minilinkbadgeicon);
+                                }
+                                else
+                                {
+                                    item->setBigIcon(bigthumb, true);
+                                    item->setMiniIcon(minithumb, true);
+                                }
                             }
                         }
                     }
@@ -5253,87 +5983,76 @@ fnd:
                     // Mounted devices may have a specific icon
                     if (mtdevices->find(pathname.text()))
                     {
-                        filetype = _("Mount point");
+                        filetype = _("Mount Point");
 
-                        if (streq(mtdevices->find(pathname.text()), "cifs"))
+                        if (xf_strequal(mtdevices->find(pathname.text()), "cifs"))
                         {
-                            item->setBigIcon(bignfsdriveicon);
-                            item->setMiniIcon(nfsdriveicon);
+                            item->setBigIcon(bignetdriveicon);
+                            item->setMiniIcon(mininetdriveicon);
                         }
                         else
                         {
-                            item->setBigIcon(bigharddiskicon);
-                            item->setMiniIcon(harddiskicon);
+                            item->setBigIcon(bigharddriveicon);
+                            item->setMiniIcon(miniharddriveicon);
                         }
                     }
 
                     // Devices found in fstab may have a specific icon
                     if (fsdevices->find(pathname.text()))
                     {
-                        filetype = _("Mount point");
+                        filetype = _("Mount Point");
 
-                        if (streq(fsdevices->find(pathname.text()), "harddisk"))
+                        if (xf_strequal(fsdevices->find(pathname.text()), "harddrive"))
                         {
-                            item->setBigIcon(bigharddiskicon);
-                            item->setMiniIcon(harddiskicon);
+                            item->setBigIcon(bigharddriveicon);
+                            item->setMiniIcon(miniharddriveicon);
                         }
-                        else if (streq(fsdevices->find(pathname.text()), "nfsdisk"))
+                        else if (xf_strequal(fsdevices->find(pathname.text()), "nfsdisk"))
                         {
-                            item->setBigIcon(bignfsdriveicon);
-                            item->setMiniIcon(nfsdriveicon);
+                            item->setBigIcon(bignetdriveicon);
+                            item->setMiniIcon(mininetdriveicon);
                         }
-                        else if (streq(fsdevices->find(pathname.text()), "smbdisk"))
+                        else if (xf_strequal(fsdevices->find(pathname.text()), "smbdisk"))
                         {
-                            item->setBigIcon(bignfsdriveicon);
-                            item->setMiniIcon(nfsdriveicon);
+                            item->setBigIcon(bignetdriveicon);
+                            item->setMiniIcon(mininetdriveicon);
                         }
-                        else if (streq(fsdevices->find(pathname.text()), "floppy"))
+                        else if (xf_strequal(fsdevices->find(pathname.text()), "floppy"))
                         {
                             item->setBigIcon(bigfloppyicon);
-                            item->setMiniIcon(floppyicon);
+                            item->setMiniIcon(minifloppyicon);
                         }
-                        else if (streq(fsdevices->find(pathname.text()), "cdrom"))
+                        else if (xf_strequal(fsdevices->find(pathname.text()), "cdrom"))
                         {
                             item->setBigIcon(bigcdromicon);
-                            item->setMiniIcon(cdromicon);
+                            item->setMiniIcon(minicdromicon);
                         }
-                        else if (streq(fsdevices->find(pathname.text()), "zip"))
+                        else if (xf_strequal(fsdevices->find(pathname.text()), "zip"))
                         {
-                            item->setBigIcon(bigzipicon);
-                            item->setMiniIcon(zipicon);
+                            item->setBigIcon(bigzipdiskicon);
+                            item->setMiniIcon(minizipdiskicon);
                         }
                     }
 #endif
 
-                    // Update item label
+                    // Order labels
+                    setItemLabels(idCol, idColTrash, inTrash, name, "", hsize, filetype, ext, mod, usrid, grpid,
+                                  perms, linkpath, origpath, del, pathname, labels);
+
+                    // Set labels
                     // NB : Item del is empty if we are not in trash can
                     //      Item pathname is not displayed but is used in the tooltip
-                    item->label.format("%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s",
-                                       name.text(), hsize.text(), filetype.text(), ext.text(),
-                                       mod.text(), usrid.text(), grpid.text(), atts.text(),
-                                       origpath.text(), del.text(), pathname.text());
+
+                    item->label.format("%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s",
+                                       labels[0].text(), labels[1].text(), labels[2].text(), labels[3].text(),
+                                       labels[4].text(), labels[5].text(), labels[6].text(), labels[7].text(),
+                                       labels[8].text(), labels[9].text(), labels[10].text(), labels[11].text());
 
                     // Dotdot folders have a specific icon
                     if ((name[0] == '.') && (name[1] == '.') && (name[2] == 0))
                     {
                         item->setBigIcon(bigfolderupicon);
                         item->setMiniIcon(minifolderupicon);
-                    }
-
-                    // Symbolic links have a specific icon
-                    if (isLink)
-                    {
-                        // Broken link
-                        if (isBrokenLink)
-                        {
-                            item->setBigIcon(bigbrokenlinkicon);
-                            item->setMiniIcon(minibrokenlinkicon);
-                        }
-                        else
-                        {
-                            item->setBigIcon(biglinkicon);
-                            item->setMiniIcon(minilinkicon);
-                        }
                     }
                 }
 

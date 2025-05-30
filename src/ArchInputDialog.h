@@ -9,26 +9,28 @@ class ArchInputDialog : public DialogBox
 {
     FXDECLARE(ArchInputDialog)
 protected:
-    FXTextField*  input;
-    FXPopup*      popup;
-    FXOptionMenu* optionmenu;
-    FXOption*     option_tgz;
-    FXOption*     option_zip;
-    FXOption*     option_7zip;
-    FXOption*     option_tbz2;
-    FXOption*     option_txz;
-    FXOption*     option_tar;
-    FXOption*     option_taz;
-    FXOption*     option_gz;
-    FXOption*     option_bz2;
-    FXOption*     option_xz;
-    FXOption*     option_z;
+    FXTextField* input = NULL;
+    FXPopup* popup = NULL;
+    FXOptionMenu* optionmenu = NULL;
+    FXOption* option_tgz = NULL;
+    FXOption* option_zip = NULL;
+    FXOption* option_7zip = NULL;
+    FXOption* option_rar = NULL;
+    FXOption* option_tbz2 = NULL;
+    FXOption* option_txz = NULL;
+    FXOption* option_tzst = NULL;
+    FXOption* option_tar = NULL;
+    FXOption* option_taz = NULL;
+    FXOption* option_gz = NULL;
+    FXOption* option_bz2 = NULL;
+    FXOption* option_xz = NULL;
+    FXOption* option_zst = NULL;
+    FXOption* option_z = NULL;
 
 private:
-    ArchInputDialog() : input(NULL), popup(NULL), optionmenu(NULL), option_tgz(NULL),
-        option_zip(NULL), option_7zip(NULL), option_tbz2(NULL), option_txz(NULL), option_tar(NULL),
-        option_taz(NULL), option_gz(NULL), option_bz2(NULL), option_xz(NULL), option_z(NULL)
-    {}
+    ArchInputDialog()
+    {
+    }
 public:
     enum
     {
@@ -36,13 +38,16 @@ public:
         ID_FORMAT_TAR_GZ,
         ID_FORMAT_ZIP,
         ID_FORMAT_7ZIP,
+        ID_FORMAT_RAR,
         ID_FORMAT_TAR_BZ2,
         ID_FORMAT_TAR_XZ,
+        ID_FORMAT_TAR_ZST,
         ID_FORMAT_TAR,
         ID_FORMAT_TAR_Z,
         ID_FORMAT_GZ,
         ID_FORMAT_BZ2,
         ID_FORMAT_XZ,
+        ID_FORMAT_ZST,
         ID_FORMAT_Z,
         ID_LAST
     };
@@ -56,7 +61,7 @@ public:
     long onUpdOption(FXObject*, FXSelector, void*);
     FXString getText()
     {
-        return(input->getText());
+        return input->getText();
     }
 
     void setText(const FXString& text)

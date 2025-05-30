@@ -10,23 +10,27 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <dirent.h>
+#include <map>
 
 #include "xfedefs.h"
 #include "xfeutils.h"
+#include "ComboBox.h"
 #include "FileDict.h"
 #include "FilePanel.h"
+#include "BookmarkDialog.h"
 #include "InputDialog.h"
 #include "HistInputDialog.h"
 #include "BrowseInputDialog.h"
+#include "ConnectDialog.h"
+#include "TabButtons.h"
 #include "Properties.h"
 #include "DirPanel.h"
-#include "Bookmarks.h"
 #include "Preferences.h"
 #include "TextWindow.h"
 #include "SearchWindow.h"
 
 // Typedef for the map between program string identifiers and integer indexes
-typedef std::map<FXString, int>   progsmap;
+typedef std::map<FXString, int> progsmap;
 
 
 // Application object
@@ -43,78 +47,102 @@ protected:
         FILEPANEL_FOCUS,
         DIRPANEL_FOCUS,
     };
-    int panel_view;
-    int RunHistSize;
-    char RunHistory[RUN_HIST_SIZE][MAX_COMMAND_SIZE];
-    FXbool vertpanels;
-    FXSplitter*      panelsplit;
-    FXMenuBar*       menubar;
-    FXMenuPane*      toolsmenu;
-    FXMenuPane*      filemenu;
-    FXMenuPane*      trashmenu;
-    FXMenuPane*      editmenu;
-    FXMenuPane*      bookmarksmenu;
-    FXMenuPane*      viewmenu;
-    FXMenuPane*      lpanelmenu;
-    FXMenuPane*      rpanelmenu;
-    FXMenuPane*      helpmenu;
-    FXMenuTitle*     toolsmenutitle;
-    FXMenuTitle*     filemenutitle;
-    FXMenuTitle*     trashmenutitle;
-    FXMenuTitle*     editmenutitle;
-    FXMenuTitle*     bookmarksmenutitle;
-    FXMenuTitle*     viewmenutitle;
-    FXMenuTitle*     lpanelmenutitle;
-    FXMenuTitle*     rpanelmenutitle;
-    FXMenuTitle*     helpmenutitle;
-    Bookmarks*       bookmarks;
-    FXToolBar*       generaltoolbar;
-    FXToolBar*       toolstoolbar;
-    FXToolBar*       paneltoolbar;
-    FXToolBar*       locationbar;
-    ComboBox*        address;
-    DirPanel*        dirpanel;
-    FilePanel*       lpanel;
-    FilePanel*       rpanel;
+    int panel_mode = -1;
+    int panel_view = 0;
+    FXbool vertpanels = false;
+    FXSplitter* panelsplit = NULL;
+    FXMenuBar* menubar = NULL;
+    FXMenuPane* toolsmenu = NULL;
+    FXMenuPane* filemenu = NULL;
+    FXMenuPane* trashmenu = NULL;
+    FXMenuPane* editmenu = NULL;
+    FXMenuPane* bookmarksmenu = NULL;
+    FXMenuPane* viewmenu = NULL;
+    FXMenuPane* lpanelmenu = NULL;
+    FXMenuPane* rpanelmenu = NULL;
+    FXMenuPane* scriptsmenu = NULL;
+    FXMenuPane* helpmenu = NULL;
+    FXMenuTitle* toolsmenutitle = NULL;
+    FXMenuTitle* filemenutitle = NULL;
+    FXMenuTitle* trashmenutitle = NULL;
+    FXMenuTitle* editmenutitle = NULL;
+    FXMenuTitle* bookmarksmenutitle = NULL;
+    FXMenuTitle* viewmenutitle = NULL;
+    FXMenuTitle* lpanelmenutitle = NULL;
+    FXMenuTitle* rpanelmenutitle = NULL;
+    FXMenuTitle* scriptsmenutitle = NULL;
+    FXMenuTitle* helpmenutitle = NULL;
+    FXToolBar* generaltoolbar = NULL;
+    FXToolBar* toolstoolbar = NULL;
+    FXToolBar* paneltoolbar = NULL;
+    FXToolBar* addresstoolbar = NULL;
+    FXToolBar* tabtoolbar = NULL;
+    TabButtons* tabbuttons = NULL;
+    HistComboBox* addressbox = NULL;
+    DirPanel* dirpanel = NULL;
+    FilePanel* lpanel = NULL;
+    FilePanel* rpanel = NULL;
+    FXDockSite* topdock = NULL;
+    FXDockSite* bottomdock = NULL;
+    FXDockSite* leftdock = NULL;
+    FXDockSite* rightdock = NULL;
     FXString trashfileslocation;
     FXString trashinfolocation;
     FXString startlocation;
-    FXuint liststyle;
-    FXColor listbackcolor;
-    FXColor listforecolor;
-    FXColor highlightcolor;
-    FXColor pbarcolor;
-    FXColor attentioncolor;
-    FXColor scrollbarcolor;
-    FXArrowButton*   btnbackhist;
-    FXArrowButton*   btnforwardhist;
-    HistInputDialog* rundialog;
-    PreferencesBox*  prefsdialog;
-    TextWindow*      helpwindow;
+    FXuint liststyle = 0;
+    FXColor listbackcolor = FXRGB(0, 0, 0);
+    FXColor listforecolor = FXRGB(0, 0, 0);
+    FXColor highlightcolor = FXRGB(0, 0, 0);
+    FXColor pbarcolor = FXRGB(0, 0, 0);
+    FXColor attentioncolor = FXRGB(0, 0, 0);
+    FXColor scrollbarcolor = FXRGB(0, 0, 0);
+    FXArrowButton* btnbackhist = NULL;
+    FXArrowButton* btnforwardhist = NULL;
+    HistInputDialog* rundialog = NULL;
+    BookmarkDialog* addbookmarkdialog = NULL;
+    ConnectDialog* connectdialog = NULL;
+    PreferencesBox* prefsdialog = NULL;
+    TextWindow* helpwindow = NULL;
     FXString message;
-    FXuint panelfocus;
+    FXuint panelfocus = 0;
     FXString startdir1;
     FXString startdir2;
+    FXbool startdirs = false;
+    FXString startdir2_tab;
     vector_FXString startURIs;
-    FXbool starticonic;
-    FXbool startmaximized;
-    FXbool smoothscroll;
-    double twopanels_lpanel_pct;                // Panel sizes, relatively to the window width (in percent)
-    double treepanel_tree_pct;
-    double treetwopanels_tree_pct;
-    double treetwopanels_lpanel_pct;
+    FXbool starticonic = false;
+    FXbool startmaximized = false;
+    FXbool smoothscroll = false;
+    double twopanels_lpanel_pct = 0;                // Panel sizes, relatively to the window width (in percent)
+    double treepanel_tree_pct = 0;
+    double treetwopanels_tree_pct = 0;
+    double treetwopanels_lpanel_pct = 0;
     FXString prevdir;
-    int prev_width;
-    FXuint search_xpos;
-    FXuint search_ypos;
-    FXuint search_width;
-    FXuint search_height;
-    SearchWindow*    searchwindow;
-    progsmap progs;                             // Map between program string identifiers and integer indexes
-    FXbool winshow;                             // If true, do not show the Xfe window
-    FXbool stop;                                // If true, stop Xfe immediately
-    int nbstartfiles;                           // Number of files to open on startup
-    FXMenuCommand*   cpnmenu;
+    int prev_width = 0;
+    FXuint search_xpos = 0;
+    FXuint search_ypos = 0;
+    FXuint search_width = 0;
+    FXuint search_height = 0;
+    SearchWindow* searchwindow = NULL;
+    progsmap progs;                                 // Map between program string identifiers and integer indexes
+    FXbool winshow = true;                          // If false, do not show the Xfe window
+    FXbool stop = false;                            // If true, stop Xfe immediately
+    int nbstartfiles = 0;                           // Number of files to open on startup
+    FXMenuCommand* copynamesmc = NULL;
+    FXMenuSeparator* bookmarkssep = NULL;
+
+    FXuint single_click = SINGLE_CLICK_NONE;        // Single click navigation
+    FXbool file_tooltips = true;                    // File tooltips
+    FXbool relative_resize = true;                  // Relative resizing of the panels and columns in detailed mode
+    FXbool always_show_tabbar = true;                      // Always show tab bar
+    FXbool save_win_pos = false;                    // Save window position
+
+    FXuint idCol[NMAX_COLS] = { 0 };
+    FXbool colShown[FileList::ID_COL_NAME + NMAX_COLS] = { 0 };
+    FXuint nbCols = 0;
+
+    typedef std::vector<FXMenuCommand*> vector_FXMenuCommand;
+    vector_FXMenuCommand bookmarkmc;
 
 public:
     enum
@@ -125,6 +153,7 @@ public:
         ID_EMPTY_TRASH,
         ID_TRASH_SIZE,
         ID_XTERM,
+        ID_CONNECT_TO_SERVER,
         ID_DIR_UP,
         ID_DIR_BACK,
         ID_DIR_FORWARD,
@@ -144,8 +173,9 @@ public:
         ID_FILE_RESTORE,
         ID_FILE_ASSOC,
         ID_FILE_SEARCH,
-        ID_CLEAR_LOCATION,
-        ID_GOTO_LOCATION,
+        ID_CLEAR_ADDRESS,
+        ID_GOTO_ADDRESS,
+        ID_CHANGED,
         ID_RUN,
         ID_SU,
         ID_PREFS,
@@ -153,14 +183,16 @@ public:
         ID_TOGGLE_STATUS,
         ID_SHOW_ONE_PANEL,
         ID_SHOW_TWO_PANELS,
-        ID_SHOW_TREE_PANEL,
-        ID_SHOW_TREE_TWO_PANELS,
+        ID_SHOW_FOLDERS_ONE_PANEL,
+        ID_SHOW_FOLDERS_TWO_PANELS,
         ID_SYNCHRONIZE_PANELS,
         ID_SWITCH_PANELS,
         ID_RESTART,
         ID_NEW_WIN,
         ID_BOOKMARK,
         ID_ADD_BOOKMARK,
+        ID_REMOVE_ALL_BOOKMARKS,
+        ID_REBUILD_BOOKMARKS_MENU,
         ID_HARVEST,
         ID_QUIT,
         ID_FILE_ADDCOPY,
@@ -169,22 +201,16 @@ public:
         ID_VERT_PANELS,
         ID_LAST
     };
-protected:
-    XFileExplorer() : panel_view(0), RunHistSize(0), vertpanels(false), panelsplit(NULL), menubar(NULL), toolsmenu(NULL), filemenu(NULL),
-        trashmenu(NULL), editmenu(NULL), bookmarksmenu(NULL), viewmenu(NULL), lpanelmenu(NULL), rpanelmenu(NULL), helpmenu(NULL),
-        toolsmenutitle(NULL), filemenutitle(NULL), trashmenutitle(NULL), editmenutitle(NULL), bookmarksmenutitle(NULL), viewmenutitle(NULL),
-        lpanelmenutitle(NULL), rpanelmenutitle(NULL), helpmenutitle(NULL), bookmarks(NULL), generaltoolbar(NULL),
-        toolstoolbar(NULL), paneltoolbar(NULL), locationbar(NULL), address(NULL), dirpanel(NULL), lpanel(NULL),
-        rpanel(NULL), liststyle(0), listbackcolor(FXRGB(0, 0, 0)), listforecolor(FXRGB(0, 0, 0)),
-        highlightcolor(FXRGB(0, 0, 0)), pbarcolor(FXRGB(0, 0, 0)), attentioncolor(FXRGB(0, 0, 0)),
-        scrollbarcolor(FXRGB(0, 0, 0)), btnbackhist(NULL), btnforwardhist(NULL), rundialog(NULL), prefsdialog(NULL),
-        helpwindow(NULL), panelfocus(0), starticonic(false), startmaximized(false), smoothscroll(false),
-        twopanels_lpanel_pct(0.0), treepanel_tree_pct(0.0), treetwopanels_tree_pct(0.0), treetwopanels_lpanel_pct(0.0),
-        prev_width(0), search_xpos(0), search_ypos(0), search_width(0), search_height(0), searchwindow(NULL), winshow(false), stop(false), nbstartfiles(0), cpnmenu(NULL)
 
-    {}
+protected:
+    XFileExplorer()
+    {
+    }
+
 public:
-    XFileExplorer(FXApp* app, vector_FXString URIs, const FXbool iconic = false, const FXbool maximized = false, const char* title = "X File Explorer", FXIcon* bigicon = NULL, FXIcon* miniicon = NULL);
+    XFileExplorer(FXApp* app, vector_FXString URIs, const int pm = -1, const FXbool iconic = false,
+                  const FXbool maximized = false, const char* title = "X File Explorer",
+                  FXIcon* bigicon = NULL, FXIcon* miniicon = NULL);
     virtual void create();
 
     ~XFileExplorer();
@@ -204,6 +230,7 @@ public:
     long onCmdPrefs(FXObject*, FXSelector, void*);
     long onCmdRun(FXObject*, FXSelector, void*);
     long onCmdSu(FXObject*, FXSelector, void*);
+    long onCmdConnectToServer(FXObject*, FXSelector, void*);
     long onCmdXTerm(FXObject*, FXSelector, void*);
     long onCmdEmptyTrash(FXObject*, FXSelector, void*);
     long onCmdTrashSize(FXObject*, FXSelector, void*);
@@ -211,13 +238,18 @@ public:
     long onCmdShowPanels(FXObject*, FXSelector, void*);
     long onCmdRestart(FXObject*, FXSelector, void*);
     long onCmdNewWindow(FXObject*, FXSelector, void*);
-    long onCmdBookmark(FXObject*, FXSelector, void*);
-    long onCmdGotoLocation(FXObject*, FXSelector, void*);
-    long onCmdClearLocation(FXObject*, FXSelector, void*);
+    long onCmdNewTab(FXObject*, FXSelector, void*);
+    long onCmdGotoBookmark(FXObject*, FXSelector, void*);
+    long onCmdAddBookmark(FXObject*, FXSelector, void*);
+    long onCmdRemoveAllBookmarks(FXObject*, FXSelector, void*);
+    long onUpdBookmarksMenu(FXObject*, FXSelector, void*);
+    long onCmdRebuildBookmarksMenu(FXObject*, FXSelector, void*);
+    long onCmdClearAddress(FXObject*, FXSelector, void*);
+    long onCmdGotoAddress(FXObject*, FXSelector, void*);
     long onUpdToggleStatus(FXObject*, FXSelector, void*);
     long onUpdHorzVertPanels(FXObject*, FXSelector, void*);
     long onUpdShowPanels(FXObject*, FXSelector, void*);
-    long onUpdFileLocation(FXObject*, FXSelector, void*);
+    long onUpdAddress(FXObject*, FXSelector, void*);
     long onUpdEmptyTrash(FXObject*, FXSelector, void*);
     long onUpdTrashSize(FXObject*, FXSelector, void*);
     long onCmdFileDelete(FXObject*, FXSelector, void*);
@@ -226,7 +258,7 @@ public:
     long onUpdFileDelete(FXObject*, FXSelector, void*);
     long onUpdFileTrash(FXObject*, FXSelector, void*);
     long onUpdFileRestore(FXObject*, FXSelector, void*);
-    long onCmdFileSearch(FXObject*, FXSelector sel, void*);
+    long onCmdFileSearch(FXObject*, FXSelector, void*);
     long onCmdDirUp(FXObject*, FXSelector, void*);
     long onCmdDirBack(FXObject*, FXSelector, void*);
     long onUpdDirBack(FXObject*, FXSelector, void*);
@@ -257,11 +289,13 @@ public:
     long onUpdSu(FXObject*, FXSelector, void*);
     long onUpdQuit(FXObject*, FXSelector, void*);
     long onUpdFileSearch(FXObject*, FXSelector, void*);
+    long onCmdChanged(FXObject*, FXSelector, void*);
+
 public:
     // Get associations
     FileDict* getAssociations()
     {
-        return(lpanel->getCurrent()->getAssociations());
+        return lpanel->getCurrent()->getAssociations();
     }
 
     // Change to selected directory
@@ -302,25 +336,49 @@ public:
     // Return a pointer on the current file panel
     FilePanel* getCurrentPanel(void)
     {
-        return(lpanel->getCurrent());
+        return lpanel->getCurrent();
     }
 
     // Return a pointer on the next file panel
     FilePanel* getNextPanel(void)
     {
-        return(lpanel->getNext());
+        return lpanel->getNext();
     }
 
-    // Return the address box (location bar)
-    FXComboBox* getAddressBox(void)
+    // Return the address box (from location bar)
+    ComboBox* getAddressBox(void)
     {
-        return(address);
+        return addressbox;
     }
 
     // Return a pointer on the directory panel
     DirPanel* getDirPanel(void)
     {
-        return(dirpanel);
+        return dirpanel;
+    }
+
+    // Return a pointer on the left panel
+    FilePanel* getLeftPanel(void)
+    {
+        return lpanel;
+    }
+
+    // Return a pointer on the right panel
+    FilePanel* getRightPanel(void)
+    {
+        return rpanel;
+    }
+
+    // Return a pointer on the search window
+    SearchWindow* getSearchWindow(void)
+    {
+        return searchwindow;
+    }
+
+    // Return a pointer on the tab buttons
+    TabButtons* getTabButtons(void)
+    {
+        return tabbuttons;
     }
 };
 #endif

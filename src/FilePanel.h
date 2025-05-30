@@ -7,18 +7,11 @@
 #include "FileList.h"
 #include "PathLinker.h"
 #include "InputDialog.h"
+#include "BookmarkDialog.h"
 #include "BrowseInputDialog.h"
 #include "HistInputDialog.h"
 #include "ArchInputDialog.h"
-
-// Clipboard operations
-enum
-{
-    COPY_CLIPBOARD,
-    COPYNAME_CLIPBOARD,
-    CUT_CLIPBOARD,
-};
-
+#include "DirPanel.h"
 
 
 // Typedef for the map between program string identifiers and integer indexes
@@ -29,62 +22,67 @@ class FilePanel : public FXVerticalFrame
 {
     FXDECLARE(FilePanel)
 protected:
-    FilePanel*             current;
-    FileList*              list;
-    FilePanel*             next;
-    DirPanel*              dirpanel;
-    PathLinker*            pathlink;
-    FXPacker*              statusbar;
-    FXLabel*               statuslabel;
-    FXLabel*               filterlabel;
-    FXHorizontalSeparator* panelsep;
-    FXButton*               activeicon;
+    FilePanel* current = NULL;
+    FileList* list = NULL;
+    FilePanel* next = NULL;
+    DirPanel* dirpanel = NULL;
+    PathLinker* pathlink = NULL;
+    FXPacker* statusbar = NULL;
+    FXLabel* statuslabel = NULL;
+    FXLabel* filterlabel = NULL;
+    FXHorizontalSeparator* panelsep = NULL;
+    FXButton* activeicon = NULL;
+    FXButton* closefilter = NULL;
     FXString name;
-    FXbool ctrlkey;
-    FXbool selmult;
+    FXbool ctrlkey = false;
+    FXbool selmult = false;
     FXString trashlocation;
     FXString trashfileslocation;
     FXString trashinfolocation;
     FXString startlocation;
-    FXDragCorner*          corner;
-    FXDragType urilistType;                  // Standard uri-list type
-    FXDragType xfelistType;                  // Xfe, Gnome and XFCE list type
-    FXDragType kdelistType;                  // KDE list type
-    FXDragType utf8Type;                     // UTF-8 text type
-    FXbool clipboard_locked;                 // Clipboard locked to prevent changes when viewing it
-    InputDialog*           newfiledialog;
-    InputDialog*           newdirdialog;
-    InputDialog*           newlinkdialog;
-    HistInputDialog*       opendialog;
-    ArchInputDialog*       archdialog;
-    HistInputDialog*       filterdialog;
-    BrowseInputDialog*     operationdialogsingle;
-    InputDialog*           operationdialogrename;
-    BrowseInputDialog*     operationdialogmultiple;
-    BrowseInputDialog*     comparedialog;
-    FXbool fromPaste;
-    FXbool ctrl;                        // Flag to select the right click control menu
-    FXbool shiftf10;                    // Flag indicating that Shift-F10 was pressed
-    TextLabel*             pathtext;
-    FXbool isactive;
-    FXbool stopListRefresh;
-    FXColor attenclr;
-    progsmap progs;                     // Map between program string identifiers and integer indexes
-
+    FXDragCorner* corner = NULL;
+    FXDragType urilistType = 0;                           // Standard uri-list type
+    FXDragType xfelistType = 0;                           // Xfe, Gnome and XFCE list type
+    FXDragType kdelistType = 0;                           // KDE list type
+    FXDragType utf8Type = 0;                              // UTF-8 text type
+    FXbool clipboard_locked = false;                      // Clipboard locked to prevent changes when viewing it
+    progsmap progs;                                       // Map between program string identifiers and integer indexes
+    InputDialog* newfiledialog = NULL;
+    InputDialog* newdirdialog = NULL;
+    InputDialog* newlinkdialog = NULL;
+    HistInputDialog* opendialog = NULL;
+    ArchInputDialog* archdialog = NULL;
+    HistInputDialog* filterdialog = NULL;
+    BrowseInputDialog* operationdialogsingle = NULL;
+    InputDialog* operationdialogrename = NULL;
+    BrowseInputDialog* operationdialogmultiple = NULL;
+    BrowseInputDialog* comparedialog = NULL;
+    BookmarkDialog* addbookmarkdialog = NULL;
+    TextLabel* pathtext = NULL;
+    FXuint single_click = SINGLE_CLICK_NONE;
+    FXuint nbCols = 0;
+    FXbool fromPaste = false;
+    FXbool ctrl = false;                                  // Flag to select the right click control menu
+    FXbool shiftf10 = false;                              // Flag indicating that Shift-F10 was pressed
+    FXbool isactive = false;
+    FXbool stopListRefresh = false;
+    FXColor attenclr = FXRGB(0, 0, 0);
+    FXbool sameFileType = false;                           // Flag indicating that two selected items have
+                                                           // the same file type (files or directories)
 public:
 
-    FilePanel(FXWindow* owner, const char*, FXComposite*, DirPanel*, FXuint name_size = 200, FXuint size_size = 60, FXuint type_size = 100, FXuint ext_size = 100,
-              FXuint modd_size = 150, FXuint user_size = 50, FXuint grou_size = 50, FXuint attr_size = 100, FXuint deldate_size = 150, FXuint origpath_size = 200, FXbool showthumbs = false,
-              FXColor listbackcolor = FXRGB(255, 255, 255), FXColor listforecolor = FXRGB(0, 0, 0), FXColor attentioncolor = FXRGB(255, 0, 0), FXbool smoothscroll = true,
+    FilePanel(FXWindow* owner, const char*, FXComposite*, DirPanel*, FXuint*, FXuint, FXuint name_size = 200,
+              FXuint size_size = 60, FXuint type_size = 100, FXuint ext_size = 100, FXuint date_size = 150,
+              FXuint user_size = 50, FXuint group_size = 50, FXuint perms_size = 100, FXuint link_size = 100,
+              FXuint deldate_size = 150,
+              FXuint origpath_size = 200, FXbool showthumbs = false, FXColor listbackcolor = FXRGB(255, 255, 255),
+              FXColor listforecolor = FXRGB(0, 0, 0), FXColor attentioncolor = FXRGB(255, 0, 0),
+              FXbool smoothscroll = true,
               FXuint opts = 0, int x = 0, int y = 0, int w = 0, int h = 0);
 
-    FilePanel() : current(NULL), list(NULL), next(NULL), dirpanel(NULL), pathlink(NULL), statusbar(NULL), statuslabel(NULL), filterlabel(NULL),
-        panelsep(NULL), activeicon(NULL), ctrlkey(false), selmult(false), corner(NULL), urilistType(0), xfelistType(0),
-        kdelistType(0), utf8Type(0), clipboard_locked(false), newfiledialog(NULL), newdirdialog(NULL), newlinkdialog(NULL),
-        opendialog(NULL), archdialog(NULL), filterdialog(NULL), operationdialogsingle(NULL), operationdialogrename(NULL),
-        operationdialogmultiple(NULL), comparedialog(NULL), fromPaste(false), ctrl(false), shiftf10(false), pathtext(NULL),
-        isactive(false), stopListRefresh(false), attenclr(FXRGB(0, 0, 0))
-    {}
+    FilePanel()
+    {
+    }
     virtual void create();
 
     ~FilePanel();
@@ -95,10 +93,10 @@ public:
 
     void Next(FilePanel*);
     void updateLocation();
-    void showCorner(FXbool show);
-    void showActiveIcon(FXbool show);
-    void execFile(FXString pathname);
-    int readScriptDir(FXMenuPane* scriptsmenu, FXString dir);
+    void showCorner(FXbool);
+    void showActiveIcon(FXbool);
+    void execFile(FXString);
+    int readScriptDir(FXWindow*, FXMenuPane*, FXString);
 
     enum
     {
@@ -130,6 +128,7 @@ public:
         ID_NEW_DIR,
         ID_NEW_FILE,
         ID_NEW_SYMLINK,
+        ID_ADD_BOOKMARK,
         ID_ADD_TO_ARCH,
         ID_GO_HOME,
         ID_GO_TRASH,
@@ -154,6 +153,7 @@ public:
         ID_SHOW_DETAILS,
         ID_TOGGLE_HIDDEN,
         ID_TOGGLE_THUMBNAILS,
+        ID_KEY_RETURN,
 #if defined(linux)
         ID_MOUNT,
         ID_UMOUNT,
@@ -168,6 +168,7 @@ public:
     long onClipboardLost(FXObject*, FXSelector, void*);
     long onClipboardRequest(FXObject*, FXSelector, void*);
     long onUpdStatus(FXObject*, FXSelector, void*);
+    long onKeyPress(FXObject*, FXSelector, void*);
     long onCmdItemDoubleClicked(FXObject*, FXSelector, void*);
     long onCmdItemClicked(FXObject*, FXSelector, void*);
     long onCmdFocus(FXObject*, FXSelector, void*);
@@ -189,6 +190,7 @@ public:
     long onCmdNewDir(FXObject*, FXSelector, void*);
     long onCmdNewFile(FXObject*, FXSelector, void*);
     long onCmdNewSymlink(FXObject*, FXSelector, void*);
+    long onCmdAddBookmark(FXObject*, FXSelector, void*);
     long onCmdOpen(FXObject*, FXSelector, void*);
     long onCmdOpenWith(FXObject*, FXSelector, void*);
     long onCmdXTerm(FXObject*, FXSelector, void*);
@@ -207,7 +209,6 @@ public:
     long onCmdToggleThumbnails(FXObject*, FXSelector, void*);
     long onCmdRunScript(FXObject*, FXSelector, void*);
     long onCmdDirUsage(FXObject*, FXSelector, void*);
-
     long onUpdDirUsage(FXObject*, FXSelector, void*);
     long onUpdToggleThumbnails(FXObject*, FXSelector, void*);
     long onCmdAddToArch(FXObject*, FXSelector, void*);
@@ -221,7 +222,6 @@ public:
     long onUpdFileRestore(FXObject*, FXSelector, void*);
     long onUpdGoTrash(FXObject*, FXSelector, void*);
     void updatePath();
-
     long onCmdStopListRefreshTimer(FXObject*, FXSelector, void*);
     long onUpdRunScript(FXObject*, FXSelector, void*);
     long onCmdGoScriptDir(FXObject*, FXSelector, void*);
@@ -259,7 +259,7 @@ public:
     // Return sort function
     IconListSortFunc getSortFunc() const
     {
-        return(list->getSortFunc());
+        return list->getSortFunc();
     }
 
     // Change default cursor
@@ -283,13 +283,13 @@ public:
     // Return a pointer on the current panel
     FilePanel* getCurrent(void) const
     {
-        return(current);
+        return current;
     }
 
     // Return a pointer on the next panel
     FilePanel* getNext(void) const
     {
-        return(next);
+        return next;
     }
 
     // Set current directory
@@ -301,25 +301,31 @@ public:
     // Get current directory
     FXString getDirectory(void) const
     {
-        return(list->getDirectory());
+        return list->getDirectory();
     }
 
     // Get associations
     FileDict* getAssociations(void)
     {
-        return(list->getAssociations());
+        return list->getAssociations();
     }
 
     // Get header size given its index
-    int getHeaderSize(int index) const
+    int getHeaderSize(FXuint index) const
     {
-        return(list->getHeaderSize(index));
+        return list->getHeaderSize(index);
+    }
+
+    // Get header index given its column id
+    int getHeaderIndex(FXuint id) const
+    {
+        return list->getHeaderIndex(id);
     }
 
     // Hidden files shown?
     FXbool shownHiddenFiles(void) const
     {
-        return(list->shownHiddenFiles());
+        return list->shownHiddenFiles();
     }
 
     // Show hidden files
@@ -331,7 +337,7 @@ public:
     // Thumbnails shown?
     FXbool shownThumbnails(void) const
     {
-        return(list->shownThumbnails());
+        return list->shownThumbnails();
     }
 
     // Show thumbnails
@@ -343,7 +349,7 @@ public:
     // Get the current icon list style
     FXuint getListStyle(void) const
     {
-        return(list->getListStyle());
+        return list->getListStyle();
     }
 
     // Get the current icon list style
@@ -355,7 +361,7 @@ public:
     // Return pointer on the file list
     FileList* getList(void) const
     {
-        return(list);
+        return list;
     }
 
     // Set ignore case
@@ -367,7 +373,7 @@ public:
     // Get ignore case
     FXbool getIgnoreCase(void)
     {
-        return(list->getIgnoreCase());
+        return list->getIgnoreCase();
     }
 
     // Set directory first
@@ -379,7 +385,7 @@ public:
     // Set directory first
     FXbool getDirsFirst(void)
     {
-        return(list->getDirsFirst());
+        return list->getDirsFirst();
     }
 
     // Set focus on file list
@@ -391,13 +397,13 @@ public:
     // Is panel active?
     FXbool isActive(void)
     {
-        return(isactive);
+        return isactive;
     }
 
     // Get current item
     int getCurrentItem(void) const
     {
-        return(list->getCurrentItem());
+        return list->getCurrentItem();
     }
 
     // Set current item
@@ -422,19 +428,25 @@ public:
     // Is item selected?
     FXbool isItemSelected(int item)
     {
-        return(list->isItemSelected(item));
+        return list->isItemSelected(item);
     }
 
     // Get number od selected items
     int getNumSelectedItems(void)
     {
-        return(list->getNumSelectedItems());
+        return list->getNumSelectedItems();
     }
 
     // Status bar is shown?
     FXbool statusbarShown(void)
     {
-        return(statusbar->shown());
+        return statusbar->shown();
+    }
+
+    // Return item path name at index
+    FXString getItemPathname(int item)
+    {
+        return list->getItemPathname(item);
     }
 
     // Toggle status bar
@@ -452,37 +464,37 @@ public:
     // Get back history first item
     StringItem* backhistGetFirst(void)
     {
-        return(list->backhist->getFirst());
+        return list->backhist->getFirst();
     }
 
     // Get forward history first item
     StringItem* forwardhistGetFirst(void)
     {
-        return(list->forwardhist->getFirst());
+        return list->forwardhist->getFirst();
     }
 
     // Get back history next item
     StringItem* backhistGetNext(StringItem* item)
     {
-        return(list->backhist->getNext(item));
+        return list->backhist->getNext(item);
     }
 
     // Get forward history next item
     StringItem* forwardhistGetNext(StringItem* item)
     {
-        return(list->forwardhist->getNext(item));
+        return list->forwardhist->getNext(item);
     }
 
     // Get back history string from item
     FXString backhistGetString(StringItem* item)
     {
-        return(list->backhist->getString(item));
+        return list->backhist->getString(item);
     }
 
     // Get forward history string from item
     FXString forwardhistGetString(StringItem* item)
     {
-        return(list->forwardhist->getString(item));
+        return list->forwardhist->getString(item);
     }
 
     // Remove back history first item
@@ -514,11 +526,11 @@ public:
     {
         if (list->backhist)
         {
-            return(list->backhist->getNumItems());
+            return list->backhist->getNumItems();
         }
         else
         {
-            return(0);
+            return 0;
         }
     }
 
@@ -527,11 +539,11 @@ public:
     {
         if (list->forwardhist)
         {
-            return(list->forwardhist->getNumItems());
+            return list->forwardhist->getNumItems();
         }
         else
         {
-            return(0);
+            return 0;
         }
     }
 
@@ -562,13 +574,13 @@ public:
     // Get back history item at position pos
     StringItem* backhistGetItemAtPos(int pos)
     {
-        return(list->backhist->getItemAtPos(pos));
+        return list->backhist->getItemAtPos(pos);
     }
 
     // Get forward history item at position pos
     StringItem* forwardhistGetItemAtPos(int pos)
     {
-        return(list->forwardhist->getItemAtPos(pos));
+        return list->forwardhist->getItemAtPos(pos);
     }
 
     // Show panel separator
@@ -581,6 +593,18 @@ public:
     void hidePanelSeparator(void)
     {
         panelsep->setSeparatorStyle(SEPARATOR_NONE);
+    }
+
+    // Return size of deletion date column
+    FXuint getDeldateSize(void)
+    {
+        return list->getDeldateSize();
+    }
+
+    // Return size of original path column
+    FXuint getOrigpathSize(void)
+    {
+        return list->getOrigpathSize();
     }
 };
 #endif

@@ -1,6 +1,7 @@
 #ifndef HISTINPUTDIALOG_H
 #define HISTINPUTDIALOG_H
 
+#include "ComboBox.h"
 #include "DialogBox.h"
 
 // Browse types
@@ -14,17 +15,18 @@ enum
 
 class XComApp;
 
-class ComboBox : public FXComboBox
+class HistComboBox : public ComboBox
 {
-    FXDECLARE(ComboBox)
+    FXDECLARE(HistComboBox)
 private:
-    ComboBox()
-    {}
+    HistComboBox()
+    {
+    }
 
 public:
     FXTextField* getTextEntry()
     {
-        return(field);
+        return field;
     }
 
     void CursorEnd()
@@ -33,7 +35,8 @@ public:
         field->setFocus();
     }
 
-    ComboBox(FXComposite* p, int cols, FXObject* tgt = NULL, FXSelector sel = 0, FXuint opts = COMBOBOX_NORMAL);
+    HistComboBox(FXComposite* p, int cols, FXbool addr = false, FXbool crlbtn = false, FXObject* tgt = NULL,
+                 FXSelector sel = 0, FXuint opts = COMBOBOX_NORMAL);
     virtual void create();
 };
 
@@ -41,28 +44,35 @@ class HistInputDialog : public DialogBox
 {
     FXDECLARE(HistInputDialog)
 protected:
-    FXHorizontalFrame* buttons;
-    FXHorizontalFrame* checkbutton;
-    ComboBox*          input;
-    FXuint browsetype;
+    FXHorizontalFrame* buttons = NULL;
+    FXHorizontalFrame* checkbutton = NULL;
+    FXButton* accept = NULL;
+    FXButton* cancel = NULL;
+    HistComboBox* input = NULL;
+    FXuint browsetype = 0;
     FXString initialdir;
 private:
-    HistInputDialog() : buttons(NULL), checkbutton(NULL), input(NULL), browsetype(0)
-    {}
+    HistInputDialog()
+    {
+    }
 public:
     enum
     {
         ID_BROWSE_PATH=DialogBox::ID_LAST,
         ID_LAST
     };
-    HistInputDialog(FXWindow*, FXString, FXString, FXString, FXString label = "", FXIcon* ic = NULL, FXuint browse = HIST_INPUT_FILE, FXbool option = false, FXString = FXString::null);
+    HistInputDialog(FXWindow*, FXString, FXString, FXString, FXString label = "", FXIcon* ic = NULL,
+                    FXbool addr = false, FXbool clrbtn = false, FXuint browse = HIST_INPUT_FILE,
+                    FXbool option = false, FXString = FXString::null);
     virtual void create();
 
     long onCmdKeyPress(FXObject*, FXSelector, void*);
     long onCmdBrowsePath(FXObject*, FXSelector, void*);
+    long onUpdAccept(FXObject*, FXSelector, void*);
+
     FXString getText()
     {
-        return(input->getText());
+        return input->getText();
     }
 
     void setText(const FXString& text)
@@ -85,12 +95,12 @@ public:
 
     FXString getHistoryItem(int pos)
     {
-        return(input->getItemText(pos));
+        return input->getItemText(pos);
     }
 
     int getHistorySize()
     {
-        return(input->getNumItems());
+        return input->getNumItems();
     }
 
     void setDirectory(const FXString&);
@@ -100,6 +110,5 @@ public:
         input->setSortFunc(FXList::ascendingCase);
         input->sortItems();
     }
-
 };
 #endif

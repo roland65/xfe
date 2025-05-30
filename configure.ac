@@ -3,7 +3,7 @@
 #
 
 # Initialize
-AC_INIT([xfe],[1.45])
+AC_INIT([xfe],[2.1.1])
 AC_CONFIG_SRCDIR([src/XFileExplorer.cpp])
 AM_INIT_AUTOMAKE([subdir-objects -Wall])
 AC_CONFIG_HEADERS([config.h])
@@ -33,11 +33,11 @@ PKG_PROG_PKG_CONFIG
 
 
 # Internationalization
-IT_PROG_INTLTOOL
 GETTEXT_PACKAGE=xfe
 AC_SUBST(GETTEXT_PACKAGE)
 AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE,"$GETTEXT_PACKAGE",[The package name, for gettext])
 AM_GNU_GETTEXT(external)
+AM_GNU_GETTEXT_VERSION([0.21])
 
 # Checks for header files.
 AC_PATH_X
@@ -209,6 +209,22 @@ if test "x$PKEXEC_VERSION_OUTPUT" != 'x'; then
 	if test "$PKEXEC_FOUND_INT" -ge "$PKEXEC_REQUIRED_INT"; then
 		AM_CONDITIONAL([INSTALL_POLKIT_ACTIONS], true)
 	fi
+	PKG_CHECK_MODULES([POLKIT], [polkit-gobject-1],,[AC_MSG_ERROR([Cannot find polkit-gobject-1])])
+fi
+
+# Check for udisks2
+UDISKS2_CFLAGS=
+UDISKS2_LIBS=
+PKG_CHECK_MODULES([UDISKS2], [udisks2 >= 2.7.6], [HAVE_UDISKS2="yes"], [HAVE_UDISKS2="no"])
+AM_CONDITIONAL(XFEAUTOMOUNTER, [test x$HAVE_UDISKS2 = xyes])
+
+# Check for libnotify
+if test "x$HAVE_UDISKS2" = "xyes"; then
+	CXXFLAGS="${CXXFLAGS} -DXFE_AUTOMOUNTER"
+    PKG_CHECK_MODULES([LIBNOTIFY], [libnotify >= 0.7.7], [HAVE_LIBNOTIFY="yes"], [HAVE_LIBNOTIFY="no"])
+    if test "x$HAVE_LIBNOTIFY" = "xyes"; then
+        LIBNOTIFY_CFLAGS="${LIBNOTIFY_CFLAGS} -DHAVE_LIBNOTIFY"
+    fi   
 fi
 
 # Building for debugging
@@ -246,7 +262,6 @@ else
 		CXXFLAGS="-O2 -Wall ${CXXFLAGS}"
 	fi
 
-
 	# Setting CFLAGS
 	if test "x$enable_debug" = "xyes" ; then
 		CFLAGS="${CFLAGS} -Wall -g -DDEBUG"
@@ -262,28 +277,40 @@ fi
 
 
 # Output
-AC_CONFIG_FILES([Makefile m4/Makefile po/Makefile.in xfe.spec xferc xfe.desktop.in xfi.desktop.in
-          xfw.desktop.in xfp.desktop.in src/Makefile
+AC_CONFIG_FILES([Makefile m4/Makefile po/Makefile.in xferc xfe.desktop.in xfa.desktop.in
+          xfi.desktop.in xfp.desktop.in xfw.desktop.in automount/Makefile src/Makefile
           icons/Makefile
-          icons/gnome-theme/Makefile
+          icons/apps/Makefile
+          icons/apps-scalable/Makefile
           icons/default-theme/Makefile
+          icons/gnome-theme/Makefile
           icons/xfce-theme/Makefile
           icons/kde-theme/Makefile])
+
 AC_OUTPUT
 
 
 # Display CXXFLAGS, CFLAGS and LIBS
 echo ""
-echo "======================== Compiler and linker flags ========================"
+echo "=========================================== Compiler and linker flags ==========================================="
 echo "CXXFLAGS=$CXXFLAGS"
 echo "CFLAGS=$CFLAGS"
 echo "LIBS=$LIBS"
-echo "==========================================================================="
+echo "================================================================================================================="
 
 echo ""
 echo "Configure finished!"
+
+if test "x$HAVE_UDISKS2" = "xno"; then
+echo ""
+    echo "    => libudisks2 not found, automounting is disabled"
+else
+    if test "x$HAVE_LIBNOTIFY" = "xno"; then
+        echo "    => libnotify not found, automounting notifications are disabled"
+    fi
+fi
+
+echo ""
 echo "              Do:  'make' to compile Xfe."
 echo "            Then:  'make install' (as root) to install Xfe."
 echo ""
-
-

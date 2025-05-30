@@ -5,12 +5,12 @@
 # $2 is the install directory
 
 # Reference theme names
-ref_theme1=gnome-theme
-ref_theme2=kde-theme
+ref_theme1=default-theme
 
 # Link theme names
-link_theme1=default-theme
+link_theme1=gnome-theme
 link_theme2=xfce-theme
+link_theme3=kde-theme
 
 echo Installing icon links...
 
@@ -33,6 +33,12 @@ do
 	then
 		echo ln -s -f ../$ref_theme1/$iconname $2/icons/$link_theme2/$iconname;
 		ln -s -f ../$ref_theme1/$iconname $2/icons/$link_theme2/$iconname
+	fi
+
+	if test ! -f $1/icons/$link_theme3/$iconname
+	then
+		echo ln -s -f ../$ref_theme1/$iconname $2/icons/$link_theme3/$iconname;
+		ln -s -f ../$ref_theme1/$iconname $2/icons/$link_theme3/$iconname
 	fi
 
 done

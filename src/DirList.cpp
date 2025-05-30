@@ -18,9 +18,10 @@
 #include "FileDict.h"
 #include "InputDialog.h"
 #include "MessageBox.h"
-#include "XFileExplorer.h"
 #include "DirList.h"
 
+
+#define SELECT_MASK    (TREELIST_SINGLESELECT | TREELIST_BROWSESELECT)
 
 // Interval between updevices and mtdevices read (s)
 #define UPDEVICES_INTERVAL    300
@@ -36,14 +37,14 @@
 #define EXPAND_INTERVAL       500
 
 // Global variables
+extern FXString xdgdatahome;
+
 #if defined(linux)
 extern FXStringDict* fsdevices;
 extern FXStringDict* mtdevices;
 extern FXStringDict* updevices;
 #endif
 
-extern FXbool allowPopupScroll;
-extern FXString xdgdatahome;
 
 
 // Object implementation
@@ -96,6 +97,7 @@ FXDEFMAP(DirList) DirListMap[] =
     FXMAPFUNC(SEL_COMMAND, DirList::ID_SORT_CASE, DirList::onCmdSortCase),
     FXMAPFUNC(SEL_UPDATE, DirList::ID_SORT_CASE, DirList::onUpdSortCase),
     FXMAPFUNC(SEL_UPDATE, 0, DirList::onUpdRefreshTimers),
+    FXMAPFUNC(SEL_QUERY_TIP, 0, DirList::onQueryTip)
 };
 
 
@@ -103,9 +105,9 @@ FXDEFMAP(DirList) DirListMap[] =
 FXIMPLEMENT(DirList, FXTreeList, DirListMap, ARRAYNUMBER(DirListMap))
 
 
-
-// Directory List Widget
-DirList::DirList(FXWindow* focuswin, FXComposite* p, FXObject* tgt, FXSelector sel, FXuint opts, int x, int y, int w, int h) :
+// Construct
+DirList::DirList(FXWindow* focuswin, FXComposite* p, FXObject* tgt, FXSelector sel,
+                 FXuint opts, int x, int y, int w, int h) :
     FXTreeList(p, tgt, sel, opts, x, y, w, h), pattern("*")
 {
     flags |= FLAG_ENABLED | FLAG_DROPTARGET;
@@ -135,8 +137,8 @@ DirList::DirList(FXWindow* focuswin, FXComposite* p, FXObject* tgt, FXSelector s
         {
             while ((mnt = getmntent(fstab)))
             {
-                if (!streq(mnt->mnt_type, MNTTYPE_IGNORE) && !streq(mnt->mnt_type, MNTTYPE_SWAP) &&
-                    !streq(mnt->mnt_dir, "/"))
+                if (!xf_strequal(mnt->mnt_type, MNTTYPE_IGNORE) && !xf_strequal(mnt->mnt_type, MNTTYPE_SWAP) &&
+                    !xf_strequal(mnt->mnt_dir, "/"))
                 {
                     if (!strncmp(mnt->mnt_fsname, "/dev/fd", 7))
                     {
@@ -150,17 +152,17 @@ DirList::DirList(FXWindow* focuswin, FXComposite* p, FXObject* tgt, FXSelector s
                     {
                         fsdevices->insert(mnt->mnt_dir, "zip");
                     }
-                    else if (streq(mnt->mnt_type, "nfs"))
+                    else if (!strncmp(mnt->mnt_type, "nfs", 3))
                     {
                         fsdevices->insert(mnt->mnt_dir, "nfsdisk");
                     }
-                    else if (streq(mnt->mnt_type, "smbfs") || streq(mnt->mnt_type, "cifs"))
+                    else if (xf_strequal(mnt->mnt_type, "smbfs") || xf_strequal(mnt->mnt_type, "cifs"))
                     {
                         fsdevices->insert(mnt->mnt_dir, "smbdisk");
                     }
                     else
                     {
-                        fsdevices->insert(mnt->mnt_dir, "harddisk");
+                        fsdevices->insert(mnt->mnt_dir, "harddrive");
                     }
                 }
             }
@@ -177,7 +179,7 @@ DirList::DirList(FXWindow* focuswin, FXComposite* p, FXObject* tgt, FXSelector s
             while ((mnt = getmntent(mtab)))
             {
                 // Filter out some file systems
-                if (keepMount(mnt->mnt_dir, mnt->mnt_fsname))
+                if (xf_keepmount(mnt->mnt_dir, mnt->mnt_fsname))
                 {
                     mtdevices->insert(mnt->mnt_dir, mnt->mnt_type);
                 }
@@ -190,7 +192,7 @@ DirList::DirList(FXWindow* focuswin, FXComposite* p, FXObject* tgt, FXSelector s
         // To mark mount points that are up or down
         updevices = new FXStringDict();
         FXString mtstate;
-        FILE*       mtab = setmntent(MTAB_PATH, "r");
+        FILE* mtab = setmntent(MTAB_PATH, "r");
 
         if (mtab)
         {
@@ -198,7 +200,7 @@ DirList::DirList(FXWindow* focuswin, FXComposite* p, FXObject* tgt, FXSelector s
             while ((mnt = getmntent(mtab)))
             {
                 // Filter out some file systems
-                if (keepMount(mnt->mnt_dir, mnt->mnt_fsname))
+                if (xf_keepmount(mnt->mnt_dir, mnt->mnt_fsname))
                 {
                     mntlist.push_back(mnt->mnt_dir);
                 }
@@ -209,7 +211,7 @@ DirList::DirList(FXWindow* focuswin, FXComposite* p, FXObject* tgt, FXSelector s
 
             for (FXuint i = 0; i < mntlist.size(); i++)
             {
-                if (statvfsTimeout(mntlist[i].text(), timeout) == 1)
+                if (xf_statvfs_timeout(mntlist[i].text(), timeout) == 1)
                 {
                     mtstate = "down";
                 }
@@ -223,9 +225,12 @@ DirList::DirList(FXWindow* focuswin, FXComposite* p, FXObject* tgt, FXSelector s
     }
 #endif
 
-    // Trahscan location
+    // Trashcan location
     trashfileslocation = xdgdatahome + PATHSEPSTRING TRASHFILESPATH;
     trashinfolocation = xdgdatahome + PATHSEPSTRING TRASHINFOPATH;
+
+    // Read settings
+    file_tooltips = getApp()->reg().readUnsignedEntry("SETTINGS", "file_tooltips", true);
 }
 
 
@@ -265,33 +270,33 @@ long DirList::onExpandTimer(FXObject* sender, FXSelector sel, void* ptr)
 
     if (!(item->state & DirItem::FOLDER))
     {
-        return(0);
+        return 0;
     }
 
     // Expand tree item
-    expandTree((TreeItem*)item, true);
+    expandDirTree((TreeItem*)item, true);
     scan(true);
 
     // Set open timer
     getApp()->addTimeout(this, ID_EXPAND_TIMER, EXPAND_INTERVAL);
 
-    return(1);
+    return 1;
 }
 
 
 // Create item
 TreeItem* DirList::createItem(const FXString& text, FXIcon* oi, FXIcon* ci, void* ptr)
 {
-    return((TreeItem*)new DirItem(text, oi, ci, ptr));
+    return (TreeItem*)new DirItem(text, oi, ci, ptr);
 }
 
 
 /**
  * Compares fields of p and q, supposing they are single byte strings
  * without using the current locale.
- * @param  igncase	Ignore upper/lower-case?
- * @param  asc		Ascending?  If false is descending order
- * @param  jmp		Field to compare (separated with \t)
+ * @param  igncase    Ignore upper/lower-case?
+ * @param  asc        Ascending?  If false is descending order
+ * @param  jmp        Field to compare (separated with \t)
  *
  * @return 0 if equal, negative if p<q, positive if p>q
  * If jmp has an invalid value returns 0 and errno will be EINVAL
@@ -323,7 +328,7 @@ static inline int compare_nolocale(char* p, char* q, FXbool igncase, FXbool asc)
     *qq = '\0';
 
     // Compare strings
-    int ret = comparenat(p, q, igncase);
+    int ret = xf_comparenat(p, q, igncase);
 
     // Restore saved characters
     *pp = pw;
@@ -335,16 +340,16 @@ static inline int compare_nolocale(char* p, char* q, FXbool igncase, FXbool asc)
         ret = ret * -1;
     }
 
-    return(ret);
+    return ret;
 }
 
 
 /**
  * Compares fields of p and q, supposing they are wide strings
  * and using the current locale.
- * @param  igncase	Ignore upper/lower-case?
- * @param  asc		Ascending?  If false is descending order
- * @param  jmp		Field to compare (separated with \t)
+ * @param  igncase    Ignore upper/lower-case?
+ * @param  asc        Ascending?  If false is descending order
+ * @param  jmp        Field to compare (separated with \t)
  *
  * @return 0 if equal, negative if p<q, positive if p>q
  * If jmp has an invalid value returns 0 and errno will be EINVAL
@@ -376,7 +381,7 @@ static inline int compare_locale(wchar_t* p, wchar_t* q, FXbool igncase, FXbool 
     *qq = '\0';
 
     // Compare wide strings
-    int ret = comparewnat(p, q, igncase);
+    int ret = xf_comparewnat(p, q, igncase);
 
     // Restore saved characters
     *pp = pw;
@@ -388,15 +393,15 @@ static inline int compare_locale(wchar_t* p, wchar_t* q, FXbool igncase, FXbool 
         ret = ret * -1;
     }
 
-    return(ret);
+    return ret;
 }
 
 
 /**
  * Compares a field of pa with the same field of pb, if the fields are
  * equal compare by name
- * @param  igncase	Ignore upper/lower-case?
- * @param  asc		Ascending?  If false is descending order
+ * @param  igncase    Ignore upper/lower-case?
+ * @param  asc        Ascending?  If false is descending order
  *
  * @return 0 if equal, negative if pa<pb, positive if pa>pb
  * Requires to allocate some space, if there is no memory this
@@ -407,8 +412,8 @@ int DirList::compareItem(const FXTreeItem* pa, const FXTreeItem* pb, FXbool ignc
 {
     const DirItem* a = (DirItem*)pa;
     const DirItem* b = (DirItem*)pb;
-    char*          p = (char*)a->label.text();
-    char*          q = (char*)b->label.text();
+    char* p = (char*)a->label.text();
+    char* q = (char*)b->label.text();
 
     // Prepare wide char strings
     wchar_t* wa = NULL;
@@ -418,27 +423,27 @@ int DirList::compareItem(const FXTreeItem* pa, const FXTreeItem* pb, FXbool ignc
     an = mbstowcs(NULL, (const char*)p, 0);
     if (an == (size_t)-1)
     {
-        return(compare_nolocale(p, q, igncase, asc)); // If error, fall back to no locale comparison
+        return compare_nolocale(p, q, igncase, asc); // If error, fall back to no locale comparison
     }
     wa = (wchar_t*)calloc(an + 1, sizeof(wchar_t));
     if (wa == NULL)
     {
         errno = ENOMEM;
-        return(0);
+        return 0;
     }
     mbstowcs(wa, p, an + 1);
     bn = mbstowcs(NULL, (const char*)q, 0);
     if (bn == (size_t)-1)
     {
         free(wa);
-        return(compare_nolocale(p, q, igncase, asc)); // If error, fall back to no locale comparison
+        return compare_nolocale(p, q, igncase, asc); // If error, fall back to no locale comparison
     }
     wb = (wchar_t*)calloc(bn + 1, sizeof(wchar_t));
     if (wb == NULL)
     {
         errno = ENOMEM;
         free(wa);
-        return(0);
+        return 0;
     }
     mbstowcs(wb, q, bn + 1);
 
@@ -455,35 +460,35 @@ int DirList::compareItem(const FXTreeItem* pa, const FXTreeItem* pb, FXbool ignc
         free(wb);
     }
 
-    return(ret);
+    return ret;
 }
 
 
 // Sort ascending order, keeping directories first
 int DirList::ascending(const FXTreeItem* pa, const FXTreeItem* pb)
 {
-    return(compareItem(pa, pb, false, true));
+    return compareItem(pa, pb, false, true);
 }
 
 
 // Sort descending order, keeping directories first
 int DirList::descending(const FXTreeItem* pa, const FXTreeItem* pb)
 {
-    return(compareItem(pa, pb, false, false));
+    return compareItem(pa, pb, false, false);
 }
 
 
 // Sort ascending order, case insensitive, keeping directories first
 int DirList::ascendingCase(const FXTreeItem* pa, const FXTreeItem* pb)
 {
-    return(compareItem(pa, pb, true, true));
+    return compareItem(pa, pb, true, true);
 }
 
 
 // Sort descending order, case insensitive, keeping directories first
 int DirList::descendingCase(const FXTreeItem* pa, const FXTreeItem* pb)
 {
-    return(compareItem(pa, pb, true, false));
+    return compareItem(pa, pb, true, false);
 }
 
 
@@ -491,7 +496,7 @@ int DirList::descendingCase(const FXTreeItem* pa, const FXTreeItem* pb)
 long DirList::onDNDEnter(FXObject* sender, FXSelector sel, void* ptr)
 {
     FXTreeList::onDNDEnter(sender, sel, ptr);
-    return(1);
+    return 1;
 }
 
 
@@ -511,14 +516,14 @@ long DirList::onDNDLeave(FXObject* sender, FXSelector sel, void* ptr)
         }
         prevSelItem = NULL;
     }
-    return(1);
+    return 1;
 }
 
 
 // Handle drag-and-drop motion
 long DirList::onDNDMotion(FXObject* sender, FXSelector sel, void* ptr)
 {
-    FXEvent*  event = (FXEvent*)ptr;
+    FXEvent* event = (FXEvent*)ptr;
     TreeItem* item;
 
     // Cancel open up timer
@@ -527,13 +532,13 @@ long DirList::onDNDMotion(FXObject* sender, FXSelector sel, void* ptr)
     // Start autoscrolling
     if (startAutoScroll(event, false))
     {
-        return(1);
+        return 1;
     }
 
     // Give base class a shot
     if (FXTreeList::onDNDMotion(sender, sel, ptr))
     {
-        return(1);
+        return 1;
     }
 
     // Dropping list of filenames
@@ -558,9 +563,8 @@ long DirList::onDNDMotion(FXObject* sender, FXSelector sel, void* ptr)
             setItemOpenIcon(item, minifolderopenicon);
 
             // See if this is writable
-            if (::isWritable(dropdirectory))
+            if (xf_iswritable(dropdirectory))
             {
-                item->setSelected(TRUE);
                 acceptDrop(DRAG_ACCEPT);
                 int x, y;
                 FXuint state;
@@ -579,13 +583,14 @@ long DirList::onDNDMotion(FXObject* sender, FXSelector sel, void* ptr)
                 if (item && (prevSelItem != item))
                 {
                     openItem(item);
+                    item->setSelected(TRUE);
                     prevSelItem = item;
                 }
             }
         }
-        return(1);
+        return 1;
     }
-    return(0);
+    return 0;
 }
 
 
@@ -593,7 +598,7 @@ long DirList::onDNDMotion(FXObject* sender, FXSelector sel, void* ptr)
 long DirList::onCmdDragCopy(FXObject* sender, FXSelector sel, void* ptr)
 {
     dropaction = DRAG_COPY;
-    return(1);
+    return 1;
 }
 
 
@@ -601,7 +606,7 @@ long DirList::onCmdDragCopy(FXObject* sender, FXSelector sel, void* ptr)
 long DirList::onCmdDragMove(FXObject* sender, FXSelector sel, void* ptr)
 {
     dropaction = DRAG_MOVE;
-    return(1);
+    return 1;
 }
 
 
@@ -609,7 +614,7 @@ long DirList::onCmdDragMove(FXObject* sender, FXSelector sel, void* ptr)
 long DirList::onCmdDragLink(FXObject* sender, FXSelector sel, void* ptr)
 {
     dropaction = DRAG_LINK;
-    return(1);
+    return 1;
 }
 
 
@@ -617,7 +622,7 @@ long DirList::onCmdDragLink(FXObject* sender, FXSelector sel, void* ptr)
 long DirList::onCmdDragReject(FXObject* sender, FXSelector sel, void* ptr)
 {
     dropaction = DRAG_REJECT;
-    return(1);
+    return 1;
 }
 
 
@@ -628,7 +633,7 @@ long DirList::onDNDDrop(FXObject* sender, FXSelector sel, void* ptr)
     FXuint len;
     FXbool showdialog = true;
     int ret;
-    File*    f = NULL;
+    File* f = NULL;
 
     FXbool ask_before_copy = getApp()->reg().readUnsignedEntry("OPTIONS", "ask_before_copy", true);
     FXbool confirm_dnd = getApp()->reg().readUnsignedEntry("OPTIONS", "confirm_drag_and_drop", true);
@@ -642,7 +647,7 @@ long DirList::onDNDDrop(FXObject* sender, FXSelector sel, void* ptr)
     // Perhaps target wants to deal with it
     if (FXTreeList::onDNDDrop(sender, sel, ptr))
     {
-        return(1);
+        return 1;
     }
 
     // Check if control key or shift key were pressed
@@ -680,16 +685,14 @@ long DirList::onDNDDrop(FXObject* sender, FXSelector sel, void* ptr)
         FXMenuPane menu(this);
         int x, y;
         getRoot()->getCursorPosition(x, y, state);
-        new FXMenuCommand(&menu, _("Copy here"), copy_clpicon, this, DirList::ID_DRAG_COPY);
-        new FXMenuCommand(&menu, _("Move here"), moveiticon, this, DirList::ID_DRAG_MOVE);
-        new FXMenuCommand(&menu, _("Link here"), minilinkicon, this, DirList::ID_DRAG_LINK);
+        new FXMenuCommand(&menu, _("Copy Here"), minicopyicon, this, DirList::ID_DRAG_COPY);
+        new FXMenuCommand(&menu, _("Move Here"), minimoveicon, this, DirList::ID_DRAG_MOVE);
+        new FXMenuCommand(&menu, _("Link Here"), minilinktoicon, this, DirList::ID_DRAG_LINK);
         new FXMenuSeparator(&menu);
         new FXMenuCommand(&menu, _("Cancel"), NULL, this, DirList::ID_DRAG_REJECT);
         menu.create();
-        allowPopupScroll = true;  // Allow keyboard scrolling
         menu.popup(NULL, x, y);
         getApp()->runModalWhileShown(&menu);
-        allowPopupScroll = false;
     }
 
     // Close item
@@ -704,18 +707,18 @@ long DirList::onDNDDrop(FXObject* sender, FXSelector sel, void* ptr)
 
     // Get uri-list of files being dropped
     //if (getDNDData(FROM_DRAGNDROP,urilistType,data,len))
-    if (dnd)  // See comment upper
+    if (dnd) // See comment upper
     {
         FXRESIZE(&data, FXuchar, len + 1);
         data[len] = '\0';
-        char* p, *q;
+        char* p, * q;
         p = q = (char*)data;
 
         // Number of selected items
         FXString buf = p;
         int num = buf.contains('\n') + 1;
 
-        // Eventually correct the number of selected items
+        // Possibly correct the number of selected items
         // because sometimes there is another '\n' at the end of the string
         int pos = buf.rfind('\n');
         if (pos == buf.length() - 1)
@@ -726,15 +729,18 @@ long DirList::onDNDDrop(FXObject* sender, FXSelector sel, void* ptr)
         // File object
         if (dropaction == DRAG_COPY)
         {
-            f = new File(this, _("File copy"), COPY, num);
+            f = new File(this, _("Copy Files"), COPY, num);
+            f->create();
         }
         else if (dropaction == DRAG_MOVE)
         {
-            f = new File(this, _("File move"), MOVE, num);
+            f = new File(this, _("Move Files"), MOVE, num);
+            f->create();
         }
         else if (dropaction == DRAG_LINK)
         {
-            f = new File(this, _("File symlink"), SYMLINK, num);
+            f = new File(this, _("Symlink Files"), SYMLINK, num);
+            f->create();
         }
         else
         {
@@ -744,12 +750,38 @@ long DirList::onDNDDrop(FXObject* sender, FXSelector sel, void* ptr)
                 item->setSelected(FALSE);
             }
             FXFREE(&data);
-            return(0);
+            return 0;
         }
 
         // Target directory
         FXString targetdir = dropdirectory;
 
+        // Get total source size
+        FXString hsourcesize;
+        FXulong sourcesize = 0, tstart = 0;
+
+        if (dropaction == DRAG_COPY || dropaction == DRAG_MOVE)
+        {
+            hsourcesize = f->sourcesize(buf, &sourcesize, true);
+            tstart = xf_getcurrenttime();
+
+            // If action is cancelled in progress dialog
+            if (f->isCancelled())
+            {
+                f->hideProgressDialog();
+                if (dropaction == DRAG_COPY)
+                {
+                    MessageBox::error(this, BOX_OK, _("Warning"), _("Copy file operation cancelled!"));
+                }
+                else
+                {
+                    MessageBox::error(this, BOX_OK, _("Warning"), _("Move file operation cancelled!"));
+                }
+                goto out;
+            }
+        }
+
+        // Process sources
         while (*p)
         {
             while (*q && *q != '\r')
@@ -762,40 +794,42 @@ long DirList::onDNDDrop(FXObject* sender, FXSelector sel, void* ptr)
             FXString sourcedir = FXPath::directory(source);
 
             // File operation dialog, if needed
-            if ( ((!confirm_dnd) | ctrlshiftkey) & ask_before_copy & showdialog)
+            if (((!confirm_dnd) | ctrlshiftkey) & ask_before_copy & showdialog)
             {
-                FXIcon*  icon = NULL;
+                f->hideProgressDialog();
+
+                FXIcon* icon = NULL;
                 FXString title, message;
                 if (dropaction == DRAG_COPY)
                 {
                     title = _("Copy");
-                    icon = copy_bigicon;
+                    icon = bigcopyicon;
                     if (num == 1)
                     {
                         message = title + source;
                     }
                     else
                     {
-                        title.format(_("Copy %s files/folders.\nFrom: %s"), FXStringVal(num).text(), sourcedir.text());
+                        message.format(_("Copy %s files/folders from: %s"), FXStringVal(num).text(), sourcedir.text());
                     }
                 }
                 else if (dropaction == DRAG_MOVE)
                 {
                     title = _("Move");
-                    icon = move_bigicon;
+                    icon = bigmoveicon;
                     if (num == 1)
                     {
                         message = title + source;
                     }
                     else
                     {
-                        title.format(_("Move %s files/folders.\nFrom: %s"), FXStringVal(num).text(), sourcedir.text());
+                        message.format(_("Move %s files/folders from: %s"), FXStringVal(num).text(), sourcedir.text());
                     }
                 }
                 else if ((dropaction == DRAG_LINK) && (num == 1))
                 {
                     title = _("Symlink");
-                    icon = link_bigicon;
+                    icon = biglinktoicon;
                     message = title + source;
                 }
 
@@ -803,7 +837,7 @@ long DirList::onDNDDrop(FXObject* sender, FXSelector sel, void* ptr)
                 dialog->CursorEnd();
                 int rc = dialog->execute();
                 target = dialog->getText();
-                target = ::filePath(target);
+                target = xf_filepath(target);
                 if (num > 1)
                 {
                     showdialog = false;
@@ -812,16 +846,16 @@ long DirList::onDNDDrop(FXObject* sender, FXSelector sel, void* ptr)
                 if (!rc)
                 {
                     delete f;
-                    return(0);
+                    return 0;
                 }
             }
+
+            f->showProgressDialog();
+            getApp()->beginWaitCursor();
 
             // Move the source file
             if (dropaction == DRAG_MOVE)
             {
-                // Move file
-                f->create();
-
                 // If target file is located at trash location, also create the corresponding trashinfo file
                 // Do it silently and don't report any error if it fails
                 FXbool use_trash_can = getApp()->reg().readUnsignedEntry("OPTIONS", "use_trash_can", true);
@@ -829,38 +863,38 @@ long DirList::onDNDDrop(FXObject* sender, FXSelector sel, void* ptr)
                 if (use_trash_can && (FXPath::directory(target) == trashfileslocation))
                 {
                     // Trash files path name
-                    FXString trashpathname = createTrashpathname(source, trashfileslocation);
+                    FXString trashpathname = xf_create_trashpathname(source, trashfileslocation);
 
                     // Adjust target name to get the _N suffix if any
                     FXString trashtarget = FXPath::directory(target) + PATHSEPSTRING + FXPath::name(trashpathname);
 
                     // Create trashinfo file
-                    createTrashinfo(source, trashpathname, trashfileslocation, trashinfolocation);
+                    xf_create_trashinfo(source, trashpathname, trashfileslocation, trashinfolocation);
 
                     // Move source to trash target
-                    ret = f->move(source, trashtarget);
+                    ret = f->fmove(source, trashtarget, hsourcesize, sourcesize, tstart);
                 }
-
                 // Move source to target
                 else
                 {
-                    //target=FXPath::directory(target);
-                    ret = f->move(source, target);
+                    ret = f->fmove(source, target, hsourcesize, sourcesize, tstart);
                 }
 
                 // If source file is located at trash location, try to also remove the corresponding trashinfo if it exists
                 // Do it silently and don't report any error if it fails
                 if (use_trash_can && ret && (source.left(trashfileslocation.length()) == trashfileslocation))
                 {
-                    FXString trashinfopathname = trashinfolocation + PATHSEPSTRING + FXPath::name(source) + ".trashinfo";
-                    ::unlink(trashinfopathname.text());
+                    FXString trashinfopathname = trashinfolocation + PATHSEPSTRING + FXPath::name(source) +
+                                                 ".trashinfo";
+                    unlink(trashinfopathname.text());
                 }
 
                 // An error has occurred
                 if ((ret == 0) && !f->isCancelled())
                 {
                     f->hideProgressDialog();
-                    MessageBox::error(this, BOX_OK, _("Error"), _("An error has occurred during the move file operation!"));
+                    MessageBox::error(this, BOX_OK, _("Error"),
+                                      _("An error has occurred during the move file operation!"));
                     break;
                 }
 
@@ -878,9 +912,6 @@ long DirList::onDNDDrop(FXObject* sender, FXSelector sel, void* ptr)
             // Copy the source file
             else if (dropaction == DRAG_COPY)
             {
-                // Copy file
-                f->create();
-
                 // If target file is located at trash location, also create the corresponding trashinfo file
                 // Do it silently and don't report any error if it fails
                 FXbool use_trash_can = getApp()->reg().readUnsignedEntry("OPTIONS", "use_trash_can", true);
@@ -888,30 +919,29 @@ long DirList::onDNDDrop(FXObject* sender, FXSelector sel, void* ptr)
                 if (use_trash_can && (FXPath::directory(target) == trashfileslocation))
                 {
                     // Trash files path name
-                    FXString trashpathname = createTrashpathname(source, trashfileslocation);
+                    FXString trashpathname = xf_create_trashpathname(source, trashfileslocation);
 
                     // Adjust target name to get the _N suffix if any
                     FXString trashtarget = FXPath::directory(target) + PATHSEPSTRING + FXPath::name(trashpathname);
 
                     // Create trashinfo file
-                    createTrashinfo(source, trashpathname, trashfileslocation, trashinfolocation);
+                    xf_create_trashinfo(source, trashpathname, trashfileslocation, trashinfolocation);
 
                     // Copy source to trash target
-                    ret = f->copy(source, trashtarget);
+                    ret = f->copy(source, trashtarget, hsourcesize, sourcesize, tstart);
                 }
-
                 // Copy source to target
                 else
                 {
-                    //target=FXPath::directory(target);
-                    ret = f->copy(source, target);
+                    ret = f->copy(source, target, hsourcesize, sourcesize, tstart);
                 }
 
                 // An error has occurred
                 if ((ret == 0) && !f->isCancelled())
                 {
                     f->hideProgressDialog();
-                    MessageBox::error(this, BOX_OK, _("Error"), _("An error has occurred during the copy file operation!"));
+                    MessageBox::error(this, BOX_OK, _("Error"),
+                                      _("An error has occurred during the copy file operation!"));
                     break;
                 }
 
@@ -935,16 +965,25 @@ long DirList::onDNDDrop(FXObject* sender, FXSelector sel, void* ptr)
                 q += 2;
             }
             p = q;
+
+            getApp()->endWaitCursor();
         }
+out:
         delete f;
         FXFREE(&data);
+
+        // Deselect item
+        if (item)
+        {
+            item->setSelected(FALSE);
+        }
 
         // Force a refresh of the DirList
         onCmdRefresh(0, 0, 0);
 
-        return(1);
+        return 1;
     }
-    return(0);
+    return 0;
 }
 
 
@@ -958,7 +997,7 @@ long DirList::onDNDRequest(FXObject* sender, FXSelector sel, void* ptr)
     // Perhaps the target wants to supply its own data
     if (FXTreeList::onDNDRequest(sender, sel, ptr))
     {
-        return(1);
+        return 1;
     }
 
     // Return list of filenames as a uri-list
@@ -970,16 +1009,16 @@ long DirList::onDNDRequest(FXObject* sender, FXSelector sel, void* ptr)
             FXMEMDUP(&data, dragfiles.text(), FXuchar, len);
             setDNDData(FROM_DRAGNDROP, event->target, data, len);
         }
-        return(1);
+        return 1;
     }
 
     // Delete selected files
     if (event->target == deleteType)
     {
-        return(1);
+        return 1;
     }
 
-    return(0);
+    return 0;
 }
 
 
@@ -990,7 +1029,7 @@ long DirList::onBeginDrag(FXObject* sender, FXSelector sel, void* ptr)
 
     if (FXTreeList::onBeginDrag(sender, sel, ptr))
     {
-        return(1);
+        return 1;
     }
     if (beginDrag(&urilistType, 1))
     {
@@ -1004,7 +1043,7 @@ long DirList::onBeginDrag(FXObject* sender, FXSelector sel, void* ptr)
                 {
                     dragfiles += "\r\n";
                 }
-                dragfiles += FXURL::encode(::fileToURI(getItemPathname(item)));
+                dragfiles += FXURL::encode(::xf_filetouri(getItemPathname(item)));
             }
             if (item->first)
             {
@@ -1019,9 +1058,9 @@ long DirList::onBeginDrag(FXObject* sender, FXSelector sel, void* ptr)
                 item = (TreeItem*)item->next;
             }
         }
-        return(1);
+        return 1;
     }
-    return(0);
+    return 0;
 }
 
 
@@ -1030,24 +1069,24 @@ long DirList::onEndDrag(FXObject* sender, FXSelector sel, void* ptr)
 {
     if (FXTreeList::onEndDrag(sender, sel, ptr))
     {
-        return(1);
+        return 1;
     }
     endDrag((didAccept() != DRAG_REJECT));
     setDragCursor(getDefaultCursor());
 
-    return(1);
+    return 1;
 }
 
 
 // Dragged stuff around
 long DirList::onDragged(FXObject* sender, FXSelector sel, void* ptr)
 {
-    FXEvent*     event = (FXEvent*)ptr;
+    FXEvent* event = (FXEvent*)ptr;
     FXDragAction action;
 
     if (FXTreeList::onDragged(sender, sel, ptr))
     {
-        return(1);
+        return 1;
     }
     action = DRAG_MOVE;
     if (event->state & CONTROLMASK)
@@ -1082,7 +1121,7 @@ long DirList::onDragged(FXObject* sender, FXSelector sel, void* ptr)
     {
         setDragCursor(getApp()->getDefaultCursor(DEF_DNDSTOP_CURSOR));
     }
-    return(1);
+    return 1;
 }
 
 
@@ -1090,7 +1129,7 @@ long DirList::onDragged(FXObject* sender, FXSelector sel, void* ptr)
 long DirList::onCmdToggleHidden(FXObject*, FXSelector, void*)
 {
     showHiddenFiles(!shownHiddenFiles());
-    return(1);
+    return 1;
 }
 
 
@@ -1105,7 +1144,7 @@ long DirList::onUpdToggleHidden(FXObject* sender, FXSelector, void*)
     {
         sender->handle(this, FXSEL(SEL_COMMAND, ID_UNCHECK), NULL);
     }
-    return(1);
+    return 1;
 }
 
 
@@ -1113,7 +1152,7 @@ long DirList::onUpdToggleHidden(FXObject* sender, FXSelector, void*)
 long DirList::onCmdShowHidden(FXObject*, FXSelector, void*)
 {
     showHiddenFiles(true);
-    return(1);
+    return 1;
 }
 
 
@@ -1128,7 +1167,7 @@ long DirList::onUpdShowHidden(FXObject* sender, FXSelector, void*)
     {
         sender->handle(this, FXSEL(SEL_COMMAND, ID_UNCHECK), NULL);
     }
-    return(1);
+    return 1;
 }
 
 
@@ -1136,7 +1175,7 @@ long DirList::onUpdShowHidden(FXObject* sender, FXSelector, void*)
 long DirList::onCmdHideHidden(FXObject*, FXSelector, void*)
 {
     showHiddenFiles(false);
-    return(1);
+    return 1;
 }
 
 
@@ -1151,7 +1190,7 @@ long DirList::onUpdHideHidden(FXObject* sender, FXSelector, void*)
     {
         sender->handle(this, FXSEL(SEL_COMMAND, ID_UNCHECK), NULL);
     }
-    return(1);
+    return 1;
 }
 
 
@@ -1159,7 +1198,7 @@ long DirList::onUpdHideHidden(FXObject* sender, FXSelector, void*)
 long DirList::onCmdToggleFiles(FXObject*, FXSelector, void*)
 {
     showFiles(!showFiles());
-    return(1);
+    return 1;
 }
 
 
@@ -1174,7 +1213,7 @@ long DirList::onUpdToggleFiles(FXObject* sender, FXSelector, void*)
     {
         sender->handle(this, FXSEL(SEL_COMMAND, ID_UNCHECK), NULL);
     }
-    return(1);
+    return 1;
 }
 
 
@@ -1182,7 +1221,7 @@ long DirList::onUpdToggleFiles(FXObject* sender, FXSelector, void*)
 long DirList::onCmdShowFiles(FXObject*, FXSelector, void*)
 {
     showFiles(true);
-    return(1);
+    return 1;
 }
 
 
@@ -1197,7 +1236,7 @@ long DirList::onUpdShowFiles(FXObject* sender, FXSelector, void*)
     {
         sender->handle(this, FXSEL(SEL_COMMAND, ID_UNCHECK), NULL);
     }
-    return(1);
+    return 1;
 }
 
 
@@ -1205,7 +1244,7 @@ long DirList::onUpdShowFiles(FXObject* sender, FXSelector, void*)
 long DirList::onCmdHideFiles(FXObject*, FXSelector, void*)
 {
     showFiles(false);
-    return(1);
+    return 1;
 }
 
 
@@ -1220,7 +1259,7 @@ long DirList::onUpdHideFiles(FXObject* sender, FXSelector, void*)
     {
         sender->handle(this, FXSEL(SEL_COMMAND, ID_UNCHECK), NULL);
     }
-    return(1);
+    return 1;
 }
 
 
@@ -1229,10 +1268,10 @@ long DirList::onCmdSetPattern(FXObject*, FXSelector, void* ptr)
 {
     if (!ptr)
     {
-        return(0);
+        return 0;
     }
     setPattern((const char*)ptr);
-    return(1);
+    return 1;
 }
 
 
@@ -1240,7 +1279,7 @@ long DirList::onCmdSetPattern(FXObject*, FXSelector, void* ptr)
 long DirList::onUpdSetPattern(FXObject* sender, FXSelector, void*)
 {
     sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_SETVALUE), (void*)pattern.text());
-    return(1);
+    return 1;
 }
 
 
@@ -1264,15 +1303,17 @@ long DirList::onCmdSortReverse(FXObject*, FXSelector, void*)
         sortfunc = (FXTreeListSortFunc)ascendingCase;
     }
     scan(true);
-    return(1);
+    return 1;
 }
 
 
 // Update sender
 long DirList::onUpdSortReverse(FXObject* sender, FXSelector, void* ptr)
 {
-    sender->handle(this, (sortfunc == (FXTreeListSortFunc)descending || sortfunc == (FXTreeListSortFunc)descendingCase) ? FXSEL(SEL_COMMAND, ID_CHECK) : FXSEL(SEL_COMMAND, ID_UNCHECK), ptr);
-    return(1);
+    sender->handle(this,
+                   (sortfunc == (FXTreeListSortFunc)descending || sortfunc == (FXTreeListSortFunc)descendingCase) ?
+                   FXSEL(SEL_COMMAND, ID_CHECK) : FXSEL(SEL_COMMAND, ID_UNCHECK), ptr);
+    return 1;
 }
 
 
@@ -1296,15 +1337,17 @@ long DirList::onCmdSortCase(FXObject*, FXSelector, void*)
         sortfunc = (FXTreeListSortFunc)descending;
     }
     scan(true);
-    return(1);
+    return 1;
 }
 
 
 // Check if case sensitive
 long DirList::onUpdSortCase(FXObject* sender, FXSelector, void* ptr)
 {
-    sender->handle(this, (sortfunc == (FXTreeListSortFunc)ascendingCase || sortfunc == (FXTreeListSortFunc)descendingCase) ? FXSEL(SEL_COMMAND, ID_CHECK) : FXSEL(SEL_COMMAND, ID_UNCHECK), ptr);
-    return(1);
+    sender->handle(this,
+                   (sortfunc == (FXTreeListSortFunc)ascendingCase || sortfunc == (FXTreeListSortFunc)descendingCase) ?
+                   FXSEL(SEL_COMMAND, ID_CHECK) : FXSEL(SEL_COMMAND, ID_UNCHECK), ptr);
+    return 1;
 }
 
 
@@ -1315,10 +1358,10 @@ long DirList::onClosed(FXObject*, FXSelector, void* ptr)
 
     if (item->state & DirItem::FOLDER)
     {
-        return(target && target->handle(this, FXSEL(SEL_CLOSED, message), ptr));
+        return target && target->handle(this, FXSEL(SEL_CLOSED, message), ptr);
     }
 
-    return(1);
+    return 1;
 }
 
 
@@ -1329,9 +1372,9 @@ long DirList::onOpened(FXObject*, FXSelector, void* ptr)
 
     if (item->state & DirItem::FOLDER)
     {
-        return(target && target->handle(this, FXSEL(SEL_OPENED, message), ptr));
+        return target && target->handle(this, FXSEL(SEL_OPENED, message), ptr);
     }
-    return(1);
+    return 1;
 }
 
 
@@ -1342,11 +1385,11 @@ long DirList::onExpanded(FXObject* sender, FXSelector sel, void* ptr)
 
     if (!(item->state & DirItem::FOLDER))
     {
-        return(0);
+        return 0;
     }
 
     // Expand tree item
-    expandTree((TreeItem*)item, true);
+    expandDirTree((TreeItem*)item, true);
     listChildItems(item);
 
     // Now we know for sure whether we really have subitems or not
@@ -1360,7 +1403,7 @@ long DirList::onExpanded(FXObject* sender, FXSelector sel, void* ptr)
     }
 
     sortChildItems(item);
-    return(1);
+    return 1;
 }
 
 
@@ -1371,18 +1414,18 @@ long DirList::onCollapsed(FXObject* sender, FXSelector sel, void* ptr)
 
     if (!(item->state & DirItem::FOLDER))
     {
-        return(0);
+        return 0;
     }
 
     // Collapse tree item
-    collapseTree((TreeItem*)item, true);
+    collapseDirTree((TreeItem*)item, true);
 
-    return(1);
+    return 1;
 }
 
 
-// Expand tree
-FXbool DirList::expandTree(TreeItem* tree, FXbool notify)
+// Expand directory tree
+FXbool DirList::expandDirTree(TreeItem* tree, FXbool notify)
 {
     if (FXTreeList::expandTree(tree, notify))
     {
@@ -1391,14 +1434,14 @@ FXbool DirList::expandTree(TreeItem* tree, FXbool notify)
             listChildItems((DirItem*)tree);
             sortChildItems(tree);
         }
-        return(true);
+        return true;
     }
-    return(false);
+    return false;
 }
 
 
-// Collapse tree
-FXbool DirList::collapseTree(TreeItem* tree, FXbool notify)
+// Collapse directory tree
+FXbool DirList::collapseDirTree(TreeItem* tree, FXbool notify)
 {
     if (FXTreeList::collapseTree(tree, notify))
     {
@@ -1406,12 +1449,12 @@ FXbool DirList::collapseTree(TreeItem* tree, FXbool notify)
         {
             // As a memory saving feature, all knowledge below this item
             // is deleted; we'll just recreate it when its reexpanded!
-            removeItems(tree->first, tree->last);
+            FXTreeList::removeItems(tree->first, tree->last);
             recalc();
         }
-        return(true);
+        return true;
     }
-    return(false);
+    return false;
 }
 
 
@@ -1423,18 +1466,18 @@ long DirList::onMtdevicesRefresh(FXObject*, FXSelector, void*)
     // Don't refresh if window is minimized
     if (((FXTopWindow*)focuswindow)->isMinimized())
     {
-        return(0);
+        return 0;
     }
 
     struct mntent* mnt;
-    FXStringDict*  tmpdict = new FXStringDict();
-    FILE*          mtab = setmntent(MTAB_PATH, "r");
+    FXStringDict* tmpdict = new FXStringDict();
+    FILE* mtab = setmntent(MTAB_PATH, "r");
     if (mtab)
     {
         while ((mnt = getmntent(mtab)))
         {
             // Filter out some file systems
-            if (keepMount(mnt->mnt_dir, mnt->mnt_fsname))
+            if (xf_keepmount(mnt->mnt_dir, mnt->mnt_fsname))
             {
                 tmpdict->insert(mnt->mnt_dir, "");
                 if (mtdevices->find(mnt->mnt_dir))
@@ -1458,9 +1501,9 @@ long DirList::onMtdevicesRefresh(FXObject*, FXSelector, void*)
     }
     delete tmpdict;
 
-    // Reset timer again
+    // Restart timer
     getApp()->addTimeout(this, ID_MTDEVICES_REFRESH, MTDEVICES_INTERVAL * 1000);
-    return(0);
+    return 0;
 }
 
 
@@ -1471,7 +1514,7 @@ long DirList::onUpdevicesRefresh(FXObject*, FXSelector, void*)
     // Don't refresh if window is minimized
     if (((FXTopWindow*)focuswindow)->isMinimized())
     {
-        return(0);
+        return 0;
     }
 
     struct mntent* mnt;
@@ -1480,7 +1523,7 @@ long DirList::onUpdevicesRefresh(FXObject*, FXSelector, void*)
     FXbool mount_warn = getApp()->reg().readUnsignedEntry("OPTIONS", "mount_warn", true);
 
     FXStringDict* tmpdict = new FXStringDict();
-    FILE*         mtab = setmntent(MTAB_PATH, "r");
+    FILE* mtab = setmntent(MTAB_PATH, "r");
 
     if (mtab)
     {
@@ -1488,7 +1531,7 @@ long DirList::onUpdevicesRefresh(FXObject*, FXSelector, void*)
         while ((mnt = getmntent(mtab)))
         {
             // Filter out some file systems
-            if (keepMount(mnt->mnt_dir, mnt->mnt_fsname))
+            if (xf_keepmount(mnt->mnt_dir, mnt->mnt_fsname))
             {
                 mntlist.push_back(mnt->mnt_dir);
             }
@@ -1501,12 +1544,13 @@ long DirList::onUpdevicesRefresh(FXObject*, FXSelector, void*)
         {
             tmpdict->insert(mntlist[i].text(), "");
 
-            if (statvfsTimeout(mntlist[i].text(), timeout) == 1)
+            if (xf_statvfs_timeout(mntlist[i].text(), timeout) == 1)
             {
                 mtstate = "down";
                 if (mount_warn)
                 {
-                    MessageBox::warning(this, BOX_OK, _("Warning"), _("Mount point %s is not responding..."), mntlist[i].text());
+                    MessageBox::warning(this, BOX_OK, _("Warning"), _("Mount point %s is not responding..."),
+                                        mntlist[i].text());
                 }
             }
             else
@@ -1519,10 +1563,8 @@ long DirList::onUpdevicesRefresh(FXObject*, FXSelector, void*)
                 updevices->remove(mntlist[i].text());
             }
             updevices->insert(mntlist[i].text(), mtstate.text());
-
         }
     }
-
 
     // Remove mount points that don't exist anymore
     int s;
@@ -1535,9 +1577,9 @@ long DirList::onUpdevicesRefresh(FXObject*, FXSelector, void*)
     }
     delete tmpdict;
 
-    // Reset timer again
+    // Restart timer
     getApp()->addTimeout(this, ID_UPDEVICES_REFRESH, UPDEVICES_INTERVAL * 1000);
-    return(0);
+    return 0;
 }
 
 
@@ -1550,7 +1592,7 @@ long DirList::onCmdRefreshTimer(FXObject*, FXSelector, void*)
     // Don't refresh if window is minimized
     if (((FXTopWindow*)focuswindow)->isMinimized())
     {
-        return(0);
+        return 0;
     }
 
     if (flags & FLAG_UPDATE)
@@ -1559,9 +1601,9 @@ long DirList::onCmdRefreshTimer(FXObject*, FXSelector, void*)
         counter = (counter + 1) % REFRESH_FREQUENCY;
     }
 
-    // Reset timer again
+    // Restart timer
     getApp()->addTimeout(this, ID_REFRESH_TIMER, REFRESH_INTERVAL);
-    return(0);
+    return 0;
 }
 
 
@@ -1569,7 +1611,7 @@ long DirList::onCmdRefreshTimer(FXObject*, FXSelector, void*)
 long DirList::onCmdRefresh(FXObject*, FXSelector, void*)
 {
     scan(true);
-    return(0);
+    return 0;
 }
 
 
@@ -1578,9 +1620,7 @@ void DirList::scan(FXbool force)
 {
     FXString pathname;
     struct stat info;
-    DirItem*    item;
-
-
+    DirItem* item;
 
     // Do root first time
     if (!firstitem || force)
@@ -1600,7 +1640,7 @@ void DirList::scan(FXbool force)
             pathname = getItemPathname((TreeItem*)item);
 
             // Stat this directory
-            if (statrep(pathname.text(), &info) == 0)
+            if (xf_stat(pathname.text(), &info) == 0)
             {
                 // Get the mod date of the item
                 FXTime newdate = (FXTime)FXMAX(info.st_mtime, info.st_ctime);
@@ -1626,7 +1666,6 @@ void DirList::scan(FXbool force)
                     continue;
                 }
             }
-
             // Directory does not exist
             else
             {
@@ -1652,24 +1691,25 @@ void DirList::scan(FXbool force)
 // List root directories
 void DirList::listRootItems()
 {
-    DirItem*   item = (DirItem*)firstitem;
-    FXIcon*    openicon, *closedicon;
+    DirItem* item = (DirItem*)firstitem;
+    FXIcon* openicon, * closedicon;
     FileAssoc* fileassoc;
 
     // First time, make root node
     if (!item)
     {
-        item = list = (DirItem*)appendItem(NULL, PATHSEPSTRING, harddiskicon, harddiskicon, NULL, true);
+        item = list = (DirItem*)appendItem(NULL, PATHSEPSTRING, miniharddriveicon, miniharddriveicon, NULL, true);
     }
 
     // Root is a directory, has items under it, and is searchable
     item->state |= DirItem::FOLDER | DirItem::HASITEMS;
-    item->state &= ~(DirItem::CHARDEV | DirItem::BLOCKDEV | DirItem::FIFO | DirItem::SOCK | DirItem::SYMLINK | DirItem::EXECUTABLE);
+    item->state &= ~(DirItem::CHARDEV | DirItem::BLOCKDEV | DirItem::FIFO | DirItem::SOCK | DirItem::SYMLINK |
+                     DirItem::EXECUTABLE);
 
     // Determine associations, icons and type
     fileassoc = NULL;
-    openicon = harddiskicon;
-    closedicon = harddiskicon;
+    openicon = miniharddriveicon;
+    closedicon = miniharddriveicon;
     if (associations)
     {
         fileassoc = associations->findDirBinding(PATHSEPSTRING);
@@ -1709,14 +1749,14 @@ void DirList::listRootItems()
 // List child items
 void DirList::listChildItems(DirItem* par)
 {
-    DirItem*       oldlist, *newlist, **po, **pp, **pn, *item, *link;
-    FXIcon*        openicon, *closedicon;
-    FileAssoc*     fileassoc;
-    DIR*           dirp;
+    DirItem* oldlist, * newlist, ** po, ** pp, ** pn, * item, * link;
+    FXIcon* openicon, * closedicon;
+    FileAssoc* fileassoc;
+    DIR* dirp;
     struct dirent* dp;
     struct stat info;
     FXString pathname, directory, name;
-    FXString type, mod, usrid, grpid, atts, del;
+    FXString type, mod, usrid, grpid, perms, del;
     FXString timeformat;
     int islink;
     FXlong deldate;
@@ -1768,14 +1808,14 @@ void DirList::listChildItems(DirItem* par)
             pathname += name;
 
             // Get file/link info
-            if (lstatrep(pathname.text(), &info) != 0)
+            if (xf_lstat(pathname.text(), &info) != 0)
             {
                 continue;
             }
 
             // If its a link, get the info on file itself
             islink = S_ISLNK(info.st_mode);
-            if (islink && (statrep(pathname.text(), &info) != 0))
+            if (islink && (xf_stat(pathname.text(), &info) != 0))
             {
                 continue;
             }
@@ -1799,7 +1839,7 @@ void DirList::listChildItems(DirItem* par)
             }
 
             // Not found; prepend before list
-            item = (DirItem*)appendItem(par, name, minifolderopenicon, minifolderclosedicon, NULL, true);
+            item = (DirItem*)appendItem(par, name, minifolderopenicon, minifoldericon, NULL, true);
 
             // Next gets hung after this one
 fnd:
@@ -1884,7 +1924,7 @@ fnd:
             // Determine icons and type
             if (item->state & DirItem::FOLDER)
             {
-                if (!::isReadExecutable(pathname))
+                if (!xf_isreadexecutable(pathname))
                 {
                     openicon = minifolderlockedicon;
                     closedicon = minifolderlockedicon;
@@ -1892,7 +1932,7 @@ fnd:
                 else
                 {
                     openicon = minifolderopenicon;
-                    closedicon = minifolderclosedicon;
+                    closedicon = minifoldericon;
                 }
                 if (associations)
                 {
@@ -1939,7 +1979,7 @@ fnd:
             item->date = info.st_mtime;
 
             // Set the HASITEMS flag (too slow on network drives)
-            //(hasSubDirs(pathname.text()) == 1 ? item->setHasItems(true) : item->setHasItems(false));
+            //(xf_hassubdirs(pathname.text()) == 1 ? item->setHasItems(true) : item->setHasItems(false));
 
             // Default folder type
             type = _("Folder");
@@ -1952,7 +1992,7 @@ fnd:
 
             // Permissions (caution : we don't use the FXSystem::modeString() function because
             // it seems to be incompatible with the info.st_mode format)
-            FXString atts = ::permissions(info.st_mode);
+            FXString perms = xf_permissions(info.st_mode);
 
             // Modification time
             mod = FXSystem::time(timeformat.text(), item->date);
@@ -1962,7 +2002,7 @@ fnd:
             del = "";
             if (FXPath::directory(pathname) == trashfileslocation)
             {
-                char*    endptr;
+                char* endptr;
                 FXString str;
                 str = pathname.rafter('_');
                 str = str.rbefore('-');
@@ -1977,54 +2017,54 @@ fnd:
             // Mounted devices may have a specific icon
             if (mtdevices->find(pathname.text()))
             {
-                type = _("Mount point");
+                type = _("Mount Point");
 
-                if (streq(mtdevices->find(pathname.text()), "cifs"))
+                if (xf_strequal(mtdevices->find(pathname.text()), "cifs"))
                 {
-                    item->closedIcon = nfsdriveicon;
-                    item->openIcon = nfsdriveicon;
+                    item->closedIcon = mininetdriveicon;
+                    item->openIcon = mininetdriveicon;
                 }
                 else
                 {
-                    item->closedIcon = harddiskicon;
-                    item->openIcon = harddiskicon;
+                    item->closedIcon = miniharddriveicon;
+                    item->openIcon = miniharddriveicon;
                 }
             }
 
             // Devices found in fstab may have a specific icon
             if (fsdevices->find(pathname.text()))
             {
-                type = _("Mount point");
+                type = _("Mount Point");
 
-                if (streq(fsdevices->find(pathname.text()), "harddisk"))
+                if (xf_strequal(fsdevices->find(pathname.text()), "harddrive"))
                 {
-                    item->closedIcon = harddiskicon;
-                    item->openIcon = harddiskicon;
+                    item->closedIcon = miniharddriveicon;
+                    item->openIcon = miniharddriveicon;
                 }
-                else if (streq(fsdevices->find(pathname.text()), "nfsdisk"))
+                else if (xf_strequal(fsdevices->find(pathname.text()), "nfsdisk"))
                 {
-                    item->closedIcon = nfsdriveicon;
-                    item->openIcon = nfsdriveicon;
+                    item->closedIcon = mininetdriveicon;
+                    item->openIcon = mininetdriveicon;
                 }
-                else if (streq(fsdevices->find(pathname.text()), "smbdisk"))
+                else if (xf_strequal(fsdevices->find(pathname.text()), "smbdisk"))
                 {
-                    item->closedIcon = nfsdriveicon;
-                    item->openIcon = nfsdriveicon;
+                    item->closedIcon = mininetdriveicon;
+                    item->openIcon = mininetdriveicon;
                 }
-                else if (streq(fsdevices->find(pathname.text()), "floppy"))
+                else if (xf_strequal(fsdevices->find(pathname.text()), "floppy"))
                 {
-                    item->closedIcon = floppyicon;
-                    item->openIcon = floppyicon;
+                    item->closedIcon = minifloppyicon;
+                    item->openIcon = minifloppyicon;
                 }
-                else if (streq(fsdevices->find(pathname.text()), "cdrom"))
+                else if (xf_strequal(fsdevices->find(pathname.text()), "cdrom"))
                 {
-                    item->closedIcon = cdromicon;
-                    item->openIcon = cdromicon;
+                    item->closedIcon = minicdromicon;
+                    item->openIcon = minicdromicon;
                 }
-                else if (streq(fsdevices->find(pathname.text()), "zip"))
+                else if (xf_strequal(fsdevices->find(pathname.text()), "zip"))
                 {
-                    item->closedIcon = zipicon;
-                    item->openIcon = zipicon;
+                    item->closedIcon = minizipdiskicon;
+                    item->openIcon = minizipdiskicon;
                 }
             }
 #endif
@@ -2033,12 +2073,13 @@ fnd:
             if (islink)
             {
                 type = _("Link to Folder");
-                item->closedIcon = minilinkicon;
-                item->openIcon = minilinkicon;
+                item->closedIcon = minifolderlinkicon;
+                item->openIcon = minifolderlinkicon;
             }
 
             // Data used to update the tooltip
-            item->tdata = item->label + "\t" + type + "\t" + mod + "\t" + usrid + "\t" + grpid + "\t" + atts + "\t" + del + "\t" + pathname;
+            item->tdata = item->label + "\t" + type + "\t" + mod + "\t" + usrid + "\t" + grpid + "\t" + perms + "\t" +
+                          del + "\t" + pathname;
             item->setData(&item->tdata);
 
             // Create item
@@ -2085,7 +2126,7 @@ FXbool DirList::isItemDirectory(const TreeItem* item) const
         fprintf(stderr, "%s::isItemDirectory: item is NULL.\n", getClassName());
         exit(EXIT_FAILURE);
     }
-    return((item->state & DirItem::FOLDER) != 0);
+    return (item->state & DirItem::FOLDER) != 0;
 }
 
 
@@ -2097,7 +2138,8 @@ FXbool DirList::isItemFile(const TreeItem* item) const
         fprintf(stderr, "%s::isItemFile: item is NULL.\n", getClassName());
         exit(EXIT_FAILURE);
     }
-    return((item->state & (DirItem::FOLDER | DirItem::CHARDEV | DirItem::BLOCKDEV | DirItem::FIFO | DirItem::SOCK)) == 0);
+    return (item->state & (DirItem::FOLDER | DirItem::CHARDEV | DirItem::BLOCKDEV | DirItem::FIFO | DirItem::SOCK)) ==
+           0;
 }
 
 
@@ -2109,7 +2151,7 @@ FXbool DirList::isItemExecutable(const TreeItem* item) const
         fprintf(stderr, "%s::isItemExecutable: item is NULL.\n", getClassName());
         exit(EXIT_FAILURE);
     }
-    return((item->state & DirItem::EXECUTABLE) != 0);
+    return (item->state & DirItem::EXECUTABLE) != 0;
 }
 
 
@@ -2134,14 +2176,14 @@ FXString DirList::getItemPathname(const TreeItem* item) const
             }
         }
     }
-    return(pathname);
+    return pathname;
 }
 
 
 // Return the item from the absolute pathname
 TreeItem* DirList::getPathnameItem(const FXString& path)
 {
-    TreeItem* item, *it;
+    TreeItem* item, * it;
     int beg = 0, end = 0;
     FXString name;
 
@@ -2170,7 +2212,7 @@ TreeItem* DirList::getPathnameItem(const FXString& path)
                     goto x;
                 }
             }
-            return(NULL);
+            return NULL;
 
 x:
             item = it;
@@ -2199,7 +2241,7 @@ x:
                         goto y;
                     }
                 }
-                return(item);
+                return item;
 
 y:
                 item = it;
@@ -2210,10 +2252,10 @@ y:
                 }
             }
             FXASSERT(item);
-            return(item);
+            return item;
         }
     }
-    return(NULL);
+    return NULL;
 }
 
 
@@ -2225,7 +2267,7 @@ FXString DirList::getItemFilename(const TreeItem* item) const
         fprintf(stderr, "%s::getItemFilename: item is NULL.\n", getClassName());
         exit(EXIT_FAILURE);
     }
-    return(item->label);
+    return item->label;
 }
 
 
@@ -2236,7 +2278,7 @@ void DirList::setDirectory(const FXString& pathname, FXbool notify)
     {
         FXString path = FXPath::absolute(getItemPathname((TreeItem*)currentitem), pathname);
 
-        while (!FXPath::isTopDirectory(path) && !::isDirectory(path))
+        while (!FXPath::isTopDirectory(path) && !xf_isdirectory(path))
         {
             path = FXPath::upLevel(path);
         }
@@ -2261,11 +2303,11 @@ FXString DirList::getDirectory() const
     {
         if (item->state & DirItem::FOLDER)
         {
-            return(getItemPathname(item));
+            return getItemPathname(item);
         }
         item = (TreeItem*)item->parent;
     }
-    return("");
+    return "";
 }
 
 
@@ -2275,7 +2317,7 @@ void DirList::setCurrentFile(const FXString& pathname, FXbool notify)
     if (!pathname.empty())
     {
         FXString path = FXPath::absolute(getItemPathname((TreeItem*)currentitem), pathname);
-        while (!FXPath::isTopDirectory(path) && !existFile(path))
+        while (!FXPath::isTopDirectory(path) && !xf_existfile(path))
         {
             path = FXPath::upLevel(path);
         }
@@ -2293,14 +2335,14 @@ void DirList::setCurrentFile(const FXString& pathname, FXbool notify)
 // Get current (dir/file) name path
 FXString DirList::getCurrentFile() const
 {
-    return(getItemPathname((TreeItem*)currentitem));
+    return getItemPathname((TreeItem*)currentitem);
 }
 
 
 // Get list style
 FXbool DirList::showFiles() const
 {
-    return((options & DIRLIST_SHOWFILES) != 0);
+    return (options & DIRLIST_SHOWFILES) != 0;
 }
 
 
@@ -2329,7 +2371,7 @@ void DirList::showFiles(FXbool showing)
 // Return true if showing hidden files
 FXbool DirList::shownHiddenFiles() const
 {
-    return((options & DIRLIST_SHOWHIDDEN) != 0);
+    return (options & DIRLIST_SHOWHIDDEN) != 0;
 }
 
 
@@ -2435,5 +2477,241 @@ long DirList::onUpdRefreshTimers(FXObject*, FXSelector, void*)
 #endif
     }
 
-    return(1);
+    return 1;
+}
+
+
+// Remove all siblings from [fm,to]
+void DirList::removeItems(TreeItem* fm, TreeItem* to, FXbool notify)
+{
+    TreeItem* olditem = (TreeItem*)currentitem;
+    TreeItem* prv;
+    TreeItem* nxt;
+    TreeItem* par;
+
+    if (fm && to)
+    {
+        if (fm->parent != to->parent)
+        {
+            fxerror("%s::removeItems: arguments have different parent.\n", getClassName());
+        }
+
+        // Delete items
+        while (1)
+        {
+            // Scan till end
+            while (to->last)
+            {
+                to = (TreeItem*)to->last;
+            }
+            do
+            {
+                // Notify item will be deleted
+                if (notify && target)
+                {
+                    target->tryHandle(this, FXSEL(SEL_DELETED, message), (void*)to);
+                }
+
+                // Remember hookups
+                nxt = (TreeItem*)to->next;
+                prv = (TreeItem*)to->prev;
+                par = (TreeItem*)to->parent;
+
+                // Adjust pointers; suggested by Alan Ott <ott@acusoft.com>
+                if (anchoritem == to)
+                {
+                    anchoritem = par;
+                    if (prv)
+                    {
+                        anchoritem = prv;
+                    }
+                    if (nxt)
+                    {
+                        anchoritem = nxt;
+                    }
+                }
+
+                // !!! Hack to go back to parent when an item disappeared !!!
+                if (currentitem == to)
+                {
+                    currentitem = par;
+                    //if(prv) currentitem=prv;
+                    //if(nxt) currentitem=nxt;
+                }
+                // !!! End of hack !!!
+
+                if (extentitem == to)
+                {
+                    extentitem = par;
+                    if (prv)
+                    {
+                        extentitem = prv;
+                    }
+                    if (nxt)
+                    {
+                        extentitem = nxt;
+                    }
+                }
+                if (viewableitem == to)
+                {
+                    viewableitem = par;
+                    if (prv)
+                    {
+                        viewableitem = prv;
+                    }
+                    if (nxt)
+                    {
+                        viewableitem = nxt;
+                    }
+                }
+
+                // Remove item from list
+                if (prv)
+                {
+                    prv->next = nxt;
+                }
+                else if (par)
+                {
+                    par->first = nxt;
+                }
+                else
+                {
+                    firstitem = nxt;
+                }
+                if (nxt)
+                {
+                    nxt->prev = prv;
+                }
+                else if (par)
+                {
+                    par->last = prv;
+                }
+                else
+                {
+                    lastitem = prv;
+                }
+
+                // Delete it
+                delete to;
+
+                // Was last one?
+                if (to == fm)
+                {
+                    goto x;
+                }
+                to = par;
+            }
+            while (!prv);
+            to = prv;
+        }
+
+        // Current item has changed
+x:
+        if (olditem != currentitem)
+        {
+            if (notify && target)
+            {
+                target->tryHandle(this, FXSEL(SEL_CHANGED, message), (void*)currentitem);
+            }
+        }
+
+        // Deleted current item
+        if (currentitem && (currentitem != olditem))
+        {
+            if (hasFocus())
+            {
+                currentitem->setFocus(true);
+            }
+            if (((options & SELECT_MASK) == TREELIST_BROWSESELECT) && currentitem->isEnabled())
+            {
+                selectItem(currentitem, notify);
+            }
+        }
+
+        // Redo layout
+        recalc();
+    }
+}
+
+
+// Display a tooltip with name, size, date, etc.
+long DirList::onQueryTip(FXObject* sender, FXSelector sel, void* ptr)
+{
+    if (FXWindow::onQueryTip(sender, sel, ptr))
+    {
+        return 1;
+    }
+
+    // File tooltips are optional
+    if (file_tooltips)
+    {
+        if ((flags & FLAG_TIP) && !(options & TREELIST_AUTOSELECT)) // No tip when autoselect!
+        {
+            int x, y;
+            FXuint buttons;
+
+            getCursorPosition(x, y, buttons);
+            DirItem* item = (DirItem*)getItemAt(x, y);
+            if (item)
+            {
+                // !!! Hack to display a tooltip with name, size, date, etc. !!!
+                FXString string;
+
+                // Root folder
+                if (item->getText() == ROOTDIR)
+                {
+                    string = _("Root Folder");
+                }
+                // Other folders
+                else
+                {
+                    // Get tooltip data
+                    FXString str = item->getTooltipData();
+                    if (str == "")
+                    {
+                        return 0;
+                    }
+
+                    // Add name, type, permissions, etc. to the tool tip
+                    FXString name = str.section('\t', 0);
+                    FXString type = str.section('\t', 1);
+                    FXString date = str.section('\t', 2);
+                    FXString user = str.section('\t', 3);
+                    FXString group = str.section('\t', 4);
+                    FXString perms = str.section('\t', 5);
+                    FXString deldate = str.section('\t', 6);
+                    FXString pathname = str.section('\t', 7);
+
+                    // Compute root file size
+                    FXulong dnsize;
+                    char dsize[64];
+                    dnsize = xf_dirsize(pathname.text());
+#if __WORDSIZE == 64
+                    snprintf(dsize, sizeof(dsize), "%lu", dnsize);
+#else
+                    snprintf(dsize, sizeof(dsize), "%llu", dnsize);
+#endif
+                    FXString size = xf_humansize(dsize);
+                    if (deldate.empty())
+                    {
+                        string = _("Name: ") + name + "\n" + _("Size in root: ") + size + "\n" + _("Type: ") + type
+                                 + "\n" + _("Modified date: ") + date + "\n" + _("User: ") + user + " - " +
+                                 _("Group: ") + group
+                                 + "\n" + _("Permissions: ") + perms;
+                    }
+                    else
+                    {
+                        string = _("Name: ") + name + "\n" + _("Size in root: ") + size + "\n" + _("Type: ") + type
+                                 + "\n" + _("Modified date: ") + date + "\n" + _("Deletion date: ") + deldate + "\n"
+                                 + _("User: ") + user + " - " + _("Group: ") + group
+                                 + "\n" + _("Permissions: ") + perms;
+                    }
+                }
+
+                sender->handle(this, FXSEL(SEL_COMMAND, ID_SETSTRINGVALUE), (void*)&string);
+                return 1;
+            }
+        }
+    }
+    return 0;
 }

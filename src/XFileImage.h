@@ -8,54 +8,56 @@ class XFileImage : public FXMainWindow
 {
     FXDECLARE(XFileImage)
 protected:
-    FXbool hiddenfiles;                       // Show or hide hidden files
-    FXbool thumbnails;                        // Show or hide image thumbnails
-    FXuint fileview;                          // File list view
-    FXuint liststyle;                         // Icon list style
-    FXImageView*       imageview;             // Image viewer
-    FXRecentFiles mrufiles;                   // Recent files
-    FXString filename;                        // File being viewed
-    FXMenuBar*         menubar;               // Menu bar
-    FXToolBar*         toolbar;               // Tool bar
-    FXToolBarShell*    dragshell1;            // Shell for floating menubar
-    FXHorizontalFrame* statusbar;             // Status bar
-    FXbool filelistbefore;
-    FXbool vertpanels;
-    FXSplitter*        splitter;              // Splitter
-    FXVerticalFrame*   filebox;               // Box containing directories/files
-    FileList*          filelist;              // File List
-    FXLabel*           label;                 // Directory path
-    FXMenuPane*        filemenu;              // File menu
-    FXMenuPane*        viewmenu;              // View menu
-    FXMenuPane*        helpmenu;              // Help menu
-    FXMenuPane*        imagemenu;             // Image menu
-    FXMenuPane*        prefsmenu;             // Preferences menu
-    FXTextField*       filter;                // Filter for tree list
-    FXImage*           img;                   // Image loaded
-    FXImage*           tmpimg;                // Temporary image
-    FXColor*           tmpdata;               // Temporary image data
-    int indZoom;                              // Zoom index
-    double zoomval;                           // Actual zoom factor
-    FXbool fitwin;                            // Fit window when opening an image
-    FXbool filterimgs;                        // List only image files in file list
-    InputDialog*       printdialog;
-    FXbool smoothscroll;
-    double filewidth_pct;
-    double fileheight_pct;
-    FXArrowButton*     btnbackhist;           // Back history
-    FXArrowButton*     btnforwardhist;        // Forward history
-    PathLinker*        pathlink;
-    TextLabel*         pathtext;
-    int prev_width;
-    int prev_height;
+    FXbool hiddenfiles = false;                       // Show or hide hidden files
+    FXbool thumbnails = false;                        // Show or hide image thumbnails
+    FXuint fileview = 0;                              // File list view
+    FXuint liststyle = 0;                             // Icon list style
+    FXImageView* imageview = NULL;                    // Image viewer
+    FXRecentFiles mrufiles;                           // Recent files
+    FXString filename;                                // File being viewed
+    FXMenuBar* menubar = NULL;                        // Menu bar
+    FXToolBar* toolbar = NULL;                        // Tool bar
+    FXToolBarShell* dragshell1 = NULL;                // Shell for floating menubar
+    FXHorizontalFrame* statusbar = NULL;              // Status bar
+    FXbool filelistbefore = false;
+    FXbool vertpanels = false;
+    FXSplitter* splitter = NULL;                      // Splitter
+    FXVerticalFrame* filebox = NULL;                  // Box containing directories/files
+    FileList* filelist = NULL;                        // File List
+    FXLabel* label = NULL;                            // Directory path
+    FXMenuPane* filemenu = NULL;                      // File menu
+    FXMenuPane* viewmenu = NULL;                      // View menu
+    FXMenuPane* helpmenu = NULL;                      // Help menu
+    FXMenuPane* imagemenu = NULL;                     // Image menu
+    FXMenuPane* prefsmenu = NULL;                     // Preferences menu
+    FXTextField* filter = NULL;                       // Filter for tree list
+    FXImage* img = NULL;                              // Image loaded
+    FXImage* tmpimg = NULL;                           // Temporary image
+    FXColor* tmpdata = NULL;                          // Temporary image data
+    int indZoom = 0;                                  // Zoom index
+    double zoomval = 0;                               // Actual zoom factor
+    FXbool fitwin = false;                            // Fit window when opening an image
+    FXbool filterimgs = false;                        // List only image files in file list
+    InputDialog* printdialog = NULL;
+    FXbool smoothscroll = false;
+    double filewidth_pct = 0;
+    double fileheight_pct = 0;
+    FXArrowButton* btnbackhist = NULL;                // Back history
+    FXArrowButton* btnforwardhist = NULL;             // Forward history
+    PathLinker* pathlink = NULL;
+    TextLabel* pathtext = NULL;
+    int prev_width = 0;
+    int prev_height = 0;
+
+    FXuint single_click = SINGLE_CLICK_NONE;          // Single click navigation
+    FXbool relative_resize = true;                    // Relative resizing of the panels and columns in detailed mode
+    FXbool save_win_pos = false;                      // Save window position
+
 protected:
-    XFileImage() : hiddenfiles(false), thumbnails(false), fileview(0), liststyle(0), imageview(NULL), menubar(NULL), toolbar(NULL), dragshell1(NULL),
-        statusbar(NULL), filelistbefore(false), vertpanels(false), splitter(NULL),
-        filebox(NULL), filelist(NULL), label(NULL), filemenu(NULL), viewmenu(NULL), helpmenu(NULL), imagemenu(NULL),
-        prefsmenu(NULL), filter(NULL), img(NULL), tmpimg(NULL), tmpdata(NULL), indZoom(0),
-        zoomval(0.0), fitwin(false), filterimgs(false), printdialog(NULL), smoothscroll(false), filewidth_pct(0.0), fileheight_pct(0.0),
-        btnbackhist(NULL), btnforwardhist(NULL), pathlink(NULL), pathtext(NULL), prev_width(0), prev_height(0)
-    {}
+    XFileImage()
+    {
+    }
+
 public:
     long onCmdAbout(FXObject*, FXSelector, void*);
     long onCmdOpen(FXObject*, FXSelector, void*);
@@ -110,6 +112,8 @@ public:
     long onUpdToggleFileListBefore(FXObject*, FXSelector, void*);
     long onKeyPress(FXObject*, FXSelector, void*);
     long onKeyRelease(FXObject*, FXSelector, void*);
+    long onCmdViewPrev(FXObject*, FXSelector, void*);
+    long onCmdViewNext(FXObject*, FXSelector, void*);
 
 
 public:
@@ -153,11 +157,13 @@ public:
         ID_DIR_FORWARD_HIST,
         ID_HORZ_PANELS,
         ID_VERT_PANELS,
-        ID_TOGGLE_FILELIST_BEFORE,
+        ID_TOGGLEFILELIST_BEFORE,
+        ID_VIEW_PREV,
+        ID_VIEW_NEXT,
         ID_LAST
     };
 public:
-    XFileImage(FXApp*, FXbool);
+    XFileImage(FXApp*, FXbool, FXColor, FXColor, FXColor);
     virtual void create();
     FXbool loadimage(const FXString&);
     void saveConfig();

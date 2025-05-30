@@ -27,9 +27,12 @@
 #define REFRESH_COUNT_FAST     1000
 
 
-#define TIMEOUT_DELAY    500
+// Rotating cursor refresh delay
+#define ROTATING_CURSOR_REFRESH_DELAY    500
 
-
+// Search history
+extern int FindNum;
+extern char FindHistory[FIND_HIST_SIZE][MAX_FIND_SIZE];
 
 extern FXMainWindow* mainWindow;
 
@@ -45,13 +48,13 @@ FXDEFMAP(SearchWindow) SearchWindowMap[] =
     FXMAPFUNC(SEL_COMMAND, SearchWindow::ID_CLOSE, SearchWindow::onCmdClose),
     FXMAPFUNC(SEL_COMMAND, SearchWindow::ID_RESET_OPTIONS, SearchWindow::onCmdResetOptions),
     FXMAPFUNC(SEL_COMMAND, SearchWindow::ID_BROWSE_PATH, SearchWindow::onCmdBrowsePath),
-    FXMAPFUNC(SEL_VERIFY, SearchWindow::ID_PERM, SearchWindow::onPermVerify),
+    FXMAPFUNC(SEL_VERIFY, SearchWindow::ID_PERMS, SearchWindow::onPermsVerify),
     FXMAPFUNC(SEL_COMMAND, SearchWindow::ID_MORE_OPTIONS, SearchWindow::onCmdMoreOptions),
     FXMAPFUNC(SEL_UPDATE, SearchWindow::ID_STOP, SearchWindow::onUpdStop),
     FXMAPFUNC(SEL_UPDATE, SearchWindow::ID_START, SearchWindow::onUpdStart),
-    FXMAPFUNC(SEL_UPDATE, SearchWindow::ID_PERM, SearchWindow::onUpdPerm),
+    FXMAPFUNC(SEL_UPDATE, SearchWindow::ID_PERMS, SearchWindow::onUpdPerms),
     FXMAPFUNC(SEL_UPDATE, SearchWindow::ID_SIZE, SearchWindow::onUpdSize),
-    FXMAPFUNC(SEL_TIMEOUT, SearchWindow::ID_TIMEOUT, SearchWindow::onTimeout),
+    FXMAPFUNC(SEL_TIMEOUT, SearchWindow::ID_ROTATING_CURSOR, SearchWindow::onRotatingCursorRefresh),
 };
 
 
@@ -61,48 +64,72 @@ FXIMPLEMENT(SearchWindow, FXTopWindow, SearchWindowMap, ARRAYNUMBER(SearchWindow
 
 
 // Contruct free floating dialog
-SearchWindow::SearchWindow(FXApp* app, const FXString& name, FXuint opts, int x, int y, int w, int h, int pl, int pr, int pt, int pb, int hs, int vs) :
-    FXTopWindow(app, name, NULL, NULL, opts, x, y, w, h, pl, pr, pt, pb, hs, vs)
+SearchWindow::SearchWindow(FXApp* app, const FXString& name, int x, int y, int w, int h, int pl, int pr, int pt, int pb,
+                           int hs, int vs) :
+    FXTopWindow(app, name, NULL, NULL,
+                DECOR_TITLE | DECOR_MINIMIZE | DECOR_MAXIMIZE | DECOR_CLOSE | DECOR_BORDER | DECOR_STRETCHABLE, x, y, w,
+                h, pl, pr, pt, pb, hs, vs)
 {
-    setIcon(searchicon);
+    setIcon(minisearchicon);
 
     // Vertical frame
-    FXVerticalFrame* frame1 = new FXVerticalFrame(this, LAYOUT_SIDE_TOP | FRAME_NONE | LAYOUT_FILL_X | LAYOUT_FILL_Y, 0, 0, 0, 0, 0, 0, 0, 0);
+    FXVerticalFrame* frame1 = new FXVerticalFrame(this, LAYOUT_SIDE_TOP | FRAME_NONE | LAYOUT_FILL_X | LAYOUT_FILL_Y, 0,
+                                                  0, 0, 0, 0, 0, 0, 0);
 
     // Vertical frame
     searchframe = new FXVerticalFrame(frame1, LAYOUT_SIDE_TOP | FRAME_NONE | LAYOUT_FILL_X);
 
-    // Label and input field
-    FXMatrix* matrix1 = new FXMatrix(searchframe, 4, MATRIX_BY_COLUMNS | LAYOUT_SIDE_TOP | LAYOUT_FILL_X | LAYOUT_FILL_Y);
+    // Label and input field with history
+    FXMatrix* matrix1 = new FXMatrix(searchframe, 4,
+                                     MATRIX_BY_COLUMNS | LAYOUT_SIDE_TOP | LAYOUT_FILL_X | LAYOUT_FILL_Y);
     new FXLabel(matrix1, _("Find files:"), NULL, LAYOUT_LEFT | LAYOUT_CENTER_Y | LAYOUT_FILL_ROW);
-    findfile = new FXTextField(matrix1, 40, 0, 0, LAYOUT_CENTER_Y | LAYOUT_CENTER_X | FRAME_SUNKEN | FRAME_THICK | LAYOUT_FILL_COLUMN | LAYOUT_FILL_ROW | LAYOUT_FILL_X);
+    findfile = new HistComboBox(matrix1, 40, false, true, NULL, 0,
+                                COMBOBOX_INSERT_LAST | LAYOUT_CENTER_Y | LAYOUT_CENTER_X | LAYOUT_FILL_COLUMN |
+                                LAYOUT_FILL_ROW | LAYOUT_FILL_X);
+    findfile->setNumVisible(5);
+    for (int i = 0; i < FindNum; i++)
+    {
+        findfile->appendItem(FindHistory[i]);
+    }
 
-    findigncase = new FXCheckButton(matrix1, _("Ignore case\tIgnore file name case") + FXString(" "), NULL, 0, JUSTIFY_NORMAL | ICON_BEFORE_TEXT | LAYOUT_CENTER_Y);
+    findigncase = new FXCheckButton(matrix1, _("Ignore case\tIgnore file name case") + FXString(" "), NULL, 0,
+                                    JUSTIFY_NORMAL | ICON_BEFORE_TEXT | LAYOUT_CENTER_Y);
     FXuint ignorecase = getApp()->reg().readUnsignedEntry("SEARCH PANEL", "find_ignorecase", 0);
     findigncase->setCheck(ignorecase);
 
     // Hidden files
-    findhidden = new FXCheckButton(matrix1, _("Hidden files\tShow hidden files and folders") + FXString(" "), NULL, 0, JUSTIFY_NORMAL | ICON_BEFORE_TEXT | LAYOUT_CENTER_Y);
+    findhidden = new FXCheckButton(matrix1, _("Hidden files\tShow hidden files and folders") + FXString(" "), NULL, 0,
+                                   JUSTIFY_NORMAL | ICON_BEFORE_TEXT | LAYOUT_CENTER_Y);
     FXuint hidden = getApp()->reg().readUnsignedEntry("SEARCH PANEL", "find_hidden", 0);
     findhidden->setCheck(hidden);
 
-    FXMatrix* matrix2 = new FXMatrix(searchframe, 3, MATRIX_BY_COLUMNS | LAYOUT_SIDE_TOP | LAYOUT_FILL_X | LAYOUT_FILL_Y);
+    FXMatrix* matrix2 = new FXMatrix(searchframe, 3,
+                                     MATRIX_BY_COLUMNS | LAYOUT_SIDE_TOP | LAYOUT_FILL_X | LAYOUT_FILL_Y);
     new FXLabel(matrix2, _("In folder:"), NULL, LAYOUT_LEFT | LAYOUT_CENTER_Y | LAYOUT_FILL_ROW);
-    wheredir = new FXTextField(matrix2, 40, 0, 0, LAYOUT_CENTER_Y | LAYOUT_CENTER_X | FRAME_SUNKEN | FRAME_THICK | LAYOUT_FILL_COLUMN | LAYOUT_FILL_ROW | LAYOUT_FILL_X);
-    dirbutton = new FXButton(matrix2, _("\tIn folder..."), filedialogicon, this, ID_BROWSE_PATH, FRAME_RAISED | FRAME_THICK | LAYOUT_RIGHT | LAYOUT_CENTER_Y, 0, 0, 0, 0, 20, 20);
+    wheredir = new FXTextField(matrix2, 40, 0, 0,
+                               LAYOUT_CENTER_Y | LAYOUT_CENTER_X | TEXTFIELD_NORMAL | LAYOUT_FILL_COLUMN |
+                               LAYOUT_FILL_ROW | LAYOUT_FILL_X);
+    dirbutton = new FXButton(matrix2, _("\tIn folder..."), minifiledialogicon, this, ID_BROWSE_PATH,
+                             FRAME_GROOVE | LAYOUT_RIGHT | LAYOUT_CENTER_Y, 0, 0, 0, 0, 20, 20);
 
-    FXMatrix* matrix3 = new FXMatrix(searchframe, 3, MATRIX_BY_COLUMNS | LAYOUT_SIDE_TOP | LAYOUT_FILL_X | LAYOUT_FILL_Y);
+    FXMatrix* matrix3 = new FXMatrix(searchframe, 3,
+                                     MATRIX_BY_COLUMNS | LAYOUT_SIDE_TOP | LAYOUT_FILL_X | LAYOUT_FILL_Y);
     new FXLabel(matrix3, _("Text contains:"), NULL, LAYOUT_LEFT | LAYOUT_CENTER_Y | LAYOUT_FILL_ROW);
-    greptext = new FXTextField(matrix3, 40, 0, 0, LAYOUT_CENTER_Y | LAYOUT_CENTER_X | FRAME_SUNKEN | FRAME_THICK | LAYOUT_FILL_COLUMN | LAYOUT_FILL_ROW | LAYOUT_FILL_X);
+    greptext = new FXTextField(matrix3, 40, 0, 0,
+                               LAYOUT_CENTER_Y | LAYOUT_CENTER_X | TEXTFIELD_NORMAL | LAYOUT_FILL_COLUMN |
+                               LAYOUT_FILL_ROW | LAYOUT_FILL_X);
 
-    grepigncase = new FXCheckButton(matrix3, _("Ignore case\tIgnore text case") + FXString(" "), NULL, 0, JUSTIFY_NORMAL | ICON_BEFORE_TEXT | LAYOUT_CENTER_Y);
+    grepigncase = new FXCheckButton(matrix3, _("Ignore case\tIgnore text case") + FXString(" "), NULL, 0,
+                                    JUSTIFY_NORMAL | ICON_BEFORE_TEXT | LAYOUT_CENTER_Y);
     ignorecase = getApp()->reg().readUnsignedEntry("SEARCH PANEL", "grep_ignorecase", 0);
     grepigncase->setCheck(ignorecase);
 
     // Search options
-    moreoptions = new FXCheckButton(searchframe, _("More options") + FXString(" "), this, ID_MORE_OPTIONS, CHECKBUTTON_PLUS | JUSTIFY_NORMAL | ICON_BEFORE_TEXT | LAYOUT_CENTER_Y);
+    moreoptions = new FXCheckButton(searchframe, _("More options") + FXString(" "), this, ID_MORE_OPTIONS,
+                                    CHECKBUTTON_PLUS | JUSTIFY_NORMAL | ICON_BEFORE_TEXT | LAYOUT_CENTER_Y);
     moregroup = new FXGroupBox(searchframe, _("Search options"), GROUPBOX_TITLE_LEFT | FRAME_GROOVE | LAYOUT_FILL_X);
-    resetoptions = new FXButton(moregroup, _("Reset\tReset search options"), NULL, this, SearchWindow::ID_RESET_OPTIONS, FRAME_RAISED | LAYOUT_CENTER_Y | LAYOUT_LEFT);
+    resetoptions = new FXButton(moregroup, _("Reset\tReset search options"), NULL, this, SearchWindow::ID_RESET_OPTIONS,
+                                FRAME_GROOVE | LAYOUT_CENTER_Y | LAYOUT_LEFT);
 
     FXbool moreopts = getApp()->reg().readUnsignedEntry("SEARCH PANEL", "moreoptions", 0);
     if (moreopts)
@@ -117,7 +144,8 @@ SearchWindow::SearchWindow(FXApp* app, const FXString& name, FXuint opts, int x,
     }
 
     // File size
-    FXMatrix* matrix4 = new FXMatrix(moregroup, 6, MATRIX_BY_COLUMNS | LAYOUT_SIDE_TOP | PACK_UNIFORM_WIDTH, 0, 0, 0, 0, 4, 4, 4, 8, 4, 8);
+    FXMatrix* matrix4 = new FXMatrix(moregroup, 6, MATRIX_BY_COLUMNS | LAYOUT_SIDE_TOP | PACK_UNIFORM_WIDTH, 0, 0, 0, 0,
+                                     4, 4, 4, 8, 4, 8);
     new FXLabel(matrix4, _("Min size:"), NULL, JUSTIFY_LEFT);
     minsize = new FXSpinner(matrix4, 10, this, SearchWindow::ID_SIZE, SPIN_NOMAX | JUSTIFY_LEFT);
     minsize->setTipText(_("Filter by minimum file size (kBytes)"));
@@ -141,14 +169,16 @@ SearchWindow::SearchWindow(FXApp* app, const FXString& name, FXuint opts, int x,
 
     // User and group
     new FXLabel(matrix4, _("User:"), NULL, JUSTIFY_LEFT);
-    user = new FXComboBox(matrix4, 15, NULL, 0, COMBOBOX_STATIC);
+    user = new ComboBox(matrix4, 15,false, false, NULL, 0, COMBOBOX_STATIC);
     user->setNumVisible(5);
-    userbtn = new FXCheckButton(matrix4, FXString(" ") + _("\tFilter by user name"), NULL, 0, JUSTIFY_LEFT | LAYOUT_CENTER_Y);
+    userbtn = new FXCheckButton(matrix4, FXString(" ") + _("\tFilter by user name"), NULL, 0,
+                                JUSTIFY_LEFT | LAYOUT_CENTER_Y);
 
     new FXLabel(matrix4, _("Group:"), NULL, JUSTIFY_LEFT);
-    grp = new FXComboBox(matrix4, 15, NULL, 0, COMBOBOX_STATIC);
+    grp = new ComboBox(matrix4, 15, false, false, NULL, 0, COMBOBOX_STATIC);
     grp->setNumVisible(5);
-    grpbtn = new FXCheckButton(matrix4, FXString(" ") + _("\tFilter by group name"), NULL, 0, JUSTIFY_LEFT | LAYOUT_CENTER_Y);
+    grpbtn = new FXCheckButton(matrix4, FXString(" ") + _("\tFilter by group name"), NULL, 0,
+                               JUSTIFY_LEFT | LAYOUT_CENTER_Y);
 
     // User names (sorted in ascending order)
     struct passwd* pwde;
@@ -172,7 +202,7 @@ SearchWindow::SearchWindow(FXApp* app, const FXString& name, FXuint opts, int x,
 
     // Set user name and group name
     struct stat linfo;
-    if (lstatrep(FXSystem::getHomeDirectory().text(), &linfo) == 0)
+    if (xf_lstat(FXSystem::getHomeDirectory().text(), &linfo) == 0)
     {
         uid = FXSystem::userName(linfo.st_uid);
         gid = FXSystem::groupName(linfo.st_gid);
@@ -182,7 +212,7 @@ SearchWindow::SearchWindow(FXApp* app, const FXString& name, FXuint opts, int x,
 
     // File type
     new FXLabel(matrix4, _("File type:"), NULL, JUSTIFY_LEFT);
-    type = new FXComboBox(matrix4, 15, NULL, 0, COMBOBOX_STATIC);
+    type = new ComboBox(matrix4, 15, false, false, NULL, 0, COMBOBOX_STATIC);
     type->setNumVisible(5);
     type->appendItem(_("File"));
     type->appendItem(_("Folder"));
@@ -190,61 +220,152 @@ SearchWindow::SearchWindow(FXApp* app, const FXString& name, FXuint opts, int x,
     type->appendItem(_("Socket"));
     type->appendItem(_("Pipe"));
     type->setCurrentItem(0);
-    typebtn = new FXCheckButton(matrix4, FXString(" ") + _("\tFilter by file type"), NULL, 0, JUSTIFY_LEFT | LAYOUT_CENTER_Y);
+    typebtn = new FXCheckButton(matrix4, FXString(" ") + _("\tFilter by file type"), NULL, 0,
+                                JUSTIFY_LEFT | LAYOUT_CENTER_Y);
 
     // Permissions (in octal)
     new FXLabel(matrix4, _("Permissions:"), NULL, JUSTIFY_LEFT);
-    perm = new FXTextField(matrix4, 4, this, SearchWindow::ID_PERM, TEXTFIELD_INTEGER | TEXTFIELD_LIMITED | TEXTFIELD_OVERSTRIKE | FRAME_SUNKEN | FRAME_THICK);
-    perm->setText("0644");
-    perm->setNumColumns(4);
-    permbtn = new FXCheckButton(matrix4, FXString(" ") + _("\tFilter by permissions (octal)"), NULL, 0, JUSTIFY_LEFT | LAYOUT_CENTER_Y);
+    perms = new FXTextField(matrix4, 4, this, SearchWindow::ID_PERMS,
+                            TEXTFIELD_NORMAL | TEXTFIELD_INTEGER | TEXTFIELD_LIMITED | TEXTFIELD_OVERSTRIKE);
+    perms->setText("0644");
+    perms->setNumColumns(4);
+    permsbtn = new FXCheckButton(matrix4, FXString(" ") + _("\tFilter by permissions (octal)"), NULL, 0,
+                                 JUSTIFY_LEFT | LAYOUT_CENTER_Y);
 
     // Empty files
     new FXLabel(matrix4, _("Empty files:"), NULL, JUSTIFY_LEFT);
-    emptybtn = new FXCheckButton(matrix4, FXString(" ") + _("\tEmpty files only"), NULL, 0, JUSTIFY_LEFT | LAYOUT_CENTER_Y);
+    emptybtn = new FXCheckButton(matrix4, FXString(" ") + _("\tEmpty files only"), NULL, 0,
+                                 JUSTIFY_LEFT | LAYOUT_CENTER_Y);
 
-    // Follow symlinks
+    // Don't follow symlinks
     new FXLabel(matrix4, "", NULL, JUSTIFY_LEFT);
-    new FXLabel(matrix4, _("Follow symbolic links:"), NULL, JUSTIFY_LEFT);
-    linkbtn = new FXCheckButton(matrix4, FXString(" ") + _("\tSearch while following symbolic links"), NULL, 0, JUSTIFY_LEFT | LAYOUT_CENTER_Y);
+    new FXLabel(matrix4, _("Don't follow symbolic links:"), NULL, JUSTIFY_LEFT);
+    linkbtn = new FXCheckButton(matrix4, FXString(" ") + _("\tSearch without following symbolic links"), NULL, 0,
+                                JUSTIFY_LEFT | LAYOUT_CENTER_Y);
 
     // Non recursive
     new FXLabel(matrix4, "", NULL, JUSTIFY_LEFT);
     new FXLabel(matrix4, _("Non recursive:"), NULL, JUSTIFY_LEFT);
-    norecbtn = new FXCheckButton(matrix4, FXString(" ") + _("\tDon't search folders recursively"), NULL, 0, JUSTIFY_LEFT | LAYOUT_CENTER_Y);
+    norecbtn = new FXCheckButton(matrix4, FXString(" ") + _("\tDon't search folders recursively"), NULL, 0,
+                                 JUSTIFY_LEFT | LAYOUT_CENTER_Y);
 
     // Don't search in other file systems
     new FXLabel(matrix4, "", NULL, JUSTIFY_LEFT);
-    new FXLabel(matrix4, _("Ignore other file systems:"), NULL, JUSTIFY_LEFT);
-    nofsbtn = new FXCheckButton(matrix4, FXString(" ") + _("\tDon't search in other file systems"), NULL, 0, JUSTIFY_LEFT | LAYOUT_CENTER_Y);
+    new FXLabel(matrix4, _("Other file systems:"), NULL, JUSTIFY_LEFT);
+    nofsbtn = new FXCheckButton(matrix4, FXString(" ") + _("\tSearch also in other file systems"), NULL, 0,
+                                JUSTIFY_LEFT | LAYOUT_CENTER_Y);
 
     // Search results
-    FXHorizontalFrame* frame2 = new FXHorizontalFrame(frame1, LAYOUT_SIDE_TOP | FRAME_NONE | LAYOUT_FILL_X, 0, 0, 0, 0, 0, 0, 0, 0);
+    FXHorizontalFrame* frame2 = new FXHorizontalFrame(frame1, LAYOUT_SIDE_TOP | FRAME_NONE | LAYOUT_FILL_X, 0, 0, 0, 0,
+                                                      0, 0, 0, 0);
     searchresults = new FXLabel(frame2, "", NULL, LAYOUT_CENTER_Y | LAYOUT_FILL_X);
 
     // Buttons
     FXHorizontalFrame* buttons = new FXHorizontalFrame(frame2, PACK_UNIFORM_WIDTH, 0, 0, 0, 0, 10, 10, 5, 5);
 
     // Start
-    startbutton = new FXButton(buttons, _("&Start\tStart the search (F3)"), NULL, this, ID_START, FRAME_RAISED | FRAME_THICK | LAYOUT_RIGHT, 0, 0, 0, 0, 20, 20);
+    startbutton = new FXButton(buttons, _("&Start\tStart Search (F3)"), NULL, this, ID_START,
+                               FRAME_GROOVE | LAYOUT_RIGHT, 0, 0, 0, 0, 20, 20);
 
     // Stop
-    stopbutton = new FXButton(buttons, _("&Stop\tStop the search (Esc)"), NULL, this, ID_STOP, FRAME_RAISED | FRAME_THICK | LAYOUT_RIGHT, 0, 0, 0, 0, 20, 20);
+    stopbutton = new FXButton(buttons, _("&Stop\tStop Search (Esc)"), NULL, this, ID_STOP,
+                              FRAME_GROOVE | LAYOUT_RIGHT, 0, 0, 0, 0, 20, 20);
 
+    // Quit
+    new FXButton(buttons, _("&Quit"), NULL, this, ID_CLOSE, FRAME_GROOVE | LAYOUT_RIGHT, 0, 0, 0, 0, 20, 20);
+
+    // Read file list columns order and shown status
+    FXbool colShown[FileList::ID_COL_NAME + NMAX_COLS] = { 0 };
+    FXuint i = FileList::ID_COL_NAME;
+    colShown[i++] = getApp()->reg().readUnsignedEntry("SETTINGS", "view_col_name", 1);
+    colShown[i++] = getApp()->reg().readUnsignedEntry("SETTINGS", "view_col_size", 1);
+    colShown[i++] = getApp()->reg().readUnsignedEntry("SETTINGS", "view_col_type", 1);
+    colShown[i++] = getApp()->reg().readUnsignedEntry("SETTINGS", "view_col_ext", 1);
+    colShown[i++] = getApp()->reg().readUnsignedEntry("SETTINGS", "view_col_date", 1);
+    colShown[i++] = getApp()->reg().readUnsignedEntry("SETTINGS", "view_col_user", 1);
+    colShown[i++] = getApp()->reg().readUnsignedEntry("SETTINGS", "view_col_group", 1);
+    colShown[i++] = getApp()->reg().readUnsignedEntry("SETTINGS", "view_col_perms", 1);
+    colShown[i++] = getApp()->reg().readUnsignedEntry("SETTINGS", "view_col_link", 1);
+
+    FXuint idCol[NMAX_COLS] = { 0 };
+    FXuint nbCols = 0;
+    FXuint id = 0;
+    i = 0;
+
+    id = getApp()->reg().readUnsignedEntry("SETTINGS", "id_col_0", FileList::ID_COL_NAME);
+    if (id > 0 && colShown[id])
+    {
+        idCol[i++] = id;
+    }
+    id = getApp()->reg().readUnsignedEntry("SETTINGS", "id_col_1", FileList::ID_COL_SIZE);
+    if (id > 0 && colShown[id])
+    {
+        idCol[i++] = id;
+    }
+    id = getApp()->reg().readUnsignedEntry("SETTINGS", "id_col_2", FileList::ID_COL_TYPE);
+    if (id > 0 && colShown[id])
+    {
+        idCol[i++] = id;
+    }
+    id = getApp()->reg().readUnsignedEntry("SETTINGS", "id_col_3", FileList::ID_COL_EXT);
+    if (id > 0 && colShown[id])
+    {
+        idCol[i++] = id;
+    }
+    id = getApp()->reg().readUnsignedEntry("SETTINGS", "id_col_4", FileList::ID_COL_DATE);
+    if (id > 0 && colShown[id])
+    {
+        idCol[i++] = id;
+    }
+    id = getApp()->reg().readUnsignedEntry("SETTINGS", "id_col_5", FileList::ID_COL_USER);
+    if (id > 0 && colShown[id])
+    {
+        idCol[i++] = id;
+    }
+    id = getApp()->reg().readUnsignedEntry("SETTINGS", "id_col_6", FileList::ID_COL_GROUP);
+    if (id > 0 && colShown[id])
+    {
+        idCol[i++] = id;
+    }
+    id = getApp()->reg().readUnsignedEntry("SETTINGS", "id_col_7", FileList::ID_COL_PERMS);
+    if (id > 0 && colShown[id])
+    {
+        idCol[i++] = id;
+    }
+    id = getApp()->reg().readUnsignedEntry("SETTINGS", "id_col_8", FileList::ID_COL_LINK);
+    if (id > 0 && colShown[id])
+    {
+        idCol[i++] = id;
+    }
+    nbCols = i;
+
+    // Column ids for search list
+    FXuint idColSearch[NMAX_COLS + 1] = { 0 };
+    FXuint nbColsSearch = nbCols + 1;
+
+    idColSearch[0] = idCol[0];
+    idColSearch[1] = FileList::ID_COL_DIRNAME;
+
+    for (FXuint i = 1; i < nbCols; i++)
+    {
+        idColSearch[i + 1] = idCol[i];
+    }
 
     // Search Panel
     FXColor listbackcolor = getApp()->reg().readColorEntry("SETTINGS", "listbackcolor", FXRGB(255, 255, 255));
     FXColor listforecolor = getApp()->reg().readColorEntry("SETTINGS", "listforecolor", FXRGB(0, 0, 0));
-    searchpanel = new SearchPanel(frame1,
-                                  getApp()->reg().readUnsignedEntry("SEARCH PANEL", "name_size", 200),
+
+    searchpanel = new SearchPanel(frame1, idColSearch, nbColsSearch,
+                                  getApp()->reg().readUnsignedEntry("SEARCH PANEL", "name_size", MIN_NAME_SIZE),
                                   getApp()->reg().readUnsignedEntry("SEARCH PANEL", "dir_size", 150),
                                   getApp()->reg().readUnsignedEntry("SEARCH PANEL", "size_size", 60),
                                   getApp()->reg().readUnsignedEntry("SEARCH PANEL", "type_size", 100),
                                   getApp()->reg().readUnsignedEntry("SEARCH PANEL", "ext_size", 100),
-                                  getApp()->reg().readUnsignedEntry("SEARCH PANEL", "modd_size", 150),
+                                  getApp()->reg().readUnsignedEntry("SEARCH PANEL", "date_size", 150),
                                   getApp()->reg().readUnsignedEntry("SEARCH PANEL", "user_size", 50),
-                                  getApp()->reg().readUnsignedEntry("SEARCH PANEL", "grou_size", 50),
-                                  getApp()->reg().readUnsignedEntry("SEARCH PANEL", "attr_size", 100),
+                                  getApp()->reg().readUnsignedEntry("SEARCH PANEL", "group_size", 50),
+                                  getApp()->reg().readUnsignedEntry("SEARCH PANEL", "perms_size", 100),
+                                  getApp()->reg().readUnsignedEntry("SEARCH PANEL", "link_size", 100),
                                   listbackcolor, listforecolor,
                                   LAYOUT_SIDE_TOP | LAYOUT_FILL_X | LAYOUT_FILL_Y);
 
@@ -367,21 +488,21 @@ SearchWindow::SearchWindow(FXApp* app, const FXString& name, FXuint opts, int x,
     {
         searchpanel->setSortFunc(FileList::descendingExtMix);
     }
-    else if (sort_func == "ascendingTime")
+    else if (sort_func == "ascendingDate")
     {
-        searchpanel->setSortFunc(FileList::ascendingTime);
+        searchpanel->setSortFunc(FileList::ascendingDate);
     }
-    else if (sort_func == "ascendingTimeMix")
+    else if (sort_func == "ascendingDateMix")
     {
-        searchpanel->setSortFunc(FileList::ascendingTimeMix);
+        searchpanel->setSortFunc(FileList::ascendingDateMix);
     }
-    else if (sort_func == "descendingTime")
+    else if (sort_func == "descendingDate")
     {
-        searchpanel->setSortFunc(FileList::descendingTime);
+        searchpanel->setSortFunc(FileList::descendingDate);
     }
-    else if (sort_func == "descendingTimeMix")
+    else if (sort_func == "descendingDateMix")
     {
-        searchpanel->setSortFunc(FileList::descendingTimeMix);
+        searchpanel->setSortFunc(FileList::descendingDateMix);
     }
     else if (sort_func == "ascendingUser")
     {
@@ -415,21 +536,37 @@ SearchWindow::SearchWindow(FXApp* app, const FXString& name, FXuint opts, int x,
     {
         searchpanel->setSortFunc(FileList::descendingGroupMix);
     }
-    else if (sort_func == "ascendingPerm")
+    else if (sort_func == "ascendingPerms")
     {
-        searchpanel->setSortFunc(FileList::ascendingPerm);
+        searchpanel->setSortFunc(FileList::ascendingPerms);
     }
-    else if (sort_func == "ascendingPermMix")
+    else if (sort_func == "ascendingPermsMix")
     {
-        searchpanel->setSortFunc(FileList::ascendingPermMix);
+        searchpanel->setSortFunc(FileList::ascendingPermsMix);
     }
-    else if (sort_func == "descendingPerm")
+    else if (sort_func == "descendingPerms")
     {
-        searchpanel->setSortFunc(FileList::descendingPerm);
+        searchpanel->setSortFunc(FileList::descendingPerms);
     }
-    else if (sort_func == "descendingPermMix")
+    else if (sort_func == "descendingPermsMix")
     {
-        searchpanel->setSortFunc(FileList::descendingPermMix);
+        searchpanel->setSortFunc(FileList::descendingPermsMix);
+    }
+    else if (sort_func == "ascendingLink")
+    {
+        searchpanel->setSortFunc(FileList::ascendingLink);
+    }
+    else if (sort_func == "ascendingLinkMix")
+    {
+        searchpanel->setSortFunc(FileList::ascendingLinkMix);
+    }
+    else if (sort_func == "descendingLink")
+    {
+        searchpanel->setSortFunc(FileList::descendingLink);
+    }
+    else if (sort_func == "descendingLinkMix")
+    {
+        searchpanel->setSortFunc(FileList::descendingLinkMix);
     }
 
     // Add some accelerators
@@ -437,51 +574,51 @@ SearchWindow::SearchWindow(FXApp* app, const FXString& name, FXuint opts, int x,
     FXString key;
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "select_all", "Ctrl-A");
-    hotkey = _parseAccel(key);
+    hotkey = xf_parseaccel(key);
     getAccelTable()->addAccel(hotkey, searchpanel, FXSEL(SEL_COMMAND, SearchPanel::ID_SELECT_ALL));
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "invert_selection", "Ctrl-I");
-    hotkey = _parseAccel(key);
+    hotkey = xf_parseaccel(key);
     getAccelTable()->addAccel(hotkey, searchpanel, FXSEL(SEL_COMMAND, SearchPanel::ID_SELECT_INVERSE));
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "deselect_all", "Ctrl-Z");
-    hotkey = _parseAccel(key);
+    hotkey = xf_parseaccel(key);
     getAccelTable()->addAccel(hotkey, searchpanel, FXSEL(SEL_COMMAND, SearchPanel::ID_DESELECT_ALL));
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "rename", "F2");
-    hotkey = _parseAccel(key);
+    hotkey = xf_parseaccel(key);
     getAccelTable()->addAccel(hotkey, searchpanel, FXSEL(SEL_COMMAND, SearchPanel::ID_FILE_RENAME));
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "copy_to", "F5");
-    hotkey = _parseAccel(key);
+    hotkey = xf_parseaccel(key);
     getAccelTable()->addAccel(hotkey, searchpanel, FXSEL(SEL_COMMAND, SearchPanel::ID_FILE_COPYTO));
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "move_to", "F6");
-    hotkey = _parseAccel(key);
+    hotkey = xf_parseaccel(key);
     getAccelTable()->addAccel(hotkey, searchpanel, FXSEL(SEL_COMMAND, SearchPanel::ID_FILE_MOVETO));
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "symlink_to", "Ctrl-S");
-    hotkey = _parseAccel(key);
+    hotkey = xf_parseaccel(key);
     getAccelTable()->addAccel(hotkey, searchpanel, FXSEL(SEL_COMMAND, SearchPanel::ID_FILE_SYMLINK));
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "open", "Ctrl-O");
-    hotkey = _parseAccel(key);
+    hotkey = xf_parseaccel(key);
     getAccelTable()->addAccel(hotkey, searchpanel, FXSEL(SEL_COMMAND, SearchPanel::ID_OPEN));
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "view", "Shift-F4");
-    hotkey = _parseAccel(key);
+    hotkey = xf_parseaccel(key);
     getAccelTable()->addAccel(hotkey, searchpanel, FXSEL(SEL_COMMAND, SearchPanel::ID_VIEW));
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "edit", "F4");
-    hotkey = _parseAccel(key);
+    hotkey = xf_parseaccel(key);
     getAccelTable()->addAccel(hotkey, searchpanel, FXSEL(SEL_COMMAND, SearchPanel::ID_EDIT));
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "compare", "F8");
-    hotkey = _parseAccel(key);
+    hotkey = xf_parseaccel(key);
     getAccelTable()->addAccel(hotkey, searchpanel, FXSEL(SEL_COMMAND, SearchPanel::ID_COMPARE));
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "close", "Ctrl-W");
-    hotkey = _parseAccel(key);
+    hotkey = xf_parseaccel(key);
     getAccelTable()->addAccel(hotkey, this, FXSEL(SEL_COMMAND, SearchWindow::ID_CLOSE));
 
     // Warning window
@@ -499,9 +636,6 @@ SearchWindow::SearchWindow(FXApp* app, const FXString& name, FXuint opts, int x,
 
     // Initialize variables
     application = app;
-    count = 0;
-    pid = -1;
-    running = false;
 }
 
 
@@ -523,7 +657,7 @@ SearchWindow::~SearchWindow()
 
 
 // Check input for permissions in octal
-long SearchWindow::onPermVerify(FXObject* o, FXSelector sel, void* ptr)
+long SearchWindow::onPermsVerify(FXObject* sender, FXSelector sel, void* ptr)
 {
     char* str = (char*)ptr;
 
@@ -531,16 +665,16 @@ long SearchWindow::onPermVerify(FXObject* o, FXSelector sel, void* ptr)
     {
         if (str[i] - '0' > 7)
         {
-            return(1);
+            return 1;
         }
     }
 
-    return(0);
+    return 0;
 }
 
 
 // Display or hide the more options dialog
-long SearchWindow::onCmdMoreOptions(FXObject* o, FXSelector sel, void*)
+long SearchWindow::onCmdMoreOptions(FXObject* sender, FXSelector sel, void*)
 {
     if (moreoptions->getCheck())
     {
@@ -554,10 +688,10 @@ long SearchWindow::onCmdMoreOptions(FXObject* o, FXSelector sel, void*)
         userbtn->setCheck(false);
         grpbtn->setCheck(false);
         typebtn->setCheck(false);
-        permbtn->setCheck(false);
+        permsbtn->setCheck(false);
         emptybtn->setCheck(false);
         linkbtn->setCheck(false);
-        perm->setText("0644");
+        perms->setText("0644");
         type->setCurrentItem(0);
         user->setText(uid);
         grp->setText(gid);
@@ -572,14 +706,14 @@ long SearchWindow::onCmdMoreOptions(FXObject* o, FXSelector sel, void*)
     // Refresh layout
     searchframe->recalc();
 
-    return(1);
+    return 1;
 }
 
 
 // Close window
 long SearchWindow::onCmdClose(FXObject*, FXSelector, void*)
 {
-    ::setWaitCursor(getApp(), END_CURSOR);
+    xf_setwaitcursor(getApp(), END_CURSOR);
 
     // Clear panel items
     searchpanel->clearItems();
@@ -592,10 +726,10 @@ long SearchWindow::onCmdClose(FXObject*, FXSelector, void*)
     userbtn->setCheck(false);
     grpbtn->setCheck(false);
     typebtn->setCheck(false);
-    permbtn->setCheck(false);
+    permsbtn->setCheck(false);
     emptybtn->setCheck(false);
     linkbtn->setCheck(false);
-    perm->setText("0644");
+    perms->setText("0644");
     type->setCurrentItem(0);
     user->setText(uid);
     grp->setText(gid);
@@ -611,10 +745,30 @@ long SearchWindow::onCmdClose(FXObject*, FXSelector, void*)
     }
     hide();
 
+    // Sort history
+    findfile->setSortFunc(FXList::ascendingCase);
+    findfile->sortItems();
+
+    // Update history
+    FindNum = 0;
+    if (findfile->getNumItems() > 0)
+    {
+        for (int i = 0; i < findfile->getNumItems(); i++)
+        {
+            if (FindNum > FIND_HIST_SIZE - 1)
+            {
+                break;
+            }
+            FXString str = findfile->getItemText(i);
+            xf_strlcpy(FindHistory[i], str.text(), str.length() + 1);
+            FindNum++;
+        }
+    }
+
     // Set focus to main window
     mainWindow->setFocus();
 
-    return(1);
+    return 1;
 }
 
 
@@ -643,14 +797,14 @@ long SearchWindow::onCmdStart(FXObject*, FXSelector, void*)
 
     // Compose the find and grep command according to the selected options
 
-    // Follow symlinks
+    // Don't follow symlinks
     if (linkbtn->getCheck())
     {
-        searchcommand = "find -L " + ::quote(wheredir->getText());
+        searchcommand = "find -P " + xf_quote(wheredir->getText());
     }
     else
     {
-        searchcommand = "find -P " + ::quote(wheredir->getText());
+        searchcommand = "find -L " + xf_quote(wheredir->getText());
     }
 
     // Ignore case
@@ -706,8 +860,8 @@ long SearchWindow::onCmdStart(FXObject*, FXSelector, void*)
         searchcommand += " -maxdepth 1 ";
     }
 
-    // Don't search other file systems
-    if (nofsbtn->getCheck())
+    // Search other file systems
+    if (!nofsbtn->getCheck())
     {
         searchcommand += " -mount ";
     }
@@ -719,22 +873,18 @@ long SearchWindow::onCmdStart(FXObject*, FXSelector, void*)
         {
             searchcommand += " -type f";
         }
-
         else if (type->getCurrentItem() == 1)
         {
             searchcommand += " -type d";
         }
-
         else if (type->getCurrentItem() == 2)
         {
             searchcommand += " -type l";
         }
-
         else if (type->getCurrentItem() == 3)
         {
             searchcommand += " -type s";
         }
-
         else if (type->getCurrentItem() == 4)
         {
             searchcommand += " -type p";
@@ -742,9 +892,9 @@ long SearchWindow::onCmdStart(FXObject*, FXSelector, void*)
     }
 
     // Permissions
-    if (permbtn->getCheck())
+    if (permsbtn->getCheck())
     {
-        searchcommand += " -perm " + perm->getText();
+        searchcommand += " -perm " + perms->getText();
     }
 
     // Empty files
@@ -764,7 +914,6 @@ long SearchWindow::onCmdStart(FXObject*, FXSelector, void*)
     {
         searchcommand += nameoption + searchpattern + "\" -print";
     }
-
     // With grep command
     else
     {
@@ -783,11 +932,11 @@ long SearchWindow::onCmdStart(FXObject*, FXSelector, void*)
     searchpanel->clearItems();
 
     // Don't use standard cursor wait function
-    ::setWaitCursor(getApp(), BEGIN_CURSOR);
+    xf_setwaitcursor(getApp(), BEGIN_CURSOR);
 
     // Search message
     searchresults->setText(FXString(">>>> ") + _("Search started - Please wait...") + FXString(" <<<<"));
-    
+
     // Running flag and rotating cursor
     running = true;
     rotcur = "-";
@@ -797,11 +946,11 @@ long SearchWindow::onCmdStart(FXObject*, FXSelector, void*)
     strprev = "";
     warnwindow->setText("");
 
-    getApp()->addTimeout(this, SearchWindow::ID_TIMEOUT, TIMEOUT_DELAY);
+    getApp()->addTimeout(this, SearchWindow::ID_ROTATING_CURSOR, ROTATING_CURSOR_REFRESH_DELAY);
 
     execCmd(searchcommand.text());
 
-    return(1);
+    return 1;
 }
 
 
@@ -811,7 +960,7 @@ int SearchWindow::execCmd(FXString command)
     // Open pipes to communicate with child process
     if ((pipe(in) == -1) || (pipe(out) == -1))
     {
-        return(-1);
+        return -1;
     }
 
     // Create child process
@@ -819,7 +968,7 @@ int SearchWindow::execCmd(FXString command)
     if (pid == -1)
     {
         fprintf(stderr, _("Error: Fork failed: %s\n"), strerror(errno));
-        return(-1);
+        return -1;
     }
     application->addInput(out[0], INPUT_READ, this, ID_READ_DATA);
 
@@ -828,10 +977,10 @@ int SearchWindow::execCmd(FXString command)
         // Here, we are running as the child process!
         char* args[4];
         ::close(out[0]);
-        int ret1 = ::dup2(out[1], STDOUT_FILENO);
-        int ret2 = ::dup2(out[1], STDERR_FILENO);
+        int ret1 = dup2(out[1], STDOUT_FILENO);
+        int ret2 = dup2(out[1], STDERR_FILENO);
         ::close(in[1]);
-        int ret3 = ::dup2(in[0], STDIN_FILENO);
+        int ret3 = dup2(in[0], STDIN_FILENO);
 
         if ((ret1 < 0) || (ret2 < 0) || (ret3 < 0))
         {
@@ -845,17 +994,17 @@ int SearchWindow::execCmd(FXString command)
                 MessageBox::error(this, BOX_OK, _("Error"), _("Can't duplicate pipes"));
             }
 
-            return(-1);
+            return -1;
         }
 
-        args[0] = (char*)"sh";           // Setup arguments
-        args[1] = (char*)"-c";           // to run command
-        args[2] = (char*)command.text(); // in a shell in
-        args[3] = NULL;                  // a new process
+        args[0] = (char*)"sh";                  // Setup arguments
+        args[1] = (char*)"-c";                  // to run command
+        args[2] = (char*)command.text();        // in a shell in
+        args[3] = NULL;                         // a new process
 
-        setpgid(0, 0);                   // Allows to kill the whole group
-        execvp(args[0], args);           // Start a new process which will execute the command
-        _exit(EXIT_FAILURE);             // We'll get here only if an error occurred
+        setpgid(0, 0);                          // Allows to kill the whole group
+        execvp(args[0], args);                  // Start a new process which will execute the command
+        _exit(EXIT_FAILURE);                    // We'll get here only if an error occurred
     }
     else
     {
@@ -864,7 +1013,7 @@ int SearchWindow::execCmd(FXString command)
         ::close(in[0]);
     }
 
-    return(1);
+    return 1;
 }
 
 
@@ -917,7 +1066,8 @@ long SearchWindow::onReadData(FXObject*, FXSelector, void*)
                         }
 
                         // Refresh file list (two speeds depending on the number of items)
-                        FXuint cnt = (count < REFRESH_COUNT_LIMIT ? count % REFRESH_COUNT_SLOW : count % REFRESH_COUNT_FAST);
+                        FXuint cnt = (count <
+                                      REFRESH_COUNT_LIMIT ? count % REFRESH_COUNT_SLOW : count % REFRESH_COUNT_FAST);
                         if (cnt == 0)
                         {
                             searchpanel->setCurrentItem(count - 1);
@@ -941,7 +1091,6 @@ long SearchWindow::onReadData(FXObject*, FXSelector, void*)
                 }
             }
         }
-
         // Nothing to read
         else if (nread == 0)
         {
@@ -953,17 +1102,17 @@ long SearchWindow::onReadData(FXObject*, FXSelector, void*)
             running = false;
 
             // Don't use standard cursor wait function
-            ::setWaitCursor(getApp(), END_CURSOR);
+            xf_setwaitcursor(getApp(), END_CURSOR);
 
             // Update item count
             searchpanel->setStatusText(FXStringVal(count) + _(" items"));
             getApp()->repaint();
 
             // Force file list refresh
+            searchpanel->setSearchPath(wheredir->getText());  // To autosize, if enabled
             searchpanel->setAllowRefresh(true);
             searchpanel->onCmdRefresh(0, 0, 0);
         }
-
         // Input / Output error
         else
         {
@@ -973,7 +1122,7 @@ long SearchWindow::onReadData(FXObject*, FXSelector, void*)
         }
     }
 
-    return(1);
+    return 1;
 }
 
 
@@ -982,7 +1131,7 @@ long SearchWindow::onCmdStop(FXObject*, FXSelector, void*)
 {
     if (running)
     {
-        ::setWaitCursor(getApp(), END_CURSOR);
+        xf_setwaitcursor(getApp(), END_CURSOR);
         running = false;
         searchresults->setText(FXString(">>>> ") + _("Search stopped...") + FXString(" <<<<"));
 
@@ -994,11 +1143,10 @@ long SearchWindow::onCmdStop(FXObject*, FXSelector, void*)
         searchpanel->setAllowRefresh(true);
 
 
-        getApp()->removeTimeout(this, SearchWindow::ID_TIMEOUT);
-
+        getApp()->removeTimeout(this, SearchWindow::ID_ROTATING_CURSOR);
     }
 
-    return(1);
+    return 1;
 }
 
 
@@ -1028,10 +1176,10 @@ long SearchWindow::onUpdStop(FXObject*, FXSelector, void*)
         userbtn->disable();
         grpbtn->disable();
         typebtn->disable();
-        permbtn->disable();
+        permsbtn->disable();
         emptybtn->disable();
         linkbtn->disable();
-        perm->disable();
+        perms->disable();
         type->disable();
         user->disable();
         grp->disable();
@@ -1061,10 +1209,10 @@ long SearchWindow::onUpdStop(FXObject*, FXSelector, void*)
         userbtn->enable();
         grpbtn->enable();
         typebtn->enable();
-        permbtn->enable();
+        permsbtn->enable();
         emptybtn->enable();
         linkbtn->enable();
-        perm->enable();
+        perms->enable();
         type->enable();
         user->enable();
         grp->enable();
@@ -1072,7 +1220,7 @@ long SearchWindow::onUpdStop(FXObject*, FXSelector, void*)
         nofsbtn->enable();
     }
 
-    return(1);
+    return 1;
 }
 
 
@@ -1087,11 +1235,10 @@ long SearchWindow::onUpdStart(FXObject*, FXSelector, void*)
     {
         startbutton->enable();
 
-        getApp()->removeTimeout(this, SearchWindow::ID_TIMEOUT);
-
+        getApp()->removeTimeout(this, SearchWindow::ID_ROTATING_CURSOR);
     }
 
-    return(1);
+    return 1;
 }
 
 
@@ -1101,9 +1248,20 @@ void SearchWindow::show(FXuint placement)
     // Clear all file list items
     searchpanel->clearItems();
 
+    // Sort history
+    findfile->setSortFunc(FXList::ascendingCase);
+    findfile->sortItems();
+
     // Set focus on the find search field and select all chars
     findfile->setFocus();
     findfile->selectAll();
+
+    // Empty find text at first call
+    if (firstcall)
+    {
+        findfile->setText("");
+        firstcall = false;
+    }
 
     // Pop the window
     FXTopWindow::show(placement);
@@ -1123,32 +1281,30 @@ long SearchWindow::onKeyPress(FXObject* sender, FXSelector sel, void* ptr)
         // Deselect files if any
         searchpanel->handle(sender, FXSEL(SEL_COMMAND, SearchPanel::ID_DESELECT_ALL), ptr);
 
-        return(1);
+        return 1;
     }
     else if ((event->code == KEY_F3) || ((searchpanel->hasFocus() == false) && (event->code == KEY_Return)))
     {
         // Start process
         handle(this, FXSEL(SEL_COMMAND, ID_START), NULL);
-        return(1);
+        return 1;
     }
-
     // Shift-F10 or menu was pressed : open popup menu
     else if ((event->state & SHIFTMASK && event->code == KEY_F10) || event->code == KEY_Menu)
     {
         searchpanel->handle(sender, FXSEL(SEL_COMMAND, SearchPanel::ID_POPUP_MENU), ptr);
-        return(1);
+        return 1;
     }
-
     // Any other key was pressed : handle the pressed key in the usual way
     else
     {
         if (FXTopWindow::onKeyPress(sender, sel, ptr))
         {
-            return(1);
+            return 1;
         }
     }
 
-    return(0);
+    return 0;
 }
 
 
@@ -1158,12 +1314,12 @@ FXuint SearchWindow::execute(FXuint placement)
     create();
     show(placement);
     getApp()->refresh();
-    return(getApp()->runModalFor(this));
+    return getApp()->runModalFor(this);
 }
 
 
 // Browse the file system
-long SearchWindow::onCmdBrowsePath(FXObject* o, FXSelector s, void* p)
+long SearchWindow::onCmdBrowsePath(FXObject* sender, FXSelector sel, void* ptr)
 {
     FileDialog browse(this, _("Select path"), 0, 0, 0, 650, 480);
 
@@ -1182,42 +1338,39 @@ long SearchWindow::onCmdBrowsePath(FXObject* o, FXSelector s, void* p)
         FXString path = browse.getFilename();
         wheredir->setText(path);
     }
-    return(1);
+    return 1;
 }
 
 
-// Update permission string
-long SearchWindow::onUpdPerm(FXObject* sender, FXSelector, void*)
+// Update permissions string
+long SearchWindow::onUpdPerms(FXObject* sender, FXSelector, void*)
 {
-    int len = perm->getText().length();
+    int len = perms->getText().length();
 
     if (len < 4)
     {
         FXString str;
         if (len == 0)
         {
-            perm->setText("0644");
+            perms->setText("0644");
         }
-
         else if (len == 1)
         {
-            str = "000" + perm->getText();
+            str = "000" + perms->getText();
         }
-
         else if (len == 2)
         {
-            str = "00" + perm->getText();
+            str = "00" + perms->getText();
         }
-
         else
         {
-            str = "0" + perm->getText();
+            str = "0" + perms->getText();
         }
 
-        perm->setText(str);
+        perms->setText(str);
     }
 
-    return(1);
+    return 1;
 }
 
 
@@ -1238,12 +1391,12 @@ long SearchWindow::onUpdSize(FXObject* sender, FXSelector, void*)
         maxsize->enable();
     }
 
-    return(1);
+    return 1;
 }
 
 
 // Reset search options
-long SearchWindow::onCmdResetOptions(FXObject* o, FXSelector sel, void*)
+long SearchWindow::onCmdResetOptions(FXObject* sender, FXSelector sel, void*)
 {
     minsize->setValue(0);
     maxsize->setValue(0);
@@ -1252,46 +1405,51 @@ long SearchWindow::onCmdResetOptions(FXObject* o, FXSelector sel, void*)
     userbtn->setCheck(false);
     grpbtn->setCheck(false);
     typebtn->setCheck(false);
-    permbtn->setCheck(false);
+    permsbtn->setCheck(false);
     emptybtn->setCheck(false);
     linkbtn->setCheck(false);
-    perm->setText("0644");
+    perms->setText("0644");
     type->setCurrentItem(0);
     user->setText(uid);
     grp->setText(gid);
     norecbtn->setCheck(false);
     nofsbtn->setCheck(false);
 
-    return(1);
+    return 1;
 }
 
 
-// Handle timeout for cursor animation
-long SearchWindow::onTimeout(FXObject*, FXSelector, void*)
+// Refresh rotating cursor
+long SearchWindow::onRotatingCursorRefresh(FXObject*, FXSelector, void*)
 {
+    FXString msg = _("Search started - Please wait...");
+    FXString gt = ">>>> ";
+    FXString lt = " <<<<";
+
+
     // Show a rotating cursor
     if (rotcur == "—") // Em dash
     {
-        searchresults->setText(FXString(">>>> ") + _("Search started - Please wait...") + FXString(" \\ <<<<"));
+        searchresults->setText(gt + msg + FXString(" \\") + lt);
         rotcur = "\\";
     }
     else if (rotcur == "\\")
     {
-        searchresults->setText(FXString(">>>> ") + _("Search started - Please wait...") + FXString(" | <<<<"));
+        searchresults->setText(gt + msg + FXString(" |") + lt);
         rotcur = "|";
     }
     else if (rotcur == "|")
     {
-        searchresults->setText(FXString(">>>> ") + _("Search started - Please wait...") + FXString(" / <<<<"));
+        searchresults->setText(gt + msg + FXString(" /") + lt);
         rotcur = "/";
     }
     else
     {
-        searchresults->setText(FXString(">>>> ") + _("Search started - Please wait...") + FXString(" — <<<<"));
+        searchresults->setText(gt + msg + FXString(" —") + lt);
         rotcur = "—"; // Em dash
     }
 
-    getApp()->addTimeout(this, SearchWindow::ID_TIMEOUT, TIMEOUT_DELAY);
+    getApp()->addTimeout(this, SearchWindow::ID_ROTATING_CURSOR, ROTATING_CURSOR_REFRESH_DELAY);
 
-    return(1);
+    return 1;
 }

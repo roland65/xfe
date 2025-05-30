@@ -25,29 +25,26 @@
 
 // Add FOX hacks
 #include "foxhacks.cpp"
-#include "clearlooks.cpp"
+#include "moderncontrols.cpp"
 
 
 // Global variables
-char**   args;
-FXbool dpkg = false;
-FXbool rpm = false;
-FXColor highlightcolor;
-FXbool allowPopupScroll = false;
-FXuint single_click;
-FXbool file_tooltips;
-FXbool relative_resize;
-FXbool save_win_pos;
+char** args;
 FXString homedir;
 FXString xdgconfighome;
 FXString xdgdatahome;
-FXbool xim_used = false;
+FXString execpath;
+
+// Filter history
+char FilterHistory[FILTER_HIST_SIZE][MAX_PATTERN_SIZE];
+int FilterNum = 0;
+
+// Integer UI scaling factor
+FXint scaleint = 1;
 
 // Main window (not used but necessary for compilation)
 FXMainWindow* mainWindow = NULL;
 
-// Scaling factors for the UI
-extern double scalefrac;
 
 // Hand cursor replacement (integer scaling factor = 1)
 #define hand1_width     32
@@ -162,27 +159,32 @@ FXDEFMAP(XFilePackage) XFilePackageMap[] =
 {
     FXMAPFUNC(SEL_SIGNAL, XFilePackage::ID_HARVEST, XFilePackage::onSigHarvest),
     FXMAPFUNC(SEL_CLOSE, 0, XFilePackage::onCmdQuit),
+    FXMAPFUNC(SEL_COMMAND, XFilePackage::ID_RECENTFILE, XFilePackage::onCmdRecentFile),
     FXMAPFUNC(SEL_COMMAND, XFilePackage::ID_QUIT, XFilePackage::onCmdQuit),
     FXMAPFUNC(SEL_COMMAND, XFilePackage::ID_UNINSTALL, XFilePackage::onCmdUninstall),
     FXMAPFUNC(SEL_COMMAND, XFilePackage::ID_ABOUT, XFilePackage::onCmdAbout),
     FXMAPFUNC(SEL_COMMAND, XFilePackage::ID_OPEN, XFilePackage::onCmdOpen),
     FXMAPFUNC(SEL_COMMAND, XFilePackage::ID_INSTALL, XFilePackage::onCmdInstall),
+    FXMAPFUNC(SEL_COMMAND, XFilePackage::ID_TAB, XFilePackage::onCmdTabClicked),
 };
 
 
 // Object implementation
 FXIMPLEMENT(XFilePackage, FXMainWindow, XFilePackageMap, ARRAYNUMBER(XFilePackageMap))
 
-// Constructor
-XFilePackage::XFilePackage(FXApp* a) : FXMainWindow(a, "Xfp", NULL, NULL, DECOR_ALL)
+// Construct
+XFilePackage::XFilePackage(FXApp* a) : FXMainWindow(a, "Xfp", NULL, NULL,
+                                                    DECOR_TITLE | DECOR_MINIMIZE | DECOR_MAXIMIZE | DECOR_CLOSE |
+                                                    DECOR_BORDER | DECOR_STRETCHABLE)
 {
     FXString key;
     FXHotKey hotkey;
 
+    // Application icon
     setIcon(xfpicon);
 
     // Make menu bar
-    menubar = new FXMenuBar(this, LAYOUT_DOCK_NEXT | LAYOUT_SIDE_TOP | LAYOUT_FILL_X | FRAME_RAISED);
+    menubar = new FXMenuBar(this, LAYOUT_DOCK_NEXT | LAYOUT_SIDE_TOP | LAYOUT_FILL_X | FRAME_NONE);
 
     // Sites where to dock
     FXDockSite* topdock = new FXDockSite(this, LAYOUT_SIDE_TOP | LAYOUT_FILL_X);
@@ -191,8 +193,9 @@ XFilePackage::XFilePackage(FXApp* a) : FXMainWindow(a, "Xfp", NULL, NULL, DECOR_
     new FXDockSite(this, LAYOUT_SIDE_RIGHT | LAYOUT_FILL_Y);
 
     // Tool bar
-    FXToolBarShell* dragshell1 = new FXToolBarShell(this, FRAME_RAISED);
-    toolbar = new FXToolBar(topdock, dragshell1, LAYOUT_DOCK_NEXT | LAYOUT_SIDE_TOP | LAYOUT_FILL_X | LAYOUT_FILL_Y | FRAME_RAISED);
+    FXToolBarShell* dragshell1 = new FXToolBarShell(this, FRAME_NONE);
+    toolbar = new FXToolBar(topdock, dragshell1,
+                            LAYOUT_DOCK_NEXT | LAYOUT_SIDE_TOP | LAYOUT_FILL_X | LAYOUT_FILL_Y | FRAME_NONE);
     new FXToolBarGrip(toolbar, toolbar, FXToolBar::ID_TOOLBARGRIP, TOOLBARGRIP_DOUBLE);
     int style = BUTTON_TOOLBAR;
 
@@ -210,21 +213,37 @@ XFilePackage::XFilePackage(FXApp* a) : FXMainWindow(a, "Xfp", NULL, NULL, DECOR_
 
     // Toolbar button: File open
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "open", "Ctrl-O");
-    new FXButton(toolbar, TAB + _("Open package file") + PARS(key), fileopenicon, this, ID_OPEN, style | FRAME_RAISED | LAYOUT_CENTER_Y | LAYOUT_LEFT);
+    new FXButton(toolbar, TAB + _("Open Package File") + PARS(key), minifileopenicon, this, ID_OPEN,
+                 style | FRAME_NONE | LAYOUT_CENTER_Y | LAYOUT_LEFT);
 
     // File Menu entries
     FXMenuCommand* mc = NULL;
 
-    mc = new FXMenuCommand(filemenu, _("&Open..."), fileopenicon, this, ID_OPEN);
+    mc = new FXMenuCommand(filemenu, _("&Open..."), minifileopenicon, this, ID_OPEN);
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "open", "Ctrl-O");
     mc->setAccelText(key);
-    hotkey = _parseAccel(key);
+    hotkey = xf_parseaccel(key);
     getAccelTable()->addAccel(hotkey, mc, FXSEL(SEL_COMMAND, FXMenuCommand::ID_ACCEL));
 
-    mc = new FXMenuCommand(filemenu, _("&Quit"), quiticon, this, ID_QUIT);
+    // Recent file menu; this automatically hides if there are no files
+    FXMenuSeparator* sep1 = new FXMenuSeparator(filemenu);
+    sep1->setTarget(&mrufiles);
+    sep1->setSelector(FXRecentFiles::ID_ANYFILES);
+    new FXMenuCommand(filemenu, FXString::null, NULL, &mrufiles, FXRecentFiles::ID_FILE_1);
+    new FXMenuCommand(filemenu, FXString::null, NULL, &mrufiles, FXRecentFiles::ID_FILE_2);
+    new FXMenuCommand(filemenu, FXString::null, NULL, &mrufiles, FXRecentFiles::ID_FILE_3);
+    new FXMenuCommand(filemenu, FXString::null, NULL, &mrufiles, FXRecentFiles::ID_FILE_4);
+    new FXMenuCommand(filemenu, FXString::null, NULL, &mrufiles, FXRecentFiles::ID_FILE_5);
+    new FXMenuCommand(filemenu, _("&Clear Recent Files") + TAB2 + _("Clear recent file menu."), NULL, &mrufiles,
+                      FXRecentFiles::ID_CLEAR);
+    FXMenuSeparator* sep2 = new FXMenuSeparator(filemenu);
+    sep2->setTarget(&mrufiles);
+    sep2->setSelector(FXRecentFiles::ID_ANYFILES);
+
+    mc = new FXMenuCommand(filemenu, _("&Quit"), miniquiticon, this, ID_QUIT);
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "quit", "Ctrl-Q");
     mc->setAccelText(key);
-    hotkey = _parseAccel(key);
+    hotkey = xf_parseaccel(key);
     getAccelTable()->addAccel(hotkey, mc, FXSEL(SEL_COMMAND, FXMenuCommand::ID_ACCEL));
     getAccelTable()->addAccel(KEY_Escape, this, FXSEL(SEL_COMMAND, ID_QUIT));
 
@@ -235,12 +254,12 @@ XFilePackage::XFilePackage(FXApp* a) : FXMainWindow(a, "Xfp", NULL, NULL, DECOR_
     mc = new FXMenuCommand(helpmenu, _("&About X File Package"), NULL, this, ID_ABOUT, 0);
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "help", "F1");
     mc->setAccelText(key);
-    hotkey = _parseAccel(key);
+    hotkey = xf_parseaccel(key);
     getAccelTable()->addAccel(hotkey, mc, FXSEL(SEL_COMMAND, FXMenuCommand::ID_ACCEL));
 
     // Close accelerator
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "close", "Ctrl-W");
-    hotkey = _parseAccel(key);
+    hotkey = xf_parseaccel(key);
     getAccelTable()->addAccel(hotkey, this, FXSEL(SEL_COMMAND, XFilePackage::ID_QUIT));
 
     // Make a tool tip
@@ -250,29 +269,34 @@ XFilePackage::XFilePackage(FXApp* a) : FXMainWindow(a, "Xfp", NULL, NULL, DECOR_
     FXHorizontalFrame* buttons = new FXHorizontalFrame(this, LAYOUT_SIDE_BOTTOM | LAYOUT_FILL_X);
     new FXDragCorner(buttons);
 
-    // Close
-    new FXButton(buttons, _("&Close"), NULL, this, XFilePackage::ID_QUIT, FRAME_RAISED | FRAME_THICK | LAYOUT_RIGHT | LAYOUT_CENTER_Y, 0, 0, 0, 0, 20, 20);
+    // Quit
+    new FXButton(buttons, _("&Quit"), NULL, this, XFilePackage::ID_QUIT, FRAME_GROOVE | LAYOUT_RIGHT | LAYOUT_CENTER_Y,
+                 0, 0, 0, 0, 20, 20);
 
     // Uninstall
-    new FXButton(buttons, _("&Uninstall"), NULL, this, XFilePackage::ID_UNINSTALL, FRAME_RAISED | FRAME_THICK | LAYOUT_RIGHT | LAYOUT_CENTER_Y, 0, 0, 0, 0, 20, 20);
+    new FXButton(buttons, _("&Uninstall"), NULL, this, XFilePackage::ID_UNINSTALL,
+                 FRAME_GROOVE | LAYOUT_RIGHT | LAYOUT_CENTER_Y, 0, 0, 0, 0, 20, 20);
 
-    // Install/Upgrade
-    new FXButton(buttons, _("&Install/Upgrade"), NULL, this, XFilePackage::ID_INSTALL, FRAME_RAISED | FRAME_THICK | LAYOUT_RIGHT | LAYOUT_CENTER_Y, 0, 0, 0, 0, 20, 20);
+    // Install / Upgrade
+    new FXButton(buttons, _("&Install / Upgrade"), NULL, this, XFilePackage::ID_INSTALL,
+                 FRAME_GROOVE | LAYOUT_RIGHT | LAYOUT_CENTER_Y, 0, 0, 0, 0, 20, 20);
 
     // Switcher
-    FXTabBook* tabbook = new FXTabBook(this, NULL, 0, LAYOUT_FILL_X | LAYOUT_FILL_Y | LAYOUT_RIGHT | FRAME_RAISED, 0, 0, 0, 0, 0, 0, 0, 0);
+    tabbook = new FXTabBook(this, this, ID_TAB, LAYOUT_FILL_X | LAYOUT_FILL_Y | LAYOUT_RIGHT | FRAME_NONE, 0, 0, 0, 0,
+                            0, 0, 0, 0);
 
-    // First item is Description
+    // First tab is Description
     new FXTabItem(tabbook, _("&Description"), NULL);
     FXVerticalFrame* descr = new FXVerticalFrame(tabbook);
-    FXPacker*        p = new FXPacker(descr, LAYOUT_FILL_X | LAYOUT_FILL_Y | FRAME_SUNKEN, 0, 0, 0, 0, 0, 0, 0, 0);
+    FXPacker* p = new FXPacker(descr, LAYOUT_FILL_X | LAYOUT_FILL_Y | FRAME_NONE, 0, 0, 0, 0, 0, 0, 0, 0);
     description = new FXText(p, this, XFilePackage::ID_DESCRIPTION, LAYOUT_FILL_X | LAYOUT_FILL_Y);
 
-    // Second item is File List
+    // Second tab is File List
     new FXTabItem(tabbook, _("File &List"), NULL);
     FXVerticalFrame* flistfr = new FXVerticalFrame(tabbook);
-    p = new FXPacker(flistfr, LAYOUT_FILL_X | LAYOUT_FILL_Y | FRAME_SUNKEN, 0, 0, 0, 0, 0, 0, 0, 0);
-    list = new FXTreeList(p, this, XFilePackage::ID_FILELIST, LAYOUT_FILL_X | LAYOUT_FILL_Y | TREELIST_SHOWS_LINES);
+    p = new FXPacker(flistfr, LAYOUT_FILL_X | LAYOUT_FILL_Y | FRAME_NONE, 0, 0, 0, 0, 0, 0, 0, 0);
+    list = new FXTreeList(p, this, XFilePackage::ID_FILELIST,
+                          LAYOUT_FILL_X | LAYOUT_FILL_Y | TREELIST_SHOWS_LINES | TREELIST_SINGLESELECT);
 
     // Initialize file name
     filename = "";
@@ -280,6 +304,13 @@ XFilePackage::XFilePackage(FXApp* a) : FXMainWindow(a, "Xfp", NULL, NULL, DECOR_
     // Other initializations
     smoothscroll = true;
     errorflag = false;
+
+    // Recent files
+    mrufiles.setTarget(this);
+    mrufiles.setSelector(ID_RECENTFILE);
+
+    // Read settings
+    save_win_pos = getApp()->reg().readUnsignedEntry("SETTINGS", "save_win_pos", false);
 }
 
 
@@ -293,6 +324,7 @@ XFilePackage::~XFilePackage()
     delete helpmenu;
     delete list;
     delete description;
+    delete tabbook;
 }
 
 
@@ -304,9 +336,10 @@ long XFilePackage::onCmdAbout(FXObject*, FXSelector, void*)
     msg.format(_("X File Package Version %s is a simple rpm or deb package manager.\n\n"), VERSION);
     msg += COPYRIGHT;
     MessageBox about(this, _("About X File Package"), msg.text(), xfpicon, BOX_OK | DECOR_TITLE | DECOR_BORDER,
-                     JUSTIFY_CENTER_X | ICON_BEFORE_TEXT | LAYOUT_CENTER_Y | LAYOUT_LEFT | LAYOUT_FILL_X | LAYOUT_FILL_Y);
+                     JUSTIFY_CENTER_X | ICON_BEFORE_TEXT | LAYOUT_CENTER_Y | LAYOUT_LEFT | LAYOUT_FILL_X |
+                     LAYOUT_FILL_Y);
     about.execute(PLACEMENT_OWNER);
-    return(1);
+    return 1;
 }
 
 
@@ -316,29 +349,42 @@ long XFilePackage::onCmdOpen(FXObject*, FXSelector, void*)
     const char* patterns[] =
     {
         _("All Files"), "*",
-        _("RPM source packages"), "*.src.rpm",
-        _("RPM packages"), "*.rpm",
-        _("DEB packages"), "*.deb",
+        _("RPM Source Packages"), "*.src.rpm",
+        _("RPM Packages"), "*.rpm",
+        _("DEB Packages"), "*.deb",
         NULL
     };
 
+    errorflag = false;
     FileDialog opendialog(this, _("Open Document"));
 
     opendialog.setSelectMode(SELECTFILE_EXISTING);
     opendialog.setPatternList(patterns);
     opendialog.setDirectory(FXPath::directory(filename));
-    if (opendialog.execute())
+    if (opendialog.execute(PLACEMENT_OWNER))
     {
         filename = opendialog.getFilename();
+        mrufiles.appendFile(filename);
         readDescription();
         readFileList();
     }
 
-    return(1);
+    return 1;
 }
 
 
-// Install/upgrade package
+// Open recent file
+long XFilePackage::onCmdRecentFile(FXObject*, FXSelector, void* ptr)
+{
+    filename = (char*)ptr;
+    readDescription();
+    readFileList();
+
+    return 1;
+}
+
+
+// Install / upgrade package
 long XFilePackage::onCmdInstall(FXObject*, FXSelector, void*)
 {
     FXString cmd;
@@ -348,7 +394,7 @@ long XFilePackage::onCmdInstall(FXObject*, FXSelector, void*)
     if (strlen(filename.text()) == 0)
     {
         MessageBox::error(this, BOX_OK, _("Error"), _("No package loaded"));
-        return(0);
+        return 0;
     }
 
     // Package name
@@ -367,11 +413,11 @@ long XFilePackage::onCmdInstall(FXObject*, FXSelector, void*)
     else
     {
         MessageBox::error(this, BOX_OK, _("Error"), _("Unknown package format"));
-        return(0);
+        return 0;
     }
 
     // Make and show command window
-    CommandWindow* cmdwin = new CommandWindow(this, _("Install/Upgrade Package"), cmd, 10, 80);
+    CommandWindow* cmdwin = new CommandWindow(this, _("Install / Upgrade Package"), cmd, 10, 80);
     cmdwin->create();
 
     FXString msg;
@@ -380,7 +426,7 @@ long XFilePackage::onCmdInstall(FXObject*, FXSelector, void*)
 
     // The CommandWindow object will delete itself when closed!
 
-    return(1);
+    return 1;
 }
 
 
@@ -394,7 +440,7 @@ long XFilePackage::onCmdUninstall(FXObject*, FXSelector, void*)
     if (strlen(filename.text()) == 0)
     {
         MessageBox::error(this, BOX_OK, _("Error"), _("No package loaded"));
-        return(0);
+        return 0;
     }
 
     // Command to perform
@@ -417,7 +463,7 @@ long XFilePackage::onCmdUninstall(FXObject*, FXSelector, void*)
     else
     {
         MessageBox::error(this, BOX_OK, _("Error"), _("Unknown package format"));
-        return(0);
+        return 0;
     }
 
     // Make and show command window
@@ -430,7 +476,7 @@ long XFilePackage::onCmdUninstall(FXObject*, FXSelector, void*)
 
     // The CommandWindow object will delete itself when closed!
 
-    return(1);
+    return 1;
 }
 
 
@@ -470,6 +516,18 @@ void XFilePackage::saveConfig()
         getApp()->reg().writeUnsignedEntry("OPTIONS", "showtoolbar", false);
     }
 
+    // Write filter history
+    FXString history = "";
+    for (int i = 0; i < FilterNum; i++)
+    {
+        history += FilterHistory[i];
+        history += ":";
+    }
+    if (FilterNum)
+    {
+        getApp()->reg().writeStringEntry("HISTORY", "filter", history.text());
+    }
+
     // Write registry options
     getApp()->reg().write();
 }
@@ -479,8 +537,9 @@ void XFilePackage::saveConfig()
 long XFilePackage::onSigHarvest(FXObject*, FXSelector, void*)
 {
     while (waitpid(-1, NULL, WNOHANG) > 0)
-    {}
-    return(1);
+    {
+    }
+    return 1;
 }
 
 
@@ -492,11 +551,22 @@ long XFilePackage::onCmdQuit(FXObject*, FXSelector, void*)
 
     // Exit
     getApp()->exit(EXIT_SUCCESS);
-    return(1);
+    return 1;
 }
 
 
-// Update file list
+// Refresh tabs
+long XFilePackage::onCmdTabClicked(FXObject*, FXSelector, void*)
+{
+    description->recalc();
+    list->recalc();
+
+    return 1;
+}
+
+
+
+// Read package file list
 int XFilePackage::readFileList(void)
 {
     FXString cmd;
@@ -506,19 +576,19 @@ int XFilePackage::readFileList(void)
     if (comparecase(ext, "rpm") == 0)
     {
         errorflag = false;
-        cmd = "rpm -qlp " + ::quote(filename);
+        cmd = "rpm -qlp " + xf_quote(filename);
     }
     else if (comparecase(ext, "deb") == 0)
     {
         errorflag = false;
-        cmd = "dpkg -c " + ::quote(filename);
+        cmd = "dpkg -c " + xf_quote(filename);
     }
     else if (errorflag == false)
     {
         errorflag = true;
         list->clearItems();
         MessageBox::error(this, BOX_OK, _("Error"), _("Unknown package format"));
-        return(0);
+        return 0;
     }
 
     FILE* pcmd = popen(cmd.text(), "r");
@@ -530,7 +600,7 @@ int XFilePackage::readFileList(void)
     char text[10000] = { 0 };
     FXString str;
     str = FXPath::name(filename);
-    strlcpy(text, str.text(), str.length() + 1);
+    xf_strlcpy(text, str.text(), str.length() + 1);
 
     // Clear list
     list->clearItems();
@@ -554,10 +624,11 @@ int XFilePackage::readFileList(void)
     getApp()->endWaitCursor();
 
     pclose(pcmd);
-    return(1);
+    return 1;
 }
 
 
+// Read package description
 int XFilePackage::readDescription(void)
 {
     FXString cmd;
@@ -568,21 +639,21 @@ int XFilePackage::readDescription(void)
     if (comparecase(ext, "rpm") == 0)
     {
         errorflag = false;
-        cmd = "rpm -qip " + ::quote(filename);
+        cmd = "rpm -qip " + xf_quote(filename);
         buf += _("[RPM package]\n");
     }
     else if (comparecase(ext, "deb") == 0)
     {
         errorflag = false;
         buf += _("[DEB package]\n");
-        cmd = "dpkg -I " + ::quote(filename);
+        cmd = "dpkg -I " + xf_quote(filename);
     }
     else if (errorflag == false)
     {
         errorflag = true;
         list->clearItems();
         MessageBox::error(this, BOX_OK, _("Error"), _("Unknown package format"));
-        return(0);
+        return 0;
     }
 
     FILE* pcmd = popen(cmd.text(), "r");
@@ -611,7 +682,7 @@ int XFilePackage::readDescription(void)
             buf += text;
         }
     }
-    if ((pclose(pcmd) == -1) && (errno != ECHILD))  // ECHILD can be set if the child was caught by sigHarvest
+    if ((pclose(pcmd) == -1) && (errno != ECHILD)) // ECHILD can be set if the child was caught by sigHarvest
     {
         MessageBox::error(this, BOX_OK, _("Error"), _("Query of %s failed!"), filename.text());
         list->clearItems();
@@ -623,11 +694,11 @@ int XFilePackage::readDescription(void)
         description->setText(buf.text());
     }
 
-    return(1);
+    return 1;
 }
 
 
-// Start the ball rolling
+// Start application
 void XFilePackage::start(FXString startpkg)
 {
     filename = startpkg;
@@ -637,7 +708,7 @@ void XFilePackage::start(FXString startpkg)
         FILE* fp = fopen(filename.text(), "r");
         if (!fp)
         {
-            MessageBox::error(this, BOX_OK, _("Error Loading File"), _("Unable to open file: %s"), filename.text());
+            MessageBox::error(this, BOX_OK, _("Error"), _("Unable to open file: %s"), filename.text());
             filename = "";
         }
         else
@@ -695,9 +766,34 @@ void XFilePackage::create()
         position(getX(), getY(), width, height);
     }
 
+    // Read filter history
+    FXString history = getApp()->reg().readStringEntry("HISTORY", "filter", "");
+    FXString histent = "";
+    FilterNum = 0;
+    if (history != "")
+    {
+        int i;
+        for (i = 0; ; i++)
+        {
+            if (i < FILTER_HIST_SIZE)
+            {
+                histent = history.section(':', i);
+                if (xf_strequal(histent.text(), ""))
+                {
+                    break;
+                }
+                xf_strlcpy(FilterHistory[i], histent.text(), histent.length() + 1);
+            }
+            else
+            {
+                break;
+            }
+        }
+        FilterNum = i;
+    }
+
     FXMainWindow::create();
 
-    // This is necessary otherwise Xfp crashes when opening a package, but why?
     minifoldericon->create();
     minifolderopenicon->create();
     minidocicon->create();
@@ -715,7 +811,8 @@ void XFilePackage::create()
 
 
 // Usage message
-#define USAGE_MSG    _("\
+#define USAGE_MSG    _( \
+            "\
 \nUsage: xfp [options] [package] \n\
 \n\
     [options] can be any of the following:\n\
@@ -756,23 +853,12 @@ int main(int argc, char* argv[])
         xdgconfighome = homedir + PATHSEPSTRING CONFIGPATH;
     }
 
-    // Detect if an X input method is used
-    xmodifiers = getenv("XMODIFIERS");
-    if ((xmodifiers == "") || (xmodifiers == "@im=none"))
-    {
-        xim_used = false;
-    }
-    else
-    {
-        xim_used = true;
-    }
-
 #ifdef HAVE_SETLOCALE
     // Set locale via LC_ALL.
     setlocale(LC_ALL, "");
 #endif
 
-#if ENABLE_NLS
+#ifdef ENABLE_NLS
     // Set the text message domain.
     bindtextdomain(PACKAGE, LOCALEDIR);
     bind_textdomain_codeset(PACKAGE, "utf-8");
@@ -816,31 +902,36 @@ int main(int argc, char* argv[])
     // Compute integer and fractional scaling factors depending on the monitor resolution
     FXint res = reg_xfe->readUnsignedEntry("SETTINGS", "screenres", 100);
     scaleint = round(res / 100.0);
-    scalefrac = FXMAX(1.0, res / 100.0);
 
     // Redefine the default hand cursor depending on the integer scaling factor
     FXCursor* hand;
     if (scaleint == 1)
     {
-        hand = new FXCursor(application, hand1_bits, hand1_mask_bits, hand1_width, hand1_height, hand1_x_hot, hand1_y_hot);
+        hand = new FXCursor(application, hand1_bits, hand1_mask_bits, hand1_width, hand1_height, hand1_x_hot,
+                            hand1_y_hot);
     }
     else if (scaleint == 2)
     {
-        hand = new FXCursor(application, hand2_bits, hand2_mask_bits, hand2_width, hand2_height, hand2_x_hot, hand2_y_hot);
+        hand = new FXCursor(application, hand2_bits, hand2_mask_bits, hand2_width, hand2_height, hand2_x_hot,
+                            hand2_y_hot);
     }
     else
     {
-        hand = new FXCursor(application, hand3_bits, hand3_mask_bits, hand3_width, hand3_height, hand3_x_hot, hand3_y_hot);
+        hand = new FXCursor(application, hand3_bits, hand3_mask_bits, hand3_width, hand3_height, hand3_x_hot,
+                            hand3_y_hot);
     }
     application->setDefaultCursor(DEF_HAND_CURSOR, hand);
 
     // Load all application icons
-    FXbool iconpathfound = true;
-    loadicons = loadAppIcons(application, &iconpathfound);
+    FXuint iconpathstatus;
+    execpath = xf_execpath(argv[0]);
+    loadicons = loadAppIcons(application, &iconpathstatus);
 
-    // Set base color (to change the default base color at first run)
-    FXColor basecolor = reg_xfe->readColorEntry("SETTINGS", "basecolor", FXRGB(237, 233, 227));
+    // Set base and border colors (to change the default colors at first run)
+    FXColor basecolor = reg_xfe->readColorEntry("SETTINGS", "basecolor", FXRGB(237, 236, 235));
+    FXColor bordercolor = reg_xfe->readColorEntry("SETTINGS", "bordercolor", FXRGB(125, 125, 125));
     application->setBaseColor(basecolor);
+    application->setBorderColor(bordercolor);
 
     // Set Xfp normal font according to the Xfe registry
     FXString fontspec;
@@ -853,19 +944,23 @@ int main(int argc, char* argv[])
     }
 
     // Set single click navigation according to the Xfe registry
-    single_click = reg_xfe->readUnsignedEntry("SETTINGS", "single_click", SINGLE_CLICK_NONE);
+    FXuint single_click = reg_xfe->readUnsignedEntry("SETTINGS", "single_click", SINGLE_CLICK_NONE);
+    application->reg().writeUnsignedEntry("SETTINGS", "single_click", single_click);
 
     // Set smooth scrolling according to the Xfe registry
     FXbool smoothscroll = reg_xfe->readUnsignedEntry("SETTINGS", "smooth_scroll", true);
 
     // Set file list tooltip flag according to the Xfe registry
-    file_tooltips = reg_xfe->readUnsignedEntry("SETTINGS", "file_tooltips", true);
+    FXbool file_tooltips = reg_xfe->readUnsignedEntry("SETTINGS", "file_tooltips", true);
+    application->reg().writeUnsignedEntry("SETTINGS", "file_tooltips", file_tooltips);
 
     // Set relative resizing flag according to the Xfe registry
-    relative_resize = reg_xfe->readUnsignedEntry("SETTINGS", "relative_resize", true);
+    FXbool relative_resize = reg_xfe->readUnsignedEntry("SETTINGS", "relative_resize", true);
+    application->reg().writeUnsignedEntry("SETTINGS", "relative_resize", relative_resize);
 
     // Get value of the window position flag
-    save_win_pos = reg_xfe->readUnsignedEntry("SETTINGS", "save_win_pos", false);
+    FXbool save_win_pos = reg_xfe->readUnsignedEntry("SETTINGS", "save_win_pos", false);
+    application->reg().writeUnsignedEntry("SETTINGS", "save_win_pos", save_win_pos);
 
     // Delete the Xfe registry
     delete reg_xfe;
@@ -882,16 +977,28 @@ int main(int argc, char* argv[])
     // Create it
     application->create();
 
-    // Icon path not found
-    if (!iconpathfound)
+    // Icon path doesn't exist
+    if (iconpathstatus == ICONPATH_NOT_FOUND)
     {
-        MessageBox::error(application, BOX_OK, _("Error loading icons"), _("Icon path doesn't exist, icon theme was set back to default. Please check your icon path!") );
+        MessageBox::error(application->getRootWindow(), BOX_OK, _("Error loading icons"),
+                          _("Icon path doesn't exist, default icon path was selected.\
+\n\nFrom Xfe, please check your icon path in Edit / Preferences / Appearance..."));
     }
 
     // Some icons not found
-    if (!loadicons)
+    if (!loadicons && iconpathstatus == ICONPATH_MISSING_ICONS)
     {
-        MessageBox::error(application, BOX_OK, _("Error loading icons"), _("Unable to load some icons. Please check your icon theme!"));
+        MessageBox::error(application->getRootWindow(), BOX_OK, _("Error loading icons"),
+                          _("Unable to load some icons, default icon theme was selected.\
+\n\nFrom Xfe, please check your icon theme in Edit / Preferences / Appearance..."));       
+    }
+
+    // Default icon path doesn't exist
+    if (iconpathstatus == DEFAULTICONPATH_NOT_FOUND)
+    {
+        MessageBox::error(application->getRootWindow(), BOX_OK, _("Error loading icons"),
+                          _("Unable to load default icons, no icons can be shown.\
+\n\nPlease check your Xfe installation..."));       
     }
 
     // Tooltips setup time and duration
@@ -901,16 +1008,18 @@ int main(int argc, char* argv[])
     // Test the existence of the Debian package manager (dpkg)
     // and the RedHat package manager (rpm)
     FXString cmd = "dpkg --version";
-    FXString str = getCommandOutput(cmd);
+    FXString str = xf_getcommandoutput(cmd);
 
+    FXbool dpkg = false;
     if (str.find("Debian") != -1)
     {
         dpkg = true;
     }
 
     cmd = "rpm --version";
-    str = getCommandOutput(cmd);
+    str = xf_getcommandoutput(cmd);
 
+    FXbool rpm = false;
     if (str.find("RPM") != -1)
     {
         rpm = true;
@@ -927,5 +1036,5 @@ int main(int argc, char* argv[])
     window->start(startpkg);
 
     // Run the application
-    return(application->run());
+    return application->run();
 }

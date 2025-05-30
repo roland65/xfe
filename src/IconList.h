@@ -1,31 +1,31 @@
-#ifndef _ICONLIST_H
-#define _ICONLIST_H
+#ifndef ICONLIST_H
+#define ICONLIST_H
 
-#ifndef FXSCROLLAREA_H
-#include "FXScrollArea.h"
-#endif
-
+#include "xfeutils.h"
 
 class IconList;
 class FileList;
 
 
-// Icon List options (prefixed with an underscore to avoid conflict with the FOX library)
+// Icon List options
 enum
 {
-    _ICONLIST_EXTENDEDSELECT = 0,                // Extended selection mode
-    _ICONLIST_SINGLESELECT   = 0x00100000,       // At most one selected item
-    _ICONLIST_BROWSESELECT   = 0x00200000,       // Always exactly one selected item
-    _ICONLIST_MULTIPLESELECT = 0x00300000,       // Multiple selection mode
-    _ICONLIST_AUTOSIZE       = 0x00400000,       // Automatically size item spacing
-    _ICONLIST_DETAILED       = 0,                // List mode
-    _ICONLIST_MINI_ICONS     = 0x00800000,       // Mini Icon mode
-    _ICONLIST_BIG_ICONS      = 0x01000000,       // Big Icon mode
-    _ICONLIST_ROWS           = 0,                // Row-wise mode
-    _ICONLIST_COLUMNS        = 0x02000000,       // Column-wise mode
-    _ICONLIST_SEARCH         = 0x10000000,       // Icon list is a search list (must be the same value as in FileList)
-    _ICONLIST_STANDARD       = 0x20000000,       // Icon list is a not a file list and not a search list
-    _ICONLIST_NORMAL         = _ICONLIST_EXTENDEDSELECT
+    /* These options are already declared in FXIconList.h
+    ICONLIST_EXTENDEDSELECT    = 0,                    // Extended selection mode
+    ICONLIST_SINGLESELECT      = 0x00100000,           // At most one selected item
+    ICONLIST_BROWSESELECT      = 0x00200000,           // Always exactly one selected item
+    ICONLIST_MULTIPLESELECT    = 0x00300000,           // Multiple selection mode
+    ICONLIST_AUTOSIZE          = 0x00400000,           // Automatically size item spacing
+    ICONLIST_DETAILED          = 0,                    // List mode
+    ICONLIST_MINI_ICONS        = 0x00800000,           // Mini Icon mode
+    ICONLIST_BIG_ICONS         = 0x01000000,           // Big Icon mode
+    ICONLIST_ROWS              = 0,                    // Row-wise mode
+    ICONLIST_COLUMNS           = 0x02000000,           // Column-wise mode
+    ICONLIST_NORMAL            = ICONLIST_EXTENDEDSELECT
+    */
+    ICONLIST_SEARCH            = 0x10000000,           // Icon list is a search list (must be same value as in FileList)
+    ICONLIST_STANDARD          = 0x20000000,           // Icon list is a not a file list and not a search list
+    ICONLIST_FILELIST          = 0x40000000,           // Icon list is a file list
 };
 
 
@@ -35,40 +35,49 @@ class FXAPI IconItem : public FXObject
     FXDECLARE(IconItem)
     friend class IconList;
 protected:
-    FXString label;       // Text of item
-    FXIcon*  bigIcon;     // Icon of item
-    FXIcon*  miniIcon;    // Icon of item
-    void*    data;        // Item user data pointer
-    FXuint state;         // Item state flags
+    FXString label;                                     // Text of item
+    FXIcon* bigIcon = NULL;                             // Big icon of item
+    FXIcon* miniIcon = NULL;                            // Mini icon of item
+    FXIcon* bigIconBadge = NULL;                        // Big icon badge of item
+    FXIcon* miniIconBadge = NULL;                       // Mini icon badge of item
+    void* data = NULL;                                  // Item user data pointer
+    FXuint state = 0;                                   // Item state flags
+    FXApp* app = NULL;
 private:
     IconItem(const IconItem&);
     IconItem& operator=(const IconItem&);
 
 protected:
-    IconItem() : bigIcon(NULL), miniIcon(NULL), data(NULL), state(0) {}
-    virtual void draw(IconList* list, FXDC& dc, int x, int y, int w, int h) const;
-    virtual int hitItem(const IconList* list, int rx, int ry, int rw = 1, int rh = 1) const;
+    IconItem()
+    {
+    }
+    virtual void draw(IconList*, FXDC&, int, int, int, int) const;
+    virtual int hitItem(const IconList*, int, int, int rw = 1, int rh = 1) const;
 
 protected:
-    virtual void drawBigIcon(const IconList* list, FXDC& dc, int x, int y, int w, int h) const;
-    virtual void drawMiniIcon(const IconList* list, FXDC& dc, int x, int y, int w, int h) const;
-    FXbool isOdd(int i) const;
-    virtual void drawDetails(IconList* list, FXDC& dc, int x, int y, int w, int h) const;
+    virtual void drawBigIcon(const IconList*, FXDC&, int, int, int, int) const;
+    virtual void drawMiniIcon(const IconList*, FXDC&, int, int, int, int) const;
+    FXbool isOdd(int) const;
+    virtual void drawDetails(IconList*, FXDC&, int, int, int, int) const;
 
 public:
     enum
     {
-        SELECTED      = 1,  // Selected
-        FOCUS         = 2,  // Focus
-        DISABLED      = 4,  // Disabled
-        DRAGGABLE     = 8,  // Draggable
-        BIGICONOWNED  = 16, // Big icon owned by item
-        MINIICONOWNED = 32  // Mini icon owned by item
+        SELECTED         = 1,            // Selected
+        FOCUS            = 2,            // Focus
+        DISABLED         = 4,            // Disabled
+        DRAGGABLE        = 8,            // Draggable
+        BIGICONOWNED     = 16,           // Big icon owned by item
+        MINIICONOWNED    = 32            // Mini icon owned by item
     };
 public:
 
     // Construct new item with given text, icons, and user-data
-    IconItem(const FXString& text, FXIcon* bi = NULL, FXIcon* mi = NULL, void* ptr = NULL) : label(text), bigIcon(bi), miniIcon(mi), data(ptr), state(0) {}
+    IconItem(FXApp* a, const FXString& text, FXIcon* bi = NULL, FXIcon* mi = NULL, void* ptr = NULL) :
+        label(text), bigIcon(bi), miniIcon(mi), data(ptr), state(0)
+    {
+        app = a;
+    }
 
     // Change item's text label
     virtual void setText(const FXString& txt);
@@ -76,25 +85,25 @@ public:
     // Return item's text label
     const FXString& getText() const
     {
-        return(label);
+        return label;
     }
 
-    // Change item's big icon, deleting the old icon if it was owned
-    virtual void setBigIcon(FXIcon* icn, FXbool owned = false);
+    // Change item's big icon and badge, deleting the old icon if it was owned
+    virtual void setBigIcon(FXIcon* icn, FXbool owned = false, FXIcon* bdg = NULL);
 
     // Return item's big icon
     FXIcon* getBigIcon() const
     {
-        return(bigIcon);
+        return bigIcon;
     }
 
-    // Change item's mini icon, deleting the old icon if it was owned
-    virtual void setMiniIcon(FXIcon* icn, FXbool owned = false);
+    // Change item's mini icon and badge, deleting the old icon if it was owned
+    virtual void setMiniIcon(FXIcon* icn, FXbool owned = false, FXIcon* bdg = NULL);
 
     // Return item's mini icon
     FXIcon* getMiniIcon() const
     {
-        return(miniIcon);
+        return miniIcon;
     }
 
     // Change item's user data
@@ -106,7 +115,7 @@ public:
     // Get item's user data
     void* getData() const
     {
-        return(data);
+        return data;
     }
 
     // Make item draw as focused
@@ -115,7 +124,7 @@ public:
     // Return true if item has focus
     FXbool hasFocus() const
     {
-        return((state & FOCUS) != 0);
+        return (state & FOCUS) != 0;
     }
 
     // Select item
@@ -124,7 +133,7 @@ public:
     // Return true if this item is selected
     FXbool isSelected() const
     {
-        return((state & SELECTED) != 0);
+        return (state & SELECTED) != 0;
     }
 
     // Enable or disable item
@@ -133,7 +142,7 @@ public:
     // Return true if this item is enabled
     FXbool isEnabled() const
     {
-        return((state & DISABLED) == 0);
+        return (state & DISABLED) == 0;
     }
 
     // Make item draggable
@@ -142,7 +151,7 @@ public:
     // Return true if this item is draggable
     FXbool isDraggable() const
     {
-        return((state & DRAGGABLE) != 0);
+        return (state & DRAGGABLE) != 0;
     }
 
     // Return width of item as drawn in list
@@ -202,56 +211,67 @@ class FXAPI IconList : public FXScrollArea
 {
     FXDECLARE(IconList)
 protected:
-    FXHeader*        header;             // Header control
-    IconItemList items;                  // Item list
-    int nrows;                           // Number of rows
-    int ncols;                           // Number of columns
-    int anchor;                          // Anchor item
-    int current;                         // Current item
-    int extent;                          // Extent item
-    int cursor;                          // Cursor item
-    int viewable;                        // Visible item
-    FXFont*          font;               // Font
-    IconListSortFunc sortfunc;           // Item sort function
-    FXColor textColor;                   // Text color
-    FXColor selbackColor;                // Selected back color
-    FXColor seltextColor;                // Selected text color
-    FXColor highlightColor;              // Highlight color
-    FXColor sortColor;                   // Sort color
-    FXColor highlightSortColor;          // Highlight sort color
-    int itemWidth;                       // Item width
-    int itemHeight;                      // Item height
-    int itemSpace;                       // Space for item label
-    int anchorx;                         // Rectangular selection
-    int anchory;
-    int currentx;
-    int currenty;
-    int grabx;                        // Grab point x
-    int graby;                        // Grab point y
-    FXString lookup;                  // Lookup string
-    FXString help;                    // Help text
-    FXbool state;                     // State of item
-    FXbool allowTooltip;              // Allow tooltip in single click mode
-    FXuint numsortheader;             // Index of the sorted column
-    double headerpct[10];             // Header sizes, relatively to the list width (in percent)
-    int count;                        // Counter used to properly initialize the relative header sizes
-    FXbool ignorecase;                // Case sensitivity for file name sorting
-    FXbool initheaderpct;             // Indicates we have to initialize the headerpct for the deletion columns
+    FXHeader* header = NULL;                        // Header control
+    IconItemList items;                             // Item list
+    int nrows = 0;                                  // Number of rows
+    int ncols = 0;                                  // Number of columns
+    int anchor = 0;                                 // Anchor item
+    int current = 0;                                // Current item
+    int extent = 0;                                 // Extent item
+    int cursor = 0;                                 // Cursor item
+    int viewable = 0;                               // Visible item
+    FXFont* font = NULL;                            // Font
+    IconListSortFunc sortfunc = NULL;               // Item sort function
+    FXColor textColor = FXRGB(0, 0, 0);             // Text color
+    FXColor selbackColor = FXRGB(0, 0, 0);          // Selected back color
+    FXColor seltextColor = FXRGB(0, 0, 0);          // Selected text color
+    FXColor highlightColor = FXRGB(0, 0, 0);        // Highlight color
+    FXColor sortColor = FXRGB(0, 0, 0);             // Sort color
+    FXColor highlightSortColor = FXRGB(0, 0, 0);    // Highlight sort color
+    int itemWidth = 0;                              // Item width
+    int itemHeight = 0;                             // Item height
+    int itemSpace = 0;                              // Space for item label
+    int anchorx = 0;                                // Rectangular selection
+    int anchory = 0;
+    int currentx = 0;
+    int currenty = 0;
+    int grabx = 0;                                  // Grab point x
+    int graby = 0;                                  // Grab point y
+    FXString lookup;                                // Lookup string
+    FXString help;                                  // Help text
+    FXbool state = false;                           // State of item
+    FXbool allowTooltip = false;                    // Allow tooltip in single click mode
+    FXuint numsortheader = 0;                       // Index of the sorted column
+    double headerpct[10];                           // Header sizes, relatively to the list width (in percent)
+    int count = 0;                                  // Counter used to properly initialize the relative header sizes
+    FXbool ignorecase = false;                      // Case sensitivity for file name sorting
+    FXbool initheaderpct = false;                   // Indicates we have to initialize the headerpct for the deletion columns
+    double scalefrac = 1.0;                         // Icon scaling factor
+
+    FXuint idCol[NMAX_COLS + 1] = { 0 };
+    FXuint nbCols = 0;
+
+    FXuint idColTrash[NMAX_COLS + 2] = { 0 };
+    FXuint nbColsTrash = 0;
+
+    FXbool inTrash = false;
+
+    FXuint single_click = SINGLE_CLICK_NONE;        // Single click navigation
+    FXbool file_tooltips = true;                    // File tooltips
+    FXbool relative_resize = true;                  // Relative resizing of the panels and columns in detailed mode
+
 protected:
-    IconList() : header(NULL), nrows(0), ncols(0), anchor(0), current(0), extent(0), cursor(0), viewable(0), font(NULL),
-        sortfunc(NULL), textColor(FXRGB(0, 0, 0)), selbackColor(FXRGB(0, 0, 0)),
-        seltextColor(FXRGB(0, 0, 0)), highlightColor(FXRGB(0, 0, 0)), sortColor(FXRGB(0, 0, 0)), highlightSortColor(FXRGB(0, 0, 0)),
-        itemWidth(0), itemHeight(0), itemSpace(0), anchorx(0), anchory(0), currentx(0), currenty(0), grabx(0), graby(0), state(false),
-        allowTooltip(false), numsortheader(0), count(0), ignorecase(false), initheaderpct(false)
-    {}
+    IconList()
+    {
+    }
     void recompute();
-    void getrowscols(int& nr, int& nc, int w, int h) const;
-    void drawLasso(int x0, int y0, int x1, int y1);
-    void lassoChanged(int ox, int oy, int ow, int oh, int nx, int ny, int nw, int nh, FXbool notify);
-    virtual void moveContents(int x, int y);
-    virtual IconItem* createItem(const FXString& text, FXIcon* big, FXIcon* mini, void* ptr);
-    static int compareSection(const char* p, const char* q, int s);
-    static int compareSectionCase(const char* p, const char* q, int s);
+    void getrowscols(int&, int&, int, int) const;
+    void drawLasso(int, int, int, int);
+    void lassoChanged(int, int, int, int, int, int, int, int, FXbool);
+    virtual void moveContents(int, int);
+    virtual IconItem* createItem(const FXString&, FXIcon*, FXIcon*, void*);
+    static int compareSection(const char*, const char*, int);
+    static int compareSectionCase(const char*, const char*, int);
 
 private:
     IconList(const IconList&);
@@ -302,11 +322,13 @@ public:
     long onCmdToggleAutosize(FXObject*, FXSelector, void*);
     long onUpdToggleAutosize(FXObject*, FXSelector, void*);
     long onCmdHeaderClicked(FXObject*, FXSelector, void*);
+    long onCmdReturnKeyPressed(FXObject*, FXSelector, void*);
+
 public:
-    static int ascending(const IconItem* a, const IconItem* b);
-    static int descending(const IconItem* a, const IconItem* b);
-    static int ascendingCase(const IconItem* a, const IconItem* b);
-    static int descendingCase(const IconItem* a, const IconItem* b);
+    static int ascending(const IconItem*, const IconItem*);
+    static int descending(const IconItem*, const IconItem*);
+    static int ascendingCase(const IconItem*, const IconItem*);
+    static int descendingCase(const IconItem*, const IconItem*);
 
 public:
     enum
@@ -327,7 +349,8 @@ public:
 public:
 
     // Construct icon list with no items in it initially
-    IconList(FXComposite* p, FXObject* tgt = NULL, FXSelector sel = 0, FXuint opts = _ICONLIST_NORMAL, int x = 0, int y = 0, int w = 0, int h = 0);
+    IconList(FXComposite* p, FXuint* ic, FXuint nc, FXObject* tgt = NULL, FXSelector sel = 0,
+             FXuint opts = ICONLIST_NORMAL, int x = 0, int y = 0, int w = 0, int h = 0);
 
     // Create server-side resources
     virtual void create();
@@ -368,7 +391,7 @@ public:
     // Return ignore case flag
     FXbool getIgnoreCase() const
     {
-        return(ignorecase);
+        return ignorecase;
     }
 
     // Set ignore case flag
@@ -377,26 +400,29 @@ public:
     // Return number of items
     int getNumItems() const
     {
-        return(items.no());
+        return items.no();
     }
 
     // Return number of rows
     int getNumRows() const
     {
-        return(nrows);
+        return nrows;
     }
 
     // Return number of columns
     int getNumCols() const
     {
-        return(ncols);
+        return ncols;
     }
 
     // Return header control
     FXHeader* getHeader() const
     {
-        return(header);
+        return header;
     }
+
+    // Autosize name header in detailed mode
+    void autosizeNameHeader(void);
 
     // Set headers from array of strings
     void setHeaders(const char** strings, int size = 1);
@@ -438,31 +464,37 @@ public:
     int setItem(int index, IconItem* item, FXbool notify = false);
 
     // Replace items text, icons, and user-data pointer
-    int setItem(int index, const FXString& text, FXIcon* big = NULL, FXIcon* mini = NULL, void* ptr = NULL, FXbool notify = false);
+    int setItem(int index, const FXString& text, FXIcon* big = NULL, FXIcon* mini = NULL, void* ptr = NULL,
+                FXbool notify = false);
 
     // Fill list by appending items from array of strings
-    int fillItems(const char** strings, FXIcon* big = NULL, FXIcon* mini = NULL, void* ptr = NULL, FXbool notify = false);
+    int fillItems(const char** strings, FXIcon* big = NULL, FXIcon* mini = NULL, void* ptr = NULL,
+                  FXbool notify = false);
 
     // Fill list by appending items from newline separated strings
-    int fillItems(const FXString& strings, FXIcon* big = NULL, FXIcon* mini = NULL, void* ptr = NULL, FXbool notify = false);
+    int fillItems(const FXString& strings, FXIcon* big = NULL, FXIcon* mini = NULL, void* ptr = NULL,
+                  FXbool notify = false);
 
     // Insert a new [possibly subclassed] item at the give index
     int insertItem(int index, IconItem* item, FXbool notify = false);
 
     // Insert item at index with given text, icons, and user-data pointer
-    int insertItem(int index, const FXString& text, FXIcon* big = NULL, FXIcon* mini = NULL, void* ptr = NULL, FXbool notify = false);
+    int insertItem(int index, const FXString& text, FXIcon* big = NULL, FXIcon* mini = NULL, void* ptr = NULL,
+                   FXbool notify = false);
 
     // Append a [possibly subclassed] item to the end of the list
     int appendItem(IconItem* item, FXbool notify = false);
 
     // Append new item with given text and optional icons, and user-data pointer
-    int appendItem(const FXString& text, FXIcon* big = NULL, FXIcon* mini = NULL, void* ptr = NULL, FXbool notify = false);
+    int appendItem(const FXString& text, FXIcon* big = NULL, FXIcon* mini = NULL, void* ptr = NULL,
+                   FXbool notify = false);
 
     // Prepend a [possibly subclassed] item to the end of the list
     int prependItem(IconItem* item, FXbool notify = false);
 
     // Prepend new item with given text and optional icons, and user-data pointer
-    int prependItem(const FXString& text, FXIcon* big = NULL, FXIcon* mini = NULL, void* ptr = NULL, FXbool notify = false);
+    int prependItem(const FXString& text, FXIcon* big = NULL, FXIcon* mini = NULL, void* ptr = NULL,
+                    FXbool notify = false);
 
     // Move item from oldindex to newindex
     int moveItem(int newindex, int oldindex, FXbool notify = false);
@@ -479,17 +511,17 @@ public:
     // Return item width
     int getItemWidth() const
     {
-        return(itemWidth);
+        return itemWidth;
     }
 
     // Return item height
     int getItemHeight() const
     {
-        return(itemHeight);
+        return itemHeight;
     }
 
     // Return index of item at x,y, or -1 if none
-    virtual int getItemAt(int x, int y);
+    virtual int getItemAt(int x, int y, int state = -1);
 
     // Search items by name, beginning from item start.  If the start
     // item is -1 the search will start at the first item in the list.
@@ -543,7 +575,7 @@ public:
         {
             fxerror("%s::isItemSelected: index out of range.\n", getClassName());
         }
-        return(items[index]->isSelected());
+        return items[index]->isSelected();
     }
 
     // Return true if item at index is current
@@ -591,7 +623,7 @@ public:
     // Return current item index, or -1 if none
     int getCurrentItem() const
     {
-        return(current);
+        return current;
     }
 
     // Change anchor item index
@@ -600,13 +632,13 @@ public:
     // Return anchor item index, or -1 if none
     int getAnchorItem() const
     {
-        return(anchor);
+        return anchor;
     }
 
     // Return index of item under cursor, or -1 if none
     int getCursorItem() const
     {
-        return(cursor);
+        return cursor;
     }
 
     // Sort items
@@ -615,7 +647,7 @@ public:
     // Return sort function
     IconListSortFunc getSortFunc() const
     {
-        return(sortfunc);
+        return sortfunc;
     }
 
     // Change sort function
@@ -633,7 +665,7 @@ public:
     // Get sort header
     FXuint getSortHeader()
     {
-        return(numsortheader);
+        return numsortheader;
     }
 
     // Change text font
@@ -642,13 +674,13 @@ public:
     // Return text font
     FXFont* getFont() const
     {
-        return(font);
+        return font;
     }
 
     // Return normal text color
     FXColor getTextColor() const
     {
-        return(textColor);
+        return textColor;
     }
 
     // Change normal text color
@@ -657,7 +689,7 @@ public:
     // Return selected text background
     FXColor getSelBackColor() const
     {
-        return(selbackColor);
+        return selbackColor;
     }
 
     // Change selected text background
@@ -666,25 +698,25 @@ public:
     // Return selected text color
     FXColor getSelTextColor() const
     {
-        return(seltextColor);
+        return seltextColor;
     }
 
     // Return highlight color
     FXColor getHighlightColor() const
     {
-        return(highlightColor);
+        return highlightColor;
     }
 
     // Return sort color
     FXColor getSortColor() const
     {
-        return(sortColor);
+        return sortColor;
     }
 
     // Return highlight sort color
     FXColor getHighlightSortColor() const
     {
-        return(highlightSortColor);
+        return highlightSortColor;
     }
 
     // Change selected text color
@@ -696,14 +728,17 @@ public:
     // Return maximum item space
     int getItemSpace() const
     {
-        return(itemSpace);
+        return itemSpace;
     }
 
     // Get the current icon list style
     FXuint getListStyle() const;
 
-    // Set the current icon list style.
+    // Set the current icon list style
     void setListStyle(FXuint style);
+
+    // Get the current icon list type
+    FXuint getListType() const;
 
     // Set the status line help text for this widget
     void setHelpText(const FXString& text);
@@ -711,8 +746,14 @@ public:
     // Get the status line help text for this widget
     const FXString& getHelpText() const
     {
-        return(help);
+        return help;
     }
+
+    // Get column id from header position
+    FXString getHeaderName(FXuint);
+
+    // Get header name from column id
+    FXuint getHeaderId(int);
 
     // Save list to a stream
     virtual void save(FXStream& store) const;
@@ -723,6 +764,5 @@ public:
     // Destructor
     virtual ~IconList();
 };
-
 
 #endif

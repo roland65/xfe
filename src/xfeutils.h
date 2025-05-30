@@ -1,7 +1,7 @@
 #ifndef XFEUTILS_H
 #define XFEUTILS_H
 
-// The functions comparenat(), comparewnat(), comparenat_left(), comparenat_right()
+// The functions xf_comparenat(), xf_comparewnat(), comparenat_left(), comparenat_right()
 // comparewnat_left() and comparewnat_right() for natural sort order
 // are adapted from the following software:
 
@@ -18,11 +18,11 @@
  * freely, subject to the following restrictions:
  *
  * 1. The origin of this software must not be misrepresented; you must not
- *   claim that you wrote the original software. If you use this software
- *   in a product, an acknowledgment in the product documentation would be
- *   appreciated but is not required.
+ *    claim that you wrote the original software. If you use this software
+ *    in a product, an acknowledgment in the product documentation would be
+ *    appreciated but is not required.
  * 2. Altered source versions must be plainly marked as such, and must not be
- *   misrepresented as being the original software.
+ *    misrepresented as being the original software.
  * 3. This notice may not be removed or altered from any source distribution.
  */
 
@@ -77,28 +77,44 @@ enum
 // Indexes of default programs
 enum
 {
-    NONE            = 0,
-    TXTVIEWER       = 1,
-    TXTEDITOR       = 2,
-    IMGVIEWER       = 3,
-    IMGEDITOR       = 4,
-    PDFVIEWER       = 5,
-    AUDIOPLAYER     = 6,
-    VIDEOPLAYER     = 7,
-    ARCHIVER        = 8,
+    NONE         = 0,
+    TXTVIEWER    = 1,
+    TXTEDITOR    = 2,
+    IMGVIEWER    = 3,
+    IMGEDITOR    = 4,
+    PDFVIEWER    = 5,
+    AUDIOPLAYER  = 6,
+    VIDEOPLAYER  = 7,
+    ARCHIVER     = 8,
 };
 
 
 // Start directory modes
 enum
 {
-    START_HOMEDIR       = 0,
-    START_CURRENTDIR    = 1,
-    START_LASTDIR       = 2,
+    START_HOMEDIR        = 0,
+    START_CURRENTDIR     = 1,
+    START_LASTDIR        = 2,
+};
+
+
+// New tab directory modes
+enum
+{
+    NEWTAB_HOMEDIR        = 0,
+    NEWTAB_CURRENTDIR     = 1,
+    NEWTAB_ROOTDIR        = 2,
 };
 
 
 // Note : some inline functions must be declared in the header file or they won't compile!
+
+
+// Convert a character to lower case
+static inline int tolowercase(int c)
+{
+    return 'A' <= c && c <= 'Z' ? c + 32 : c;
+}
 
 
 static inline int comparenat_right(const char* a, const char* b)
@@ -113,15 +129,15 @@ static inline int comparenat_right(const char* a, const char* b)
     {
         if (!isdigit(*a) && !isdigit(*b))
         {
-            return(bias);
+            return bias;
         }
         else if (!isdigit(*a))
         {
-            return(-1);
+            return -1;
         }
         else if (!isdigit(*b))
         {
-            return(+1);
+            return +1;
         }
         else if (*a < *b)
         {
@@ -139,11 +155,11 @@ static inline int comparenat_right(const char* a, const char* b)
         }
         else if (!*a && !*b)
         {
-            return(bias);
+            return bias;
         }
     }
 
-    return(0);
+    return 0;
 }
 
 
@@ -155,32 +171,32 @@ static inline int comparenat_left(const char* a, const char* b)
     {
         if (!isdigit(*a) && !isdigit(*b))
         {
-            return(0);
+            return 0;
         }
         else if (!isdigit(*a))
         {
-            return(-1);
+            return -1;
         }
         else if (!isdigit(*b))
         {
-            return(+1);
+            return +1;
         }
         else if (*a < *b)
         {
-            return(-1);
+            return -1;
         }
         else if (*a > *b)
         {
-            return(+1);
+            return +1;
         }
     }
 
-    return(0);
+    return 0;
 }
 
 
 // Perform natural comparison on single byte strings (so foo10 comes after foo2, 0.2foo comes before 10.2foo, etc.)
-static inline int comparenat(const char* a, const char* b, FXbool igncase)
+static inline int xf_comparenat(const char* a, const char* b, FXbool igncase)
 {
     int ai, bi;
     char ca, cb;
@@ -194,7 +210,7 @@ static inline int comparenat(const char* a, const char* b, FXbool igncase)
 
         if ((ca == '\t') && (cb == '\t'))
         {
-            return(0);
+            return 0;
         }
 
         /* skip over leading spaces or zeros */
@@ -217,14 +233,14 @@ static inline int comparenat(const char* a, const char* b, FXbool igncase)
             {
                 if ((result = comparenat_left(a + ai, b + bi)) != 0)
                 {
-                    return(result);
+                    return result;
                 }
             }
             else
             {
                 if ((result = comparenat_right(a + ai, b + bi)) != 0)
                 {
-                    return(result);
+                    return result;
                 }
             }
         }
@@ -233,22 +249,22 @@ static inline int comparenat(const char* a, const char* b, FXbool igncase)
         {
             /* The strings compare the same.  Perhaps the caller
              *     will want to call strcmp to break the tie. */
-            return(0);
+            return 0;
         }
 
         if (igncase)
         {
-            ca = tolower(ca);
-            cb = tolower(cb);
+            ca = tolowercase(ca);
+            cb = tolowercase(cb);
         }
 
         if (ca < cb)
         {
-            return(-1);
+            return -1;
         }
         else if (ca > cb)
         {
-            return(+1);
+            return +1;
         }
 
         ++ai;
@@ -259,7 +275,7 @@ static inline int comparenat(const char* a, const char* b, FXbool igncase)
 
 // Lookup table of accents and ligatures
 // For comparisons, À is converted to A, é to e, etc.
-static const wchar_t* const accents[] =   /* copied from Perl6 code */
+static const wchar_t* const accents[] =    /* copied from Perl6 code */
 {
     L"À", L"A", L"Á", L"A", L"Â", L"A", L"Ã", L"A", L"Ä", L"A", L"Å", L"A", L"à",
     L"a", L"á", L"a", L"â", L"a", L"ã", L"a", L"ä", L"a", L"å", L"a",
@@ -285,7 +301,7 @@ static inline wchar_t convaccents(const wchar_t wc, const wchar_t* const* tbl, i
     // Don't convert an Ascii char
     if (wc < 127)
     {
-        return(wc);
+        return wc;
     }
 
     wchar_t wr = wc;
@@ -305,7 +321,7 @@ static inline wchar_t convaccents(const wchar_t wc, const wchar_t* const* tbl, i
         }
     }
 
-    return(wr);
+    return wr;
 }
 
 
@@ -321,15 +337,15 @@ static inline int comparewnat_right(const wchar_t* wa, const wchar_t* wb)
     {
         if (!iswdigit(*wa) && !iswdigit(*wb))
         {
-            return(bias);
+            return bias;
         }
         else if (!iswdigit(*wa))
         {
-            return(-1);
+            return -1;
         }
         else if (!iswdigit(*wb))
         {
-            return(+1);
+            return +1;
         }
         else if (*wa < *wb)
         {
@@ -347,11 +363,11 @@ static inline int comparewnat_right(const wchar_t* wa, const wchar_t* wb)
         }
         else if (!*wa && !*wb)
         {
-            return(bias);
+            return bias;
         }
     }
 
-    return(0);
+    return 0;
 }
 
 
@@ -363,32 +379,32 @@ static inline int comparewnat_left(const wchar_t* wa, const wchar_t* wb)
     {
         if (!iswdigit(*wa) && !iswdigit(*wb))
         {
-            return(0);
+            return 0;
         }
         else if (!iswdigit(*wa))
         {
-            return(-1);
+            return -1;
         }
         else if (!iswdigit(*wb))
         {
-            return(+1);
+            return +1;
         }
         else if (*wa < *wb)
         {
-            return(-1);
+            return -1;
         }
         else if (*wa > *wb)
         {
-            return(+1);
+            return +1;
         }
     }
 
-    return(0);
+    return 0;
 }
 
 
 // Perform natural comparison on wide strings (so foo10 comes after foo2, 0.2foo comes before 10.2foo, etc.)
-static inline int comparewnat(const wchar_t* wa, const wchar_t* wb, int igncase)
+static inline int xf_comparewnat(const wchar_t* wa, const wchar_t* wb, int igncase)
 {
     wint_t ai, bi;
     wchar_t wca, wcb;
@@ -424,14 +440,14 @@ static inline int comparewnat(const wchar_t* wa, const wchar_t* wb, int igncase)
             {
                 if ((result = comparewnat_left(wa + ai, wb + bi)) != 0)
                 {
-                    return(result);
+                    return result;
                 }
             }
             else
             {
                 if ((result = comparewnat_right(wa + ai, wb + bi)) != 0)
                 {
-                    return(result);
+                    return result;
                 }
             }
         }
@@ -439,8 +455,8 @@ static inline int comparewnat(const wchar_t* wa, const wchar_t* wb, int igncase)
         if (!wca && !wcb)
         {
             /* The strings compare the same.  Perhaps the caller
-             *     will want to call strcmp to break the tie. */
-            return(0);
+             * will want to call strcmp to break the tie. */
+            return 0;
         }
 
         if (igncase)
@@ -451,11 +467,11 @@ static inline int comparewnat(const wchar_t* wa, const wchar_t* wb, int igncase)
 
         if (wca < wcb)
         {
-            return(-1);
+            return -1;
         }
         else if (wca > wcb)
         {
-            return(+1);
+            return +1;
         }
 
         ++ai;
@@ -464,30 +480,23 @@ static inline int comparewnat(const wchar_t* wa, const wchar_t* wb, int igncase)
 }
 
 
-// Convert a character to lower case
-static inline int toLower(int c)
-{
-    return('A' <= c && c <= 'Z' ? c + 32 : c);
-}
-
-
 // To test if two strings are equal (strcmp replacement, thanks to Francesco Abbate)
-static inline int streq(const char* a, const char* b)
+static inline int xf_strequal(const char* a, const char* b)
 {
     if ((a == NULL) || (b == NULL))
     {
-        return(0);
+        return 0;
     }
-    return(strcmp(a, b) == 0);
+    return strcmp(a, b) == 0;
 }
 
 
 // Convert a string to lower cases and returns the string size
-static inline void strlow(char* str)
+static inline void xf_tolowercase(char* str)
 {
     while (*str)
     {
-        *str = ::toLower(*str);
+        *str = tolowercase(*str);
         ++str;
     }
 }
@@ -495,10 +504,11 @@ static inline void strlow(char* str)
 
 // Stat function with a timeout, used to test if a mount point is up or down
 // Return 0 on success, -1 on error with errno set and 1 on timeout
-static inline int statvfsTimeout(const char *filename, FXuint timeout)
+static inline int xf_statvfs_timeout(const char* filename, FXuint timeout)
 {
     // Create child process
     int pid = fork();
+
     if (pid == -1)
     {
         return -1;
@@ -507,7 +517,7 @@ static inline int statvfsTimeout(const char *filename, FXuint timeout)
     if (pid == 0)
     {
         // Here, we are running as the child process!
-        
+
         struct statvfs buf;
         int ret = statvfs(filename, &buf);
         exit(ret);
@@ -515,14 +525,14 @@ static inline int statvfsTimeout(const char *filename, FXuint timeout)
     else
     {
         // Here, we are running as the parent process!
-	    
-	    int ret = -1;
-	    time_t t0;
+
+        int ret = -1;
+        time_t t0;
         time(&t0);
-        
+
         while (1)
         {
-            if ( (waitpid(pid, &ret, WNOHANG) == 0 ) )
+            if ((waitpid(pid, &ret, WNOHANG) == 0))
             {
                 // Child is still running, wait
                 time_t t;
@@ -532,8 +542,12 @@ static inline int statvfsTimeout(const char *filename, FXuint timeout)
                 if (difftime(t, t0) > timeout)
                 {
                     kill(pid, SIGKILL);
-                    waitpid(pid, NULL, WNOHANG);       // Avoids zombies
-                    return 1;                          // Return 1 on timeout
+                    int ret = waitpid(pid, NULL, WNOHANG);      // Avoids zombies
+                    if (ret < 0)                                // Should not happen
+                    {
+                        fprintf(stderr, "%s", strerror(errno));
+                    }
+                    return 1;                                   // Return 1 on timeout
                 }
             }
             else
@@ -541,7 +555,7 @@ static inline int statvfsTimeout(const char *filename, FXuint timeout)
                 // Child has finished
                 if (ret == 0)
                 {
-			        struct statvfs buf;
+                    struct statvfs buf;
                     int ret = statvfs(filename, &buf);
                     return ret;
                 }
@@ -552,13 +566,13 @@ static inline int statvfsTimeout(const char *filename, FXuint timeout)
             }
         }
     }
-	
-	return -1;
+
+    return -1;
 }
 
 
 // Replacement of the stat function
-static inline int statrep(const char* path, struct stat* buf)
+static inline int xf_stat(const char* path, struct stat* buf)
 {
 #if defined(linux)
     static int ret;
@@ -567,11 +581,10 @@ static inline int statrep(const char* path, struct stat* buf)
     if (mtdevices != NULL && mtdevices->find(path))
     {
         // Mount point is down
-        if (streq(updevices->find(path), "down"))
+        if (xf_strequal(updevices->find(path), "down"))
         {
-            return(-1);
+            return -1;
         }
-
         // Mount point is up
         else
         {
@@ -581,19 +594,18 @@ static inline int statrep(const char* path, struct stat* buf)
                 updevices->remove(path);
                 updevices->insert(path, "down");
             }
-            return(ret);
+            return ret;
         }
     }
-
     // It's not a mount point
     else
 #endif
-    return(stat(path, buf));
+    return stat(path, buf);
 }
 
 
 // Replacement of the lstat function
-static inline int lstatrep(const char* path, struct stat* buf)
+static inline int xf_lstat(const char* path, struct stat* buf)
 {
 #if defined(linux)
     static int ret;
@@ -602,11 +614,10 @@ static inline int lstatrep(const char* path, struct stat* buf)
     if (mtdevices != NULL && mtdevices->find(path))
     {
         // Mount point is down
-        if (streq(updevices->find(path), "down"))
+        if (xf_strequal(updevices->find(path), "down"))
         {
-            return(-1);
+            return -1;
         }
-
         // Mount point is up
         else
         {
@@ -616,71 +627,79 @@ static inline int lstatrep(const char* path, struct stat* buf)
                 updevices->remove(path);
                 updevices->insert(path, "down");
             }
-            return(ret);
+            return ret;
         }
     }
-
     // It's not a mount point
     else
 #endif
-    return(lstat(path, buf));
+    return lstat(path, buf);
 }
 
 
-FXlong GetAvailableSpace(const FXString&);
-FXHotKey _parseAccel(const FXString&);
-FXbool existCommand(const FXString);
-FXString getKeybinding(FXEvent*);
+FXString xf_mimetype(FXString);
+FXlong xf_getavailablespace(const FXString&);
+FXHotKey xf_parseaccel(const FXString&);
+FXbool xf_existcommand(const FXString);
+FXString xf_getkeybinding(FXEvent*);
 
-int mkpath(const char*, mode_t);
-FXString createTrashpathname(FXString, FXString);
-int createTrashinfo(FXString, FXString, FXString, FXString);
-FXString mimetype(FXString);
-FXString quote(FXString);
-FXbool isUtf8(const char*, FXuint);
+int xf_mkpath(const char*, mode_t);
+FXString xf_create_trashpathname(FXString, FXString);
+int xf_create_trashinfo(FXString, FXString, FXString, FXString);
+int xf_istextfile(FXString);
+FXString xf_quote(FXString);
+FXbool xf_isutf8(const char*, FXuint);
 
-#if !defined (__OpenBSD__)
-size_t strlcpy(char*, const char*, size_t);
-size_t strlcat(char*, const char*, size_t);
-#endif
+size_t xf_strlcpy(char*, const char*, size_t);
+size_t xf_strlcat(char*, const char*, size_t);
 
-FXulong dirsize(const char*);
-FXulong pathsize(char*, FXuint*, FXuint*, FXulong*, int* = NULL);
-FXString hSize(char*);
-FXString cleanPath(const FXString);
-FXString filePath(const FXString);
-FXString filePath(const FXString, const FXString);
+FXulong xf_dirsize(const char*);
+FXulong xf_pathsize(char*, FXuint*, FXuint*, FXulong*, int* = NULL);
 
-FXString fileFromURI(FXString);
-FXString fileToURI(const FXString&);
-FXString buildCopyName(const FXString&, const FXbool);
+FXString xf_humansize(char*);
+FXString xf_cleanpath(const FXString);
+FXString xf_filepath(const FXString);
+FXString xf_filepath(const FXString, const FXString);
+FXString xf_realpath(const FXString);
+FXString xf_execpath(char*);
 
-FXlong deltime(FXString);
-int isEmptyDir(const FXString);
-int hasSubDirs(const FXString);
-FXbool existFile(const FXString&);
-FXbool isDirectory(const FXString&);
-FXbool isFile(const FXString&);
+FXString xf_filefromuri(FXString);
+FXString xf_filetouri(const FXString&);
+FXString xf_buildcopyname(const FXString&, const FXbool, FXString&, const FXuint);
 
-FXbool isGroupMember(gid_t);
-FXbool isWritable(const FXString&);
-FXbool isReadable(const FXString&);
-FXbool isReadExecutable(const FXString&);
-FXbool isLink(const FXString&);
-FXbool info(const FXString&, struct stat&);
+FXlong xf_deltime(FXString);
+int xf_isemptydir(const FXString);
+int xf_hassubdirs(const FXString);
+FXbool xf_existfile(const FXString&);
+FXbool xf_isdirectory(const FXString&);
+FXbool xf_isfile(const FXString&);
 
-FXString permissions(FXuint);
-FXString readLink(const FXString&);
-FXbool identical(const FXString&, const FXString&);
+FXbool xf_isgroupmember(gid_t);
+FXbool xf_iswritable(const FXString&);
+FXbool xf_isreadable(const FXString&);
+FXbool xf_isreadexecutable(const FXString&);
+FXbool xf_islink(const FXString&);
+FXbool xf_info(const FXString&, struct stat&);
+FXString xf_permissions(FXuint);
+FXString xf_readlink(const FXString&);
+FXbool xf_isidentical(const FXString&, const FXString&);
 
-int setWaitCursor(FXApp*, FXuint);
-int runst(FXString);
-FXString getCommandOutput(FXString);
-FXIcon* loadiconfile(FXApp*, const FXString, const FXString);
+int xf_setwaitcursor(FXApp*, FXuint);
+int xf_runst(FXString);
+FXString xf_getcommandoutput(FXString);
+FXIcon* xf_loadiconfile(FXApp*, const FXString, const FXString, const double, const FXColor);
 
-FXString truncLine(FXString, FXuint);
-FXString multiLines(FXString, FXuint);
+FXString xf_truncline(FXString, FXuint);
+FXString xf_multilines(FXString, FXuint);
 
-FXbool keepMount(FXString, FXString);
+FXbool xf_keepmount(FXString, FXString);
+
+FXulong xf_getcurrenttime(void);
+FXString xf_secondstotimestring(FXuint);
+
+void xf_replacestring(FXchar*, FXint*, FXint, FXint, const FXchar*, FXint);
+FXString xf_substitutecase(const FXString&, const FXString&, const FXString&, bool all = true);
+
+FXulong xf_hashfile(const FXchar*);
 
 #endif

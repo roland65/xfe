@@ -34,21 +34,21 @@
 #include "Properties.h"
 
 
-
 // Global variables
 extern FXMainWindow* mainWindow;
 extern FXStringDict* fsdevices;
 extern FXString xdgdatahome;
+extern FXString execpath;
 
 
 // Map
-FXDEFMAP(PermFrame) PermFrameMap[] = {};
+FXDEFMAP(PermsFrame) PermsFrameMap[] = {};
 
 // Object implementation
-FXIMPLEMENT(PermFrame, FXVerticalFrame, PermFrameMap, ARRAYNUMBER(PermFrameMap))
+FXIMPLEMENT(PermsFrame, FXVerticalFrame, PermsFrameMap, ARRAYNUMBER(PermsFrameMap))
 
-PermFrame::PermFrame(FXComposite* parent, FXObject* target) :
-    FXVerticalFrame(parent, FRAME_RAISED)
+PermsFrame::PermsFrame(FXComposite* parent, FXObject* target) :
+    FXVerticalFrame(parent, FRAME_NONE)
 {
     FXHorizontalFrame* accessframe = new FXHorizontalFrame(this, LAYOUT_FILL_X | LAYOUT_FILL_Y);
     FXHorizontalFrame* chmodframe = new FXHorizontalFrame(this, LAYOUT_FILL_X | LAYOUT_FILL_Y);
@@ -63,22 +63,25 @@ PermFrame::PermFrame(FXComposite* parent, FXObject* target) :
     gr = new FXCheckButton(group2, _("Read") + FXString(" "), target, PropertiesBox::ID_RGRP);
     gw = new FXCheckButton(group2, _("Write") + FXString(" "), target, PropertiesBox::ID_WGRP);
     gx = new FXCheckButton(group2, _("Execute") + FXString(" "), target, PropertiesBox::ID_XGRP);
-    FXGroupBox* group3 = new FXGroupBox(accessframe, _("Others") + FXString(" "), GROUPBOX_TITLE_LEFT | FRAME_GROOVE | LAYOUT_FILL_X);
+    FXGroupBox* group3 = new FXGroupBox(accessframe, _("Others") + FXString(" "),
+                                        GROUPBOX_TITLE_LEFT | FRAME_GROOVE | LAYOUT_FILL_X);
     or_ = new FXCheckButton(group3, _("Read") + FXString(" "), target, PropertiesBox::ID_ROTH);
     ow = new FXCheckButton(group3, _("Write") + FXString(" "), target, PropertiesBox::ID_WOTH);
     ox = new FXCheckButton(group3, _("Execute") + FXString(" "), target, PropertiesBox::ID_XOTH);
-    FXGroupBox* group4 = new FXGroupBox(accessframe, _("Special") + FXString(" "), GROUPBOX_TITLE_LEFT | FRAME_GROOVE | LAYOUT_FILL_X);
+    FXGroupBox* group4 = new FXGroupBox(accessframe, _("Special") + FXString(" "),
+                                        GROUPBOX_TITLE_LEFT | FRAME_GROOVE | LAYOUT_FILL_X);
     suid = new FXCheckButton(group4, _("Set UID") + FXString(" "), target, PropertiesBox::ID_SUID);
     sgid = new FXCheckButton(group4, _("Set GID") + FXString(" "), target, PropertiesBox::ID_SGID);
     svtx = new FXCheckButton(group4, _("Sticky") + FXString(" "), target, PropertiesBox::ID_SVTX);
 
     // Owner
-    FXGroupBox* group5 = new FXGroupBox(chmodframe, _("Owner"), GROUPBOX_TITLE_LEFT | FRAME_GROOVE | LAYOUT_FILL_X | LAYOUT_FILL_Y);
+    FXGroupBox* group5 = new FXGroupBox(chmodframe, _("Owner"),
+                                        GROUPBOX_TITLE_LEFT | FRAME_GROOVE | LAYOUT_FILL_X | LAYOUT_FILL_Y);
     new FXLabel(group5, _("User"));
-    user = new FXComboBox(group5, 5, NULL, 0, COMBOBOX_STATIC | LAYOUT_FILL_X);
+    user = new ComboBox(group5, 5, false, false, NULL, 0, COMBOBOX_STATIC | LAYOUT_FILL_X);
     user->setNumVisible(5);
     new FXLabel(group5, _("Group"));
-    grp = new FXComboBox(group5, 5, NULL, 0, COMBOBOX_STATIC | LAYOUT_FILL_X);
+    grp = new ComboBox(group5, 5, false, false, NULL, 0, COMBOBOX_STATIC | LAYOUT_FILL_X);
     grp->setNumVisible(5);
 
     // User names (sorted in ascending order)
@@ -88,6 +91,7 @@ PermFrame::PermFrame(FXComposite* parent, FXObject* target) :
         user->appendItem(pwde->pw_name);
     }
     endpwent();
+
     user->setSortFunc(FXList::ascending);
     user->sortItems();
 
@@ -98,6 +102,7 @@ PermFrame::PermFrame(FXComposite* parent, FXObject* target) :
         grp->appendItem(grpe->gr_name);
     }
     endgrent();
+
     grp->setSortFunc(FXList::ascending);
     grp->sortItems();
 
@@ -106,18 +111,25 @@ PermFrame::PermFrame(FXComposite* parent, FXObject* target) :
     flt = 0;
 
     // Command
-    FXGroupBox* group6 = new FXGroupBox(chmodframe, _("Command"), GROUPBOX_TITLE_LEFT | FRAME_GROOVE | LAYOUT_FILL_X | LAYOUT_FILL_Y);
-    FXMatrix*   matrix6 = new FXMatrix(group6, 2, MATRIX_BY_COLUMNS | LAYOUT_SIDE_TOP | LAYOUT_FILL_X | LAYOUT_FILL_Y);
+    FXGroupBox* group6 = new FXGroupBox(chmodframe, _("Command"),
+                                        GROUPBOX_TITLE_LEFT | FRAME_GROOVE | LAYOUT_FILL_X | LAYOUT_FILL_Y);
+    FXMatrix* matrix6 = new FXMatrix(group6, 2, MATRIX_BY_COLUMNS | LAYOUT_SIDE_TOP | LAYOUT_FILL_X | LAYOUT_FILL_Y);
     cmd_radiotarget.connect(cmd);
-    set = new FXRadioButton(matrix6, _("Set marked") + FXString(" "), &cmd_radiotarget, FXDataTarget::ID_OPTION + PropertiesBox::ID_SET);
+    set = new FXRadioButton(matrix6, _("Set marked") + FXString(" "), &cmd_radiotarget,
+                            FXDataTarget::ID_OPTION + PropertiesBox::ID_SET);
     rec = new FXCheckButton(matrix6, _("Recursively") + FXString(" "), NULL, 0);
-    clear = new FXRadioButton(matrix6, _("Clear marked") + FXString(" "), &cmd_radiotarget, FXDataTarget::ID_OPTION + PropertiesBox::ID_CLEAR);
+    clear = new FXRadioButton(matrix6, _("Clear marked") + FXString(" "), &cmd_radiotarget,
+                              FXDataTarget::ID_OPTION + PropertiesBox::ID_CLEAR);
     flt_radiotarget.connect(flt);
-    all = new FXRadioButton(matrix6, _("Files and folders") + FXString(" "), &flt_radiotarget, FXDataTarget::ID_OPTION + PropertiesBox::ID_ALL);
-    add = new FXRadioButton(matrix6, _("Add marked") + FXString(" "), &cmd_radiotarget, FXDataTarget::ID_OPTION + PropertiesBox::ID_ADD);
-    dironly = new FXRadioButton(matrix6, _("Folders only") + FXString(" "), &flt_radiotarget, FXDataTarget::ID_OPTION + PropertiesBox::ID_DIRONLY);
+    all = new FXRadioButton(matrix6, _("Files and folders") + FXString(" "), &flt_radiotarget,
+                            FXDataTarget::ID_OPTION + PropertiesBox::ID_ALL);
+    add = new FXRadioButton(matrix6, _("Add marked") + FXString(" "), &cmd_radiotarget,
+                            FXDataTarget::ID_OPTION + PropertiesBox::ID_ADD);
+    dironly = new FXRadioButton(matrix6, _("Folders only") + FXString(" "), &flt_radiotarget,
+                                FXDataTarget::ID_OPTION + PropertiesBox::ID_DIRONLY);
     own = new FXCheckButton(matrix6, _("Owner only") + FXString(" "), NULL, 0);
-    fileonly = new FXRadioButton(matrix6, _("Files only") + FXString(" "), &flt_radiotarget, FXDataTarget::ID_OPTION + PropertiesBox::ID_FILEONLY);
+    fileonly = new FXRadioButton(matrix6, _("Files only") + FXString(" "), &flt_radiotarget,
+                                 FXDataTarget::ID_OPTION + PropertiesBox::ID_FILEONLY);
 }
 
 
@@ -139,7 +151,7 @@ FXDEFMAP(PropertiesBox) PropertiesBoxMap[] =
     FXMAPFUNC(SEL_COMMAND, PropertiesBox::ID_SUID, PropertiesBox::onCmdCheck),
     FXMAPFUNC(SEL_COMMAND, PropertiesBox::ID_SGID, PropertiesBox::onCmdCheck),
     FXMAPFUNC(SEL_COMMAND, PropertiesBox::ID_SVTX, PropertiesBox::onCmdCheck),
-    FXMAPFUNC(SEL_UPDATE, 0, PropertiesBox::onUpdSizeAndPerm),
+    FXMAPFUNC(SEL_UPDATE, 0, PropertiesBox::onUpdSizeAndPerms),
     FXMAPFUNC(SEL_COMMAND, PropertiesBox::ID_SET, PropertiesBox::onCmdCommand),
     FXMAPFUNC(SEL_COMMAND, PropertiesBox::ID_CLEAR, PropertiesBox::onCmdCommand),
     FXMAPFUNC(SEL_COMMAND, PropertiesBox::ID_ADD, PropertiesBox::onCmdCommand),
@@ -162,12 +174,13 @@ FXDEFMAP(PropertiesBox) PropertiesBoxMap[] =
 FXIMPLEMENT(PropertiesBox, DialogBox, PropertiesBoxMap, ARRAYNUMBER(PropertiesBoxMap))
 
 // Construct window for one file
-PropertiesBox::PropertiesBox(FXWindow* win, FXString file, FXString path) : DialogBox(win, _("Properties"), DECOR_TITLE | DECOR_BORDER | DECOR_MAXIMIZE | DECOR_STRETCHABLE | DECOR_CLOSE)
+PropertiesBox::PropertiesBox(FXWindow* win, FXString file, FXString path, FXbool placeitem) :
+    DialogBox(win, _("Properties"), DECOR_TITLE | DECOR_BORDER | DECOR_MAXIMIZE | DECOR_STRETCHABLE | DECOR_CLOSE)
 {
     FXulong filesize;
     FXString mod, changed, accessed;
     FXString grpid, usrid;
-    FXLabel*    sizelabel = NULL;
+    FXLabel* sizelabel = NULL;
     struct stat linfo;
     FXString type = "", extension, extension2, fileassoc;
     FXbool isLink, isBrokenLink;
@@ -175,14 +188,15 @@ PropertiesBox::PropertiesBox(FXWindow* win, FXString file, FXString path) : Dial
     char mnttype[64], used[64], avail[64], pctr[64], size[128];
     char buf[MAXPATHLEN + 1];
     FXString hsize;
-    FILE*       p;
+    FILE* p;
 
     // Trash locations
     trashfileslocation = xdgdatahome + PATHSEPSTRING TRASHFILESPATH;
     trashinfolocation = xdgdatahome + PATHSEPSTRING TRASHINFOPATH;
 
     // Buttons
-    FXHorizontalFrame* buttons = new FXHorizontalFrame(this, LAYOUT_SIDE_BOTTOM | LAYOUT_FILL_X, 0, 0, 0, 0, 10, 10, 5, 5);
+    FXHorizontalFrame* buttons = new FXHorizontalFrame(this, LAYOUT_SIDE_BOTTOM | LAYOUT_FILL_X,
+                                                       0, 0, 0, 0, 10, 10, 5, 5);
 
     // Contents
     FXVerticalFrame* contents = new FXVerticalFrame(this, LAYOUT_SIDE_TOP | FRAME_NONE | LAYOUT_FILL_X | LAYOUT_FILL_Y);
@@ -190,54 +204,63 @@ PropertiesBox::PropertiesBox(FXWindow* win, FXString file, FXString path) : Dial
     // Accept
     if (file != "..")
     {
-        FXButton* ok = new FXButton(buttons, _("&Accept"), NULL, this, PropertiesBox::ID_ACCEPT_SINGLE, FRAME_RAISED | FRAME_THICK | LAYOUT_RIGHT | LAYOUT_CENTER_Y, 0, 0, 0, 0, 20, 20);
+        FXButton* ok = new FXButton(buttons, _("&Accept"), NULL, this, PropertiesBox::ID_ACCEPT_SINGLE,
+                                    FRAME_GROOVE | LAYOUT_RIGHT | LAYOUT_CENTER_Y, 0, 0, 0, 0, 20, 20);
         ok->addHotKey(KEY_Return);
     }
 
     // Cancel
-    new FXButton(buttons, _("&Cancel"), NULL, this, PropertiesBox::ID_CANCEL, FRAME_RAISED | FRAME_THICK | LAYOUT_RIGHT | LAYOUT_CENTER_Y, 0, 0, 0, 0, 20, 20);
+    new FXButton(buttons, _("&Cancel"), NULL, this, PropertiesBox::ID_CANCEL,
+                 FRAME_GROOVE | LAYOUT_RIGHT | LAYOUT_CENTER_Y, 0, 0, 0, 0, 20, 20);
 
     // Switcher
     FXTabBook* tabbook = new FXTabBook(contents, NULL, 0, LAYOUT_FILL_X | LAYOUT_FILL_Y | LAYOUT_RIGHT);
 
-    // First item is General
-    new FXTabItem(tabbook, _("&General"), NULL);
-    FXPacker*        genpack = new FXPacker(tabbook, FRAME_RAISED);
-    FXGroupBox*      generalgroup = new FXGroupBox(genpack, FXString::null, FRAME_NONE | LAYOUT_FILL_X | LAYOUT_FILL_Y);
+    // First tab is General
+    general = new FXTabItem(tabbook, _("&General"), NULL);
+    FXPacker* genpack = new FXPacker(tabbook, FRAME_NONE);
+    FXGroupBox* generalgroup = new FXGroupBox(genpack, FXString::null, FRAME_NONE | LAYOUT_FILL_X | LAYOUT_FILL_Y);
     FXVerticalFrame* generalframe = new FXVerticalFrame(generalgroup, LAYOUT_FILL_X | LAYOUT_FILL_Y);
 
-    // Second item is Access Permissions
-    FXTabItem* permtab = new FXTabItem(tabbook, _("&Permissions"), NULL);
-    perm = new PermFrame(tabbook, this);
+    // Second tab is Access Permissions
+    FXTabItem* permstab = new FXTabItem(tabbook, _("&Permissions"), NULL);
+    perms = new PermsFrame(tabbook, this);
 
     // Permission tab is disabled for parent directory
     if (file == "..")
     {
-        permtab->disable();
+        permstab->disable();
     }
 
     // Third tab - file associations
-    FXTabItem*       fassoctab = new FXTabItem(tabbook, _("&File Associations"), NULL);
-    FXPacker*        fassocpack = new FXPacker(tabbook, FRAME_RAISED);
-    FXGroupBox*      fassocgroup = new FXGroupBox(fassocpack, FXString::null, FRAME_NONE | LAYOUT_FILL_X | LAYOUT_FILL_Y);
+    FXTabItem* fassoctab = new FXTabItem(tabbook, _("&File Associations"), NULL);
+    FXPacker* fassocpack = new FXPacker(tabbook, FRAME_NONE);
+    new FXLabel(fassocpack, FXString::null, NULL, JUSTIFY_LEFT); // For spacing
+    FXGroupBox* fassocgroup = new FXGroupBox(fassocpack, _("Associations"),
+                                             FRAME_GROOVE | LAYOUT_FILL_X | LAYOUT_FILL_Y);
     FXVerticalFrame* contassoc = new FXVerticalFrame(fassocgroup, LAYOUT_FILL_X | LAYOUT_FILL_Y);
-    FXMatrix*        matrix = new FXMatrix(contassoc, 3, MATRIX_BY_COLUMNS | LAYOUT_SIDE_TOP | LAYOUT_FILL_X | LAYOUT_FILL_Y);
+    FXMatrix* matrix = new FXMatrix(contassoc, 3, MATRIX_BY_COLUMNS | LAYOUT_SIDE_TOP | LAYOUT_FILL_X | LAYOUT_FILL_Y);
     fassoctab->disable();
     new FXLabel(matrix, _("Extension:"), NULL, JUSTIFY_LEFT | LAYOUT_FILL_COLUMN | LAYOUT_FILL_ROW | LAYOUT_CENTER_Y);
 
     // Use a read-only FXTextField instead of a FXLabel, to allow long strings
-    ext = new FXTextField(matrix, 20, NULL, 0, JUSTIFY_LEFT | LAYOUT_FILL_COLUMN | LAYOUT_FILL_ROW | LAYOUT_CENTER_Y | TEXTFIELD_READONLY | _TEXTFIELD_NOFRAME);
+    ext = new FXTextField(matrix, 20, NULL, 0,
+                          JUSTIFY_LEFT | LAYOUT_FILL_COLUMN | LAYOUT_FILL_ROW | LAYOUT_CENTER_Y | TEXTFIELD_READONLY |
+                          _TEXTFIELD_NOFRAME);
     ext->setBackColor(getApp()->getBaseColor());
 
     new FXLabel(matrix, "", NULL, 0);
 
     new FXLabel(matrix, _("Description:"), NULL, JUSTIFY_LEFT | LAYOUT_FILL_COLUMN | LAYOUT_FILL_ROW | LAYOUT_CENTER_Y);
-    descr = new FXTextField(matrix, 30, NULL, 0, FRAME_THICK | FRAME_SUNKEN | LAYOUT_FILL_COLUMN | LAYOUT_FILL_ROW | LAYOUT_FILL_X | LAYOUT_CENTER_Y);
+    descr = new FXTextField(matrix, 30, NULL, 0,
+                            TEXTFIELD_NORMAL | LAYOUT_FILL_COLUMN | LAYOUT_FILL_ROW | LAYOUT_FILL_X | LAYOUT_CENTER_Y);
     new FXLabel(matrix, "", NULL, 0);
 
     new FXLabel(matrix, _("Open:"), NULL, JUSTIFY_LEFT | LAYOUT_FILL_COLUMN | LAYOUT_FILL_ROW | LAYOUT_CENTER_Y);
-    open = new FXTextField(matrix, 30, NULL, 0, FRAME_THICK | FRAME_SUNKEN | LAYOUT_FILL_COLUMN | LAYOUT_FILL_ROW | LAYOUT_FILL_X | LAYOUT_CENTER_Y);
-    new FXButton(matrix, _("\tSelect file..."), filedialogicon, this, ID_BROWSE_OPEN, FRAME_RAISED | FRAME_THICK | LAYOUT_RIGHT | LAYOUT_FILL_X | LAYOUT_CENTER_Y, 0, 0, 0, 0, 10, 10);
+    open = new FXTextField(matrix, 30, NULL, 0,
+                           TEXTFIELD_NORMAL | LAYOUT_FILL_COLUMN | LAYOUT_FILL_ROW | LAYOUT_FILL_X | LAYOUT_CENTER_Y);
+    new FXButton(matrix, _("\tSelect File..."), minifiledialogicon, this, ID_BROWSE_OPEN,
+                 FRAME_GROOVE | LAYOUT_RIGHT | LAYOUT_FILL_X | LAYOUT_CENTER_Y, 0, 0, 0, 0, 10, 10);
 
     int is_ar = false;
 
@@ -245,8 +268,11 @@ PropertiesBox::PropertiesBox(FXWindow* win, FXString file, FXString path) : Dial
     FXString editlbl = _("Edit:");
 
     extension = file.rafter('.', 1).lower();
-    if ((extension == "gz") || (extension == "tgz") || (extension == "tar") || (extension == "taz") || (extension == "bz2") ||
-        (extension == "tbz2") || (extension == "tbz") || (extension == "xz") || (extension == "txz") || (extension == "zip") ||
+    if ((extension == "gz") || (extension == "tgz") || (extension == "tar") || (extension == "taz") ||
+        (extension == "bz2") ||
+        (extension == "tbz2") || (extension == "tbz") || (extension == "xz") || (extension == "txz") ||
+        (extension == "zip") ||
+        (extension == "tzst") || (extension == "zst") ||
         (extension == "7z") || (extension == "Z") || (extension == "lzh") || (extension == "rar") ||
         (extension == "ace") || (extension == "arj"))
     {
@@ -256,18 +282,23 @@ PropertiesBox::PropertiesBox(FXWindow* win, FXString file, FXString path) : Dial
 #if defined(linux)
     else if (extension == "rpm")
     {
-        editlbl = _("Install/Upgrade:");
+        editlbl = _("Install / Upgrade:");
     }
 #endif
     new FXLabel(matrix, viewlbl, NULL, JUSTIFY_LEFT | LAYOUT_FILL_COLUMN | LAYOUT_FILL_ROW | LAYOUT_CENTER_Y);
-    view = new FXTextField(matrix, 30, NULL, 0, FRAME_THICK | FRAME_SUNKEN | LAYOUT_FILL_COLUMN | LAYOUT_FILL_ROW | LAYOUT_FILL_X | LAYOUT_CENTER_Y);
-    new FXButton(matrix, _("\tSelect file..."), filedialogicon, this, ID_BROWSE_VIEW, FRAME_RAISED | FRAME_THICK | LAYOUT_RIGHT | LAYOUT_FILL_X | LAYOUT_CENTER_Y, 0, 0, 0, 0, 10, 10);
+    view = new FXTextField(matrix, 30, NULL, 0,
+                           TEXTFIELD_NORMAL | LAYOUT_FILL_COLUMN | LAYOUT_FILL_ROW | LAYOUT_FILL_X | LAYOUT_CENTER_Y);
+    new FXButton(matrix, _("\tSelect File..."), minifiledialogicon, this, ID_BROWSE_VIEW,
+                 FRAME_GROOVE | LAYOUT_RIGHT | LAYOUT_FILL_X | LAYOUT_CENTER_Y, 0, 0, 0, 0, 10, 10);
 
     if (!is_ar)
     {
         new FXLabel(matrix, editlbl, NULL, JUSTIFY_LEFT | LAYOUT_FILL_COLUMN | LAYOUT_FILL_ROW | LAYOUT_CENTER_Y);
-        edit = new FXTextField(matrix, 30, NULL, 0, FRAME_THICK | FRAME_SUNKEN | LAYOUT_FILL_COLUMN | LAYOUT_FILL_ROW | LAYOUT_FILL_X | LAYOUT_CENTER_Y);
-        new FXButton(matrix, _("\tSelect file..."), filedialogicon, this, ID_BROWSE_EDIT, FRAME_RAISED | FRAME_THICK | LAYOUT_RIGHT | LAYOUT_FILL_X | LAYOUT_CENTER_Y, 0, 0, 0, 0, 10, 10);
+        edit = new FXTextField(matrix, 30, NULL, 0,
+                               TEXTFIELD_NORMAL | LAYOUT_FILL_COLUMN | LAYOUT_FILL_ROW | LAYOUT_FILL_X |
+                               LAYOUT_CENTER_Y);
+        new FXButton(matrix, _("\tSelect File..."), minifiledialogicon, this, ID_BROWSE_EDIT,
+                     FRAME_GROOVE | LAYOUT_RIGHT | LAYOUT_FILL_X | LAYOUT_CENTER_Y, 0, 0, 0, 0, 10, 10);
     }
     else
     {
@@ -275,16 +306,21 @@ PropertiesBox::PropertiesBox(FXWindow* win, FXString file, FXString path) : Dial
     }
 
     new FXLabel(matrix, _("Big Icon:"), NULL, JUSTIFY_LEFT | LAYOUT_FILL_COLUMN | LAYOUT_FILL_ROW | LAYOUT_CENTER_Y);
-    bigic = new FXTextField(matrix, 30, NULL, 0, FRAME_THICK | FRAME_SUNKEN | LAYOUT_FILL_COLUMN | LAYOUT_FILL_ROW | LAYOUT_FILL_X | LAYOUT_CENTER_Y);
-    bigicbtn = new FXButton(matrix, _("\tSelect file..."), filedialogicon, this, ID_BIG_ICON, FRAME_RAISED | FRAME_THICK | LAYOUT_RIGHT | LAYOUT_FILL_X | LAYOUT_CENTER_Y, 0, 0, 0, 0, 10, 10);
+    bigic = new FXTextField(matrix, 30, NULL, 0,
+                            TEXTFIELD_NORMAL | LAYOUT_FILL_COLUMN | LAYOUT_FILL_ROW | LAYOUT_FILL_X | LAYOUT_CENTER_Y);
+    bigicbtn = new FXButton(matrix, _("\tSelect File..."), minifiledialogicon, this, ID_BIG_ICON,
+                            FRAME_GROOVE | LAYOUT_RIGHT | LAYOUT_FILL_X | LAYOUT_CENTER_Y, 0, 0, 0, 0, 10, 10);
 
     new FXLabel(matrix, _("Mini Icon:"), NULL, JUSTIFY_LEFT | LAYOUT_FILL_COLUMN | LAYOUT_FILL_ROW | LAYOUT_CENTER_Y);
-    miniic = new FXTextField(matrix, 30, NULL, 0, FRAME_THICK | FRAME_SUNKEN | LAYOUT_FILL_COLUMN | LAYOUT_FILL_ROW | LAYOUT_FILL_X | LAYOUT_CENTER_Y);
-    miniicbtn = new FXButton(matrix, _("\tSelect file..."), filedialogicon, this, ID_MINI_ICON, FRAME_RAISED | FRAME_THICK | LAYOUT_FILL_X | LAYOUT_RIGHT | LAYOUT_CENTER_Y, 0, 0, 0, 0, 10, 10);
+    miniic = new FXTextField(matrix, 30, NULL, 0,
+                             TEXTFIELD_NORMAL | LAYOUT_FILL_COLUMN | LAYOUT_FILL_ROW | LAYOUT_FILL_X | LAYOUT_CENTER_Y);
+    miniicbtn = new FXButton(matrix, _("\tSelect File..."), minifiledialogicon, this, ID_MINI_ICON,
+                             FRAME_GROOVE | LAYOUT_FILL_X | LAYOUT_RIGHT | LAYOUT_CENTER_Y, 0, 0, 0, 0, 10, 10);
 
     // File name
-    new FXLabel(generalframe, _("Name"), NULL, JUSTIFY_LEFT);
-    input = new FXTextField(generalframe, 60, NULL, 0, FRAME_THICK | FRAME_SUNKEN | LAYOUT_SIDE_TOP | LAYOUT_FILL_X);
+    FXGroupBox* namegroup = new FXGroupBox(generalframe, _("Name"), GROUPBOX_TITLE_LEFT | FRAME_GROOVE | LAYOUT_FILL_X);
+    input = new FXTextField(namegroup, 60, NULL, 0, TEXTFIELD_NORMAL | LAYOUT_SIDE_TOP | LAYOUT_FILL_X);
+    new FXLabel(namegroup, FXString::null, NULL, JUSTIFY_LEFT); // For spacing
 
     // Complete file path name
     pathname = path + PATHSEPSTRING + file;
@@ -299,13 +335,14 @@ PropertiesBox::PropertiesBox(FXWindow* win, FXString file, FXString path) : Dial
     isMountpoint = false;
 
     // Warn if non UTF-8 file name
-    if (!isUtf8(pathname.text(), pathname.length()))
+    if (!xf_isutf8(pathname.text(), pathname.length()))
     {
-        new FXLabel(generalframe, _("=> Warning: file name is not UTF-8 encoded!"), NULL, LAYOUT_LEFT | LAYOUT_CENTER_Y | LAYOUT_FILL_ROW);
+        new FXLabel(generalframe, _("=> Warning: file name is not UTF-8 encoded!"), NULL,
+                    LAYOUT_LEFT | LAYOUT_CENTER_Y | LAYOUT_FILL_ROW);
     }
 
     // Get file/link stat info
-    if (lstatrep(pathname.text(), &linfo) != 0)
+    if (xf_lstat(pathname.text(), &linfo) != 0)
     {
         return;
     }
@@ -315,8 +352,8 @@ PropertiesBox::PropertiesBox(FXWindow* win, FXString file, FXString path) : Dial
 
     // Obtain group name
     grpid = FXSystem::groupName(linfo.st_gid);
-    perm->user->setText(usrid);
-    perm->grp->setText(grpid);
+    perms->user->setText(usrid);
+    perms->grp->setText(grpid);
     oldgrp = grpid;
     oldusr = usrid;
 
@@ -328,13 +365,13 @@ PropertiesBox::PropertiesBox(FXWindow* win, FXString file, FXString path) : Dial
     {
         // Broken link
         struct stat info;
-        if (statrep(pathname.text(), &info) != 0)
+        if (xf_stat(pathname.text(), &info) != 0)
         {
             isBrokenLink = true;
         }
 
         // Get the path name of the linked file
-        referredpath = ::readLink(pathname);
+        referredpath = xf_readlink(pathname);
     }
 
     orig_mode = linfo.st_mode;
@@ -366,20 +403,20 @@ PropertiesBox::PropertiesBox(FXWindow* win, FXString file, FXString path) : Dial
         FXString dirpath = FXPath::absolute(parentdir, file);
 
 #if defined(linux)
-        FILE*          mtab = setmntent(MTAB_PATH, "r");
+        FILE* mtab = setmntent(MTAB_PATH, "r");
         struct mntent* mnt;
         if (mtab)
         {
             while ((mnt = getmntent(mtab)))
             {
-                if (!streq(mnt->mnt_type, MNTTYPE_IGNORE) && !streq(mnt->mnt_type, MNTTYPE_SWAP))
+                if (!xf_strequal(mnt->mnt_type, MNTTYPE_IGNORE) && !xf_strequal(mnt->mnt_type, MNTTYPE_SWAP))
                 {
-                    if (streq(mnt->mnt_dir, dirpath.text()))
+                    if (xf_strequal(mnt->mnt_dir, dirpath.text()))
                     {
                         isMountpoint = true;
-                        snprintf(buf, sizeof(buf) - 1, _("Filesystem (%s)"), mnt->mnt_fsname);
+                        snprintf(buf, sizeof(buf), _("Filesystem (%s)"), mnt->mnt_fsname);
                         type = buf;
-                        strlcpy(mnttype, mnt->mnt_type, strlen(mnt->mnt_type) + 1);
+                        xf_strlcpy(mnttype, mnt->mnt_type, strlen(mnt->mnt_type) + 1);
                     }
                 }
             }
@@ -390,7 +427,7 @@ PropertiesBox::PropertiesBox(FXWindow* win, FXString file, FXString path) : Dial
         if (isMountpoint)
         {
             // Caution : use the -P option to be POSIX compatible!
-            snprintf(buf, sizeof(buf) - 1, "df -P -B 1 '%s'", pathname.text());
+            snprintf(buf, sizeof(buf), "df -P -B 1 '%s'", pathname.text());
             p = popen(buf, "r");
             FXbool success = true;
             if (fgets(buf, sizeof(buf), p) == NULL)
@@ -407,21 +444,20 @@ PropertiesBox::PropertiesBox(FXWindow* win, FXString file, FXString path) : Dial
                 strtok(NULL, " ");
                 char* pstr;
                 pstr = strtok(NULL, " ");
-                strlcpy(used, pstr, strlen(pstr) + 1);  // get used
+                xf_strlcpy(used, pstr, strlen(pstr) + 1);         // get used
                 pstr = strtok(NULL, " ");
-                strlcpy(avail, pstr, strlen(pstr) + 1); // get available
+                xf_strlcpy(avail, pstr, strlen(pstr) + 1);        // get available
                 pstr = strtok(NULL, " ");
-                strlcpy(pctr, pstr, strlen(pstr) + 1);  // get percentage
+                xf_strlcpy(pctr, pstr, strlen(pstr) + 1);         // get percentage
             }
             else
             {
-                strlcpy(used, "", 1);
-                strlcpy(avail, "", 1);
-                strlcpy(pctr, "", 1);
+                xf_strlcpy(used, "", 1);
+                xf_strlcpy(avail, "", 1);
+                xf_strlcpy(pctr, "", 1);
             }
             pclose(p);
         }
-
         // If it is a folder
         else
         {
@@ -429,7 +465,6 @@ PropertiesBox::PropertiesBox(FXWindow* win, FXString file, FXString path) : Dial
             nbseldirs = 1;
         }
     }
-
     else if (S_ISCHR(linfo.st_mode))
     {
         type = _("Character Device");
@@ -446,13 +481,13 @@ PropertiesBox::PropertiesBox(FXWindow* win, FXString file, FXString path) : Dial
     {
         type = _("Socket");
     }
-
     // Regular file or link
     else
     {
         // Try to use association table
         extension2 = FXPath::name(pathname).rafter('.', 2).lower();
-        if ((extension2 == "tar.gz") || (extension2 == "tar.bz2") || (extension2 == "tar.xz") || (extension2 == "tar.z"))
+        if ((extension2 == "tar.gz") || (extension2 == "tar.bz2") || (extension2 == "tar.xz") ||
+            (extension2 == "tar.zst") || (extension2 == "tar.z"))
         {
             extension = extension2;
         }
@@ -500,15 +535,16 @@ PropertiesBox::PropertiesBox(FXWindow* win, FXString file, FXString path) : Dial
             }
 
             // Load big and mini icons
-            FXString iconpath = getApp()->reg().readStringEntry("SETTINGS", "iconpath", DEFAULTICONPATH);
+            FXString defaulticonpath = xf_realpath(FXPath::directory(execpath) + "/../share/xfe/icons/default-theme");
+            FXString iconpath = xf_realpath(getApp()->reg().readStringEntry("SETTINGS", "iconpath", defaulticonpath.text()));
 
-            FXIcon* bigicon = loadiconfile(getApp(), iconpath, bigic->getText());
+            FXIcon* bigicon = xf_loadiconfile(getApp(), iconpath, bigic->getText(), scalefrac, getApp()->getBaseColor());
             if (bigicon)
             {
                 bigicbtn->setIcon(bigicon);
             }
 
-            FXIcon* miniicon = loadiconfile(getApp(), iconpath, miniic->getText());
+            FXIcon* miniicon = xf_loadiconfile(getApp(), iconpath, miniic->getText(), scalefrac, getApp()->getBaseColor());
             if (miniicon)
             {
                 miniicbtn->setIcon(miniicon);
@@ -538,25 +574,24 @@ PropertiesBox::PropertiesBox(FXWindow* win, FXString file, FXString path) : Dial
     {
         type = _("Broken link");
     }
-
     // For links, get the file type of the referred file
     else if (isLink)
     {
         struct stat info;
-        if (statrep(referredpath.text(), &info) == 0)
+        if (xf_stat(referredpath.text(), &info) == 0)
         {
             // Folder
             if (S_ISDIR(info.st_mode))
             {
                 type = _("Folder");
             }
-
             // File
             else
             {
                 // Try to use association table
                 extension2 = FXPath::name(referredpath).rafter('.', 2).lower();
-                if ((extension2 == "tar.gz") || (extension2 == "tar.bz2") || (extension2 == "tar.xz") || (extension2 == "tar.z"))
+                if ((extension2 == "tar.gz") || (extension2 == "tar.bz2") || (extension2 == "tar.xz") ||
+                    (extension2 == "tar.zst") || (extension2 == "tar.z"))
                 {
                     extension = extension2;
                 }
@@ -575,7 +610,6 @@ PropertiesBox::PropertiesBox(FXWindow* win, FXString file, FXString path) : Dial
                 {
                     type = fileassoc.section(';', 1);
                 }
-
                 // No association
                 else
                 {
@@ -630,26 +664,27 @@ PropertiesBox::PropertiesBox(FXWindow* win, FXString file, FXString path) : Dial
     input->setFocus();
 
     // Set permissions
-    perm->ur->setCheck((linfo.st_mode & S_IRUSR) ? true : false);
-    perm->uw->setCheck((linfo.st_mode & S_IWUSR) ? true : false);
-    perm->ux->setCheck((linfo.st_mode & S_IXUSR) ? true : false);
+    perms->ur->setCheck((linfo.st_mode & S_IRUSR) ? true : false);
+    perms->uw->setCheck((linfo.st_mode & S_IWUSR) ? true : false);
+    perms->ux->setCheck((linfo.st_mode & S_IXUSR) ? true : false);
 
-    perm->gr->setCheck((linfo.st_mode & S_IRGRP) ? true : false);
-    perm->gw->setCheck((linfo.st_mode & S_IWGRP) ? true : false);
-    perm->gx->setCheck((linfo.st_mode & S_IXGRP) ? true : false);
+    perms->gr->setCheck((linfo.st_mode & S_IRGRP) ? true : false);
+    perms->gw->setCheck((linfo.st_mode & S_IWGRP) ? true : false);
+    perms->gx->setCheck((linfo.st_mode & S_IXGRP) ? true : false);
 
-    perm->or_->setCheck((linfo.st_mode & S_IROTH) ? true : false);
-    perm->ow->setCheck((linfo.st_mode & S_IWOTH) ? true : false);
-    perm->ox->setCheck((linfo.st_mode & S_IXOTH) ? true : false);
+    perms->or_->setCheck((linfo.st_mode & S_IROTH) ? true : false);
+    perms->ow->setCheck((linfo.st_mode & S_IWOTH) ? true : false);
+    perms->ox->setCheck((linfo.st_mode & S_IXOTH) ? true : false);
 
-    perm->suid->setCheck((linfo.st_mode & S_ISUID) ? true : false);
-    perm->sgid->setCheck((linfo.st_mode & S_ISGID) ? true : false);
-    perm->svtx->setCheck((linfo.st_mode & S_ISVTX) ? true : false);
+    perms->suid->setCheck((linfo.st_mode & S_ISUID) ? true : false);
+    perms->sgid->setCheck((linfo.st_mode & S_ISGID) ? true : false);
+    perms->svtx->setCheck((linfo.st_mode & S_ISVTX) ? true : false);
 
-    perm->set->setCheck();
-    perm->all->setCheck();
+    perms->set->setCheck();
+    perms->all->setCheck();
 
-    FXLabel* mtType = NULL, *mtUsed = NULL, *mtFree = NULL, *fileType = NULL, *fileChanged = NULL, *fileAccessed = NULL, *fileModified = NULL;
+    FXLabel* mtType = NULL, * mtUsed = NULL, * mtFree = NULL, * fileType = NULL, * fileChanged = NULL,
+           * fileAccessed = NULL, * fileModified = NULL;
     FXbool isInTrash = false;
 
     fileSize = NULL;
@@ -657,8 +692,9 @@ PropertiesBox::PropertiesBox(FXWindow* win, FXString file, FXString path) : Dial
     // Properties are different for mount points
     if (isMountpoint)
     {
-        FXGroupBox* mtgroup = new FXGroupBox(generalframe, _("Mount point"), GROUPBOX_TITLE_LEFT | FRAME_GROOVE | LAYOUT_FILL_X);
-        FXMatrix*   mtmatrix = new FXMatrix(mtgroup, 2, MATRIX_BY_COLUMNS | LAYOUT_FILL_X | LAYOUT_FILL_Y);
+        FXGroupBox* mtgroup = new FXGroupBox(generalframe, _("Mount Point"),
+                                             GROUPBOX_TITLE_LEFT | FRAME_GROOVE | LAYOUT_FILL_X);
+        FXMatrix* mtmatrix = new FXMatrix(mtgroup, 2, MATRIX_BY_COLUMNS | LAYOUT_FILL_X | LAYOUT_FILL_Y);
         new FXLabel(mtmatrix, _("Mount type:"), NULL, LAYOUT_LEFT | JUSTIFY_LEFT);
         fileType = new FXLabel(mtmatrix, FXString::null, NULL, LAYOUT_LEFT | LAYOUT_FILL_COLUMN | JUSTIFY_LEFT);
         new FXLabel(mtmatrix, _("Used:"), NULL, LAYOUT_LEFT);
@@ -673,8 +709,9 @@ PropertiesBox::PropertiesBox(FXWindow* win, FXString file, FXString path) : Dial
     }
     else
     {
-        FXGroupBox* attrgroup = new FXGroupBox(generalframe, _("Properties"), GROUPBOX_TITLE_LEFT | FRAME_GROOVE | LAYOUT_FILL_X);
-        FXMatrix*   attrmatrix = new FXMatrix(attrgroup, 2, MATRIX_BY_COLUMNS | LAYOUT_FILL_X | LAYOUT_FILL_Y);
+        FXGroupBox* attrgroup = new FXGroupBox(generalframe, _("Properties"),
+                                               GROUPBOX_TITLE_LEFT | FRAME_GROOVE | LAYOUT_FILL_X);
+        FXMatrix* attrmatrix = new FXMatrix(attrgroup, 2, MATRIX_BY_COLUMNS | LAYOUT_FILL_X | LAYOUT_FILL_Y);
         new FXLabel(attrmatrix, _("Type:"), NULL, LAYOUT_LEFT);
         fileType = new FXLabel(attrmatrix, FXString::null, NULL, LAYOUT_LEFT | LAYOUT_FILL_COLUMN | JUSTIFY_LEFT);
         sizelabel = new FXLabel(attrmatrix, _("Total size:"), NULL, LAYOUT_LEFT);
@@ -705,8 +742,9 @@ PropertiesBox::PropertiesBox(FXWindow* win, FXString file, FXString path) : Dial
             origlocation = new FXLabel(attrmatrix, FXString::null, NULL, LAYOUT_LEFT | LAYOUT_FILL_COLUMN);
         }
 
-        FXGroupBox* timegroup = new FXGroupBox(generalframe, _("File Time"), GROUPBOX_TITLE_LEFT | FRAME_GROOVE | LAYOUT_FILL_X);
-        FXMatrix*   timematrix = new FXMatrix(timegroup, 2, MATRIX_BY_COLUMNS | LAYOUT_FILL_X | LAYOUT_FILL_Y);
+        FXGroupBox* timegroup = new FXGroupBox(generalframe, _("File Time"),
+                                               GROUPBOX_TITLE_LEFT | FRAME_GROOVE | LAYOUT_FILL_X);
+        FXMatrix* timematrix = new FXMatrix(timegroup, 2, MATRIX_BY_COLUMNS | LAYOUT_FILL_X | LAYOUT_FILL_Y);
         new FXLabel(timematrix, _("Last Modified:"), NULL, LAYOUT_LEFT);
         fileModified = new FXLabel(timematrix, FXString::null, NULL, LAYOUT_LEFT | LAYOUT_FILL_COLUMN);
         new FXLabel(timematrix, _("Last Changed:"), NULL, LAYOUT_LEFT);
@@ -715,8 +753,10 @@ PropertiesBox::PropertiesBox(FXWindow* win, FXString file, FXString path) : Dial
         fileAccessed = new FXLabel(timematrix, FXString::null, NULL, LAYOUT_LEFT | LAYOUT_FILL_COLUMN);
 
 #ifdef STARTUP_NOTIFICATION
-        sngroup = new FXGroupBox(generalframe, _("Startup Notification"), GROUPBOX_TITLE_LEFT | FRAME_GROOVE | LAYOUT_FILL_X);
-        snbutton = new FXCheckButton(sngroup, _("Disable startup notification for this executable") + FXString(" "), this, ID_SNDISABLE);
+        sngroup = new FXGroupBox(generalframe, _("Startup Notification"),
+                                 GROUPBOX_TITLE_LEFT | FRAME_GROOVE | LAYOUT_FILL_X);
+        snbutton = new FXCheckButton(sngroup, _("Disable startup notification for this executable") + FXString(" "),
+                                     this, ID_SNDISABLE);
 
         sndisable_prev = false;
         FXString snexcepts = getApp()->reg().readStringEntry("OPTIONS", "startup_notification_exceptions", "");
@@ -726,11 +766,11 @@ PropertiesBox::PropertiesBox(FXWindow* win, FXString file, FXString path) : Dial
             for (int i = 0; ; i++)
             {
                 entry = snexcepts.section(':', i);
-                if (streq(entry.text(), ""))
+                if (xf_strequal(entry.text(), ""))
                 {
                     break;
                 }
-                if (streq(entry.text(), filename.text()))
+                if (xf_strequal(entry.text(), filename.text()))
                 {
                     sndisable_prev = true;
                     break;
@@ -781,10 +821,10 @@ PropertiesBox::PropertiesBox(FXWindow* win, FXString file, FXString path) : Dial
         // If mount point
         if (isMountpoint)
         {
-            hsize = ::hSize(used);
-            snprintf(size, sizeof(size) - 1, "%s (%s)", hsize.text(), pctr);
+            hsize = xf_humansize(used);
+            snprintf(size, sizeof(size), "%s (%s)", hsize.text(), pctr);
             mtUsed->setText(size);
-            hsize = ::hSize(avail);
+            hsize = xf_humansize(avail);
             mtFree->setText(hsize);
             mtType->setText(mnttype);
         }
@@ -800,15 +840,15 @@ PropertiesBox::PropertiesBox(FXWindow* win, FXString file, FXString path) : Dial
     else
     {
 #if __WORDSIZE == 64
-        snprintf(size, sizeof(size) - 1, "%lu", filesize);
+        snprintf(size, sizeof(size), "%lu", filesize);
 #else
-        snprintf(size, sizeof(size) - 1, "%llu", filesize);
+        snprintf(size, sizeof(size), "%llu", filesize);
 #endif
-        hsize = ::hSize(size);
+        hsize = xf_humansize(size);
 #if __WORDSIZE == 64
-        snprintf(size, sizeof(size) - 1, _("%s (%lu bytes)"), hsize.text(), filesize);
+        snprintf(size, sizeof(size), _("%s (%lu bytes)"), hsize.text(), filesize);
 #else
-        snprintf(size, sizeof(size) - 1, _("%s (%llu bytes)"), hsize.text(), filesize);
+        snprintf(size, sizeof(size), _("%s (%llu bytes)"), hsize.text(), filesize);
 #endif
         sizelabel->setText(_("Size:"));
         fileSize->setText(size);
@@ -831,7 +871,7 @@ PropertiesBox::PropertiesBox(FXWindow* win, FXString file, FXString path) : Dial
         subpath.erase(0, trashbasename.length());
 
         // Read the .trashinfo file
-        FILE*    fp;
+        FILE* fp;
         char line[1024];
         FXString origpath = "", delstr = "";
         FXlong deldate = 0;
@@ -867,7 +907,7 @@ PropertiesBox::PropertiesBox(FXWindow* win, FXString file, FXString path) : Dial
             fclose(fp);
         }
 
-        // Eventually include sub path in the original path
+        // Possibly include sub path in the original path
         if (subpath == "")
         {
             origpath = origpath + subpath;
@@ -878,7 +918,7 @@ PropertiesBox::PropertiesBox(FXWindow* win, FXString file, FXString path) : Dial
         }
 
         // Convert date
-        deldate = deltime(delstr);
+        deldate = xf_deltime(delstr);
         if (deldate != 0)
         {
             delstr = FXSystem::time(timeformat.text(), deldate);
@@ -893,8 +933,8 @@ PropertiesBox::PropertiesBox(FXWindow* win, FXString file, FXString path) : Dial
     }
 
     mode = orig_mode;
-    perm->cmd = PropertiesBox::ID_SET;
-    perm->flt = PropertiesBox::ID_ALL;
+    perms->cmd = PropertiesBox::ID_SET;
+    perms->flt = PropertiesBox::ID_ALL;
     files = &file;
     source = file;
     num = 1;
@@ -912,21 +952,24 @@ PropertiesBox::PropertiesBox(FXWindow* win, FXString file, FXString path) : Dial
     // Flag used to avoid computing recursive size more than once
     recsize = true;
 
-    // Class variable initializations
-    origlocation = NULL;
-    deletiondate = NULL;
-    name_encoding = NULL;
-    username = NULL;
-    grpname = NULL;
-    pid = -1;
-    totaldirsize = 0;
-    totalnbfiles = 0;
-    totalnbsubdirs = 0;
+    // Properties are different for a place item
+    if (placeitem)
+    {
+        general->setText("");
+        input->setEditable(false);
+        permstab->hide();
+        fassoctab->hide();
+        if (sngroup != NULL)
+        {
+            sngroup->hide();
+        }
+    }
 }
 
 
 // Construct window for multiple files
-PropertiesBox::PropertiesBox(FXWindow* win, FXString* file, int n, FXString* path) : DialogBox(win, _("Properties"), DECOR_TITLE | DECOR_BORDER | DECOR_MAXIMIZE | DECOR_STRETCHABLE | DECOR_CLOSE)
+PropertiesBox::PropertiesBox(FXWindow* win, FXString* file, int n, FXString* path) :
+    DialogBox(win, _("Properties"), DECOR_TITLE | DECOR_BORDER | DECOR_MAXIMIZE | DECOR_STRETCHABLE | DECOR_CLOSE)
 {
     struct stat linfo;
     FXString grpid, usrid;
@@ -939,26 +982,30 @@ PropertiesBox::PropertiesBox(FXWindow* win, FXString* file, int n, FXString* pat
     nbseldirs = 0;
 
     // Buttons
-    FXHorizontalFrame* buttons = new FXHorizontalFrame(this, LAYOUT_SIDE_BOTTOM | LAYOUT_FILL_X, 0, 0, 0, 0, 10, 10, 5, 5);
+    FXHorizontalFrame* buttons = new FXHorizontalFrame(this, LAYOUT_SIDE_BOTTOM | LAYOUT_FILL_X,
+                                                       0, 0, 0, 0, 10, 10, 5, 5);
 
     // Contents
     FXVerticalFrame* contents = new FXVerticalFrame(this, LAYOUT_SIDE_TOP | FRAME_NONE | LAYOUT_FILL_X | LAYOUT_FILL_Y);
 
     // Accept
-    FXButton* ok = new FXButton(buttons, _("&Accept"), NULL, this, PropertiesBox::ID_ACCEPT_MULT, FRAME_RAISED | FRAME_THICK | LAYOUT_RIGHT | LAYOUT_CENTER_Y, 0, 0, 0, 0, 20, 20);
+    FXButton* ok = new FXButton(buttons, _("&Accept"), NULL, this, PropertiesBox::ID_ACCEPT_MULT,
+                                FRAME_GROOVE | LAYOUT_RIGHT | LAYOUT_CENTER_Y, 0, 0, 0, 0, 20, 20);
     ok->addHotKey(KEY_Return);
 
     // Cancel
-    new FXButton(buttons, _("&Cancel"), NULL, this, PropertiesBox::ID_CANCEL, FRAME_RAISED | FRAME_THICK | LAYOUT_RIGHT | LAYOUT_CENTER_Y, 0, 0, 0, 0, 20, 20);
+    new FXButton(buttons, _("&Cancel"), NULL, this, PropertiesBox::ID_CANCEL,
+                 FRAME_GROOVE | LAYOUT_RIGHT | LAYOUT_CENTER_Y, 0, 0, 0, 0, 20, 20);
 
     // Switcher
     FXTabBook* tabbook = new FXTabBook(contents, NULL, 0, LAYOUT_FILL_X | LAYOUT_FILL_Y | LAYOUT_RIGHT);
 
-    // First item is General
+    // First tab is General
     new FXTabItem(tabbook, _("&General"), NULL);
-    FXVerticalFrame* generalframe = new FXVerticalFrame(tabbook, FRAME_RAISED);
-    FXGroupBox*      attrgroup = new FXGroupBox(generalframe, _("Properties"), GROUPBOX_TITLE_LEFT | FRAME_GROOVE | LAYOUT_FILL_X | LAYOUT_FILL_Y);
-    FXMatrix*        attrmatrix = new FXMatrix(attrgroup, 2, MATRIX_BY_COLUMNS | LAYOUT_FILL_X | LAYOUT_FILL_Y);
+    FXVerticalFrame* generalframe = new FXVerticalFrame(tabbook, FRAME_NONE);
+    FXGroupBox* attrgroup = new FXGroupBox(generalframe, _("Properties"),
+                                           GROUPBOX_TITLE_LEFT | FRAME_GROOVE | LAYOUT_FILL_X | LAYOUT_FILL_Y);
+    FXMatrix* attrmatrix = new FXMatrix(attrgroup, 2, MATRIX_BY_COLUMNS | LAYOUT_FILL_X | LAYOUT_FILL_Y);
     new FXLabel(attrmatrix, _("Selection:"), NULL, LAYOUT_LEFT | JUSTIFY_LEFT);
     FXLabel* filesSelected = new FXLabel(attrmatrix, FXString::null, NULL, LAYOUT_LEFT | JUSTIFY_LEFT);
     new FXLabel(attrmatrix, FXString::null, NULL, LAYOUT_LEFT | JUSTIFY_LEFT);
@@ -970,14 +1017,14 @@ PropertiesBox::PropertiesBox(FXWindow* win, FXString* file, int n, FXString* pat
     new FXLabel(attrmatrix, FXString::null, NULL, LAYOUT_LEFT | JUSTIFY_LEFT);
     fileSizeDetails = new FXLabel(attrmatrix, FXString::null, NULL, LAYOUT_LEFT | JUSTIFY_LEFT);
 
-    // Second item is Access Permissions
+    // Second tab is Access Permissions
     new FXTabItem(tabbook, _("&Permissions"), NULL);
-    perm = new PermFrame(tabbook, this);
+    perms = new PermsFrame(tabbook, this);
 
     // Get file/link info of the first file of the list
     // This is used as a guess for the username, group and permissions of the whole list
     FXString pathname = path[0] + PATHSEPSTRING + file[0];
-    if (lstatrep(pathname.text(), &linfo) != 0)
+    if (xf_lstat(pathname.text(), &linfo) != 0)
     {
         return;
     }
@@ -990,31 +1037,31 @@ PropertiesBox::PropertiesBox(FXWindow* win, FXString* file, int n, FXString* pat
 
     orig_mode = linfo.st_mode;
 
-    perm->ur->setCheck((linfo.st_mode & S_IRUSR) ? true : false);
-    perm->uw->setCheck((linfo.st_mode & S_IWUSR) ? true : false);
-    perm->ux->setCheck((linfo.st_mode & S_IXUSR) ? true : false);
+    perms->ur->setCheck((linfo.st_mode & S_IRUSR) ? true : false);
+    perms->uw->setCheck((linfo.st_mode & S_IWUSR) ? true : false);
+    perms->ux->setCheck((linfo.st_mode & S_IXUSR) ? true : false);
 
-    perm->gr->setCheck((linfo.st_mode & S_IRGRP) ? true : false);
-    perm->gw->setCheck((linfo.st_mode & S_IWGRP) ? true : false);
-    perm->gx->setCheck((linfo.st_mode & S_IXGRP) ? true : false);
+    perms->gr->setCheck((linfo.st_mode & S_IRGRP) ? true : false);
+    perms->gw->setCheck((linfo.st_mode & S_IWGRP) ? true : false);
+    perms->gx->setCheck((linfo.st_mode & S_IXGRP) ? true : false);
 
-    perm->or_->setCheck((linfo.st_mode & S_IROTH) ? true : false);
-    perm->ow->setCheck((linfo.st_mode & S_IWOTH) ? true : false);
-    perm->ox->setCheck((linfo.st_mode & S_IXOTH) ? true : false);
+    perms->or_->setCheck((linfo.st_mode & S_IROTH) ? true : false);
+    perms->ow->setCheck((linfo.st_mode & S_IWOTH) ? true : false);
+    perms->ox->setCheck((linfo.st_mode & S_IXOTH) ? true : false);
 
-    perm->suid->setCheck((linfo.st_mode & S_ISUID) ? true : false);
-    perm->sgid->setCheck((linfo.st_mode & S_ISGID) ? true : false);
-    perm->svtx->setCheck((linfo.st_mode & S_ISVTX) ? true : false);
+    perms->suid->setCheck((linfo.st_mode & S_ISUID) ? true : false);
+    perms->sgid->setCheck((linfo.st_mode & S_ISGID) ? true : false);
+    perms->svtx->setCheck((linfo.st_mode & S_ISVTX) ? true : false);
 
-    perm->add->setCheck();
-    perm->all->setCheck();
+    perms->add->setCheck();
+    perms->all->setCheck();
 
-    perm->user->setText(usrid);
-    perm->grp->setText(grpid);
+    perms->user->setText(usrid);
+    perms->grp->setText(grpid);
 
     mode = orig_mode;
-    perm->cmd = PropertiesBox::ID_SET;
-    perm->flt = PropertiesBox::ID_ALL;
+    perms->cmd = PropertiesBox::ID_SET;
+    perms->flt = PropertiesBox::ID_ALL;
     files = file;
     paths = path;
     source = "";
@@ -1024,7 +1071,7 @@ PropertiesBox::PropertiesBox(FXWindow* win, FXString* file, int n, FXString* pat
     for (i = 0; i < num; i++)
     {
         FXString pathname = paths[i] + PATHSEPSTRING + files[i];
-        if (lstatrep(pathname.text(), &linfo) != 0)
+        if (xf_lstat(pathname.text(), &linfo) != 0)
         {
             continue;
         }
@@ -1042,14 +1089,14 @@ PropertiesBox::PropertiesBox(FXWindow* win, FXString* file, int n, FXString* pat
         {
             nbseldirs++;
         }
-
         else // Regular file
         {
             nbselfiles++;
 
             // Try to use association table
             extension2 = files[i].rafter('.', 2).lower();
-            if ((extension2 == "tar.gz") || (extension2 == "tar.bz2") || (extension2 == "tar.xz") || (extension2 == "tar.z"))
+            if ((extension2 == "tar.gz") || (extension2 == "tar.bz2") || (extension2 == "tar.xz") ||
+                (extension2 == "tar.zst") || (extension2 == "tar.z"))
             {
                 extension = extension2;
             }
@@ -1110,24 +1157,24 @@ PropertiesBox::PropertiesBox(FXWindow* win, FXString* file, int n, FXString* pat
     }
 
     // Number of selected files
-    snprintf(buf, sizeof(buf) - 1, _("%d items"), num);
+    snprintf(buf, sizeof(buf), _("%d items"), num);
     filesSelected->setText(buf);
 
     if (nbselfiles <= 1 && nbseldirs + dotdot <= 1)
     {
-        snprintf(buf, sizeof(buf) - 1, _("%d file, %d folder"), nbselfiles, nbseldirs + dotdot);
+        snprintf(buf, sizeof(buf), _("%d file, %d folder"), nbselfiles, nbseldirs + dotdot);
     }
     else if (nbselfiles <= 1 && nbseldirs + dotdot > 1)
     {
-        snprintf(buf, sizeof(buf) - 1, _("%d file, %d folders"), nbselfiles, nbseldirs + dotdot);
+        snprintf(buf, sizeof(buf), _("%d file, %d folders"), nbselfiles, nbseldirs + dotdot);
     }
     else if (nbselfiles > 1 && nbseldirs + dotdot <= 1)
     {
-        snprintf(buf, sizeof(buf) - 1, _("%d files, %d folder"), nbselfiles, nbseldirs + dotdot);
+        snprintf(buf, sizeof(buf), _("%d files, %d folder"), nbselfiles, nbseldirs + dotdot);
     }
     else
     {
-        snprintf(buf, sizeof(buf) - 1, _("%d files, %d folders"), nbselfiles, nbseldirs + dotdot);
+        snprintf(buf, sizeof(buf), _("%d files, %d folders"), nbselfiles, nbseldirs + dotdot);
     }
 
     filesSelectedDetails->setText(buf);
@@ -1137,6 +1184,10 @@ PropertiesBox::PropertiesBox(FXWindow* win, FXString* file, int n, FXString* pat
 
     // Flag used to avoid computing recursive size more than once
     recsize = true;
+
+    // Fractional scaling factor
+    FXint res = getApp()->reg().readUnsignedEntry("SETTINGS", "screenres", 100);
+    scalefrac = FXMAX(1.0, res / 100.0);
 
     // Class variable initializations
     executable = false;
@@ -1178,11 +1229,11 @@ void PropertiesBox::create()
 
 
 // Dialog for single selected file
-long PropertiesBox::onCmdAcceptSingle(FXObject* o, FXSelector s, void* p)
+long PropertiesBox::onCmdAcceptSingle(FXObject* sender, FXSelector sel, void* ptr)
 {
-    char**   str = NULL;
+    char** str = NULL;
     int rc = 0;
-    File*    f = NULL;
+    File* f = NULL;
     char file[MAXPATHLEN];
     FXString oldfileassoc, fileassoc, op, v, e;
 
@@ -1232,12 +1283,12 @@ long PropertiesBox::onCmdAcceptSingle(FXObject* o, FXSelector s, void* p)
         confirm = true;
     }
 
-    if ((oldgrp != perm->grp->getText()) || (oldusr != perm->user->getText()) || perm->rec->getCheck())
+    if ((oldgrp != perms->grp->getText()) || (oldusr != perms->user->getText()) || perms->rec->getCheck())
     {
         confirm = true;
     }
 
-    if (!perm->own->getCheck() && ((mode != orig_mode) || perm->rec->getCheck()))
+    if (!perms->own->getCheck() && ((mode != orig_mode) || perms->rec->getCheck()))
     {
         confirm = true;
     }
@@ -1247,7 +1298,7 @@ long PropertiesBox::onCmdAcceptSingle(FXObject* o, FXSelector s, void* p)
     if (confirm == true && confirm_properties == true)
     {
         FXString message;
-        if (::isDirectory(sourcepath))
+        if (xf_isdirectory(sourcepath))
         {
             message = _("Change properties of the selected folder?");
         }
@@ -1256,12 +1307,13 @@ long PropertiesBox::onCmdAcceptSingle(FXObject* o, FXSelector s, void* p)
             message = _("Change properties of the selected file?");
         }
 
-        MessageBox box(this, _("Confirm Change Properties"), message, bigattribicon, BOX_OK_CANCEL | DECOR_TITLE | DECOR_BORDER);
+        MessageBox box(this, _("Confirm Change Properties"), message, bigattribicon,
+                       BOX_OK_CANCEL | DECOR_TITLE | DECOR_BORDER);
 
 
         if (box.execute(PLACEMENT_CURSOR) != BOX_CLICKED_OK)
         {
-            return(0);
+            return 0;
         }
     }
 
@@ -1299,11 +1351,11 @@ long PropertiesBox::onCmdAcceptSingle(FXObject* o, FXSelector s, void* p)
                     for (int i = 0; ; i++)
                     {
                         entry = snexcepts.section(':', i);
-                        if (streq(entry.text(), ""))
+                        if (xf_strequal(entry.text(), ""))
                         {
                             break;
                         }
-                        if (streq(entry.text(), filename.text()))
+                        if (xf_strequal(entry.text(), filename.text()))
                         {
                             notinlist = false;
                             break;
@@ -1316,7 +1368,6 @@ long PropertiesBox::onCmdAcceptSingle(FXObject* o, FXSelector s, void* p)
                     snexcepts += filename + ":";
                 }
             }
-
             // Remove from list if already present
             else
             {
@@ -1328,11 +1379,11 @@ long PropertiesBox::onCmdAcceptSingle(FXObject* o, FXSelector s, void* p)
                     for (int i = 0; ; i++)
                     {
                         entry = snexcepts.section(':', i);
-                        if (streq(entry.text(), ""))
+                        if (xf_strequal(entry.text(), ""))
                         {
                             break;
                         }
-                        if (streq(entry.text(), filename.text()))
+                        if (xf_strequal(entry.text(), filename.text()))
                         {
                             inlist = true;
                             break;
@@ -1389,18 +1440,18 @@ long PropertiesBox::onCmdAcceptSingle(FXObject* o, FXSelector s, void* p)
                 str = new char* [2];
                 str[0] = new char[strlen(ext->getText().text()) + 1];
                 str[1] = new char[strlen(command.text()) + 1];
-                strlcpy(str[0], ext->getText().text(), ext->getText().length() + 1);
-                strlcpy(str[1], command.text(), command.length() + 1);
+                xf_strlcpy(str[0], ext->getText().text(), ext->getText().length() + 1);
+                xf_strlcpy(str[1], command.text(), command.length() + 1);
                 mainWindow->handle(this, FXSEL(SEL_COMMAND, XFileExplorer::ID_FILE_ASSOC), str);
             }
         }
     }
 
-    if ( target == "" || target == ".." || target == "." )
+    if (target == "" || target == ".." || target == ".")
     {
         MessageBox::warning(this, BOX_OK, _("Warning"), _("Invalid file name, operation cancelled"));
         input->setText(source);
-        return(0);
+        return 0;
     }
 
     // Rename file if necessary
@@ -1409,42 +1460,45 @@ long PropertiesBox::onCmdAcceptSingle(FXObject* o, FXSelector s, void* p)
         // Target name contains '/'
         if (target.contains(PATHSEPCHAR))
         {
-            if (::isDirectory(sourcepath))
+            if (xf_isdirectory(sourcepath))
             {
-                MessageBox::warning(this, BOX_OK, _("Warning"), _("The / character is not allowed in folder names, operation cancelled"));
+                MessageBox::warning(this, BOX_OK, _("Warning"),
+                                    _("The / character is not allowed in folder names, operation cancelled"));
             }
             else
             {
-                MessageBox::warning(this, BOX_OK, _("Warning"), _("The / character is not allowed in file names, operation cancelled"));
+                MessageBox::warning(this, BOX_OK, _("Warning"),
+                                    _("The / character is not allowed in file names, operation cancelled"));
             }
             input->setText(source);
-            return(0);
+            return 0;
         }
 
         // Source path is not writable
-        if (!::isWritable(sourcepath))
+        if (!xf_iswritable(sourcepath))
         {
-            MessageBox::error(getApp(), BOX_OK_SU, _("Error"), _("Can't write to %s: Permission denied"), source.text());
-            return(0);
+            MessageBox::error(getApp(), BOX_OK_SU, _("Error"), _("Can't write to %s: Permission denied"),
+                              source.text());
+            return 0;
         }
 
         // Target parent directory doesn't exist or is not writable
-        if (!existFile(targetparentdir))
+        if (!xf_existfile(targetparentdir))
         {
             MessageBox::error(this, BOX_OK, _("Error"), _("Folder %s doesn't exist"), targetparentdir.text());
-            return(0);
+            return 0;
         }
-        if (!::isWritable(targetparentdir))
+        if (!xf_iswritable(targetparentdir))
         {
-            MessageBox::error(getApp(), BOX_OK_SU, _("Error"), _("Can't write to %s: Permission denied"), targetparentdir.text());
-            return(0);
+            MessageBox::error(getApp(), BOX_OK_SU, _("Error"), _("Can't write to %s: Permission denied"),
+                              targetparentdir.text());
+            return 0;
         }
-
         // Rename file or directory
         else
         {
             File* f;
-            f = new File(this, _("File rename"), RENAME);
+            f = new File(this, _("Rename Files"), RENAME);
             f->create();
             f->rename(sourcepath, targetpath);
             delete f;
@@ -1457,7 +1511,7 @@ long PropertiesBox::onCmdAcceptSingle(FXObject* o, FXSelector s, void* p)
 
     // Chown only if user or group have changed or recursive flag is set
     rc = 0;
-    if ((oldgrp != perm->grp->getText()) || (oldusr != perm->user->getText()) || perm->rec->getCheck())
+    if ((oldgrp != perms->grp->getText()) || (oldusr != perms->user->getText()) || perms->rec->getCheck())
     {
         f = new File(this, _("File owner"), CHOWN);
         f->create();
@@ -1467,7 +1521,7 @@ long PropertiesBox::onCmdAcceptSingle(FXObject* o, FXSelector s, void* p)
         struct passwd* pwde;
         while ((pwde = getpwent()))
         {
-            if (perm->user->getText() == pwde->pw_name)
+            if (perms->user->getText() == pwde->pw_name)
             {
                 uid = pwde->pw_uid;
             }
@@ -1477,7 +1531,7 @@ long PropertiesBox::onCmdAcceptSingle(FXObject* o, FXSelector s, void* p)
         struct group* grpe;
         while ((grpe = getgrent()))
         {
-            if (perm->grp->getText() == grpe->gr_name)
+            if (perms->grp->getText() == grpe->gr_name)
             {
                 gid = grpe->gr_gid;
             }
@@ -1489,7 +1543,8 @@ long PropertiesBox::onCmdAcceptSingle(FXObject* o, FXSelector s, void* p)
 
         // Perform chown on the selected file or directory
         errno = 0;
-        rc = f->chown((char*)targetpath.text(), file, uid, gid, perm->rec->getCheck(), perm->dironly->getCheck(), perm->fileonly->getCheck());
+        rc = f->chown((char*)targetpath.text(), file, uid, gid, perms->rec->getCheck(), perms->dironly->getCheck(),
+                      perms->fileonly->getCheck());
         int errcode = errno;
 
         // If action is cancelled in progress dialog
@@ -1499,7 +1554,7 @@ long PropertiesBox::onCmdAcceptSingle(FXObject* o, FXSelector s, void* p)
             MessageBox::error(this, BOX_OK, _("Warning"), _("Change owner cancelled!"));
             delete f;
             getApp()->endWaitCursor();
-            return(0);
+            return 0;
         }
         getApp()->endWaitCursor();
 
@@ -1516,19 +1571,20 @@ long PropertiesBox::onCmdAcceptSingle(FXObject* o, FXSelector s, void* p)
                 MessageBox::error(this, BOX_OK, _("Error"), _("Chown in %s failed"), file);
             }
             delete f;
-            return(0);
+            return 0;
         }
         delete f;
     }
 
     // Chmod if owner only is not set and permissions are changed or recursive flag is set
-    if (!perm->own->getCheck() && ((mode != orig_mode) || perm->rec->getCheck()))
+    if (!perms->own->getCheck() && ((mode != orig_mode) || perms->rec->getCheck()))
     {
-        if (perm->suid->getCheck() || perm->sgid->getCheck() || perm->svtx->getCheck())
+        if (perms->suid->getCheck() || perms->sgid->getCheck() || perms->svtx->getCheck())
         {
-            if (BOX_CLICKED_CANCEL == MessageBox::warning(this, BOX_OK_CANCEL, _("Warning"), _("Setting special permissions could be unsafe! Is that you really want to do?")))
+            if (BOX_CLICKED_CANCEL == MessageBox::warning(this, BOX_OK_CANCEL, _("Warning"),
+                                      _("Setting special permissions could be unsafe! Is that you really want to do?")))
             {
-                return(0);
+                return 0;
             }
         }
 
@@ -1536,16 +1592,16 @@ long PropertiesBox::onCmdAcceptSingle(FXObject* o, FXSelector s, void* p)
         mode_t m;
 
         // Cannot stat target
-        if (lstatrep(targetpath.text(), &linfo) != 0)
+        if (xf_lstat(targetpath.text(), &linfo) != 0)
         {
             MessageBox::error(this, BOX_OK, _("Error"), _("Chmod in %s failed: %s"), file, strerror(errno));
-            return(0);
+            return 0;
         }
 
         f = new File(this, _("File permissions"), CHMOD);
         f->create();
 
-        switch (perm->cmd)
+        switch (perms->cmd)
         {
         case PropertiesBox::ID_ADD:
             m = linfo.st_mode | mode;
@@ -1561,7 +1617,7 @@ long PropertiesBox::onCmdAcceptSingle(FXObject* o, FXSelector s, void* p)
 
         default:
             delete f;
-            return(0);
+            return 0;
         }
 
         // Wait cursor
@@ -1569,7 +1625,8 @@ long PropertiesBox::onCmdAcceptSingle(FXObject* o, FXSelector s, void* p)
 
         // Perform chmod on the selected file or directory
         errno = 0;
-        rc = f->chmod((char*)targetpath.text(), file, m, perm->rec->getCheck(), perm->dironly->getCheck(), perm->fileonly->getCheck());
+        rc = f->chmod((char*)targetpath.text(), file, m, perms->rec->getCheck(), perms->dironly->getCheck(),
+                      perms->fileonly->getCheck());
         int errcode = errno;
 
         // If action is cancelled in progress dialog
@@ -1579,7 +1636,7 @@ long PropertiesBox::onCmdAcceptSingle(FXObject* o, FXSelector s, void* p)
             MessageBox::error(this, BOX_OK, _("Warning"), _("Change file permissions cancelled!"));
             delete f;
             getApp()->endWaitCursor();
-            return(0);
+            return 0;
         }
         getApp()->endWaitCursor();
 
@@ -1596,12 +1653,12 @@ long PropertiesBox::onCmdAcceptSingle(FXObject* o, FXSelector s, void* p)
                 MessageBox::error(this, BOX_OK, _("Error"), _("Chmod in %s failed"), file);
             }
             delete f;
-            return(0);
+            return 0;
         }
         delete f;
     }
 
-    DialogBox::onCmdAccept(o, s, p);
+    DialogBox::onCmdAccept(sender, sel, ptr);
 
     // Redraw file lists
     ((XFileExplorer*)mainWindow)->deselectAll();
@@ -1610,12 +1667,12 @@ long PropertiesBox::onCmdAcceptSingle(FXObject* o, FXSelector s, void* p)
     // Delete object
     delete this;
 
-    return(1);
+    return 1;
 }
 
 
 // Dialog for multiple selected files
-long PropertiesBox::onCmdAcceptMult(FXObject* o, FXSelector s, void* p)
+long PropertiesBox::onCmdAcceptMult(FXObject* sender, FXSelector sel, void* ptr)
 {
     int rc = 0, i;
     File* f = NULL;
@@ -1625,10 +1682,11 @@ long PropertiesBox::onCmdAcceptMult(FXObject* o, FXSelector s, void* p)
 
     if (confirm_properties)
     {
-        MessageBox box(this, _("Confirm Change Properties"), _("Apply permissions to the selected items?"), bigattribicon, BOX_OK_CANCEL | DECOR_TITLE | DECOR_BORDER);
+        MessageBox box(this, _("Confirm Change Properties"), _("Apply permissions to the selected items?"),
+                       bigattribicon, BOX_OK_CANCEL | DECOR_TITLE | DECOR_BORDER);
         if (box.execute(PLACEMENT_CURSOR) != BOX_CLICKED_OK)
         {
-            return(0);
+            return 0;
         }
     }
 
@@ -1660,7 +1718,7 @@ long PropertiesBox::onCmdAcceptMult(FXObject* o, FXSelector s, void* p)
     {
         struct stat linfo;
         FXString pathname = FXPath::absolute(paths[i], files[i]);
-        if (lstatrep(pathname.text(), &linfo) != 0)
+        if (xf_lstat(pathname.text(), &linfo) != 0)
         {
             continue;
         }
@@ -1670,7 +1728,7 @@ long PropertiesBox::onCmdAcceptMult(FXObject* o, FXSelector s, void* p)
         struct passwd* pwde;
         while ((pwde = getpwent()))
         {
-            if (perm->user->getText() == pwde->pw_name)
+            if (perms->user->getText() == pwde->pw_name)
             {
                 uid = pwde->pw_uid;
             }
@@ -1680,7 +1738,7 @@ long PropertiesBox::onCmdAcceptMult(FXObject* o, FXSelector s, void* p)
         struct group* grpe;
         while ((grpe = getgrent()))
         {
-            if (perm->grp->getText() == grpe->gr_name)
+            if (perms->grp->getText() == grpe->gr_name)
             {
                 gid = grpe->gr_gid;
             }
@@ -1690,7 +1748,8 @@ long PropertiesBox::onCmdAcceptMult(FXObject* o, FXSelector s, void* p)
         errno = 0;
         if (files[i] != "..")
         {
-            rc = f->chown((char*)pathname.text(), file, uid, gid, perm->rec->getCheck(), perm->dironly->getCheck(), perm->fileonly->getCheck());
+            rc = f->chown((char*)pathname.text(), file, uid, gid, perms->rec->getCheck(), perms->dironly->getCheck(),
+                          perms->fileonly->getCheck());
         }
         int errcode = errno;
 
@@ -1701,7 +1760,7 @@ long PropertiesBox::onCmdAcceptMult(FXObject* o, FXSelector s, void* p)
             MessageBox::error(this, BOX_OK, _("Warning"), _("Change owner cancelled!"));
             delete f;
             getApp()->endWaitCursor();
-            return(0);
+            return 0;
         }
 
         // Handle chown errors
@@ -1718,20 +1777,21 @@ long PropertiesBox::onCmdAcceptMult(FXObject* o, FXSelector s, void* p)
             }
             delete f;
             getApp()->endWaitCursor();
-            return(0);
+            return 0;
         }
     }
     delete f;
     getApp()->endWaitCursor();
 
     // Chmod if owner only is not set
-    if (!perm->own->getCheck())
+    if (!perms->own->getCheck())
     {
-        if (perm->suid->getCheck() || perm->sgid->getCheck() || perm->svtx->getCheck())
+        if (perms->suid->getCheck() || perms->sgid->getCheck() || perms->svtx->getCheck())
         {
-            if (BOX_CLICKED_CANCEL == MessageBox::warning(this, BOX_OK_CANCEL, _("Warning"), _("Setting special permissions could be unsafe! Is that you really want to do?")))
+            if (BOX_CLICKED_CANCEL == MessageBox::warning(this, BOX_OK_CANCEL, _("Warning"),
+                                      _("Setting special permissions could be unsafe! Is that you really want to do?")))
             {
-                return(0);
+                return 0;
             }
         }
 
@@ -1747,12 +1807,12 @@ long PropertiesBox::onCmdAcceptMult(FXObject* o, FXSelector s, void* p)
             mode_t m;
 
             FXString pathname = FXPath::absolute(paths[i], files[i]);
-            if (lstatrep(pathname.text(), &linfo) != 0)
+            if (xf_lstat(pathname.text(), &linfo) != 0)
             {
                 continue;
             }
 
-            switch (perm->cmd)
+            switch (perms->cmd)
             {
             case PropertiesBox::ID_ADD:
                 m = linfo.st_mode | mode;
@@ -1769,13 +1829,14 @@ long PropertiesBox::onCmdAcceptMult(FXObject* o, FXSelector s, void* p)
             default:
                 delete f;
                 getApp()->endWaitCursor();
-                return(0);
+                return 0;
             }
 
-            if ((files[i] != "..") && !perm->own->getCheck())
+            if ((files[i] != "..") && !perms->own->getCheck())
             {
                 errno = 0;
-                rc = f->chmod((char*)pathname.text(), file, m, perm->rec->getCheck(), perm->dironly->getCheck(), perm->fileonly->getCheck());
+                rc = f->chmod((char*)pathname.text(), file, m, perms->rec->getCheck(), perms->dironly->getCheck(),
+                              perms->fileonly->getCheck());
                 int errcode = errno;
 
                 // If action is cancelled in progress dialog
@@ -1785,7 +1846,7 @@ long PropertiesBox::onCmdAcceptMult(FXObject* o, FXSelector s, void* p)
                     MessageBox::error(this, BOX_OK, _("Warning"), _("Change file(s) permissions cancelled!"));
                     delete f;
                     getApp()->endWaitCursor();
-                    return(0);
+                    return 0;
                 }
 
                 // Handle chmod errors
@@ -1794,7 +1855,8 @@ long PropertiesBox::onCmdAcceptMult(FXObject* o, FXSelector s, void* p)
                     f->hideProgressDialog();
                     if (errcode)
                     {
-                        MessageBox::error(this, BOX_OK, _("Error"), _("Chmod in %s failed: %s"), file, strerror(errcode));
+                        MessageBox::error(this, BOX_OK, _("Error"), _("Chmod in %s failed: %s"), file,
+                                          strerror(errcode));
                     }
                     else
                     {
@@ -1802,7 +1864,7 @@ long PropertiesBox::onCmdAcceptMult(FXObject* o, FXSelector s, void* p)
                     }
                     delete f;
                     getApp()->endWaitCursor();
-                    return(0);
+                    return 0;
                 }
             }
         }
@@ -1810,7 +1872,7 @@ long PropertiesBox::onCmdAcceptMult(FXObject* o, FXSelector s, void* p)
         getApp()->endWaitCursor();
     }
 
-    DialogBox::onCmdAccept(o, s, p);
+    DialogBox::onCmdAccept(sender, sel, ptr);
 
     // Redraw the file lists
     ((XFileExplorer*)mainWindow)->deselectAll();
@@ -1820,12 +1882,12 @@ long PropertiesBox::onCmdAcceptMult(FXObject* o, FXSelector s, void* p)
     delete[]paths;
     delete this;
 
-    return(1);
+    return 1;
 }
 
 
 // Cancel dialog
-long PropertiesBox::onCmdCancel(FXObject* o, FXSelector s, void* p)
+long PropertiesBox::onCmdCancel(FXObject* sender, FXSelector sel, void* ptr)
 {
     // Kill child process, if exists
     if (pid > 0)
@@ -1841,33 +1903,33 @@ long PropertiesBox::onCmdCancel(FXObject* o, FXSelector s, void* p)
         getApp()->removeChore(this, ID_WATCHPROCESS);
     }
 
-    DialogBox::onCmdCancel(o, s, p);
+    DialogBox::onCmdCancel(sender, sel, ptr);
 
     delete this;
 
-    return(1);
+    return 1;
 }
 
 
-long PropertiesBox::onCmdCommand(FXObject* o, FXSelector s, void* p)
+long PropertiesBox::onCmdCommand(FXObject* sender, FXSelector sel, void* ptr)
 {
-    perm->cmd = FXSELID(s);
-    return(1);
+    perms->cmd = FXSELID(sel);
+    return 1;
 }
 
 
-long PropertiesBox::onCmdFilter(FXObject* o, FXSelector s, void* p)
+long PropertiesBox::onCmdFilter(FXObject* sender, FXSelector sel, void* ptr)
 {
-    perm->flt = FXSELID(s);
-    return(1);
+    perms->flt = FXSELID(sel);
+    return 1;
 }
 
 
-long PropertiesBox::onCmdCheck(FXObject* o, FXSelector s, void* p)
+long PropertiesBox::onCmdCheck(FXObject* sender, FXSelector sel, void* ptr)
 {
     int xmode = 0;
 
-    switch (FXSELID(s))
+    switch (FXSELID(sel))
     {
     case PropertiesBox::ID_RUSR:
         xmode = S_IRUSR;
@@ -1917,7 +1979,7 @@ long PropertiesBox::onCmdCheck(FXObject* o, FXSelector s, void* p)
         xmode = S_ISVTX;
         break;
     }
-    FXCheckButton* ch = (FXCheckButton*)o;
+    FXCheckButton* ch = (FXCheckButton*)sender;
     if (!ch->getCheck())
     {
         mode &= ~xmode;
@@ -1927,16 +1989,16 @@ long PropertiesBox::onCmdCheck(FXObject* o, FXSelector s, void* p)
         mode |= xmode;
     }
 
-    return(1);
+    return 1;
 }
 
 
-long PropertiesBox::onCmdBrowse(FXObject* o, FXSelector s, void* p)
+long PropertiesBox::onCmdBrowse(FXObject* sender, FXSelector sel, void* ptr)
 {
-    FileDialog browseProgram(this, _("Select an executable file"));
+    FileDialog browseProgram(this, _("Select an Executable File"));
     const char* patterns[] =
     {
-        _("All files"), "*", NULL
+        _("All Files"), "*", NULL
     };
 
     browseProgram.setFilename(ROOTDIR);
@@ -1945,7 +2007,7 @@ long PropertiesBox::onCmdBrowse(FXObject* o, FXSelector s, void* p)
     if (browseProgram.execute())
     {
         FXString path = browseProgram.getFilename();
-        switch (FXSELID(s))
+        switch (FXSELID(sel))
         {
         case ID_BROWSE_OPEN:
             open->setText(FXPath::name(path));
@@ -1963,15 +2025,15 @@ long PropertiesBox::onCmdBrowse(FXObject* o, FXSelector s, void* p)
             break;
         }
     }
-    return(1);
+    return 1;
 }
 
 
-long PropertiesBox::onCmdBrowseIcon(FXObject* o, FXSelector s, void* p)
+long PropertiesBox::onCmdBrowseIcon(FXObject* sender, FXSelector sel, void* ptr)
 {
     FXString icon;
 
-    if (FXSELID(s) == ID_BIG_ICON)
+    if (FXSELID(sel) == ID_BIG_ICON)
     {
         icon = bigic->getText();
     }
@@ -1980,7 +2042,8 @@ long PropertiesBox::onCmdBrowseIcon(FXObject* o, FXSelector s, void* p)
         icon = miniic->getText();
     }
 
-    FXString iconpath = getApp()->reg().readStringEntry("SETTINGS", "iconpath", DEFAULTICONPATH);
+    FXString defaulticonpath = xf_realpath(FXPath::directory(execpath) + "/../share/xfe/icons/default-theme");
+    FXString iconpath = xf_realpath(getApp()->reg().readStringEntry("SETTINGS", "iconpath", defaulticonpath.text()));
     const char* patterns[] =
     {
         _("PNG Images"), "*.png",
@@ -1996,16 +2059,16 @@ long PropertiesBox::onCmdBrowseIcon(FXObject* o, FXSelector s, void* p)
         FXString path;
 
         path = browseIcon.getFilename();
-        if (!existFile(path))
+        if (!xf_existfile(path))
         {
-            return(0);
+            return 0;
         }
-        if (FXSELID(s) == ID_BIG_ICON)
+        if (FXSELID(sel) == ID_BIG_ICON)
         {
             // Load big icon
             bigic->setText(path);
 
-            FXIcon* bigicon = loadiconfile(getApp(), path, bigic->getText());
+            FXIcon* bigicon = xf_loadiconfile(getApp(), path, bigic->getText(), scalefrac, getApp()->getBaseColor());
             if (bigicon)
             {
                 bigicbtn->setIcon(bigicon);
@@ -2016,11 +2079,11 @@ long PropertiesBox::onCmdBrowseIcon(FXObject* o, FXSelector s, void* p)
             // Load mini icon
             miniic->setText(path);
 
-            FXIcon* miniicon = loadiconfile(getApp(), path, miniic->getText());
+            FXIcon* miniicon = xf_loadiconfile(getApp(), path, miniic->getText(), scalefrac, getApp()->getBaseColor());
             miniicbtn->setIcon(miniicon);
         }
     }
-    return(1);
+    return 1;
 }
 
 
@@ -2067,7 +2130,7 @@ long PropertiesBox::onWatchProcess(FXObject*, FXSelector, void*)
                     files = strbuf.section(' ', 1);
                     subdirs = strbuf.section(' ', 2);
 
-                    hsize = ::hSize((char*)dsize.text());
+                    hsize = xf_humansize((char*)dsize.text());
 
                     // Directory size, number of files, number of sub directories
                     dirsize = FXULongVal(dsize);
@@ -2079,27 +2142,31 @@ long PropertiesBox::onWatchProcess(FXObject*, FXSelector, void*)
                     }
 
 #if __WORDSIZE == 64
-                    snprintf(size, sizeof(size) - 1, _("%s (%lu bytes)"), hsize.text(), dirsize);
+                    snprintf(size, sizeof(size), _("%s (%lu bytes)"), hsize.text(), dirsize);
 #else
-                    snprintf(size, sizeof(size) - 1, _("%s (%llu bytes)"), hsize.text(), dirsize);
+                    snprintf(size, sizeof(size), _("%s (%llu bytes)"), hsize.text(), dirsize);
 #endif
                     fileSize->setText(size);
 
                     if (nbfiles - nbsubdirs - nbseldirs <= 1 && nbsubdirs <= 1)
                     {
-                        snprintf(size, sizeof(size) - 1, _("%u file, %u subfolder"), nbfiles - nbsubdirs - nbseldirs, nbsubdirs);
+                        snprintf(size, sizeof(size), _("%u file, %u subfolder"), nbfiles - nbsubdirs - nbseldirs,
+                                 nbsubdirs);
                     }
                     else if (nbfiles - nbsubdirs - nbseldirs <= 1 && nbsubdirs > 1)
                     {
-                        snprintf(size, sizeof(size) - 1, _("%u file, %u subfolders"), nbfiles - nbsubdirs - nbseldirs, nbsubdirs);
+                        snprintf(size, sizeof(size), _("%u file, %u subfolders"), nbfiles - nbsubdirs - nbseldirs,
+                                 nbsubdirs);
                     }
                     else if (nbfiles - nbsubdirs - nbseldirs > 1 && nbsubdirs <= 1)
                     {
-                        snprintf(size, sizeof(size) - 1, _("%u files, %u subfolder"), nbfiles - nbsubdirs - nbseldirs, nbsubdirs);
+                        snprintf(size, sizeof(size), _("%u files, %u subfolder"), nbfiles - nbsubdirs - nbseldirs,
+                                 nbsubdirs);
                     }
                     else
                     {
-                        snprintf(size, sizeof(size) - 1, _("%u files, %u subfolders"), nbfiles - nbsubdirs - nbseldirs, nbsubdirs);
+                        snprintf(size, sizeof(size), _("%u files, %u subfolders"), nbfiles - nbsubdirs - nbseldirs,
+                                 nbsubdirs);
                     }
 
                     fileSizeDetails->setText(size);
@@ -2112,7 +2179,6 @@ long PropertiesBox::onWatchProcess(FXObject*, FXSelector, void*)
             }
         }
     }
-
     else
     {
         // Child has finished.
@@ -2133,7 +2199,7 @@ long PropertiesBox::onWatchProcess(FXObject*, FXSelector, void*)
                 files = strbuf.section(' ', 1);
                 subdirs = strbuf.section(' ', 2);
 
-                hsize = ::hSize((char*)dsize.text());
+                hsize = xf_humansize((char*)dsize.text());
 
                 // Directory size, number of files, number of sub directories
                 dirsize = FXULongVal(dsize);
@@ -2145,27 +2211,31 @@ long PropertiesBox::onWatchProcess(FXObject*, FXSelector, void*)
                 }
 
 #if __WORDSIZE == 64
-                snprintf(size, sizeof(size) - 1, _("%s (%lu bytes)"), hsize.text(), dirsize);
+                snprintf(size, sizeof(size), _("%s (%lu bytes)"), hsize.text(), dirsize);
 #else
-                snprintf(size, sizeof(size) - 1, _("%s (%llu bytes)"), hsize.text(), dirsize);
+                snprintf(size, sizeof(size), _("%s (%llu bytes)"), hsize.text(), dirsize);
 #endif
                 fileSize->setText(size);
 
                 if (nbfiles - nbsubdirs - nbseldirs <= 1 && nbsubdirs <= 1)
                 {
-                    snprintf(size, sizeof(size) - 1, _("%u file, %u subfolder"), nbfiles - nbsubdirs - nbseldirs, nbsubdirs);
+                    snprintf(size, sizeof(size), _("%u file, %u subfolder"), nbfiles - nbsubdirs - nbseldirs,
+                             nbsubdirs);
                 }
                 else if (nbfiles - nbsubdirs - nbseldirs <= 1 && nbsubdirs > 1)
                 {
-                    snprintf(size, sizeof(size) - 1, _("%u file, %u subfolders"), nbfiles - nbsubdirs - nbseldirs, nbsubdirs);
+                    snprintf(size, sizeof(size), _("%u file, %u subfolders"), nbfiles - nbsubdirs - nbseldirs,
+                             nbsubdirs);
                 }
                 else if (nbfiles - nbsubdirs - nbseldirs > 1 && nbsubdirs <= 1)
                 {
-                    snprintf(size, sizeof(size) - 1, _("%u files, %u subfolder"), nbfiles - nbsubdirs - nbseldirs, nbsubdirs);
+                    snprintf(size, sizeof(size), _("%u files, %u subfolder"), nbfiles - nbsubdirs - nbseldirs,
+                             nbsubdirs);
                 }
                 else
                 {
-                    snprintf(size, sizeof(size) - 1, _("%u files, %u subfolders"), nbfiles - nbsubdirs - nbseldirs, nbsubdirs);
+                    snprintf(size, sizeof(size), _("%u files, %u subfolders"), nbfiles - nbsubdirs - nbseldirs,
+                             nbsubdirs);
                 }
 
                 fileSizeDetails->setText(size);
@@ -2182,12 +2252,12 @@ long PropertiesBox::onWatchProcess(FXObject*, FXSelector, void*)
         ::close(pipes[1]);
     }
 
-    return(1);
+    return 1;
 }
 
 
 // Update recursive directory size and permissions
-long PropertiesBox::onUpdSizeAndPerm(FXObject* o, FXSelector s, void* p)
+long PropertiesBox::onUpdSizeAndPerms(FXObject* sender, FXSelector sel, void* ptr)
 {
     // Update recursive size only one time
     if (recsize)
@@ -2205,7 +2275,7 @@ long PropertiesBox::onUpdSizeAndPerm(FXObject* o, FXSelector s, void* p)
                 FXulong dirsize = 0;
 
                 FXString dirpath = FXPath::absolute(parentdir, filename);
-                strlcpy(buf, dirpath.text(), dirpath.length() + 1);
+                xf_strlcpy(buf, dirpath.text(), dirpath.length() + 1);
 
                 // Open pipes to communicate with child process
                 if (pipe(pipes) == -1)
@@ -2222,20 +2292,19 @@ long PropertiesBox::onUpdSizeAndPerm(FXObject* o, FXSelector s, void* p)
                     perror("fork");
                     exit(EXIT_FAILURE);
                 }
-                if (pid == 0)        // Child
+                if (pid == 0) // Child
                 {
-                    pathsize(buf, &nbfiles, &nbsubdirs, &dirsize, pipes);
+                    xf_pathsize(buf, &nbfiles, &nbsubdirs, &dirsize, pipes);
 
                     _exit(EXIT_SUCCESS);
                 }
-                else                 // Parent
+                else // Parent
                 {
                     // Make sure we get called so we can check when child has finished
                     getApp()->addChore(this, ID_WATCHPROCESS);
                 }
             }
         }
-
         // Multiple files
         else
         {
@@ -2254,7 +2323,7 @@ long PropertiesBox::onUpdSizeAndPerm(FXObject* o, FXSelector s, void* p)
                 perror("fork");
                 exit(EXIT_FAILURE);
             }
-            if (pid == 0)             // Child
+            if (pid == 0) // Child
             {
                 struct stat info;
 
@@ -2272,7 +2341,7 @@ long PropertiesBox::onUpdSizeAndPerm(FXObject* o, FXSelector s, void* p)
                         pathname = FXPath::absolute(paths[i], files[i]);
                     }
 
-                    if (lstatrep(pathname.text(), &info) != 0)
+                    if (xf_lstat(pathname.text(), &info) != 0)
                     {
                         continue;
                     }
@@ -2287,25 +2356,25 @@ long PropertiesBox::onUpdSizeAndPerm(FXObject* o, FXSelector s, void* p)
                     isDirectory = S_ISDIR(info.st_mode);
                     if (isDirectory)
                     {
-                        strlcpy(buf, pathname.text(), pathname.length() + 1);
+                        xf_strlcpy(buf, pathname.text(), pathname.length() + 1);
 
                         if (totalnbsubdirs > 0)
                         {
                             totalnbsubdirs--;
                         }
 
-                        pathsize(buf, &totalnbfiles, &totalnbsubdirs, &totaldirsize, pipes);
+                        xf_pathsize(buf, &totalnbfiles, &totalnbsubdirs, &totaldirsize, pipes);
                     }
-                    else           // Regular file
+                    else // Regular file
                     {
-                        strlcpy(buf, pathname.text(), pathname.length() + 1);
-                        pathsize(buf, &totalnbfiles, &totalnbsubdirs, &totaldirsize, pipes);
+                        xf_strlcpy(buf, pathname.text(), pathname.length() + 1);
+                        xf_pathsize(buf, &totalnbfiles, &totalnbsubdirs, &totaldirsize, pipes);
                     }
                 }
 
                 _exit(EXIT_SUCCESS);
             }
-            else             // Parent
+            else // Parent
             {
                 // Make sure we get called so we can check when child has finished
                 getApp()->addChore(this, ID_WATCHPROCESS);
@@ -2316,57 +2385,57 @@ long PropertiesBox::onUpdSizeAndPerm(FXObject* o, FXSelector s, void* p)
     recsize = false;
 
     // Update permissions
-    if (perm->rec->getCheck())
+    if (perms->rec->getCheck())
     {
-        perm->dironly->enable();
-        perm->fileonly->enable();
-        perm->all->enable();
+        perms->dironly->enable();
+        perms->fileonly->enable();
+        perms->all->enable();
     }
     else
     {
-        perm->all->disable();
-        perm->dironly->disable();
-        perm->fileonly->disable();
+        perms->all->disable();
+        perms->dironly->disable();
+        perms->fileonly->disable();
     }
 
-    if (perm->own->getCheck())
+    if (perms->own->getCheck())
     {
-        perm->set->disable();
-        perm->clear->disable();
-        perm->add->disable();
-        perm->ur->disable();
-        perm->uw->disable();
-        perm->ux->disable();
-        perm->gr->disable();
-        perm->gw->disable();
-        perm->gx->disable();
-        perm->or_->disable();
-        perm->ow->disable();
-        perm->ox->disable();
-        perm->suid->disable();
-        perm->sgid->disable();
-        perm->svtx->disable();
+        perms->set->disable();
+        perms->clear->disable();
+        perms->add->disable();
+        perms->ur->disable();
+        perms->uw->disable();
+        perms->ux->disable();
+        perms->gr->disable();
+        perms->gw->disable();
+        perms->gx->disable();
+        perms->or_->disable();
+        perms->ow->disable();
+        perms->ox->disable();
+        perms->suid->disable();
+        perms->sgid->disable();
+        perms->svtx->disable();
     }
     else
     {
-        perm->set->enable();
-        perm->clear->enable();
-        perm->add->enable();
-        perm->ur->enable();
-        perm->uw->enable();
-        perm->ux->enable();
-        perm->gr->enable();
-        perm->gw->enable();
-        perm->gx->enable();
-        perm->or_->enable();
-        perm->ow->enable();
-        perm->ox->enable();
-        perm->suid->enable();
-        perm->sgid->enable();
-        perm->svtx->enable();
+        perms->set->enable();
+        perms->clear->enable();
+        perms->add->enable();
+        perms->ur->enable();
+        perms->uw->enable();
+        perms->ux->enable();
+        perms->gr->enable();
+        perms->gw->enable();
+        perms->gx->enable();
+        perms->or_->enable();
+        perms->ow->enable();
+        perms->ox->enable();
+        perms->suid->enable();
+        perms->sgid->enable();
+        perms->svtx->enable();
     }
 
-    return(1);
+    return 1;
 }
 
 
@@ -2378,18 +2447,18 @@ long PropertiesBox::onCmdKeyPress(FXObject* sender, FXSelector sel, void* ptr)
     {
     case KEY_Escape:
         handle(this, FXSEL(SEL_COMMAND, ID_CANCEL), NULL);
-        return(1);
+        return 1;
 
     case KEY_KP_Enter:
     case KEY_Return:
         handle(this, FXSEL(SEL_COMMAND, ID_ACCEPT_SINGLE), NULL);
-        return(1);
+        return 1;
 
     default:
         FXTopWindow::onKeyPress(sender, sel, ptr);
-        return(1);
+        return 1;
     }
-    return(0);
+    return 0;
 }
 
 
@@ -2409,8 +2478,7 @@ long PropertiesBox::onUpdSnDisable(FXObject*, FXSelector, void*)
         sngroup->disable();
         snbutton->disable();
     }
-    return(1);
+    return 1;
 }
-
 
 #endif

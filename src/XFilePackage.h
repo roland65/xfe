@@ -7,24 +7,30 @@ class XFilePackage : public FXMainWindow
 {
     FXDECLARE(XFilePackage)
 protected:
-    FXMenuBar*  menubar;                    // Menu bar
-    FXMenuPane* filemenu;                   // File menu
-    FXMenuPane* helpmenu;                   // Help menu
-    FXMenuPane* prefsmenu;                  // Preferences menu
-    FXToolBar*  toolbar;                    // Toolbar
-    FXString filename;                      // Current package name
-    FXTreeList* list;                       // File list
-    FXText*     description;                // Package description
-    FXbool smoothscroll;
-    FXbool errorflag;
+    FXMenuBar* menubar = NULL;                      // Menu bar
+    FXMenuPane* filemenu = NULL;                    // File menu
+    FXMenuPane* helpmenu = NULL;                    // Help menu
+    FXMenuPane* prefsmenu = NULL;                   // Preferences menu
+    FXRecentFiles mrufiles;                         // Recent files
+    FXToolBar* toolbar = NULL;                      // Toolbar
+    FXString filename;                              // Current package name
+    FXTreeList* list = NULL;                        // File list
+    FXText* description = NULL;                     // Package description
+    FXbool smoothscroll = false;
+    FXbool errorflag = false;
+    FXTabBook* tabbook = NULL;
+
+    FXbool save_win_pos = false;                    // Save window position
+
 protected:
-    XFilePackage() : menubar(NULL), filemenu(NULL), helpmenu(NULL), prefsmenu(NULL), toolbar(NULL), list(NULL),
-        description(NULL), smoothscroll(false), errorflag(false)
-    {}
+    XFilePackage()
+    {
+    }
 public:
     enum
     {
         ID_DESCRIPTION=FXMainWindow::ID_LAST,
+        ID_RECENTFILE,
         ID_FILELIST,
         ID_UNINSTALL,
         ID_INSTALL,
@@ -32,6 +38,7 @@ public:
         ID_OPEN,
         ID_HARVEST,
         ID_QUIT,
+        ID_TAB,
         ID_LAST
     };
     void start(FXString);
@@ -44,6 +51,7 @@ public:
         smoothscroll = smooth;
     }
 
+    long onCmdRecentFile(FXObject*, FXSelector, void*);
     long onCmdUninstall(FXObject*, FXSelector, void*);
     long onCmdInstall(FXObject*, FXSelector, void*);
     long onCmdAbout(FXObject*, FXSelector, void*);
@@ -54,7 +62,7 @@ public:
 
     long onSigHarvest(FXObject*, FXSelector, void*);
     long onCmdQuit(FXObject*, FXSelector, void*);
-    long onUpdWindow(FXObject*, FXSelector, void*);
+    long onCmdTabClicked(FXObject*, FXSelector, void*);
 };
 
 #endif

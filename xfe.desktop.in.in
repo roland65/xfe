@@ -1,7 +1,7 @@
 [Desktop Entry]
-_Name=Xfe
-_GenericName=File Manager
-_Comment=A lightweight file manager for X Window
+Name=Xfe
+GenericName=File Manager
+Comment=A lightweight file manager for X Window
 Exec=xfe
 Terminal=false
 Type=Application

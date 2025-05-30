@@ -88,7 +88,8 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-bin_PROGRAMS = xfe$(EXEEXT) xfp$(EXEEXT) xfw$(EXEEXT) xfi$(EXEEXT)
+bin_PROGRAMS = xfe$(EXEEXT) xfa$(EXEEXT) xfi$(EXEEXT) xfp$(EXEEXT) \
+	xfw$(EXEEXT)
 @STARTUPNOTIFY_TRUE@am__append_1 = ../libsn/sn-common.c  \
 @STARTUPNOTIFY_TRUE@              ../libsn/sn-launchee.c \
 @STARTUPNOTIFY_TRUE@              ../libsn/sn-launcher.c \
@@ -125,9 +126,23 @@ bin_PROGRAMS = xfe$(EXEEXT) xfp$(EXEEXT) xfw$(EXEEXT) xfi$(EXEEXT)
 @STARTUPNOTIFY_TRUE@              ../libsn/sn-xmessages.c \
 @STARTUPNOTIFY_TRUE@              ../libsn/sn-xutils.c
 
+@STARTUPNOTIFY_TRUE@am__append_5 = ../libsn/sn-common.c  \
+@STARTUPNOTIFY_TRUE@              ../libsn/sn-launchee.c \
+@STARTUPNOTIFY_TRUE@              ../libsn/sn-launcher.c \
+@STARTUPNOTIFY_TRUE@              ../libsn/sn-list.c \
+@STARTUPNOTIFY_TRUE@              ../libsn/sn-monitor.c \
+@STARTUPNOTIFY_TRUE@              ../libsn/sn-util.c \
+@STARTUPNOTIFY_TRUE@              ../libsn/sn-xmessages.c \
+@STARTUPNOTIFY_TRUE@              ../libsn/sn-xutils.c
+
 subdir = src
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
-am__aclocal_m4_deps = $(top_srcdir)/configure.ac
+am__aclocal_m4_deps = $(top_srcdir)/m4/gettext.m4 \
+	$(top_srcdir)/m4/host-cpu-c-abi.m4 $(top_srcdir)/m4/iconv.m4 \
+	$(top_srcdir)/m4/intlmacosx.m4 $(top_srcdir)/m4/lib-ld.m4 \
+	$(top_srcdir)/m4/lib-link.m4 $(top_srcdir)/m4/lib-prefix.m4 \
+	$(top_srcdir)/m4/nls.m4 $(top_srcdir)/m4/po.m4 \
+	$(top_srcdir)/m4/progtest.m4 $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 DIST_COMMON = $(srcdir)/Makefile.am $(am__DIST_COMMON)
@@ -137,19 +152,15 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
-am__xfe_SOURCES_DIST = ../st/x.c ../st/st.c icons.cpp xfeutils.cpp \
-	startupnotification.cpp StringList.cpp File.cpp FileDict.cpp \
-	IconList.cpp FileList.cpp FileDialog.cpp DirList.cpp \
-	DialogBox.cpp MessageBox.cpp Bookmarks.cpp HistInputDialog.cpp \
-	InputDialog.cpp OverwriteBox.cpp ExecuteBox.cpp TextWindow.cpp \
-	CommandWindow.cpp Properties.cpp Preferences.cpp FilePanel.cpp \
-	DirPanel.cpp DirHistBox.cpp PathLinker.cpp \
-	BrowseInputDialog.cpp ArchInputDialog.cpp FontDialog.cpp \
-	TextLabel.cpp Keybindings.cpp KeybindingsDialog.cpp \
-	SearchWindow.cpp SearchPanel.cpp XFileExplorer.cpp main.cpp \
-	../libsn/sn-common.c ../libsn/sn-launchee.c \
-	../libsn/sn-launcher.c ../libsn/sn-list.c \
-	../libsn/sn-monitor.c ../libsn/sn-util.c \
+am__xfa_SOURCES_DIST = ../st/x.c ../st/st.c icons.cpp \
+	startupnotification.cpp xfeutils.cpp ComboBox.cpp \
+	CommandWindow.cpp DialogBox.cpp DirHistBox.cpp DirList.cpp \
+	File.cpp FileDialog.cpp FileDict.cpp FileList.cpp \
+	HistInputDialog.cpp IconList.cpp InputDialog.cpp \
+	MessageBox.cpp OverwriteBox.cpp PathLinker.cpp StringList.cpp \
+	TextLabel.cpp XFileArchive.cpp ../libsn/sn-common.c \
+	../libsn/sn-launchee.c ../libsn/sn-launcher.c \
+	../libsn/sn-list.c ../libsn/sn-monitor.c ../libsn/sn-util.c \
 	../libsn/sn-xmessages.c ../libsn/sn-xutils.c
 am__dirstamp = $(am__leading_dot)dirstamp
 @STARTUPNOTIFY_TRUE@am__objects_1 = ../libsn/sn-common.$(OBJEXT) \
@@ -160,83 +171,120 @@ am__dirstamp = $(am__leading_dot)dirstamp
 @STARTUPNOTIFY_TRUE@	../libsn/sn-util.$(OBJEXT) \
 @STARTUPNOTIFY_TRUE@	../libsn/sn-xmessages.$(OBJEXT) \
 @STARTUPNOTIFY_TRUE@	../libsn/sn-xutils.$(OBJEXT)
-am_xfe_OBJECTS = ../st/x.$(OBJEXT) ../st/st.$(OBJEXT) icons.$(OBJEXT) \
-	xfeutils.$(OBJEXT) startupnotification.$(OBJEXT) \
-	StringList.$(OBJEXT) File.$(OBJEXT) FileDict.$(OBJEXT) \
-	IconList.$(OBJEXT) FileList.$(OBJEXT) FileDialog.$(OBJEXT) \
-	DirList.$(OBJEXT) DialogBox.$(OBJEXT) MessageBox.$(OBJEXT) \
-	Bookmarks.$(OBJEXT) HistInputDialog.$(OBJEXT) \
-	InputDialog.$(OBJEXT) OverwriteBox.$(OBJEXT) \
-	ExecuteBox.$(OBJEXT) TextWindow.$(OBJEXT) \
-	CommandWindow.$(OBJEXT) Properties.$(OBJEXT) \
-	Preferences.$(OBJEXT) FilePanel.$(OBJEXT) DirPanel.$(OBJEXT) \
-	DirHistBox.$(OBJEXT) PathLinker.$(OBJEXT) \
-	BrowseInputDialog.$(OBJEXT) ArchInputDialog.$(OBJEXT) \
-	FontDialog.$(OBJEXT) TextLabel.$(OBJEXT) Keybindings.$(OBJEXT) \
-	KeybindingsDialog.$(OBJEXT) SearchWindow.$(OBJEXT) \
-	SearchPanel.$(OBJEXT) XFileExplorer.$(OBJEXT) main.$(OBJEXT) \
-	$(am__objects_1)
-xfe_OBJECTS = $(am_xfe_OBJECTS)
-xfe_DEPENDENCIES =
-am__xfi_SOURCES_DIST = ../st/x.c ../st/st.c icons.cpp xfeutils.cpp \
-	startupnotification.cpp StringList.cpp CommandWindow.cpp \
-	InputDialog.cpp DialogBox.cpp OverwriteBox.cpp FileDict.cpp \
-	IconList.cpp File.cpp FileList.cpp DirList.cpp FileDialog.cpp \
-	MessageBox.cpp DirHistBox.cpp TextLabel.cpp PathLinker.cpp \
-	XFileImage.cpp ../libsn/sn-common.c ../libsn/sn-launchee.c \
-	../libsn/sn-launcher.c ../libsn/sn-list.c \
-	../libsn/sn-monitor.c ../libsn/sn-util.c \
-	../libsn/sn-xmessages.c ../libsn/sn-xutils.c
-am_xfi_OBJECTS = ../st/x.$(OBJEXT) ../st/st.$(OBJEXT) icons.$(OBJEXT) \
-	xfeutils.$(OBJEXT) startupnotification.$(OBJEXT) \
-	StringList.$(OBJEXT) CommandWindow.$(OBJEXT) \
-	InputDialog.$(OBJEXT) DialogBox.$(OBJEXT) \
-	OverwriteBox.$(OBJEXT) FileDict.$(OBJEXT) IconList.$(OBJEXT) \
-	File.$(OBJEXT) FileList.$(OBJEXT) DirList.$(OBJEXT) \
-	FileDialog.$(OBJEXT) MessageBox.$(OBJEXT) DirHistBox.$(OBJEXT) \
-	TextLabel.$(OBJEXT) PathLinker.$(OBJEXT) XFileImage.$(OBJEXT) \
-	$(am__objects_1)
-xfi_OBJECTS = $(am_xfi_OBJECTS)
-xfi_DEPENDENCIES =
-am__xfp_SOURCES_DIST = ../st/x.c ../st/st.c icons.cpp xfeutils.cpp \
-	startupnotification.cpp StringList.cpp CommandWindow.cpp \
-	InputDialog.cpp DialogBox.cpp OverwriteBox.cpp FileDict.cpp \
-	IconList.cpp File.cpp FileList.cpp DirList.cpp FileDialog.cpp \
-	PathLinker.cpp TextLabel.cpp MessageBox.cpp DirHistBox.cpp \
-	XFilePackage.cpp ../libsn/sn-common.c ../libsn/sn-launchee.c \
-	../libsn/sn-launcher.c ../libsn/sn-list.c \
-	../libsn/sn-monitor.c ../libsn/sn-util.c \
-	../libsn/sn-xmessages.c ../libsn/sn-xutils.c
-am_xfp_OBJECTS = ../st/x.$(OBJEXT) ../st/st.$(OBJEXT) icons.$(OBJEXT) \
-	xfeutils.$(OBJEXT) startupnotification.$(OBJEXT) \
-	StringList.$(OBJEXT) CommandWindow.$(OBJEXT) \
-	InputDialog.$(OBJEXT) DialogBox.$(OBJEXT) \
-	OverwriteBox.$(OBJEXT) FileDict.$(OBJEXT) IconList.$(OBJEXT) \
-	File.$(OBJEXT) FileList.$(OBJEXT) DirList.$(OBJEXT) \
-	FileDialog.$(OBJEXT) PathLinker.$(OBJEXT) TextLabel.$(OBJEXT) \
-	MessageBox.$(OBJEXT) DirHistBox.$(OBJEXT) \
-	XFilePackage.$(OBJEXT) $(am__objects_1)
-xfp_OBJECTS = $(am_xfp_OBJECTS)
-xfp_DEPENDENCIES =
-am__xfw_SOURCES_DIST = ../st/x.c ../st/st.c icons.cpp xfeutils.cpp \
-	startupnotification.cpp StringList.cpp CommandWindow.cpp \
-	OverwriteBox.cpp MessageBox.cpp IconList.cpp File.cpp \
-	FileList.cpp DirList.cpp InputDialog.cpp DialogBox.cpp \
-	FileDict.cpp FileDialog.cpp PathLinker.cpp TextLabel.cpp \
-	WriteWindow.cpp DirHistBox.cpp FontDialog.cpp XFileWrite.cpp \
+am_xfa_OBJECTS = ../st/x.$(OBJEXT) ../st/st.$(OBJEXT) icons.$(OBJEXT) \
+	startupnotification.$(OBJEXT) xfeutils.$(OBJEXT) \
+	ComboBox.$(OBJEXT) CommandWindow.$(OBJEXT) DialogBox.$(OBJEXT) \
+	DirHistBox.$(OBJEXT) DirList.$(OBJEXT) File.$(OBJEXT) \
+	FileDialog.$(OBJEXT) FileDict.$(OBJEXT) FileList.$(OBJEXT) \
+	HistInputDialog.$(OBJEXT) IconList.$(OBJEXT) \
+	InputDialog.$(OBJEXT) MessageBox.$(OBJEXT) \
+	OverwriteBox.$(OBJEXT) PathLinker.$(OBJEXT) \
+	StringList.$(OBJEXT) TextLabel.$(OBJEXT) \
+	XFileArchive.$(OBJEXT) $(am__objects_1)
+xfa_OBJECTS = $(am_xfa_OBJECTS)
+xfa_DEPENDENCIES =
+am__xfe_SOURCES_DIST = ../st/x.c ../st/st.c icons.cpp \
+	startupnotification.cpp xfeutils.cpp ArchInputDialog.cpp \
+	BookmarkDialog.cpp BrowseInputDialog.cpp ColorSelector.cpp \
+	ComboBox.cpp CommandWindow.cpp ConnectDialog.cpp DialogBox.cpp \
+	DirHistBox.cpp DirList.cpp DirPanel.cpp ExecuteBox.cpp \
+	File.cpp FileDialog.cpp FileDict.cpp FileList.cpp \
+	FilePanel.cpp FontDialog.cpp HistInputDialog.cpp IconList.cpp \
+	InputDialog.cpp KeyBindings.cpp KeyBindingsDialog.cpp \
+	MessageBox.cpp OverwriteBox.cpp PathLinker.cpp Places.cpp \
+	Preferences.cpp Properties.cpp RenameDialog.cpp \
+	SearchPanel.cpp SearchWindow.cpp StringList.cpp TabButtons.cpp \
+	TextLabel.cpp TextWindow.cpp XFileExplorer.cpp main.cpp \
 	../libsn/sn-common.c ../libsn/sn-launchee.c \
 	../libsn/sn-launcher.c ../libsn/sn-list.c \
 	../libsn/sn-monitor.c ../libsn/sn-util.c \
 	../libsn/sn-xmessages.c ../libsn/sn-xutils.c
+am_xfe_OBJECTS = ../st/x.$(OBJEXT) ../st/st.$(OBJEXT) icons.$(OBJEXT) \
+	startupnotification.$(OBJEXT) xfeutils.$(OBJEXT) \
+	ArchInputDialog.$(OBJEXT) BookmarkDialog.$(OBJEXT) \
+	BrowseInputDialog.$(OBJEXT) ColorSelector.$(OBJEXT) \
+	ComboBox.$(OBJEXT) CommandWindow.$(OBJEXT) \
+	ConnectDialog.$(OBJEXT) DialogBox.$(OBJEXT) \
+	DirHistBox.$(OBJEXT) DirList.$(OBJEXT) DirPanel.$(OBJEXT) \
+	ExecuteBox.$(OBJEXT) File.$(OBJEXT) FileDialog.$(OBJEXT) \
+	FileDict.$(OBJEXT) FileList.$(OBJEXT) FilePanel.$(OBJEXT) \
+	FontDialog.$(OBJEXT) HistInputDialog.$(OBJEXT) \
+	IconList.$(OBJEXT) InputDialog.$(OBJEXT) KeyBindings.$(OBJEXT) \
+	KeyBindingsDialog.$(OBJEXT) MessageBox.$(OBJEXT) \
+	OverwriteBox.$(OBJEXT) PathLinker.$(OBJEXT) Places.$(OBJEXT) \
+	Preferences.$(OBJEXT) Properties.$(OBJEXT) \
+	RenameDialog.$(OBJEXT) SearchPanel.$(OBJEXT) \
+	SearchWindow.$(OBJEXT) StringList.$(OBJEXT) \
+	TabButtons.$(OBJEXT) TextLabel.$(OBJEXT) TextWindow.$(OBJEXT) \
+	XFileExplorer.$(OBJEXT) main.$(OBJEXT) $(am__objects_1)
+xfe_OBJECTS = $(am_xfe_OBJECTS)
+xfe_DEPENDENCIES =
+am__xfi_SOURCES_DIST = ../st/x.c ../st/st.c icons.cpp \
+	startupnotification.cpp xfeutils.cpp ComboBox.cpp \
+	CommandWindow.cpp DialogBox.cpp DirList.cpp DirHistBox.cpp \
+	File.cpp FileDialog.cpp FileDict.cpp FileList.cpp \
+	HistInputDialog.cpp IconList.cpp InputDialog.cpp \
+	MessageBox.cpp OverwriteBox.cpp PathLinker.cpp StringList.cpp \
+	TextLabel.cpp XFileImage.cpp ../libsn/sn-common.c \
+	../libsn/sn-launchee.c ../libsn/sn-launcher.c \
+	../libsn/sn-list.c ../libsn/sn-monitor.c ../libsn/sn-util.c \
+	../libsn/sn-xmessages.c ../libsn/sn-xutils.c
+am_xfi_OBJECTS = ../st/x.$(OBJEXT) ../st/st.$(OBJEXT) icons.$(OBJEXT) \
+	startupnotification.$(OBJEXT) xfeutils.$(OBJEXT) \
+	ComboBox.$(OBJEXT) CommandWindow.$(OBJEXT) DialogBox.$(OBJEXT) \
+	DirList.$(OBJEXT) DirHistBox.$(OBJEXT) File.$(OBJEXT) \
+	FileDialog.$(OBJEXT) FileDict.$(OBJEXT) FileList.$(OBJEXT) \
+	HistInputDialog.$(OBJEXT) IconList.$(OBJEXT) \
+	InputDialog.$(OBJEXT) MessageBox.$(OBJEXT) \
+	OverwriteBox.$(OBJEXT) PathLinker.$(OBJEXT) \
+	StringList.$(OBJEXT) TextLabel.$(OBJEXT) XFileImage.$(OBJEXT) \
+	$(am__objects_1)
+xfi_OBJECTS = $(am_xfi_OBJECTS)
+xfi_DEPENDENCIES =
+am__xfp_SOURCES_DIST = ../st/x.c ../st/st.c icons.cpp \
+	startupnotification.cpp xfeutils.cpp ComboBox.cpp \
+	CommandWindow.cpp DialogBox.cpp DirHistBox.cpp DirList.cpp \
+	File.cpp FileDialog.cpp FileDict.cpp FileList.cpp \
+	HistInputDialog.cpp IconList.cpp InputDialog.cpp \
+	MessageBox.cpp OverwriteBox.cpp PathLinker.cpp StringList.cpp \
+	TextLabel.cpp XFilePackage.cpp ../libsn/sn-common.c \
+	../libsn/sn-launchee.c ../libsn/sn-launcher.c \
+	../libsn/sn-list.c ../libsn/sn-monitor.c ../libsn/sn-util.c \
+	../libsn/sn-xmessages.c ../libsn/sn-xutils.c
+am_xfp_OBJECTS = ../st/x.$(OBJEXT) ../st/st.$(OBJEXT) icons.$(OBJEXT) \
+	startupnotification.$(OBJEXT) xfeutils.$(OBJEXT) \
+	ComboBox.$(OBJEXT) CommandWindow.$(OBJEXT) DialogBox.$(OBJEXT) \
+	DirHistBox.$(OBJEXT) DirList.$(OBJEXT) File.$(OBJEXT) \
+	FileDialog.$(OBJEXT) FileDict.$(OBJEXT) FileList.$(OBJEXT) \
+	HistInputDialog.$(OBJEXT) IconList.$(OBJEXT) \
+	InputDialog.$(OBJEXT) MessageBox.$(OBJEXT) \
+	OverwriteBox.$(OBJEXT) PathLinker.$(OBJEXT) \
+	StringList.$(OBJEXT) TextLabel.$(OBJEXT) \
+	XFilePackage.$(OBJEXT) $(am__objects_1)
+xfp_OBJECTS = $(am_xfp_OBJECTS)
+xfp_DEPENDENCIES =
+am__xfw_SOURCES_DIST = ../st/x.c ../st/st.c icons.cpp \
+	startupnotification.cpp xfeutils.cpp ComboBox.cpp \
+	ColorSelector.cpp CommandWindow.cpp DialogBox.cpp \
+	DirHistBox.cpp DirList.cpp File.cpp FileDialog.cpp \
+	FileDict.cpp FileList.cpp FontDialog.cpp HistInputDialog.cpp \
+	IconList.cpp InputDialog.cpp MessageBox.cpp OverwriteBox.cpp \
+	PathLinker.cpp StringList.cpp TextLabel.cpp WriteWindow.cpp \
+	XFileWrite.cpp ../libsn/sn-common.c ../libsn/sn-launchee.c \
+	../libsn/sn-launcher.c ../libsn/sn-list.c \
+	../libsn/sn-monitor.c ../libsn/sn-util.c \
+	../libsn/sn-xmessages.c ../libsn/sn-xutils.c
 am_xfw_OBJECTS = ../st/x.$(OBJEXT) ../st/st.$(OBJEXT) icons.$(OBJEXT) \
-	xfeutils.$(OBJEXT) startupnotification.$(OBJEXT) \
-	StringList.$(OBJEXT) CommandWindow.$(OBJEXT) \
-	OverwriteBox.$(OBJEXT) MessageBox.$(OBJEXT) IconList.$(OBJEXT) \
-	File.$(OBJEXT) FileList.$(OBJEXT) DirList.$(OBJEXT) \
-	InputDialog.$(OBJEXT) DialogBox.$(OBJEXT) FileDict.$(OBJEXT) \
-	FileDialog.$(OBJEXT) PathLinker.$(OBJEXT) TextLabel.$(OBJEXT) \
-	WriteWindow.$(OBJEXT) DirHistBox.$(OBJEXT) \
-	FontDialog.$(OBJEXT) XFileWrite.$(OBJEXT) $(am__objects_1)
+	startupnotification.$(OBJEXT) xfeutils.$(OBJEXT) \
+	ComboBox.$(OBJEXT) ColorSelector.$(OBJEXT) \
+	CommandWindow.$(OBJEXT) DialogBox.$(OBJEXT) \
+	DirHistBox.$(OBJEXT) DirList.$(OBJEXT) File.$(OBJEXT) \
+	FileDialog.$(OBJEXT) FileDict.$(OBJEXT) FileList.$(OBJEXT) \
+	FontDialog.$(OBJEXT) HistInputDialog.$(OBJEXT) \
+	IconList.$(OBJEXT) InputDialog.$(OBJEXT) MessageBox.$(OBJEXT) \
+	OverwriteBox.$(OBJEXT) PathLinker.$(OBJEXT) \
+	StringList.$(OBJEXT) TextLabel.$(OBJEXT) WriteWindow.$(OBJEXT) \
+	XFileWrite.$(OBJEXT) $(am__objects_1)
 xfw_OBJECTS = $(am_xfw_OBJECTS)
 xfw_DEPENDENCIES =
 AM_V_P = $(am__v_P_@AM_V@)
@@ -262,25 +310,29 @@ am__depfiles_remade = ../libsn/$(DEPDIR)/sn-common.Po \
 	../libsn/$(DEPDIR)/sn-xmessages.Po \
 	../libsn/$(DEPDIR)/sn-xutils.Po ../st/$(DEPDIR)/st.Po \
 	../st/$(DEPDIR)/x.Po ./$(DEPDIR)/ArchInputDialog.Po \
-	./$(DEPDIR)/Bookmarks.Po ./$(DEPDIR)/BrowseInputDialog.Po \
-	./$(DEPDIR)/CommandWindow.Po ./$(DEPDIR)/DialogBox.Po \
-	./$(DEPDIR)/DirHistBox.Po ./$(DEPDIR)/DirList.Po \
-	./$(DEPDIR)/DirPanel.Po ./$(DEPDIR)/ExecuteBox.Po \
-	./$(DEPDIR)/File.Po ./$(DEPDIR)/FileDialog.Po \
-	./$(DEPDIR)/FileDict.Po ./$(DEPDIR)/FileList.Po \
-	./$(DEPDIR)/FilePanel.Po ./$(DEPDIR)/FontDialog.Po \
-	./$(DEPDIR)/HistInputDialog.Po ./$(DEPDIR)/IconList.Po \
-	./$(DEPDIR)/InputDialog.Po ./$(DEPDIR)/Keybindings.Po \
-	./$(DEPDIR)/KeybindingsDialog.Po ./$(DEPDIR)/MessageBox.Po \
-	./$(DEPDIR)/OverwriteBox.Po ./$(DEPDIR)/PathLinker.Po \
+	./$(DEPDIR)/BookmarkDialog.Po ./$(DEPDIR)/BrowseInputDialog.Po \
+	./$(DEPDIR)/ColorSelector.Po ./$(DEPDIR)/ComboBox.Po \
+	./$(DEPDIR)/CommandWindow.Po ./$(DEPDIR)/ConnectDialog.Po \
+	./$(DEPDIR)/DialogBox.Po ./$(DEPDIR)/DirHistBox.Po \
+	./$(DEPDIR)/DirList.Po ./$(DEPDIR)/DirPanel.Po \
+	./$(DEPDIR)/ExecuteBox.Po ./$(DEPDIR)/File.Po \
+	./$(DEPDIR)/FileDialog.Po ./$(DEPDIR)/FileDict.Po \
+	./$(DEPDIR)/FileList.Po ./$(DEPDIR)/FilePanel.Po \
+	./$(DEPDIR)/FontDialog.Po ./$(DEPDIR)/HistInputDialog.Po \
+	./$(DEPDIR)/IconList.Po ./$(DEPDIR)/InputDialog.Po \
+	./$(DEPDIR)/KeyBindings.Po ./$(DEPDIR)/KeyBindingsDialog.Po \
+	./$(DEPDIR)/MessageBox.Po ./$(DEPDIR)/OverwriteBox.Po \
+	./$(DEPDIR)/PathLinker.Po ./$(DEPDIR)/Places.Po \
 	./$(DEPDIR)/Preferences.Po ./$(DEPDIR)/Properties.Po \
-	./$(DEPDIR)/SearchPanel.Po ./$(DEPDIR)/SearchWindow.Po \
-	./$(DEPDIR)/StringList.Po ./$(DEPDIR)/TextLabel.Po \
+	./$(DEPDIR)/RenameDialog.Po ./$(DEPDIR)/SearchPanel.Po \
+	./$(DEPDIR)/SearchWindow.Po ./$(DEPDIR)/StringList.Po \
+	./$(DEPDIR)/TabButtons.Po ./$(DEPDIR)/TextLabel.Po \
 	./$(DEPDIR)/TextWindow.Po ./$(DEPDIR)/WriteWindow.Po \
-	./$(DEPDIR)/XFileExplorer.Po ./$(DEPDIR)/XFileImage.Po \
-	./$(DEPDIR)/XFilePackage.Po ./$(DEPDIR)/XFileWrite.Po \
-	./$(DEPDIR)/icons.Po ./$(DEPDIR)/main.Po \
-	./$(DEPDIR)/startupnotification.Po ./$(DEPDIR)/xfeutils.Po
+	./$(DEPDIR)/XFileArchive.Po ./$(DEPDIR)/XFileExplorer.Po \
+	./$(DEPDIR)/XFileImage.Po ./$(DEPDIR)/XFilePackage.Po \
+	./$(DEPDIR)/XFileWrite.Po ./$(DEPDIR)/icons.Po \
+	./$(DEPDIR)/main.Po ./$(DEPDIR)/startupnotification.Po \
+	./$(DEPDIR)/xfeutils.Po
 am__mv = mv -f
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
@@ -307,9 +359,11 @@ AM_V_CXXLD = $(am__v_CXXLD_@AM_V@)
 am__v_CXXLD_ = $(am__v_CXXLD_@AM_DEFAULT_V@)
 am__v_CXXLD_0 = @echo "  CXXLD   " $@;
 am__v_CXXLD_1 = 
-SOURCES = $(xfe_SOURCES) $(xfi_SOURCES) $(xfp_SOURCES) $(xfw_SOURCES)
-DIST_SOURCES = $(am__xfe_SOURCES_DIST) $(am__xfi_SOURCES_DIST) \
-	$(am__xfp_SOURCES_DIST) $(am__xfw_SOURCES_DIST)
+SOURCES = $(xfa_SOURCES) $(xfe_SOURCES) $(xfi_SOURCES) $(xfp_SOURCES) \
+	$(xfw_SOURCES)
+DIST_SOURCES = $(am__xfa_SOURCES_DIST) $(am__xfe_SOURCES_DIST) \
+	$(am__xfi_SOURCES_DIST) $(am__xfp_SOURCES_DIST) \
+	$(am__xfw_SOURCES_DIST)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -337,7 +391,6 @@ am__DIST_COMMON = $(srcdir)/Makefile.in $(top_srcdir)/depcomp \
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
 ALLOCA = @ALLOCA@
-ALL_LINGUAS = @ALL_LINGUAS@
 AMTAR = @AMTAR@
 AM_DEFAULT_VERBOSITY = @AM_DEFAULT_VERBOSITY@
 AUTOCONF = @AUTOCONF@
@@ -377,18 +430,12 @@ INSTALL_PROGRAM = @INSTALL_PROGRAM@
 INSTALL_SCRIPT = @INSTALL_SCRIPT@
 INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
 INTLLIBS = @INTLLIBS@
-INTLTOOL_EXTRACT = @INTLTOOL_EXTRACT@
-INTLTOOL_MERGE = @INTLTOOL_MERGE@
-INTLTOOL_PERL = @INTLTOOL_PERL@
-INTLTOOL_UPDATE = @INTLTOOL_UPDATE@
-INTLTOOL_V_MERGE = @INTLTOOL_V_MERGE@
-INTLTOOL_V_MERGE_OPTIONS = @INTLTOOL_V_MERGE_OPTIONS@
-INTLTOOL__v_MERGE_ = @INTLTOOL__v_MERGE_@
-INTLTOOL__v_MERGE_0 = @INTLTOOL__v_MERGE_0@
 INTL_MACOSX_LIBS = @INTL_MACOSX_LIBS@
 LDFLAGS = @LDFLAGS@
 LIBICONV = @LIBICONV@
 LIBINTL = @LIBINTL@
+LIBNOTIFY_CFLAGS = @LIBNOTIFY_CFLAGS@
+LIBNOTIFY_LIBS = @LIBNOTIFY_LIBS@
 LIBOBJS = @LIBOBJS@
 LIBS = @LIBS@
 LN_S = @LN_S@
@@ -412,12 +459,16 @@ PATH_SEPARATOR = @PATH_SEPARATOR@
 PKG_CONFIG = @PKG_CONFIG@
 PKG_CONFIG_LIBDIR = @PKG_CONFIG_LIBDIR@
 PKG_CONFIG_PATH = @PKG_CONFIG_PATH@
+POLKIT_CFLAGS = @POLKIT_CFLAGS@
+POLKIT_LIBS = @POLKIT_LIBS@
 POSUB = @POSUB@
 SED = @SED@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
 STARTUPNOTIFY = @STARTUPNOTIFY@
 STRIP = @STRIP@
+UDISKS2_CFLAGS = @UDISKS2_CFLAGS@
+UDISKS2_LIBS = @UDISKS2_LIBS@
 USE_NLS = @USE_NLS@
 VERSION = @VERSION@
 XFT_CFLAGS = @XFT_CFLAGS@
@@ -458,8 +509,6 @@ htmldir = @htmldir@
 includedir = @includedir@
 infodir = @infodir@
 install_sh = @install_sh@
-intltool__v_merge_options_ = @intltool__v_merge_options_@
-intltool__v_merge_options_0 = @intltool__v_merge_options_0@
 libdir = @libdir@
 libexecdir = @libexecdir@
 localedir = $(datadir)/locale
@@ -490,40 +539,49 @@ xcb_event_CFLAGS = @xcb_event_CFLAGS@
 xcb_event_LIBS = @xcb_event_LIBS@
 xft_config = @xft_config@
 AUTOMAKE_OPTIONS = subdir-objects
-xfe_SOURCES = ../st/x.c ../st/st.c icons.cpp xfeutils.cpp \
-	startupnotification.cpp StringList.cpp File.cpp FileDict.cpp \
-	IconList.cpp FileList.cpp FileDialog.cpp DirList.cpp \
-	DialogBox.cpp MessageBox.cpp Bookmarks.cpp HistInputDialog.cpp \
-	InputDialog.cpp OverwriteBox.cpp ExecuteBox.cpp TextWindow.cpp \
-	CommandWindow.cpp Properties.cpp Preferences.cpp FilePanel.cpp \
-	DirPanel.cpp DirHistBox.cpp PathLinker.cpp \
-	BrowseInputDialog.cpp ArchInputDialog.cpp FontDialog.cpp \
-	TextLabel.cpp Keybindings.cpp KeybindingsDialog.cpp \
-	SearchWindow.cpp SearchPanel.cpp XFileExplorer.cpp main.cpp \
+xfe_SOURCES = ../st/x.c ../st/st.c icons.cpp startupnotification.cpp \
+	xfeutils.cpp ArchInputDialog.cpp BookmarkDialog.cpp \
+	BrowseInputDialog.cpp ColorSelector.cpp ComboBox.cpp \
+	CommandWindow.cpp ConnectDialog.cpp DialogBox.cpp \
+	DirHistBox.cpp DirList.cpp DirPanel.cpp ExecuteBox.cpp \
+	File.cpp FileDialog.cpp FileDict.cpp FileList.cpp \
+	FilePanel.cpp FontDialog.cpp HistInputDialog.cpp IconList.cpp \
+	InputDialog.cpp KeyBindings.cpp KeyBindingsDialog.cpp \
+	MessageBox.cpp OverwriteBox.cpp PathLinker.cpp Places.cpp \
+	Preferences.cpp Properties.cpp RenameDialog.cpp \
+	SearchPanel.cpp SearchWindow.cpp StringList.cpp TabButtons.cpp \
+	TextLabel.cpp TextWindow.cpp XFileExplorer.cpp main.cpp \
 	$(am__append_1)
 xfe_LDADD = @LIBINTL@ -lutil
-xfp_SOURCES = ../st/x.c ../st/st.c icons.cpp xfeutils.cpp \
-	startupnotification.cpp StringList.cpp CommandWindow.cpp \
-	InputDialog.cpp DialogBox.cpp OverwriteBox.cpp FileDict.cpp \
-	IconList.cpp File.cpp FileList.cpp DirList.cpp FileDialog.cpp \
-	PathLinker.cpp TextLabel.cpp MessageBox.cpp DirHistBox.cpp \
-	XFilePackage.cpp $(am__append_2)
-xfp_LDADD = @LIBINTL@ -lutil
-xfw_SOURCES = ../st/x.c ../st/st.c icons.cpp xfeutils.cpp \
-	startupnotification.cpp StringList.cpp CommandWindow.cpp \
-	OverwriteBox.cpp MessageBox.cpp IconList.cpp File.cpp \
-	FileList.cpp DirList.cpp InputDialog.cpp DialogBox.cpp \
-	FileDict.cpp FileDialog.cpp PathLinker.cpp TextLabel.cpp \
-	WriteWindow.cpp DirHistBox.cpp FontDialog.cpp XFileWrite.cpp \
-	$(am__append_3)
-xfw_LDADD = @LIBINTL@ -lutil
-xfi_SOURCES = ../st/x.c ../st/st.c icons.cpp xfeutils.cpp \
-	startupnotification.cpp StringList.cpp CommandWindow.cpp \
-	InputDialog.cpp DialogBox.cpp OverwriteBox.cpp FileDict.cpp \
-	IconList.cpp File.cpp FileList.cpp DirList.cpp FileDialog.cpp \
-	MessageBox.cpp DirHistBox.cpp TextLabel.cpp PathLinker.cpp \
-	XFileImage.cpp $(am__append_4)
+xfa_SOURCES = ../st/x.c ../st/st.c icons.cpp startupnotification.cpp \
+	xfeutils.cpp ComboBox.cpp CommandWindow.cpp DialogBox.cpp \
+	DirHistBox.cpp DirList.cpp File.cpp FileDialog.cpp \
+	FileDict.cpp FileList.cpp HistInputDialog.cpp IconList.cpp \
+	InputDialog.cpp MessageBox.cpp OverwriteBox.cpp PathLinker.cpp \
+	StringList.cpp TextLabel.cpp XFileArchive.cpp $(am__append_2)
+xfa_LDADD = @LIBINTL@ -lutil
+xfi_SOURCES = ../st/x.c ../st/st.c icons.cpp startupnotification.cpp \
+	xfeutils.cpp ComboBox.cpp CommandWindow.cpp DialogBox.cpp \
+	DirList.cpp DirHistBox.cpp File.cpp FileDialog.cpp \
+	FileDict.cpp FileList.cpp HistInputDialog.cpp IconList.cpp \
+	InputDialog.cpp MessageBox.cpp OverwriteBox.cpp PathLinker.cpp \
+	StringList.cpp TextLabel.cpp XFileImage.cpp $(am__append_3)
 xfi_LDADD = @LIBINTL@ -lutil
+xfp_SOURCES = ../st/x.c ../st/st.c icons.cpp startupnotification.cpp \
+	xfeutils.cpp ComboBox.cpp CommandWindow.cpp DialogBox.cpp \
+	DirHistBox.cpp DirList.cpp File.cpp FileDialog.cpp \
+	FileDict.cpp FileList.cpp HistInputDialog.cpp IconList.cpp \
+	InputDialog.cpp MessageBox.cpp OverwriteBox.cpp PathLinker.cpp \
+	StringList.cpp TextLabel.cpp XFilePackage.cpp $(am__append_4)
+xfp_LDADD = @LIBINTL@ -lutil
+xfw_SOURCES = ../st/x.c ../st/st.c icons.cpp startupnotification.cpp \
+	xfeutils.cpp ComboBox.cpp ColorSelector.cpp CommandWindow.cpp \
+	DialogBox.cpp DirHistBox.cpp DirList.cpp File.cpp \
+	FileDialog.cpp FileDict.cpp FileList.cpp FontDialog.cpp \
+	HistInputDialog.cpp IconList.cpp InputDialog.cpp \
+	MessageBox.cpp OverwriteBox.cpp PathLinker.cpp StringList.cpp \
+	TextLabel.cpp WriteWindow.cpp XFileWrite.cpp $(am__append_5)
+xfw_LDADD = @LIBINTL@ -lutil
 AM_CPPFLAGS = -I. -I$(top_srcdir) -I$(top_srcdir)/intl
 EXTRA_DIST = ../libsn/sn-common.h	\
 	          ../libsn/sn-internals.h \
@@ -543,47 +601,54 @@ EXTRA_DIST = ../libsn/sn-common.h	\
               ../st/x.c \
 			  ../st/x.h \
 			  xfedefs.h \
-              icons.h \
-			  xfeutils.h \
               help.h \
+              icons.h \
 			  startupnotification.h \
-			  StringList.h \
-			  FileDialog.h \
-			  FileDict.h \
-			  IconList.h \
-			  FileList.h \
+			  xfeutils.h \
+			  foxhacks.cpp \
+			  moderncontrols.cpp \
+			  ArchInputDialog.h \
+			  BookmarkDialog.h \
+			  BrowseInputDialog.h \
+			  ColorSelector.h \
+			  ComboBox.h \
+			  CommandWindow.h \
+			  ConnectDialog.h \
+			  DialogBox.h \
+			  DirHistBox.h \
 			  DirList.h \
 			  DirPanel.h \
-			  Properties.h \
-              File.h \
-			  DialogBox.h \
-			  MessageBox.h \
-			  HistInputDialog.h \
-			  InputDialog.h \
-			  Preferences.h \
-			  TextWindow.h \
-			  CommandWindow.h \
-			  OverwriteBox.h \
 			  ExecuteBox.h \
+              File.h \
+			  FileDialog.h \
+			  FileDict.h \
+			  FileList.h \
 			  FilePanel.h \
-			  Bookmarks.h \
-			  XFileExplorer.h \
-			  XFileImage.h \
-			  XFilePackage.h \
-			  WriteWindow.h \
-			  XFileWrite.h \
-			  DirHistBox.h \
-			  PathLinker.h \
-			  BrowseInputDialog.h \
-			  ArchInputDialog.h \
 			  FontDialog.h \
-			  TextLabel.h \
-			  Keybindings.h \
-			  KeybindingsDialog.h \
+			  HistInputDialog.h \
+			  IconList.h \
+			  InputDialog.h \
+			  KeyBindings.h \
+			  KeyBindingsDialog.h \
+			  MessageBox.h \
+			  OverwriteBox.h \
+			  PathLinker.h \
+			  Places.h \
+			  Properties.h \
+			  Preferences.h \
+			  RenameDialog.h \
 			  SearchPanel.h \
 			  SearchWindow.h \
-			  foxhacks.cpp \
-			  clearlooks.cpp
+			  StringList.h \
+			  TabButtons.h \
+			  TextLabel.h \
+			  TextWindow.h \
+			  WriteWindow.h \
+			  XFileExplorer.h \
+			  XFileArchive.h \
+			  XFileImage.h \
+			  XFilePackage.h \
+			  XFileWrite.h
 
 all: all-am
 
@@ -693,6 +758,10 @@ clean-binPROGRAMS:
 ../libsn/sn-xutils.$(OBJEXT): ../libsn/$(am__dirstamp) \
 	../libsn/$(DEPDIR)/$(am__dirstamp)
 
+xfa$(EXEEXT): $(xfa_OBJECTS) $(xfa_DEPENDENCIES) $(EXTRA_xfa_DEPENDENCIES) 
+	@rm -f xfa$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(xfa_OBJECTS) $(xfa_LDADD) $(LIBS)
+
 xfe$(EXEEXT): $(xfe_OBJECTS) $(xfe_DEPENDENCIES) $(EXTRA_xfe_DEPENDENCIES) 
 	@rm -f xfe$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(xfe_OBJECTS) $(xfe_LDADD) $(LIBS)
@@ -728,9 +797,12 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@../st/$(DEPDIR)/st.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@../st/$(DEPDIR)/x.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ArchInputDialog.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Bookmarks.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/BookmarkDialog.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/BrowseInputDialog.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ColorSelector.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ComboBox.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/CommandWindow.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ConnectDialog.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DialogBox.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DirHistBox.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DirList.Po@am__quote@ # am--include-marker
@@ -745,19 +817,23 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/HistInputDialog.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/IconList.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/InputDialog.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Keybindings.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/KeybindingsDialog.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/KeyBindings.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/KeyBindingsDialog.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MessageBox.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/OverwriteBox.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/PathLinker.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Places.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Preferences.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Properties.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/RenameDialog.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SearchPanel.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SearchWindow.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/StringList.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/TabButtons.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/TextLabel.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/TextWindow.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/WriteWindow.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XFileArchive.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XFileExplorer.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XFileImage.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XFilePackage.Po@am__quote@ # am--include-marker
@@ -946,9 +1022,12 @@ distclean: distclean-am
 	-rm -f ../st/$(DEPDIR)/st.Po
 	-rm -f ../st/$(DEPDIR)/x.Po
 	-rm -f ./$(DEPDIR)/ArchInputDialog.Po
-	-rm -f ./$(DEPDIR)/Bookmarks.Po
+	-rm -f ./$(DEPDIR)/BookmarkDialog.Po
 	-rm -f ./$(DEPDIR)/BrowseInputDialog.Po
+	-rm -f ./$(DEPDIR)/ColorSelector.Po
+	-rm -f ./$(DEPDIR)/ComboBox.Po
 	-rm -f ./$(DEPDIR)/CommandWindow.Po
+	-rm -f ./$(DEPDIR)/ConnectDialog.Po
 	-rm -f ./$(DEPDIR)/DialogBox.Po
 	-rm -f ./$(DEPDIR)/DirHistBox.Po
 	-rm -f ./$(DEPDIR)/DirList.Po
@@ -963,19 +1042,23 @@ distclean: distclean-am
 	-rm -f ./$(DEPDIR)/HistInputDialog.Po
 	-rm -f ./$(DEPDIR)/IconList.Po
 	-rm -f ./$(DEPDIR)/InputDialog.Po
-	-rm -f ./$(DEPDIR)/Keybindings.Po
-	-rm -f ./$(DEPDIR)/KeybindingsDialog.Po
+	-rm -f ./$(DEPDIR)/KeyBindings.Po
+	-rm -f ./$(DEPDIR)/KeyBindingsDialog.Po
 	-rm -f ./$(DEPDIR)/MessageBox.Po
 	-rm -f ./$(DEPDIR)/OverwriteBox.Po
 	-rm -f ./$(DEPDIR)/PathLinker.Po
+	-rm -f ./$(DEPDIR)/Places.Po
 	-rm -f ./$(DEPDIR)/Preferences.Po
 	-rm -f ./$(DEPDIR)/Properties.Po
+	-rm -f ./$(DEPDIR)/RenameDialog.Po
 	-rm -f ./$(DEPDIR)/SearchPanel.Po
 	-rm -f ./$(DEPDIR)/SearchWindow.Po
 	-rm -f ./$(DEPDIR)/StringList.Po
+	-rm -f ./$(DEPDIR)/TabButtons.Po
 	-rm -f ./$(DEPDIR)/TextLabel.Po
 	-rm -f ./$(DEPDIR)/TextWindow.Po
 	-rm -f ./$(DEPDIR)/WriteWindow.Po
+	-rm -f ./$(DEPDIR)/XFileArchive.Po
 	-rm -f ./$(DEPDIR)/XFileExplorer.Po
 	-rm -f ./$(DEPDIR)/XFileImage.Po
 	-rm -f ./$(DEPDIR)/XFilePackage.Po
@@ -1040,9 +1123,12 @@ maintainer-clean: maintainer-clean-am
 	-rm -f ../st/$(DEPDIR)/st.Po
 	-rm -f ../st/$(DEPDIR)/x.Po
 	-rm -f ./$(DEPDIR)/ArchInputDialog.Po
-	-rm -f ./$(DEPDIR)/Bookmarks.Po
+	-rm -f ./$(DEPDIR)/BookmarkDialog.Po
 	-rm -f ./$(DEPDIR)/BrowseInputDialog.Po
+	-rm -f ./$(DEPDIR)/ColorSelector.Po
+	-rm -f ./$(DEPDIR)/ComboBox.Po
 	-rm -f ./$(DEPDIR)/CommandWindow.Po
+	-rm -f ./$(DEPDIR)/ConnectDialog.Po
 	-rm -f ./$(DEPDIR)/DialogBox.Po
 	-rm -f ./$(DEPDIR)/DirHistBox.Po
 	-rm -f ./$(DEPDIR)/DirList.Po
@@ -1057,19 +1143,23 @@ maintainer-clean: maintainer-clean-am
 	-rm -f ./$(DEPDIR)/HistInputDialog.Po
 	-rm -f ./$(DEPDIR)/IconList.Po
 	-rm -f ./$(DEPDIR)/InputDialog.Po
-	-rm -f ./$(DEPDIR)/Keybindings.Po
-	-rm -f ./$(DEPDIR)/KeybindingsDialog.Po
+	-rm -f ./$(DEPDIR)/KeyBindings.Po
+	-rm -f ./$(DEPDIR)/KeyBindingsDialog.Po
 	-rm -f ./$(DEPDIR)/MessageBox.Po
 	-rm -f ./$(DEPDIR)/OverwriteBox.Po
 	-rm -f ./$(DEPDIR)/PathLinker.Po
+	-rm -f ./$(DEPDIR)/Places.Po
 	-rm -f ./$(DEPDIR)/Preferences.Po
 	-rm -f ./$(DEPDIR)/Properties.Po
+	-rm -f ./$(DEPDIR)/RenameDialog.Po
 	-rm -f ./$(DEPDIR)/SearchPanel.Po
 	-rm -f ./$(DEPDIR)/SearchWindow.Po
 	-rm -f ./$(DEPDIR)/StringList.Po
+	-rm -f ./$(DEPDIR)/TabButtons.Po
 	-rm -f ./$(DEPDIR)/TextLabel.Po
 	-rm -f ./$(DEPDIR)/TextWindow.Po
 	-rm -f ./$(DEPDIR)/WriteWindow.Po
+	-rm -f ./$(DEPDIR)/XFileArchive.Po
 	-rm -f ./$(DEPDIR)/XFileExplorer.Po
 	-rm -f ./$(DEPDIR)/XFileImage.Po
 	-rm -f ./$(DEPDIR)/XFilePackage.Po

@@ -1,7 +1,7 @@
 [Desktop Entry]
-_Name=Xfp
-_GenericName=Package Manager
-_Comment=A simple package manager for Xfe
+Name=Xfp
+GenericName=Package Manager
+Comment=A simple package manager for Xfe
 Exec=xfp %f
 Terminal=false
 Type=Application

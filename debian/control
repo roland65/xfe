@@ -3,25 +3,26 @@ Section: x11
 Priority: optional
 Maintainer: Roland Baudin <roland65@free.fr>
 Build-Depends:
-    debhelper (>= 10.0.0),
-    cdbs,
-    intltool,
+    debhelper-compat (= 13),
     libfox-1.6-dev (>= 1.6.45),
-    libfreetype6-dev,
+    libfreetype-dev,
     libpng-dev,
     libxft-dev,
     libx11-dev,
     libx11-xcb-dev,
     libxcb-util-dev,
-    pkexec (>= 0.102),
-Standards-Version: 4.6.1
+    pkexec | policykit-1,
+    libpolkit-gobject-1-dev,
+    libudisks2-dev (>= 2.7.6),
+    libnotify-dev (>= 0.7.7)
+Standards-Version: 4.6.2
 Homepage: http://roland65.free.fr/xfe/
 
 Package: xfe
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
-Recommends:
-Suggests:
+Recommends: xterm, xarchiver, pkexec | policykit-1, audacious
+Suggests: gimp, meld
 Description: A lightweight file manager for X11
  Xfe is desktop independent and is written using the C++ Fox Toolkit.
  It has Windows Commander or MS-Explorer look and is very fast and simple.

@@ -9,20 +9,22 @@ class InputDialog : public DialogBox
 {
     FXDECLARE(InputDialog)
 protected:
-    FXTextField*       input;
-    FXHorizontalFrame* checkbutton;
-    FXLabel*           msg;
+    FXTextField* input = NULL;
+    FXHorizontalFrame* checkbutton = NULL;
+    FXLabel* msg = NULL;
 private:
-    InputDialog() : input(NULL), checkbutton(NULL), msg(NULL)
-    {}
+    InputDialog()
+    {
+    }
 public:
-    InputDialog(FXWindow*, FXString, FXString, FXString, FXString label = "", FXIcon* icon = NULL, FXbool option = false, FXString = FXString::null);
+    InputDialog(FXWindow*, FXString, FXString, FXString, FXString label = "", FXIcon* icon = NULL,
+                FXbool option = false, FXString = FXString::null);
     virtual void create();
 
     long onCmdKeyPress(FXObject*, FXSelector, void*);
     FXString getText()
     {
-        return(input->getText());
+        return input->getText();
     }
 
     void setText(const FXString& text)

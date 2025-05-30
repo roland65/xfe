@@ -7,10 +7,10 @@
 // Return values
 enum ExecuteBoxReturn
 {
-    EXECBOX_CLICKED_CANCEL       = 0,
-    EXECBOX_CLICKED_EXECUTE      = 1,
-    EXECBOX_CLICKED_CONSOLE      = 2,
-    EXECBOX_CLICKED_EDIT         = 3,
+    EXECBOX_CLICKED_CANCEL    = 0,
+    EXECBOX_CLICKED_EXECUTE    = 1,
+    EXECBOX_CLICKED_CONSOLE    = 2,
+    EXECBOX_CLICKED_EDIT    = 3,
 };
 
 
@@ -20,9 +20,11 @@ class FXAPI ExecuteBox : public DialogBox
     FXDECLARE(ExecuteBox)
 protected:
     ExecuteBox()
-    {}
+    {
+    }
     ExecuteBox(const ExecuteBox&)
-    {}
+    {
+    }
 public:
     long onCmdClicked(FXObject*, FXSelector, void*);
 public:
@@ -35,7 +37,8 @@ public:
         ID_LAST
     };
 public:
-    ExecuteBox(FXWindow* win, const FXString& name, const FXString& text, FXuint opts = DECOR_TITLE | DECOR_BORDER, int x = 0, int y = 0);
+    ExecuteBox(FXWindow* win, const FXString& name, const FXString& text,
+               FXuint opts = DECOR_TITLE | DECOR_BORDER, int x = 0, int y = 0);
 };
 
 #endif

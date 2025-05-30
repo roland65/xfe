@@ -1,4 +1,4 @@
-// This file contains some FOX functions redefinitions (FOX hacks for various purposes, except for Clearlooks controls)
+// This file contains FOX functions redefinitions used to fix some issues
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
@@ -12,487 +12,9 @@
 #include <X11/extensions/Xrandr.h>
 #endif
 
-extern FXbool file_tooltips;
+
+// Global variables
 extern FXString xdgconfighome;
-extern FXbool xim_used;
-
-
-// Hack to fix issues with drag and drop within, from and to the dirList
-#define SELECT_MASK    (TREELIST_SINGLESELECT | TREELIST_BROWSESELECT)
-
-// Remove all siblings from [fm,to]
-void FXTreeList::removeItems(FXTreeItem* fm, FXTreeItem* to, FXbool notify)
-{
-    FXTreeItem* olditem = currentitem;
-    FXTreeItem* prv;
-    FXTreeItem* nxt;
-    FXTreeItem* par;
-
-    if (fm && to)
-    {
-        if (fm->parent != to->parent)
-        {
-            fxerror("%s::removeItems: arguments have different parent.\n", getClassName());
-        }
-
-        // Delete items
-        while (1)
-        {
-            // Scan till end
-            while (to->last)
-            {
-                to = to->last;
-            }
-            do
-            {
-                // Notify item will be deleted
-                if (notify && target)
-                {
-                    target->tryHandle(this, FXSEL(SEL_DELETED, message), (void*)to);
-                }
-
-                // Remember hookups
-                nxt = to->next;
-                prv = to->prev;
-                par = to->parent;
-
-                // !!! Hack to go back to the parent when an item disappeared
-
-                // Adjust pointers; suggested by Alan Ott <ott@acusoft.com>
-                anchoritem = par;
-                currentitem = par;
-                extentitem = par;
-                viewableitem = par;
-
-                // !!! End of hack
-
-                // Remove item from list
-                if (prv)
-                {
-                    prv->next = nxt;
-                }
-                else if (par)
-                {
-                    par->first = nxt;
-                }
-                else
-                {
-                    firstitem = nxt;
-                }
-                if (nxt)
-                {
-                    nxt->prev = prv;
-                }
-                else if (par)
-                {
-                    par->last = prv;
-                }
-                else
-                {
-                    lastitem = prv;
-                }
-
-                // Delete it
-                delete to;
-
-                // Was last one?
-                if (to == fm)
-                {
-                    goto x;
-                }
-                to = par;
-            } while (!prv);
-            to = prv;
-        }
-
-        // Current item has changed
-x:
-        if (olditem != currentitem)
-        {
-            if (notify && target)
-            {
-                target->tryHandle(this, FXSEL(SEL_CHANGED, message), (void*)currentitem);
-            }
-        }
-
-        // Deleted current item
-        if (currentitem && (currentitem != olditem))
-        {
-            if (hasFocus())
-            {
-                currentitem->setFocus(true);
-            }
-            if (((options & SELECT_MASK) == TREELIST_BROWSESELECT) && currentitem->isEnabled())
-            {
-                selectItem(currentitem, notify);
-            }
-        }
-
-        // Redo layout
-        recalc();
-    }
-}
-
-
-// Hack to display a tooltip with name, size, date, etc.
-// We were asked about tip text
-long FXTreeList::onQueryTip(FXObject* sender, FXSelector sel, void* ptr)
-{
-    if (FXWindow::onQueryTip(sender, sel, ptr))
-    {
-        return(1);
-    }
-
-    // File tooltips are optional
-    if (file_tooltips)
-    {
-        if ((flags & FLAG_TIP) && !(options & TREELIST_AUTOSELECT)) // No tip when autoselect!
-        {
-            int x, y;
-            FXuint buttons;
-
-            getCursorPosition(x, y, buttons);
-            DirItem* item = (DirItem*)getItemAt(x, y);
-            if (item)
-            {
-                // !!! Hack to display a tooltip with name, size, date, etc.
-                FXString string;
-
-                // Root folder
-                if (item->getText() == ROOTDIR)
-                {
-                    string = _("Root folder");
-                }
-
-                // Other folders
-                else
-                {
-                    // Get tooltip data
-                    FXString str = item->getTooltipData();
-                    if (str == "")
-                    {
-                        return(0);
-                    }
-
-                    // Add name, type, permissions, etc. to the tool tip
-                    FXString name = str.section('\t', 0);
-                    FXString type = str.section('\t', 1);
-                    FXString date = str.section('\t', 2);
-                    FXString user = str.section('\t', 3);
-                    FXString group = str.section('\t', 4);
-                    FXString perms = str.section('\t', 5);
-                    FXString deldate = str.section('\t', 6);
-                    FXString pathname = str.section('\t', 7);
-
-                    // Compute root file size
-                    FXulong dnsize;
-                    char dsize[64];
-                    dnsize = ::dirsize(pathname.text());
-#if __WORDSIZE == 64
-                    snprintf(dsize, sizeof(dsize) - 1, "%lu", dnsize);
-#else
-                    snprintf(dsize, sizeof(dsize) - 1, "%llu", dnsize);
-#endif
-                    FXString size = ::hSize(dsize);
-                    if (deldate.empty())
-                    {
-                        string = _("Name: ") + name + "\n" + _("Size in root: ") + size + "\n" + _("Type: ") + type
-                                 + "\n" + _("Modified date: ") + date + "\n" + _("User: ") + user + " - " + _("Group: ") + group
-                                 + "\n" + _("Permissions: ") + perms;
-                    }
-                    else
-                    {
-                        string = _("Name: ") + name + "\n" + _("Size in root: ") + size + "\n" + _("Type: ") + type
-                                 + "\n" + _("Modified date: ") + date + "\n" + _("Deletion date: ") + deldate + "\n" + _("User: ") + user + " - " + _("Group: ") + group
-                                 + "\n" + _("Permissions: ") + perms;
-                    }
-                }
-                // !!! End of hack !!!
-
-                sender->handle(this, FXSEL(SEL_COMMAND, ID_SETSTRINGVALUE), (void*)&string);
-                return(1);
-            }
-        }
-    }
-    return(0);
-}
-
-
-//
-// Hack of FXDCWindow
-//
-
-#define DISPLAY(app)    ((Display*)((app)->display))
-#define FS    ((XFontStruct*)(font->font))
-
-#ifndef HAVE_XFT_H
-static int utf2db(XChar2b* dst, const char* src, int n)
-{
-    int len, p;
-    FXwchar w;
-
-    for (p = len = 0; p < n; p += wclen(src + p), len++)
-    {
-        w = wc(src + p);
-        dst[len].byte1 = (w >> 8);
-        dst[len].byte2 = (w & 255);
-    }
-    return(len);
-}
-
-
-#endif
-
-
-// Hack to take into account non UTF-8 strings
-void FXDCWindow::drawText(int x, int y, const char* string, FXuint length)
-{
-    if (!surface)
-    {
-        fprintf(stderr, "FXDCWindow::drawText: DC not connected to drawable.\n");
-        exit(EXIT_FAILURE);
-    }
-    if (!font)
-    {
-        fprintf(stderr, "FXDCWindow::drawText: no font selected.\n");
-        exit(EXIT_FAILURE);
-    }
-    if (!string)
-    {
-        fprintf(stderr, "FXDCWindow::drawText: NULL string argument.\n");
-        exit(EXIT_FAILURE);
-    }
-
-#ifdef HAVE_XFT_H
-    XftColor color;
-    color.pixel = devfg;
-    color.color.red = FXREDVAL(fg) * 257;
-    color.color.green = FXGREENVAL(fg) * 257;
-    color.color.blue = FXBLUEVAL(fg) * 257;
-    color.color.alpha = FXALPHAVAL(fg) * 257;
-
-    // !!! Hack to draw string depending on its encoding !!!
-    if (isUtf8(string, length))
-    {
-        XftDrawStringUtf8((XftDraw*)xftDraw, &color, (XftFont*)font->font, x, y, (const FcChar8*)string, length);
-    }
-    else
-    {
-        XftDrawString8((XftDraw*)xftDraw, &color, (XftFont*)font->font, x, y, (const FcChar8*)string, length);
-    }
-    // !!! End of hack !!!
-#else
-    int count, escapement, defwidth, ww, size, i;
-    double ang, ux, uy;
-    FXuchar r, c;
-    XChar2b sbuffer[4096];
-    count = utf2db(sbuffer, string, FXMIN(length, 4096));
-    if (font->getAngle())
-    {
-        ang = font->getAngle() * 0.00027270769562411399179;
-        defwidth = FS->min_bounds.width;
-        ux = cos(ang);
-        uy = sin(ang);
-        if (FS->per_char)
-        {
-            r = FS->default_char >> 8;
-            c = FS->default_char & 255;
-            size = (FS->max_char_or_byte2 - FS->min_char_or_byte2 + 1);
-            if ((FS->min_char_or_byte2 <= c) && (c <= FS->max_char_or_byte2) && (FS->min_byte1 <= r) && (r <= FS->max_byte1))
-            {
-                defwidth = FS->per_char[(r - FS->min_byte1) * size + (c - FS->min_char_or_byte2)].width;
-            }
-            for (i = escapement = 0; i < count; i++)
-            {
-                XDrawString16(DISPLAY(getApp()), surface->id(), (GC)ctx, (int)(x + escapement * ux), (int)(y - escapement * uy), &sbuffer[i], 1);
-                r = sbuffer[i].byte1;
-                c = sbuffer[i].byte2;
-                escapement += defwidth;
-                if ((FS->min_char_or_byte2 <= c) && (c <= FS->max_char_or_byte2) && (FS->min_byte1 <= r) && (r <= FS->max_byte1))
-                {
-                    if ((ww = FS->per_char[(r - FS->min_byte1) * size + (c - FS->min_char_or_byte2)].width) != 0)
-                    {
-                        escapement += ww - defwidth;
-                    }
-                }
-            }
-        }
-        else
-        {
-            for (i = escapement = 0; i < count; i++)
-            {
-                XDrawString16(DISPLAY(getApp()), surface->id(), (GC)ctx, (int)(x + escapement * ux), (int)(y - escapement * uy), &sbuffer[i], 1);
-                escapement += defwidth;
-            }
-        }
-    }
-    else
-    {
-        XDrawString16(DISPLAY(getApp()), surface->id(), (GC)ctx, x, y, sbuffer, count);
-    }
-#endif
-}
-
-
-//
-// Hack of FXFont
-//
-
-// Hack to take into account non UTF-8 strings
-int FXFont::getTextWidth(const char* string, FXuint length) const
-{
-    if (!string)
-    {
-        fprintf(stderr, "FXDCWindow::drawText: NULL string argument.\n");
-        exit(EXIT_FAILURE);
-    }
-
-    if (font)
-    {
-#ifdef HAVE_XFT_H
-        XGlyphInfo extents;
-        // This returns rotated metrics; FOX likes to work with unrotated metrics, so if angle
-        // is not 0, we calculate the unrotated baseline; note however that the calculation is
-        // not 100% pixel exact when the angle is not a multiple of 90 degrees.
-
-        // !!! Hack to evaluate string extent depending on its encoding !!!
-        if (isUtf8(string, length))
-        {
-            XftTextExtentsUtf8(DISPLAY(getApp()), (XftFont*)font, (const FcChar8*)string, length, &extents);
-        }
-        else
-        {
-            XftTextExtents8(DISPLAY(getApp()), (XftFont*)font, (const FcChar8*)string, length, &extents);
-        }
-        // !!! End of hack !!!
-
-        if (angle)
-        {
-            return((int)(0.5 + sqrt(extents.xOff * extents.xOff + extents.yOff * extents.yOff)));
-        }
-
-        return(extents.xOff);
-
-#else
-        const XFontStruct* fs = (XFontStruct*)font;
-        int defwidth = fs->min_bounds.width;
-        int width = 0, ww;
-        FXuint p = 0;
-        FXuint s;
-        FXuchar r;
-        FXuchar c;
-        FXwchar w;
-        if (fs->per_char)
-        {
-            r = fs->default_char >> 8;
-            c = fs->default_char & 255;
-            s = (fs->max_char_or_byte2 - fs->min_char_or_byte2 + 1);
-            if ((fs->min_char_or_byte2 <= c) && (c <= fs->max_char_or_byte2) && (fs->min_byte1 <= r) && (r <= fs->max_byte1))
-            {
-                defwidth = fs->per_char[(r - fs->min_byte1) * s + (c - fs->min_char_or_byte2)].width;
-            }
-            while (p < length)
-            {
-                w = wc(string + p);
-                p += wclen(string + p);
-                r = w >> 8;
-                c = w & 255;
-                if ((fs->min_char_or_byte2 <= c) && (c <= fs->max_char_or_byte2) && (fs->min_byte1 <= r) && (r <= fs->max_byte1))
-                {
-                    if ((ww = fs->per_char[(r - fs->min_byte1) * s + (c - fs->min_char_or_byte2)].width) != 0)
-                    {
-                        width += ww;
-                        continue;
-                    }
-                }
-                width += defwidth;
-            }
-        }
-        else
-        {
-            while (p < length)
-            {
-                p += wclen(string + p);
-                width += defwidth;
-            }
-        }
-        return(width);
-#endif
-    }
-    return(length);
-}
-
-
-//
-// Hack of FXSplitter
-//
-// NB : - MIN_PANEL_WIDTH is defined in xfedefs.h
-//      - Don't use LAYOUT_FIX_WIDTH with this hack because it won't work!
-// This function is taken from the FXSplitter class
-// and hacked to set a minimum splitter width when moving splitter to right
-// It replaces the normal function...
-void FXSplitter::moveHSplit(int pos)
-{
-    int smin, smax;
-
-    //FXuint hints;
-    FXASSERT(window);
-    //hints=window->getLayoutHints();
-    // !!! Hack to limit the width to a minimum value !!!
-    if (options & SPLITTER_REVERSED)
-    {
-        smin = barsize;
-        smax = window->getX() + window->getWidth();
-    }
-    else
-    {
-        smin = window->getX();
-        smax = width - barsize;
-    }
-    smax = smax - MIN_PANEL_WIDTH;
-    smin = smin + MIN_PANEL_WIDTH;
-    split = pos;
-    if (split < smin)
-    {
-        split = smin;
-    }
-    if (split > smax)
-    {
-        split = smax;
-    }
-    // !!! End of hack
-}
-
-
-void FXSplitter::moveVSplit(int pos)
-{
-    int smin, smax;
-
-    //FXuint hints;
-    FXASSERT(window);
-    //hints=window->getLayoutHints();
-    if (options & SPLITTER_REVERSED)
-    {
-        smin = barsize;
-        smax = window->getY() + window->getHeight();
-    }
-    else
-    {
-        smin = window->getY();
-        smax = height - barsize;
-    }
-    smax = smax - MIN_PANEL_WIDTH;
-    smin = smin + MIN_PANEL_WIDTH;
-    split = pos;
-    if (split < smin)
-    {
-        split = smin;
-    }
-    if (split > smax)
-    {
-        split = smax;
-    }
-}
 
 
 //
@@ -517,6 +39,22 @@ bool FXRegistry::read()
         ok = readFromDir(dirname, false);
     }
 
+    // !!! Hack to search for directory relative to xfe executable path
+#if defined(linux)
+    if (!ok)
+    {
+        char buf[MAXPATHLEN];
+        int nbytes = readlink("/proc/self/exe", buf, MAXPATHLEN);
+
+        if (nbytes > 0)
+        {
+            dirname = FXPath::directory(FXString(buf, nbytes)) + "/../share/xfe";
+            ok = readFromDir(dirname, false);
+        }
+    }
+#endif
+    // !!! End of hack !!!
+
     // Try search along PATH if still not found
     if (!ok)
     {
@@ -536,7 +74,7 @@ bool FXRegistry::read()
         ok = true;
     }
 
-    return(ok);
+    return ok;
 }
 
 
@@ -564,7 +102,7 @@ bool FXRegistry::readFromDir(const FXString& dirname, bool mark)
             }
         }
     }
-    return(ok);
+    return ok;
 }
 
 
@@ -576,7 +114,7 @@ bool FXRegistry::write()
     // Settings have not changed
     if (!isModified())
     {
-        return(true);
+        return true;
     }
 
     // We can not save if no application key given
@@ -586,18 +124,18 @@ bool FXRegistry::write()
         pathname = xdgconfighome + PATHSEPSTRING XFECONFIGPATH;
 
         // If this directory does not exist, make it
-        if (!FXStat::exists(pathname))
+        if (!xf_existfile(pathname))
         {
             if (!FXDir::create(pathname))
             {
-                return(false);
+                return false;
             }
         }
         else
         {
-            if (!FXStat::isDirectory(pathname))
+            if (!xf_isdirectory(pathname))
             {
-                return(false);
+                return false;
             }
         }
 
@@ -613,14 +151,14 @@ bool FXRegistry::write()
             // Rename ATOMICALLY to proper name
             if (!FXFile::rename(tempname, pathname))
             {
-                return(false);
+                return false;
             }
 
             setModified(false);
-            return(true);
+            return true;
         }
     }
-    return(false);
+    return false;
 }
 
 
@@ -640,7 +178,7 @@ static bool writeString(FXFile& file, const FXchar* string)
 {
     FXint len = strlen(string);
 
-    return(file.writeBlock(string, len) == len);
+    return file.writeBlock(string, len) == len;
 }
 
 
@@ -718,10 +256,296 @@ bool FXSettings::unparseFile(const FXString& filename)
                 }
             }
         }
-        return(true);
+        return true;
     }
 x:
-    return(false);
+    return false;
+}
+
+
+//
+// Hack of FXDCWindow
+//
+
+#define DISPLAY(app)    ((Display*)((app)->display))
+#define FS    ((XFontStruct*)(font->font))
+
+#ifndef HAVE_XFT_H
+static int utf2db(XChar2b* dst, const char* src, int n)
+{
+    int len, p;
+    FXwchar w;
+
+    for (p = len = 0; p < n; p += wclen(src + p), len++)
+    {
+        w = wc(src + p);
+        dst[len].byte1 = (w >> 8);
+        dst[len].byte2 = (w & 255);
+    }
+    return len;
+}
+
+
+#endif
+
+
+// Hack to take into account non UTF-8 strings
+void FXDCWindow::drawText(int x, int y, const char* string, FXuint length)
+{
+    if (!surface)
+    {
+        fprintf(stderr, "FXDCWindow::drawText: DC not connected to drawable.\n");
+        exit(EXIT_FAILURE);
+    }
+    if (!font)
+    {
+        fprintf(stderr, "FXDCWindow::drawText: no font selected.\n");
+        exit(EXIT_FAILURE);
+    }
+    if (!string)
+    {
+        fprintf(stderr, "FXDCWindow::drawText: NULL string argument.\n");
+        exit(EXIT_FAILURE);
+    }
+
+#ifdef HAVE_XFT_H
+    XftColor color;
+    color.pixel = devfg;
+    color.color.red = FXREDVAL(fg) * 257;
+    color.color.green = FXGREENVAL(fg) * 257;
+    color.color.blue = FXBLUEVAL(fg) * 257;
+    color.color.alpha = FXALPHAVAL(fg) * 257;
+
+    // !!! Hack to draw string depending on its encoding !!!
+    if (xf_isutf8(string, length))
+    {
+        XftDrawStringUtf8((XftDraw*)xftDraw, &color, (XftFont*)font->font, x, y, (const FcChar8*)string, length);
+    }
+    else
+    {
+        XftDrawString8((XftDraw*)xftDraw, &color, (XftFont*)font->font, x, y, (const FcChar8*)string, length);
+    }
+    // !!! End of hack !!!
+#else
+    int count, escapement, defwidth, ww, size, i;
+    double ang, ux, uy;
+    FXuchar r, c;
+    XChar2b sbuffer[4096];
+    count = utf2db(sbuffer, string, FXMIN(length, 4096));
+    if (font->getAngle())
+    {
+        ang = font->getAngle() * 0.00027270769562411399179;
+        defwidth = FS->min_bounds.width;
+        ux = cos(ang);
+        uy = sin(ang);
+        if (FS->per_char)
+        {
+            r = FS->default_char >> 8;
+            c = FS->default_char & 255;
+            size = (FS->max_char_or_byte2 - FS->min_char_or_byte2 + 1);
+            if ((FS->min_char_or_byte2 <= c) && (c <= FS->max_char_or_byte2) && (FS->min_byte1 <= r) &&
+                (r <= FS->max_byte1))
+            {
+                defwidth = FS->per_char[(r - FS->min_byte1) * size + (c - FS->min_char_or_byte2)].width;
+            }
+            for (i = escapement = 0; i < count; i++)
+            {
+                XDrawString16(DISPLAY(getApp()), surface->id(), (GC)ctx, (int)(x + escapement * ux),
+                              (int)(y - escapement * uy), &sbuffer[i], 1);
+                r = sbuffer[i].byte1;
+                c = sbuffer[i].byte2;
+                escapement += defwidth;
+                if ((FS->min_char_or_byte2 <= c) && (c <= FS->max_char_or_byte2) && (FS->min_byte1 <= r) &&
+                    (r <= FS->max_byte1))
+                {
+                    if ((ww = FS->per_char[(r - FS->min_byte1) * size + (c - FS->min_char_or_byte2)].width) != 0)
+                    {
+                        escapement += ww - defwidth;
+                    }
+                }
+            }
+        }
+        else
+        {
+            for (i = escapement = 0; i < count; i++)
+            {
+                XDrawString16(DISPLAY(getApp()), surface->id(), (GC)ctx, (int)(x + escapement * ux),
+                              (int)(y - escapement * uy), &sbuffer[i], 1);
+                escapement += defwidth;
+            }
+        }
+    }
+    else
+    {
+        XDrawString16(DISPLAY(getApp()), surface->id(), (GC)ctx, x, y, sbuffer, count);
+    }
+#endif
+}
+
+
+//
+// Hack of FXFont
+//
+
+// Hack to take into account non UTF-8 strings
+int FXFont::getTextWidth(const char* string, FXuint length) const
+{
+    if (!string)
+    {
+        fprintf(stderr, "FXDCWindow::drawText: NULL string argument.\n");
+        exit(EXIT_FAILURE);
+    }
+
+    if (font)
+    {
+#ifdef HAVE_XFT_H
+        XGlyphInfo extents;
+        // This returns rotated metrics; FOX likes to work with unrotated metrics, so if angle
+        // is not 0, we calculate the unrotated baseline; note however that the calculation is
+        // not 100% pixel exact when the angle is not a multiple of 90 degrees.
+
+        // !!! Hack to evaluate string extent depending on its encoding !!!
+        if (xf_isutf8(string, length))
+        {
+            XftTextExtentsUtf8(DISPLAY(getApp()), (XftFont*)font, (const FcChar8*)string, length, &extents);
+        }
+        else
+        {
+            XftTextExtents8(DISPLAY(getApp()), (XftFont*)font, (const FcChar8*)string, length, &extents);
+        }
+        // !!! End of hack !!!
+
+        if (angle)
+        {
+            return (int)(0.5 + sqrt(extents.xOff * extents.xOff + extents.yOff * extents.yOff));
+        }
+
+        return extents.xOff;
+
+#else
+        const XFontStruct* fs = (XFontStruct*)font;
+        int defwidth = fs->min_bounds.width;
+        int width = 0, ww;
+        FXuint p = 0;
+        FXuint s;
+        FXuchar r;
+        FXuchar c;
+        FXwchar w;
+        if (fs->per_char)
+        {
+            r = fs->default_char >> 8;
+            c = fs->default_char & 255;
+            s = (fs->max_char_or_byte2 - fs->min_char_or_byte2 + 1);
+            if ((fs->min_char_or_byte2 <= c) && (c <= fs->max_char_or_byte2) && (fs->min_byte1 <= r) &&
+                (r <= fs->max_byte1))
+            {
+                defwidth = fs->per_char[(r - fs->min_byte1) * s + (c - fs->min_char_or_byte2)].width;
+            }
+            while (p < length)
+            {
+                w = wc(string + p);
+                p += wclen(string + p);
+                r = w >> 8;
+                c = w & 255;
+                if ((fs->min_char_or_byte2 <= c) && (c <= fs->max_char_or_byte2) && (fs->min_byte1 <= r) &&
+                    (r <= fs->max_byte1))
+                {
+                    if ((ww = fs->per_char[(r - fs->min_byte1) * s + (c - fs->min_char_or_byte2)].width) != 0)
+                    {
+                        width += ww;
+                        continue;
+                    }
+                }
+                width += defwidth;
+            }
+        }
+        else
+        {
+            while (p < length)
+            {
+                p += wclen(string + p);
+                width += defwidth;
+            }
+        }
+        return width;
+#endif
+    }
+    return length;
+}
+
+
+//
+// Hack of FXSplitter
+//
+// NB : - MIN_SPLITTER_WIDTH and MIN_SPLITTER_HEIGHT are defined in xfedefs.h
+//      - Don't use LAYOUT_FIX_WIDTH with this hack because it won't work!
+// This function is taken from the FXSplitter class
+// and hacked to set a minimum splitter width when moving splitter to right
+// It replaces the normal function...
+void FXSplitter::moveHSplit(int pos)
+{
+    int smin, smax;
+
+    //FXuint hints;
+    FXASSERT(window);
+    //hints=window->getLayoutHints();
+    // !!! Hack to limit the width to a minimum value !!!
+    if (options & SPLITTER_REVERSED)
+    {
+        smin = barsize;
+        smax = window->getX() + window->getWidth();
+    }
+    else
+    {
+        smin = window->getX();
+        smax = width - barsize;
+    }
+    smax = smax - MIN_SPLITTER_WIDTH;
+    smin = smin + MIN_SPLITTER_WIDTH;
+    split = pos;
+    if (split < smin)
+    {
+        split = smin;
+    }
+    if (split > smax)
+    {
+        split = smax;
+    }
+    // !!! End of hack !!!
+}
+
+
+// This function is taken from the FXSplitter class
+// and hacked to set a minimum splitter height when moving splitter down
+// It replaces the normal function...
+void FXSplitter::moveVSplit(int pos)
+{
+    int smin, smax;
+
+    //FXuint hints;
+    FXASSERT(window);
+    //hints=window->getLayoutHints();
+    if (options & SPLITTER_REVERSED)
+    {
+        smin = barsize;
+        smax = window->getY() + window->getHeight();
+    }
+    else
+    {
+        smin = window->getY();
+        smax = height - barsize;
+    }
+    smax = smax - MIN_SPLITTER_HEIGHT;
+    smin = smin + MIN_SPLITTER_HEIGHT;
+    split = pos;
+    if (split < smin)
+    {
+        split = smin;
+    }
+    if (split > smax)
+    {
+        split = smax;
+    }
 }
 
 
@@ -731,17 +555,14 @@ x:
 
 // The two functions below are taken from the FXPopup class
 // and hacked to allow navigating using the keyboard on popup menus
-// They replace the normal functions...
 
-// !!! Global variable control keyboard scrolling on right click popup menus !!!
-extern FXbool allowPopupScroll;
 
 void FXPopup::setFocus()
 {
     FXShell::setFocus();
 
     // !!! Hack to allow keyboard scroll on popup dialogs !!!
-    if (allowPopupScroll)
+    if (!xf_strequal(getGrabOwner()->getClassName(), "FXMenuBar"))
     {
         grabKeyboard();
     }
@@ -753,7 +574,7 @@ void FXPopup::killFocus()
     FXShell::killFocus();
 
     // !!! Hack to allow keyboard scroll on popup dialogs !!!
-    if (allowPopupScroll)
+    if (!xf_strequal(getGrabOwner()->getClassName(), "FXMenuBar"))
     {
         if (prevActive)
         {
@@ -763,6 +584,59 @@ void FXPopup::killFocus()
         {
             ungrabKeyboard();
         }
+    }
+}
+
+
+// Hack to prevent popup menus from covering a bottom panel
+
+#define MAX_PANEL_HEIGHT    48
+
+// Popup the menu at some location
+void FXPopup::popup(FXWindow* grabto, FXint x, FXint y, FXint w, FXint h)
+{
+    FXint rx, ry, rw, rh;
+
+    rx = getRoot()->getX();
+    ry = getRoot()->getY();
+    rw = getRoot()->getWidth();
+    rh = getRoot()->getHeight();
+
+    FXTRACE((150, "%s::popup %p\n", getClassName(), this));
+    grabowner = grabto;
+    if ((options & POPUP_SHRINKWRAP) || w <= 1)
+    {
+        w = getDefaultWidth();
+    }
+    if ((options & POPUP_SHRINKWRAP) || h <= 1)
+    {
+        h = getDefaultHeight();
+    }
+    if (x + w > rx + rw)
+    {
+        x = rx + rw - w;
+    }
+    if (y + h > ry + rh)
+    {
+        // !!! Hack here !!!
+        y = ry + rh - h - MAX_PANEL_HEIGHT;
+    }
+
+    if (x < rx)
+    {
+        x = rx;
+    }
+    if (y < ry)
+    {
+        y = ry;
+    }
+    position(x, y, w, h);
+    show();
+    raise();
+    setFocus();
+    if (!grabowner)
+    {
+        grab();
     }
 }
 
@@ -791,7 +665,7 @@ FXStatusLine::FXStatusLine(FXComposite* p, FXObject* tgt, FXSelector sel) :
 
 // Taken from the FXReplaceDialog class
 // - translation hack
-// - small hack for the Clearlooks theme
+// - small hack for the modern controls
 
 // Padding for buttons
 #define HORZ_PAD       12
@@ -799,48 +673,74 @@ FXStatusLine::FXStatusLine(FXComposite* p, FXObject* tgt, FXSelector sel) :
 #define SEARCH_MASK    (SEARCH_EXACT | SEARCH_IGNORECASE | SEARCH_REGEX)
 
 // File Open Dialog
-FXReplaceDialog::FXReplaceDialog(FXWindow* owner, const FXString& caption, FXIcon* ic, FXuint opts, int x, int y, int w, int h) :
-    FXDialogBox(owner, caption, opts | DECOR_TITLE | DECOR_BORDER | DECOR_RESIZE, x, y, w, h, 10, 10, 10, 10, 10, 10)
+FXReplaceDialog::FXReplaceDialog(FXWindow* owner, const FXString& caption, FXIcon* ic, FXuint opts, int x, int y, int w,
+                                 int h) :
+    FXDialogBox(owner, caption, opts | DECOR_TITLE | DECOR_BORDER | DECOR_STRETCHABLE, x, y, w, h, 10, 10, 10, 10, 10,
+                10)
 {
-    FXHorizontalFrame* buttons = new FXHorizontalFrame(this, LAYOUT_SIDE_BOTTOM | LAYOUT_FILL_X | PACK_UNIFORM_WIDTH | PACK_UNIFORM_HEIGHT, 0, 0, 0, 0, 0, 0, 0, 0);
+    FXHorizontalFrame* buttons = new FXHorizontalFrame(this,
+                                                       LAYOUT_SIDE_BOTTOM | LAYOUT_FILL_X | PACK_UNIFORM_WIDTH |
+                                                       PACK_UNIFORM_HEIGHT, 0, 0, 0, 0, 0, 0, 0, 0);
 
-    accept = new FXButton(buttons, _("&Replace"), NULL, this, ID_ACCEPT, BUTTON_DEFAULT | FRAME_RAISED | FRAME_THICK | LAYOUT_FILL_Y | LAYOUT_RIGHT, 0, 0, 0, 0, HORZ_PAD, HORZ_PAD, VERT_PAD, VERT_PAD);
-    every = new FXButton(buttons, _("Re&place All"), NULL, this, ID_ALL, BUTTON_DEFAULT | FRAME_RAISED | FRAME_THICK | LAYOUT_CENTER_Y | LAYOUT_RIGHT, 0, 0, 0, 0, 6, 6, VERT_PAD, VERT_PAD);
-    cancel = new FXButton(buttons, _("&Cancel"), NULL, this, ID_CANCEL, BUTTON_INITIAL | BUTTON_DEFAULT | FRAME_RAISED | FRAME_THICK | LAYOUT_FILL_Y | LAYOUT_RIGHT, 0, 0, 0, 0, HORZ_PAD, HORZ_PAD, VERT_PAD, VERT_PAD);
+    accept = new FXButton(buttons, _("&Replace"), NULL, this, ID_ACCEPT,
+                          BUTTON_DEFAULT | FRAME_GROOVE | LAYOUT_FILL_Y | LAYOUT_RIGHT, 0, 0, 0, 0, HORZ_PAD, HORZ_PAD,
+                          VERT_PAD, VERT_PAD);
+    every = new FXButton(buttons, _("Re&place All"), NULL, this, ID_ALL,
+                         BUTTON_DEFAULT | FRAME_GROOVE | LAYOUT_CENTER_Y | LAYOUT_RIGHT, 0, 0, 0, 0, 6, 6, VERT_PAD,
+                         VERT_PAD);
+    cancel = new FXButton(buttons, _("&Cancel"), NULL, this, ID_CANCEL,
+                          BUTTON_INITIAL | BUTTON_DEFAULT | FRAME_GROOVE | LAYOUT_FILL_Y | LAYOUT_RIGHT, 0, 0, 0, 0,
+                          HORZ_PAD, HORZ_PAD, VERT_PAD, VERT_PAD);
     FXHorizontalFrame* pair = new FXHorizontalFrame(buttons, LAYOUT_FILL_Y | LAYOUT_RIGHT, 0, 0, 0, 0, 0, 0, 0, 0);
-    FXArrowButton*     searchlast = new FXArrowButton(pair, this, ID_PREV, ARROW_LEFT | FRAME_RAISED | FRAME_THICK | LAYOUT_FILL_Y, 0, 0, 0, 0, HORZ_PAD, HORZ_PAD, VERT_PAD, VERT_PAD);
-    FXArrowButton*     searchnext = new FXArrowButton(pair, this, ID_NEXT, ARROW_RIGHT | FRAME_RAISED | FRAME_THICK | LAYOUT_FILL_Y, 0, 0, 0, 0, HORZ_PAD, HORZ_PAD, VERT_PAD, VERT_PAD);
-    FXHorizontalFrame* toppart = new FXHorizontalFrame(this, LAYOUT_SIDE_BOTTOM | LAYOUT_FILL_X | LAYOUT_CENTER_Y, 0, 0, 0, 0, 0, 0, 0, 0, 10, 10);
-    new FXLabel(toppart, FXString::null, ic, ICON_BEFORE_TEXT | JUSTIFY_CENTER_X | JUSTIFY_CENTER_Y | LAYOUT_FILL_Y | LAYOUT_FILL_X);
+    FXArrowButton* searchlast = new FXArrowButton(pair, this, ID_PREV, ARROW_LEFT | FRAME_GROOVE | LAYOUT_FILL_Y, 0, 0,
+                                                  0, 0, HORZ_PAD, HORZ_PAD, VERT_PAD, VERT_PAD);
+    FXArrowButton* searchnext = new FXArrowButton(pair, this, ID_NEXT, ARROW_RIGHT | FRAME_GROOVE | LAYOUT_FILL_Y, 0, 0,
+                                                  0, 0, HORZ_PAD, HORZ_PAD, VERT_PAD, VERT_PAD);
+    FXHorizontalFrame* toppart = new FXHorizontalFrame(this, LAYOUT_SIDE_BOTTOM | LAYOUT_FILL_X | LAYOUT_CENTER_Y, 0, 0,
+                                                       0, 0, 0, 0, 0, 0, 10, 10);
+    new FXLabel(toppart, FXString::null, ic,
+                ICON_BEFORE_TEXT | JUSTIFY_CENTER_X | JUSTIFY_CENTER_Y | LAYOUT_FILL_Y | LAYOUT_FILL_X);
     FXVerticalFrame* entry = new FXVerticalFrame(toppart, LAYOUT_FILL_X | LAYOUT_CENTER_Y, 0, 0, 0, 0, 0, 0, 0, 0);
-    searchlabel = new FXLabel(entry, _("Search for:"), NULL, JUSTIFY_LEFT | ICON_BEFORE_TEXT | LAYOUT_TOP | LAYOUT_LEFT | LAYOUT_FILL_X);
-
-    // !!! Hack to remove the FRAME_THICK and FRAME_SUNKEN options (required for the Clearlooks theme)
+    searchlabel = new FXLabel(entry, _("Search for:"), NULL,
+                              JUSTIFY_LEFT | ICON_BEFORE_TEXT | LAYOUT_TOP | LAYOUT_LEFT | LAYOUT_FILL_X);
     searchbox = new FXHorizontalFrame(entry, LAYOUT_FILL_X | LAYOUT_CENTER_Y, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-    searchtext = new FXTextField(searchbox, 26, this, ID_SEARCH_TEXT, FRAME_SUNKEN | TEXTFIELD_ENTER_ONLY | LAYOUT_FILL_X | LAYOUT_FILL_Y, 0, 0, 0, 0, 4, 4, 4, 4);
-    // !!! End of hack
+    searchtext = new FXTextField(searchbox, 26, this, ID_SEARCH_TEXT,
+                                 TEXTFIELD_NORMAL | TEXTFIELD_ENTER_ONLY | LAYOUT_FILL_X | LAYOUT_FILL_Y, 0, 0, 0, 0, 4,
+                                 4, 4, 4);
 
-    FXVerticalFrame* searcharrows = new FXVerticalFrame(searchbox, LAYOUT_RIGHT | LAYOUT_FILL_Y, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-    FXArrowButton*   ar1 = new FXArrowButton(searcharrows, this, ID_SEARCH_UP, FRAME_RAISED | FRAME_THICK | ARROW_UP | ARROW_REPEAT | LAYOUT_FILL_Y | LAYOUT_FIX_WIDTH, 0, 0, 16, 0, 1, 1, 1, 1);
-    FXArrowButton*   ar2 = new FXArrowButton(searcharrows, this, ID_SEARCH_DN, FRAME_RAISED | FRAME_THICK | ARROW_DOWN | ARROW_REPEAT | LAYOUT_FILL_Y | LAYOUT_FIX_WIDTH, 0, 0, 16, 0, 1, 1, 1, 1);
+    FXVerticalFrame* searcharrows = new FXVerticalFrame(searchbox, LAYOUT_RIGHT | LAYOUT_FILL_Y, 0, 0, 0, 0, 0, 0, 0, 0,
+                                                        0, 0);
+    FXArrowButton* ar1 = new FXArrowButton(searcharrows, this, ID_SEARCH_UP,
+                                           FRAME_GROOVE | ARROW_UP | ARROW_REPEAT | LAYOUT_FILL_Y | LAYOUT_FIX_WIDTH, 0,
+                                           0, 16, 0, 1, 1, 1, 1);
+    FXArrowButton* ar2 = new FXArrowButton(searcharrows, this, ID_SEARCH_DN,
+                                           FRAME_GROOVE | ARROW_DOWN | ARROW_REPEAT | LAYOUT_FILL_Y | LAYOUT_FIX_WIDTH,
+                                           0, 0, 16, 0, 1, 1, 1, 1);
     ar1->setArrowSize(3);
     ar2->setArrowSize(3);
     replacelabel = new FXLabel(entry, _("Replace with:"), NULL, LAYOUT_LEFT);
-
-    // !!! Hack to remove the FRAME_THICK and FRAME_SUNKEN options (required for the Clearlooks theme)
     replacebox = new FXHorizontalFrame(entry, LAYOUT_FILL_X | LAYOUT_CENTER_Y, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-    replacetext = new FXTextField(replacebox, 26, this, ID_REPLACE_TEXT, FRAME_SUNKEN | TEXTFIELD_ENTER_ONLY | LAYOUT_FILL_X | LAYOUT_FILL_Y, 0, 0, 0, 0, 4, 4, 4, 4);
-    // !!! End of hack
+    replacetext = new FXTextField(replacebox, 26, this, ID_REPLACE_TEXT,
+                                  TEXTFIELD_NORMAL | TEXTFIELD_ENTER_ONLY | LAYOUT_FILL_X | LAYOUT_FILL_Y, 0, 0, 0, 0,
+                                  4, 4, 4, 4);
 
-    FXVerticalFrame* replacearrows = new FXVerticalFrame(replacebox, LAYOUT_RIGHT | LAYOUT_FILL_Y, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-    FXArrowButton*   ar3 = new FXArrowButton(replacearrows, this, ID_REPLACE_UP, FRAME_RAISED | FRAME_THICK | ARROW_UP | ARROW_REPEAT | LAYOUT_FILL_Y | LAYOUT_FIX_WIDTH, 0, 0, 16, 0, 1, 1, 1, 1);
-    FXArrowButton*   ar4 = new FXArrowButton(replacearrows, this, ID_REPLACE_DN, FRAME_RAISED | FRAME_THICK | ARROW_DOWN | ARROW_REPEAT | LAYOUT_FILL_Y | LAYOUT_FIX_WIDTH, 0, 0, 16, 0, 1, 1, 1, 1);
+    FXVerticalFrame* replacearrows = new FXVerticalFrame(replacebox, LAYOUT_RIGHT | LAYOUT_FILL_Y, 0, 0, 0, 0, 0, 0, 0,
+                                                         0, 0, 0);
+    FXArrowButton* ar3 = new FXArrowButton(replacearrows, this, ID_REPLACE_UP,
+                                           FRAME_GROOVE | ARROW_UP | ARROW_REPEAT | LAYOUT_FILL_Y | LAYOUT_FIX_WIDTH, 0,
+                                           0, 16, 0, 1, 1, 1, 1);
+    FXArrowButton* ar4 = new FXArrowButton(replacearrows, this, ID_REPLACE_DN,
+                                           FRAME_GROOVE | ARROW_DOWN | ARROW_REPEAT | LAYOUT_FILL_Y | LAYOUT_FIX_WIDTH,
+                                           0, 0, 16, 0, 1, 1, 1, 1);
     ar3->setArrowSize(3);
     ar4->setArrowSize(3);
     FXHorizontalFrame* options1 = new FXHorizontalFrame(entry, LAYOUT_FILL_X, 0, 0, 0, 0, 0, 0, 0, 0);
-    new FXRadioButton(options1, _("Ex&act") + FXString(" "), this, ID_MODE + SEARCH_EXACT, ICON_BEFORE_TEXT | LAYOUT_CENTER_X);
-    new FXRadioButton(options1, _("&Ignore Case") + FXString(" "), this, ID_MODE + SEARCH_IGNORECASE, ICON_BEFORE_TEXT | LAYOUT_CENTER_X);
-    new FXRadioButton(options1, _("E&xpression") + FXString(" "), this, ID_MODE + SEARCH_REGEX, ICON_BEFORE_TEXT | LAYOUT_CENTER_X);
+    new FXRadioButton(options1, _("Ex&act") + FXString(" "), this, ID_MODE + SEARCH_EXACT,
+                      ICON_BEFORE_TEXT | LAYOUT_CENTER_X);
+    new FXRadioButton(options1, _("&Ignore Case") + FXString(" "), this, ID_MODE + SEARCH_IGNORECASE,
+                      ICON_BEFORE_TEXT | LAYOUT_CENTER_X);
+    new FXRadioButton(options1, _("E&xpression") + FXString(" "), this, ID_MODE + SEARCH_REGEX,
+                      ICON_BEFORE_TEXT | LAYOUT_CENTER_X);
     new FXCheckButton(options1, _("&Backward") + FXString(" "), this, ID_DIR, ICON_BEFORE_TEXT | LAYOUT_CENTER_X);
     searchlast->setTipText("Ctrl-B");
     searchnext->setTipText("Ctrl-F");
@@ -856,7 +756,8 @@ FXReplaceDialog::FXReplaceDialog(FXWindow* owner, const FXString& caption, FXIco
 //
 
 // Taken from the FXSearchDialog class
-FXSearchDialog::FXSearchDialog(FXWindow* owner, const FXString& caption, FXIcon* ic, FXuint opts, int x, int y, int w, int h) :
+FXSearchDialog::FXSearchDialog(FXWindow* owner, const FXString& caption, FXIcon* ic, FXuint opts, int x, int y, int w,
+                               int h) :
     FXReplaceDialog(owner, caption, ic, opts, x, y, w, h)
 {
     accept->setText(_("&Search"));
@@ -873,13 +774,20 @@ FXSearchDialog::FXSearchDialog(FXWindow* owner, const FXString& caption, FXIcon*
 // Taken from the FXInputDialog class
 void FXInputDialog::initialize(const FXString& label, FXIcon* icon)
 {
-    FXuint textopts = TEXTFIELD_ENTER_ONLY | FRAME_SUNKEN | FRAME_THICK | LAYOUT_FILL_X;
-    FXHorizontalFrame* buttons = new FXHorizontalFrame(this, LAYOUT_SIDE_BOTTOM | LAYOUT_FILL_X | PACK_UNIFORM_WIDTH, 0, 0, 0, 0, 0, 0, 0, 0);
+    FXuint textopts = TEXTFIELD_NORMAL | TEXTFIELD_ENTER_ONLY | LAYOUT_FILL_X;
+    FXHorizontalFrame* buttons = new FXHorizontalFrame(this, LAYOUT_SIDE_BOTTOM | LAYOUT_FILL_X | PACK_UNIFORM_WIDTH, 0,
+                                                       0, 0, 0, 0, 0, 0, 0);
 
-    new FXButton(buttons, _("&OK"), NULL, this, ID_ACCEPT, BUTTON_DEFAULT | FRAME_RAISED | FRAME_THICK | LAYOUT_CENTER_Y | LAYOUT_RIGHT, 0, 0, 0, 0, HORZ_PAD, HORZ_PAD, VERT_PAD, VERT_PAD);
-    new FXButton(buttons, _("&Cancel"), NULL, this, ID_CANCEL, BUTTON_INITIAL | BUTTON_DEFAULT | FRAME_RAISED | FRAME_THICK | LAYOUT_CENTER_Y | LAYOUT_RIGHT, 0, 0, 0, 0, HORZ_PAD, HORZ_PAD, VERT_PAD, VERT_PAD);
-    FXHorizontalFrame* toppart = new FXHorizontalFrame(this, LAYOUT_SIDE_TOP | LAYOUT_FILL_X | LAYOUT_CENTER_Y, 0, 0, 0, 0, 0, 0, 0, 0, 10, 10);
-    new FXLabel(toppart, FXString::null, icon, ICON_BEFORE_TEXT | JUSTIFY_CENTER_X | JUSTIFY_CENTER_Y | LAYOUT_FILL_Y | LAYOUT_FILL_X);
+    new FXButton(buttons, _("&OK"), NULL, this, ID_ACCEPT,
+                 BUTTON_DEFAULT | FRAME_GROOVE | LAYOUT_CENTER_Y | LAYOUT_RIGHT, 0, 0, 0, 0, HORZ_PAD, HORZ_PAD,
+                 VERT_PAD, VERT_PAD);
+    new FXButton(buttons, _("&Cancel"), NULL, this, ID_CANCEL,
+                 BUTTON_INITIAL | BUTTON_DEFAULT | FRAME_GROOVE | LAYOUT_CENTER_Y | LAYOUT_RIGHT, 0, 0, 0, 0, HORZ_PAD,
+                 HORZ_PAD, VERT_PAD, VERT_PAD);
+    FXHorizontalFrame* toppart = new FXHorizontalFrame(this, LAYOUT_SIDE_TOP | LAYOUT_FILL_X | LAYOUT_CENTER_Y, 0, 0, 0,
+                                                       0, 0, 0, 0, 0, 10, 10);
+    new FXLabel(toppart, FXString::null, icon,
+                ICON_BEFORE_TEXT | JUSTIFY_CENTER_X | JUSTIFY_CENTER_Y | LAYOUT_FILL_Y | LAYOUT_FILL_X);
     FXVerticalFrame* entry = new FXVerticalFrame(toppart, LAYOUT_FILL_X | LAYOUT_CENTER_Y, 0, 0, 0, 0, 0, 0, 0, 0);
     new FXLabel(entry, label, NULL, JUSTIFY_LEFT | ICON_BEFORE_TEXT | LAYOUT_TOP | LAYOUT_LEFT | LAYOUT_FILL_X);
     if (options & INPUTDIALOG_PASSWORD)
@@ -920,12 +828,12 @@ Atom fxsendrequest(Display* display, Window window, Atom selection, Atom prop, A
         if (loops == 0)
         {
             //fxwarning("fxsendrequest:timed out!\n");
-            return(None);
+            return None;
         }
-        FXThread::sleep(10000000);  // Don't burn too much CPU here:- the other guy needs it more....
+        FXThread::sleep(10000000); // Don't burn too much CPU here:- the other guy needs it more....
         loops--;
     }
-    return(ev.xselection.property);
+    return ev.xselection.property;
 }
 
 
@@ -940,12 +848,12 @@ static FXbool fxwaitforevent(Display* display, Window window, int type, XEvent& 
         if (loops == 0)
         {
             //fxwarning("fxwaitforevent:timed out!\n");
-            return(false);
+            return false;
         }
-        FXThread::sleep(10000000);  // Don't burn too much CPU here:- the other guy needs it more....
+        FXThread::sleep(10000000); // Don't burn too much CPU here:- the other guy needs it more....
         loops--;
     }
-    return(true);
+    return true;
 }
 
 
@@ -957,13 +865,14 @@ static FXuint fxrecvprop(Display* display, Window window, Atom prop, Atom& type,
 {
     unsigned long maxtfrsize = XMaxRequestSize(display) * 4;
     unsigned long tfroffset, tfrsize, tfrleft;
-    FXuchar*      ptr;
+    FXuchar* ptr;
     int format;
 
     tfroffset = 0;
 
     // Read next chunk of data from property
-    while (XGetWindowProperty(display, window, prop, tfroffset >> 2, maxtfrsize >> 2, False, AnyPropertyType, &type, &format, &tfrsize, &tfrleft, &ptr) == Success && type != None)
+    while (XGetWindowProperty(display, window, prop, tfroffset >> 2, maxtfrsize >> 2, False, AnyPropertyType, &type,
+                              &format, &tfrsize, &tfrleft, &ptr) == Success && type != None)
     {
         tfrsize *= (format >> 3);
 
@@ -988,7 +897,7 @@ static FXuint fxrecvprop(Display* display, Window window, Atom prop, Atom& type,
     // Delete property after we're done
     XDeleteProperty(display, window, prop);
     XFlush(display);
-    return(tfroffset);
+    return tfroffset;
 }
 
 
@@ -996,7 +905,7 @@ static FXuint fxrecvprop(Display* display, Window window, Atom prop, Atom& type,
 Atom fxrecvdata(Display* display, Window window, Atom prop, Atom incr, Atom& type, FXuchar*& data, FXuint& size)
 {
     unsigned long tfrsize, tfrleft;
-    FXuchar*      ptr;
+    FXuchar* ptr;
     XEvent ev;
     int format;
 
@@ -1005,7 +914,8 @@ Atom fxrecvdata(Display* display, Window window, Atom prop, Atom incr, Atom& typ
     if (prop)
     {
         // First, see what we've got
-        if ((XGetWindowProperty(display, window, prop, 0, 0, False, AnyPropertyType, &type, &format, &tfrsize, &tfrleft, &ptr) == Success) && (type != None))
+        if ((XGetWindowProperty(display, window, prop, 0, 0, False, AnyPropertyType, &type, &format, &tfrsize, &tfrleft,
+                                &ptr) == Success) && (type != None))
         {
             XFree(ptr);
 
@@ -1026,7 +936,8 @@ Atom fxrecvdata(Display* display, Window window, Atom prop, Atom incr, Atom& typ
                     }
 
                     // See what we've got
-                    if ((XGetWindowProperty(display, window, prop, 0, 0, False, AnyPropertyType, &type, &format, &tfrsize, &tfrleft, &ptr) == Success) && (type != None))
+                    if ((XGetWindowProperty(display, window, prop, 0, 0, False, AnyPropertyType, &type, &format,
+                                            &tfrsize, &tfrleft, &ptr) == Success) && (type != None))
                     {
                         XFree(ptr);
 
@@ -1044,7 +955,6 @@ Atom fxrecvdata(Display* display, Window window, Atom prop, Atom incr, Atom& typ
                     }
                 }
             }
-
             // All data in one shot
             else
             {
@@ -1052,9 +962,9 @@ Atom fxrecvdata(Display* display, Window window, Atom prop, Atom incr, Atom& typ
                 fxrecvprop(display, window, prop, type, data, size);
             }
         }
-        return(prop);
+        return prop;
     }
-    return(None);
+    return None;
 }
 
 
@@ -1107,7 +1017,7 @@ bool FXWindow::getDNDData(FXDNDOrigin origin, FXDragType targettype, FXuchar*& d
         getApp()->selectionGetData(this, targettype, data, size);
         break;
     }
-    return(data != NULL);
+    return data != NULL;
 }
 
 
@@ -1169,7 +1079,7 @@ long FXTextField::onKeyPress(FXObject*, FXSelector, void* ptr)
     {
         if (target && target->tryHandle(this, FXSEL(SEL_KEYPRESS, message), ptr))
         {
-            return(1);
+            return 1;
         }
         flags &= ~FLAG_UPDATE;
         switch (event->code)
@@ -1196,7 +1106,7 @@ long FXTextField::onKeyPress(FXObject*, FXSelector, void* ptr)
             {
                 handle(this, FXSEL(SEL_COMMAND, ID_MARK), NULL);
             }
-            return(1);
+            return 1;
 
         case KEY_Left:
         case KEY_KP_Left:
@@ -1220,7 +1130,7 @@ long FXTextField::onKeyPress(FXObject*, FXSelector, void* ptr)
             {
                 handle(this, FXSEL(SEL_COMMAND, ID_MARK), NULL);
             }
-            return(1);
+            return 1;
 
         case KEY_Home:
         case KEY_KP_Home:
@@ -1237,7 +1147,7 @@ long FXTextField::onKeyPress(FXObject*, FXSelector, void* ptr)
             {
                 handle(this, FXSEL(SEL_COMMAND, ID_MARK), NULL);
             }
-            return(1);
+            return 1;
 
         case KEY_End:
         case KEY_KP_End:
@@ -1254,25 +1164,25 @@ long FXTextField::onKeyPress(FXObject*, FXSelector, void* ptr)
             {
                 handle(this, FXSEL(SEL_COMMAND, ID_MARK), NULL);
             }
-            return(1);
+            return 1;
 
         case KEY_Insert:
         case KEY_KP_Insert:
             if (event->state & CONTROLMASK)
             {
                 handle(this, FXSEL(SEL_COMMAND, ID_COPY_SEL), NULL);
-                return(1);
+                return 1;
             }
             else if (event->state & SHIFTMASK)
             {
                 handle(this, FXSEL(SEL_COMMAND, ID_PASTE_SEL), NULL);
-                return(1);
+                return 1;
             }
             else
             {
                 handle(this, FXSEL(SEL_COMMAND, ID_TOGGLE_OVERSTRIKE), NULL);
             }
-            return(1);
+            return 1;
 
         case KEY_Delete:
         case KEY_KP_Delete:
@@ -1291,7 +1201,7 @@ long FXTextField::onKeyPress(FXObject*, FXSelector, void* ptr)
             {
                 handle(this, FXSEL(SEL_COMMAND, ID_DELETE), NULL);
             }
-            return(1);
+            return 1;
 
         case KEY_BackSpace:
             if (hasSelection())
@@ -1302,7 +1212,7 @@ long FXTextField::onKeyPress(FXObject*, FXSelector, void* ptr)
             {
                 handle(this, FXSEL(SEL_COMMAND, ID_BACKSPACE), NULL);
             }
-            return(1);
+            return 1;
 
         case KEY_Return:
         case KEY_KP_Enter:
@@ -1319,7 +1229,7 @@ long FXTextField::onKeyPress(FXObject*, FXSelector, void* ptr)
             {
                 getApp()->beep();
             }
-            return(1);
+            return 1;
 
         case KEY_a:
         case KEY_A: // Hack
@@ -1328,7 +1238,7 @@ long FXTextField::onKeyPress(FXObject*, FXSelector, void* ptr)
                 goto ins;
             }
             handle(this, FXSEL(SEL_COMMAND, ID_SELECT_ALL), NULL);
-            return(1);
+            return 1;
 
         case KEY_x:
         case KEY_X: // Hack
@@ -1337,9 +1247,9 @@ long FXTextField::onKeyPress(FXObject*, FXSelector, void* ptr)
                 goto ins;
             }
 
-        case KEY_F20:                             // Sun Cut key
+        case KEY_F20:                     // Sun Cut key
             handle(this, FXSEL(SEL_COMMAND, ID_CUT_SEL), NULL);
-            return(1);
+            return 1;
 
         case KEY_c:
         case KEY_C: // Hack
@@ -1348,9 +1258,9 @@ long FXTextField::onKeyPress(FXObject*, FXSelector, void* ptr)
                 goto ins;
             }
 
-        case KEY_F16:                             // Sun Copy key
+        case KEY_F16:                     // Sun Copy key
             handle(this, FXSEL(SEL_COMMAND, ID_COPY_SEL), NULL);
-            return(1);
+            return 1;
 
         case KEY_v:
         case KEY_V: // Hack
@@ -1359,15 +1269,15 @@ long FXTextField::onKeyPress(FXObject*, FXSelector, void* ptr)
                 goto ins;
             }
 
-        case KEY_F18:                             // Sun Paste key
+        case KEY_F18:                     // Sun Paste key
             handle(this, FXSEL(SEL_COMMAND, ID_PASTE_SEL), NULL);
-            return(1);
+            return 1;
 
         default:
 ins:
             if ((event->state & (CONTROLMASK | ALTMASK)) || ((FXuchar)event->text[0] < 32))
             {
-                return(0);
+                return 0;
             }
             if (isOverstrike())
             {
@@ -1377,10 +1287,10 @@ ins:
             {
                 handle(this, FXSEL(SEL_COMMAND, ID_INSERT_STRING), (void*)event->text.text());
             }
-            return(1);
+            return 1;
         }
     }
-    return(0);
+    return 0;
 }
 
 
@@ -1397,74 +1307,75 @@ namespace FX
 // Callback Record
 struct FXCBSpec
 {
-    FXObject*  target;                // Receiver object
-    FXSelector message;               // Message sent to receiver
+    FXObject* target;          // Receiver object
+    FXSelector message;        // Message sent to receiver
 };
 
 
 // Timer record
 struct FXTimer
 {
-    FXTimer*   next;                  // Next timeout in list
-    FXObject*  target;                // Receiver object
-    void*      data;                  // User data
-    FXSelector message;               // Message sent to receiver
-    FXlong due;                       // When timer is due (ns)
+    FXTimer* next;             // Next timeout in list
+    FXObject* target;          // Receiver object
+    void* data;                // User data
+    FXSelector message;        // Message sent to receiver
+    FXlong due;                // When timer is due (ns)
 };
 
 
 // Signal record
 struct FXSignal
 {
-    FXObject*  target;                // Receiver object
-    FXSelector message;               // Message sent to receiver
-    FXbool handlerset;                // Handler was already set
-    FXbool notified;                  // Signal has fired
+    FXObject* target;          // Receiver object
+    FXSelector message;        // Message sent to receiver
+    FXbool handlerset;         // Handler was already set
+    FXbool notified;           // Signal has fired
 };
 
 
 // Idle record
 struct FXChore
 {
-    FXChore*   next;                  // Next chore in list
-    FXObject*  target;                // Receiver object
-    void*      data;                  // User data
-    FXSelector message;               // Message sent to receiver
+    FXChore* next;             // Next chore in list
+    FXObject* target;          // Receiver object
+    void* data;                // User data
+    FXSelector message;        // Message sent to receiver
 };
 
 
 // Input record
 struct FXInput
 {
-    FXCBSpec read;                    // Callback spec for read
-    FXCBSpec write;                   // Callback spec for write
-    FXCBSpec excpt;                   // Callback spec for except
+    FXCBSpec    read;         // Callback spec for read
+    FXCBSpec    write;        // Callback spec for write
+    FXCBSpec    excpt;        // Callback spec for except
 };
 
 
 // A repaint event record
 struct FXRepaint
 {
-    FXRepaint*  next;               // Next repaint in list
-    FXID window;                    // Window ID of the dirty window
-    FXRectangle rect;               // Dirty rectangle
-    int hint;                       // Hint for compositing
-    FXbool synth;                   // Synthetic expose event or real one?
+    FXRepaint* next;          // Next repaint in list
+    FXID window;              // Window ID of the dirty window
+    FXRectangle rect;         // Dirty rectangle
+    int hint;                 // Hint for compositing
+    FXbool synth;             // Synthetic expose event or real one?
 };
 
 
 // Recursive Event Loop Invocation
 struct FXInvocation
 {
-    FXInvocation** invocation; // Pointer to variable holding pointer to current invocation
-    FXInvocation*  upper;      // Invocation above this one
-    FXWindow*      window;     // Modal window (if any)
-    FXModality modality;       // Modality mode
-    int code;                  // Return code
-    FXbool done;               // True if breaking out
+    FXInvocation** invocation;   // Pointer to variable holding pointer to current invocation
+    FXInvocation* upper;         // Invocation above this one
+    FXWindow* window;            // Modal window (if any)
+    FXModality modality;         // Modality mode
+    int code;                    // Return code
+    FXbool done;                 // True if breaking out
 
     // Enter modal loop
-    FXInvocation(FXInvocation** inv, FXModality mode, FXWindow* win) : invocation(inv), upper(*inv), window(win), modality(mode), code(0), done(false)
+    FXInvocation(FXInvocation** inv, FXModality mode, FXWindow* win) : invocation(inv), upper(*inv), window(win),
+        modality(mode), code(0), done(false)
     {
         *invocation = this;
     }
@@ -1494,9 +1405,9 @@ Atom fxsendtypes(Display* display, Window window, Atom prop, FXDragType* types, 
     if (types && numtypes)
     {
         XChangeProperty(display, window, prop, XA_ATOM, 32, PropModeReplace, (unsigned char*)types, numtypes);
-        return(prop);
+        return prop;
     }
-    return(None);
+    return None;
 }
 
 
@@ -1523,9 +1434,9 @@ Atom fxsenddata(Display* display, Window window, Atom prop, Atom type, FXuchar* 
             tfroffset += tfrsize;
             size -= tfrsize;
         }
-        return(prop);
+        return prop;
     }
-    return(None);
+    return None;
 }
 
 
@@ -1544,7 +1455,7 @@ Atom fxsendreply(Display* display, Window window, Atom selection, Atom prop, Ato
     se.xselection.time = time;
     XSendEvent(display, window, True, NoEventMask, &se);
     XFlush(display);
-    return(prop);
+    return prop;
 }
 
 
@@ -1560,7 +1471,8 @@ Atom fxrecvtypes(Display* display, Window window, Atom prop, FXDragType*& types,
     numtypes = 0;
     if (prop)
     {
-        if (XGetWindowProperty(display, window, prop, 0, 1024, del, XA_ATOM, &actualtype, &actualformat, &numitems, &bytesleft, &ptr) == Success)
+        if (XGetWindowProperty(display, window, prop, 0, 1024, del, XA_ATOM, &actualtype, &actualformat, &numitems,
+                               &bytesleft, &ptr) == Success)
         {
             if ((actualtype == XA_ATOM) && (actualformat == 32) && (numitems > 0))
             {
@@ -1572,15 +1484,36 @@ Atom fxrecvtypes(Display* display, Window window, Atom prop, FXDragType*& types,
             }
             XFree(ptr);
         }
-        return(prop);
+        return prop;
     }
-    return(None);
+    return None;
 }
 
 
 // Get an event
 bool FXApp::getNextEvent(FXRawEvent& ev, bool blocking)
 {
+    // !!! Hack to make composed characters work !!!
+    static FXbool init = true;
+    static FXbool xim_used = false;
+
+    if (init)
+    {
+        // Detect if an X input method is used
+        FXString xmodifiers = getenv("XMODIFIERS");
+        if ((xmodifiers == "") || (xmodifiers == "@im=none"))
+        {
+            xim_used = false;
+        }
+        else
+        {
+            xim_used = true;
+        }
+
+        init = false;
+    }
+    // !!! End of hack !!!
+
     XEvent e;
 
     // Set to no-op just in case
@@ -1600,10 +1533,11 @@ bool FXApp::getNextEvent(FXRawEvent& ev, bool blocking)
             if (signals[sig].notified)
             {
                 signals[sig].notified = false;
-                if (signals[sig].target && signals[sig].target->tryHandle(this, FXSEL(SEL_SIGNAL, signals[sig].message), (void*)(FXival)sig))
+                if (signals[sig].target && signals[sig].target->tryHandle(this, FXSEL(SEL_SIGNAL, signals[sig].message),
+                                                                          (void*)(FXival)sig))
                 {
                     refresh();
-                    return(false);
+                    return false;
                 }
             }
         }
@@ -1658,7 +1592,7 @@ bool FXApp::getNextEvent(FXRawEvent& ev, bool blocking)
                 repaints = r->next;
                 r->next = repaintrecs;
                 repaintrecs = r;
-                return(true);
+                return true;
             }
 
             // Do our chores :-)
@@ -1697,7 +1631,7 @@ bool FXApp::getNextEvent(FXRawEvent& ev, bool blocking)
                 FXASSERT(refresher);
                 if (refresher != refresherstop)
                 {
-                    return(false);
+                    return false;
                 }
                 refresher = refresherstop = NULL;
             }
@@ -1705,13 +1639,13 @@ bool FXApp::getNextEvent(FXRawEvent& ev, bool blocking)
             // There are more chores to do
             if (chores)
             {
-                return(false);
+                return false;
             }
 
             // We're not blocking
             if (!blocking)
             {
-                return(false);
+                return false;
             }
 
             // Now, block till timeout, i/o, or event
@@ -1739,7 +1673,7 @@ bool FXApp::getNextEvent(FXRawEvent& ev, bool blocking)
                 // Some timers are already due; do them right away!
                 if (interval <= 0)
                 {
-                    return(false);
+                    return false;
                 }
 
                 // Compute how long to wait
@@ -1755,7 +1689,6 @@ bool FXApp::getNextEvent(FXRawEvent& ev, bool blocking)
                 // Enter critical section
                 appMutex.lock();
             }
-
             // If no timers, we block till event or interrupt
             else
             {
@@ -1777,7 +1710,7 @@ bool FXApp::getNextEvent(FXRawEvent& ev, bool blocking)
             {
                 fxerror("Application terminated: interrupt or lost connection errno=%d\n", errno);
             }
-            return(false);
+            return false;
         }
 
         // Any other file descriptors set?
@@ -1798,21 +1731,24 @@ bool FXApp::getNextEvent(FXRawEvent& ev, bool blocking)
                 // Check file descriptors
                 if (FD_ISSET(fff, &readfds))
                 {
-                    if (in.read.target && in.read.target->tryHandle(this, FXSEL(SEL_IO_READ, in.read.message), (void*)(FXival)fff))
+                    if (in.read.target && in.read.target->tryHandle(this, FXSEL(SEL_IO_READ, in.read.message),
+                                                                    (void*)(FXival)fff))
                     {
                         refresh();
                     }
                 }
                 if (FD_ISSET(fff, &writefds))
                 {
-                    if (in.write.target && in.write.target->tryHandle(this, FXSEL(SEL_IO_WRITE, in.write.message), (void*)(FXival)fff))
+                    if (in.write.target && in.write.target->tryHandle(this, FXSEL(SEL_IO_WRITE, in.write.message),
+                                                                      (void*)(FXival)fff))
                     {
                         refresh();
                     }
                 }
                 if (FD_ISSET(fff, &exceptfds))
                 {
-                    if (in.excpt.target && in.excpt.target->tryHandle(this, FXSEL(SEL_IO_EXCEPT, in.excpt.message), (void*)(FXival)fff))
+                    if (in.excpt.target && in.excpt.target->tryHandle(this, FXSEL(SEL_IO_EXCEPT, in.excpt.message),
+                                                                      (void*)(FXival)fff))
                     {
                         refresh();
                     }
@@ -1821,22 +1757,23 @@ bool FXApp::getNextEvent(FXRawEvent& ev, bool blocking)
         }
 
         // If there is no event, we're done
-        if (!initialized || !FD_ISSET(ConnectionNumber((Display*)display), &readfds) || !XEventsQueued((Display*)display, QueuedAfterReading))
+        if (!initialized || !FD_ISSET(ConnectionNumber((Display*)display),
+                                      &readfds) || !XEventsQueued((Display*)display, QueuedAfterReading))
         {
-            return(false);
+            return false;
         }
     }
 
     // Get an event
     XNextEvent((Display*)display, &ev);
 
-    // !!! Hack to fix the bug with composed characters !!!
+    // !!! Hack to make composed characters work !!!
     if (xim_used)
     {
         // Filter event through input method context, if any
         if (xim && XFilterEvent(&ev, None))
         {
-            return(false);
+            return false;
         }
     }
     else
@@ -1845,7 +1782,7 @@ bool FXApp::getNextEvent(FXRawEvent& ev, bool blocking)
         focuswin = getFocusWindow();
         if (xim && focuswin && XFilterEvent(&ev, (Window)focuswin->id()))
         {
-            return(false);
+            return false;
         }
     }
     // !!! End of hack !!!
@@ -1854,7 +1791,7 @@ bool FXApp::getNextEvent(FXRawEvent& ev, bool blocking)
     if ((ev.xany.type == Expose) || (ev.xany.type == GraphicsExpose))
     {
         addRepaint((FXID)ev.xexpose.window, ev.xexpose.x, ev.xexpose.y, ev.xexpose.width, ev.xexpose.height, 0);
-        return(false);
+        return false;
     }
 
     // Compress motion events
@@ -1863,14 +1800,14 @@ bool FXApp::getNextEvent(FXRawEvent& ev, bool blocking)
         while (XPending((Display*)display))
         {
             XPeekEvent((Display*)display, &e);
-            if ((e.xany.type != MotionNotify) || (ev.xmotion.window != e.xmotion.window) || (ev.xmotion.state != e.xmotion.state))
+            if ((e.xany.type != MotionNotify) || (ev.xmotion.window != e.xmotion.window) ||
+                (ev.xmotion.state != e.xmotion.state))
             {
                 break;
             }
             XNextEvent((Display*)display, &ev);
         }
     }
-
     // Compress wheel events
     else if ((ev.xany.type == ButtonPress) && ((ev.xbutton.button == Button4) || (ev.xbutton.button == Button5)))
     {
@@ -1878,16 +1815,16 @@ bool FXApp::getNextEvent(FXRawEvent& ev, bool blocking)
         while (XPending((Display*)display))
         {
             XPeekEvent((Display*)display, &e);
-            if (((e.xany.type != ButtonPress) && (e.xany.type != ButtonRelease)) || (ev.xany.window != e.xany.window) || (ev.xbutton.button != e.xbutton.button))
+            if (((e.xany.type != ButtonPress) && (e.xany.type != ButtonRelease)) || (ev.xany.window != e.xany.window) ||
+                (ev.xbutton.button != e.xbutton.button))
             {
                 break;
             }
             ticks += (e.xany.type == ButtonPress);
             XNextEvent((Display*)display, &ev);
         }
-        ev.xbutton.subwindow = (Window)ticks;   // Stick it here for later
+        ev.xbutton.subwindow = (Window)ticks; // Stick it here for later
     }
-
     // Compress configure events
     else if (ev.xany.type == ConfigureNotify)
     {
@@ -1904,7 +1841,7 @@ bool FXApp::getNextEvent(FXRawEvent& ev, bool blocking)
     }
 
     // Regular event
-    return(true);
+    return true;
 }
 
 
@@ -1917,7 +1854,7 @@ FXString translateKeyEvent(FXRawEvent& event)
 
     XLookupString(&event.xkey, buffer, sizeof(buffer), &sym, NULL);
     w = fxkeysym2ucs(sym);
-    return(FXString(&w, 1));
+    return FXString(&w, 1);
 }
 
 
@@ -1928,14 +1865,14 @@ static FXuint keysym(FXRawEvent& event)
     char buffer[40];
 
     XLookupString(&event.xkey, buffer, sizeof(buffer), &sym, NULL);
-    return(sym);
+    return sym;
 }
 
 
 // Dispatch event to widget
 bool FXApp::dispatchEvent(FXRawEvent& ev)
 {
-    FXWindow* window, *ancestor;
+    FXWindow* window, * ancestor;
     FXint tmp_x, tmp_y;
     Atom answer;
     XEvent se;
@@ -1961,11 +1898,11 @@ bool FXApp::dispatchEvent(FXRawEvent& ev)
             window->handle(this, FXSEL(SEL_PAINT, 0), &event);
 
         case NoExpose:
-            return(true);
+            return true;
 
         // Keymap Notify
         case KeymapNotify:
-            return(true);
+            return true;
 
         // Keyboard
         case KeyPress:
@@ -1976,7 +1913,7 @@ bool FXApp::dispatchEvent(FXRawEvent& ev)
 
             if ((ev.xkey.keycode != 0) && focuswin && focuswin->getComposeContext())
             {
-                Window w;
+                Window w = 0;
                 XGetICValues((XIC)focuswin->getComposeContext()->id(), XNFocusWindow, &w, NULL);
 
                 // Mouse pointer is not over the text field
@@ -1984,7 +1921,7 @@ bool FXApp::dispatchEvent(FXRawEvent& ev)
                 {
                     if ((focuswin->id() != w) && XFilterEvent(&ev, (Window)focuswin->id()))
                     {
-                        return(true);
+                        return true;
                     }
                 }
             }
@@ -2013,7 +1950,6 @@ bool FXApp::dispatchEvent(FXRawEvent& ev)
                     event.text = translateKeyEvent(ev);
                 }
             }
-
             // Clear string on KeyRelease
             else
             {
@@ -2044,7 +1980,7 @@ bool FXApp::dispatchEvent(FXRawEvent& ev)
                 }
                 else if (event.code == KEY_F13)
                 {
-                    event.state |= METAMASK;     // Key between Ctrl and Alt (on most keyboards)
+                    event.state |= METAMASK; // Key between Ctrl and Alt (on most keyboards)
                 }
                 else if (event.code == KEY_Alt_L)
                 {
@@ -2052,7 +1988,7 @@ bool FXApp::dispatchEvent(FXRawEvent& ev)
                 }
                 else if (event.code == KEY_Alt_R)
                 {
-                    event.state |= ALTMASK;    // FIXME do we need ALTGR flag instead/in addition?
+                    event.state |= ALTMASK; // FIXME do we need ALTGR flag instead/in addition?
                 }
                 else if (event.code == KEY_Num_Lock)
                 {
@@ -2099,7 +2035,7 @@ bool FXApp::dispatchEvent(FXRawEvent& ev)
                 }
                 else if (event.code == KEY_F13)
                 {
-                    event.state &= ~METAMASK;    // Key between Ctrl and Alt (on most keyboards)
+                    event.state &= ~METAMASK; // Key between Ctrl and Alt (on most keyboards)
                 }
                 else if (event.code == KEY_Alt_L)
                 {
@@ -2107,7 +2043,7 @@ bool FXApp::dispatchEvent(FXRawEvent& ev)
                 }
                 else if (event.code == KEY_Alt_R)
                 {
-                    event.state &= ~ALTMASK;   // FIXME do we need ALTGR flag instead/in addition?
+                    event.state &= ~ALTMASK; // FIXME do we need ALTGR flag instead/in addition?
                 }
                 else if (event.code == KEY_Num_Lock)
                 {
@@ -2143,7 +2079,7 @@ bool FXApp::dispatchEvent(FXRawEvent& ev)
                 {
                     refresh();
                 }
-                return(true);
+                return true;
             }
 
             // Remember window for later
@@ -2157,13 +2093,15 @@ bool FXApp::dispatchEvent(FXRawEvent& ev)
             {
                 // FIXME doesSaveUnder test should go away
                 // Dispatch if not in a modal loop or in a modal loop for a window containing the focus window
-                if (!invocation || (invocation->modality == MODAL_FOR_NONE) || (invocation->window && invocation->window->isOwnerOf(keyWindow)) || keyWindow->getShell()->doesSaveUnder())
+                if (!invocation || (invocation->modality == MODAL_FOR_NONE) ||
+                    (invocation->window && invocation->window->isOwnerOf(keyWindow)) ||
+                    keyWindow->getShell()->doesSaveUnder())
                 {
                     if (keyWindow->handle(this, FXSEL(event.type, 0), &event))
                     {
                         refresh();
                     }
-                    return(TRUE);
+                    return TRUE;
                 }
 
                 // Beep if outside modal
@@ -2172,7 +2110,7 @@ bool FXApp::dispatchEvent(FXRawEvent& ev)
                     beep();
                 }
             }
-            return(true);
+            return true;
 
         // Motion
         case MotionNotify:
@@ -2188,7 +2126,8 @@ bool FXApp::dispatchEvent(FXRawEvent& ev)
             event.state = (ev.xmotion.state & ~(Button4Mask | Button5Mask)) | stickyMods;
 
             // Moved more that delta
-            if ((FXABS(event.root_x - event.rootclick_x) >= dragDelta) || (FXABS(event.root_y - event.rootclick_y) >= dragDelta))
+            if ((FXABS(event.root_x - event.rootclick_x) >= dragDelta) ||
+                (FXABS(event.root_y - event.rootclick_y) >= dragDelta))
             {
                 event.moved = 1;
             }
@@ -2202,10 +2141,11 @@ bool FXApp::dispatchEvent(FXRawEvent& ev)
                     refresh();
                 }
             }
-
             // FIXME doesSaveUnder test should go away
             // Dispatch if inside model window
-            else if (!invocation || (invocation->modality == MODAL_FOR_NONE) || (invocation->window && invocation->window->isOwnerOf(window)) || window->getShell()->doesSaveUnder())
+            else if (!invocation || (invocation->modality == MODAL_FOR_NONE) ||
+                     (invocation->window && invocation->window->isOwnerOf(window)) ||
+                     window->getShell()->doesSaveUnder())
             {
                 if (window->handle(this, FXSEL(SEL_MOTION, 0), &event))
                 {
@@ -2216,7 +2156,7 @@ bool FXApp::dispatchEvent(FXRawEvent& ev)
             // Remember last mouse
             event.last_x = event.win_x;
             event.last_y = event.win_y;
-            return(true);
+            return true;
 
         // Button
         case ButtonPress:
@@ -2244,12 +2184,15 @@ bool FXApp::dispatchEvent(FXRawEvent& ev)
                     {
                         refresh();
                     }
-                    return(true);
+                    return true;
                 }
 
                 // Dispatch to window under cursor
                 // FIXME doesSaveUnder test should go away
-                while (window && (!invocation || invocation->modality == MODAL_FOR_NONE || (invocation->window && invocation->window->isOwnerOf(window)) || window->getShell()->doesSaveUnder()))
+                while (window &&
+                       (!invocation || invocation->modality == MODAL_FOR_NONE ||
+                        (invocation->window && invocation->window->isOwnerOf(window)) ||
+                        window->getShell()->doesSaveUnder()))
                 {
                     if (window->handle(this, FXSEL(SEL_MOUSEWHEEL, 0), &event))
                     {
@@ -2258,12 +2201,12 @@ bool FXApp::dispatchEvent(FXRawEvent& ev)
                     }
                     window = window->getParent();
                 }
-                return(true);
+                return true;
             }
 
             // Mouse Button
             event.code = ev.xbutton.button;
-            if (ev.xbutton.type == ButtonPress)                                // Mouse button press
+            if (ev.xbutton.type == ButtonPress)                    // Mouse button press
             {
                 if (ev.xbutton.button == Button1)
                 {
@@ -2280,7 +2223,8 @@ bool FXApp::dispatchEvent(FXRawEvent& ev)
                     event.type = SEL_RIGHTBUTTONPRESS;
                     event.state |= RIGHTBUTTONMASK;
                 }
-                if (!event.moved && (event.time - event.click_time < clickSpeed) && (event.code == (FXint)event.click_button))
+                if (!event.moved && (event.time - event.click_time < clickSpeed) &&
+                    (event.code == (FXint)event.click_button))
                 {
                     event.click_count++;
                     event.click_time = event.time;
@@ -2300,7 +2244,7 @@ bool FXApp::dispatchEvent(FXRawEvent& ev)
                     event.moved = 0;
                 }
             }
-            else                                                            // Mouse button release
+            else                                                // Mouse button release
             {
                 if (ev.xbutton.button == Button1)
                 {
@@ -2328,17 +2272,17 @@ bool FXApp::dispatchEvent(FXRawEvent& ev)
                     refresh();
                 }
             }
-
             // Dispatch if inside model window
             // FIXME doesSaveUnder test should go away
-            else if (!invocation || (invocation->modality == MODAL_FOR_NONE) || (invocation->window && invocation->window->isOwnerOf(window)) || window->getShell()->doesSaveUnder())
+            else if (!invocation || (invocation->modality == MODAL_FOR_NONE) ||
+                     (invocation->window && invocation->window->isOwnerOf(window)) ||
+                     window->getShell()->doesSaveUnder())
             {
                 if (window->handle(this, FXSEL(event.type, 0), &event))
                 {
                     refresh();
                 }
             }
-
             // Beep if outside modal window
             else
             {
@@ -2351,14 +2295,15 @@ bool FXApp::dispatchEvent(FXRawEvent& ev)
             // Remember last mouse
             event.last_x = event.win_x;
             event.last_y = event.win_y;
-            return(true);
+            return true;
 
         // Crossing
         case EnterNotify:
             event.time = ev.xcrossing.time;
             if (cursorWindow != window)
             {
-                if ((ev.xcrossing.mode == NotifyGrab) || (ev.xcrossing.mode == NotifyUngrab) || ((ev.xcrossing.mode == NotifyNormal) && (ev.xcrossing.detail != NotifyInferior)))
+                if ((ev.xcrossing.mode == NotifyGrab) || (ev.xcrossing.mode == NotifyUngrab) ||
+                    ((ev.xcrossing.mode == NotifyNormal) && (ev.xcrossing.detail != NotifyInferior)))
                 {
                     ancestor = FXWindow::commonAncestor(window, cursorWindow);
                     event.root_x = ev.xcrossing.x_root;
@@ -2368,14 +2313,15 @@ bool FXApp::dispatchEvent(FXRawEvent& ev)
                     enterWindow(window, ancestor);
                 }
             }
-            return(true);
+            return true;
 
         // Crossing
         case LeaveNotify:
             event.time = ev.xcrossing.time;
             if (cursorWindow == window)
             {
-                if ((ev.xcrossing.mode == NotifyGrab) || (ev.xcrossing.mode == NotifyUngrab) || ((ev.xcrossing.mode == NotifyNormal) && (ev.xcrossing.detail != NotifyInferior)))
+                if ((ev.xcrossing.mode == NotifyGrab) || (ev.xcrossing.mode == NotifyUngrab) ||
+                    ((ev.xcrossing.mode == NotifyNormal) && (ev.xcrossing.detail != NotifyInferior)))
                 {
                     event.root_x = ev.xcrossing.x_root;
                     event.root_y = ev.xcrossing.y_root;
@@ -2384,7 +2330,7 @@ bool FXApp::dispatchEvent(FXRawEvent& ev)
                     leaveWindow(window, window->getParent());
                 }
             }
-            return(true);
+            return true;
 
         // Focus change on shell window
         case FocusIn:
@@ -2408,7 +2354,7 @@ bool FXApp::dispatchEvent(FXRawEvent& ev)
                 }
                 activeWindow = window;
             }
-            return(true);
+            return true;
 
         // Map
         case MapNotify:
@@ -2417,7 +2363,7 @@ bool FXApp::dispatchEvent(FXRawEvent& ev)
             {
                 refresh();
             }
-            return(true);
+            return true;
 
         // Unmap
         case UnmapNotify:
@@ -2426,7 +2372,7 @@ bool FXApp::dispatchEvent(FXRawEvent& ev)
             {
                 refresh();
             }
-            return(true);
+            return true;
 
         // Create
         case CreateNotify:
@@ -2435,7 +2381,7 @@ bool FXApp::dispatchEvent(FXRawEvent& ev)
             {
                 refresh();
             }
-            return(true);
+            return true;
 
         // Destroy
         case DestroyNotify:
@@ -2444,7 +2390,7 @@ bool FXApp::dispatchEvent(FXRawEvent& ev)
             {
                 refresh();
             }
-            return(true);
+            return true;
 
         // Configure
         case ConfigureNotify:
@@ -2466,7 +2412,7 @@ bool FXApp::dispatchEvent(FXRawEvent& ev)
             {
                 refresh();
             }
-            return(true);
+            return true;
 
         // Circulate
         case CirculateNotify:
@@ -2475,7 +2421,7 @@ bool FXApp::dispatchEvent(FXRawEvent& ev)
             {
                 refresh();
             }
-            return(true);
+            return true;
 
         // Selection Clear
         case SelectionClear:
@@ -2511,7 +2457,7 @@ bool FXApp::dispatchEvent(FXRawEvent& ev)
                 FXFREE(&xcbTypeList);
                 xcbNumTypes = 0;
             }
-            return(true);
+            return true;
 
         // Selection Request
         case SelectionRequest:
@@ -2520,11 +2466,12 @@ bool FXApp::dispatchEvent(FXRawEvent& ev)
             {
                 if (selectionWindow)
                 {
-                    if (ev.xselectionrequest.target == ddeTargets)             // Request for TYPES
+                    if (ev.xselectionrequest.target == ddeTargets) // Request for TYPES
                     {
-                        answer = fxsendtypes((Display*)display, ev.xselectionrequest.requestor, ev.xselectionrequest.property, xselTypeList, xselNumTypes);
+                        answer = fxsendtypes((Display*)display, ev.xselectionrequest.requestor,
+                                             ev.xselectionrequest.property, xselTypeList, xselNumTypes);
                     }
-                    else                                                    // Request for DATA
+                    else                                // Request for DATA
                     {
                         event.type = SEL_SELECTION_REQUEST;
                         event.time = ev.xselectionrequest.time;
@@ -2532,7 +2479,9 @@ bool FXApp::dispatchEvent(FXRawEvent& ev)
                         ddeData = NULL;
                         ddeSize = 0;
                         selectionWindow->handle(this, FXSEL(SEL_SELECTION_REQUEST, 0), &event);
-                        answer = fxsenddata((Display*)display, ev.xselectionrequest.requestor, ev.xselectionrequest.property, ev.xselectionrequest.target, ddeData, ddeSize);
+                        answer = fxsenddata((Display*)display, ev.xselectionrequest.requestor,
+                                            ev.xselectionrequest.property, ev.xselectionrequest.target, ddeData,
+                                            ddeSize);
                         FXFREE(&ddeData);
                         ddeData = NULL;
                         ddeSize = 0;
@@ -2543,11 +2492,12 @@ bool FXApp::dispatchEvent(FXRawEvent& ev)
             {
                 if (clipboardWindow)
                 {
-                    if (ev.xselectionrequest.target == ddeTargets)             // Request for TYPES
+                    if (ev.xselectionrequest.target == ddeTargets) // Request for TYPES
                     {
-                        answer = fxsendtypes((Display*)display, ev.xselectionrequest.requestor, ev.xselectionrequest.property, xcbTypeList, xcbNumTypes);
+                        answer = fxsendtypes((Display*)display, ev.xselectionrequest.requestor,
+                                             ev.xselectionrequest.property, xcbTypeList, xcbNumTypes);
                     }
-                    else                                                    // Request for DATA
+                    else                                // Request for DATA
                     {
                         event.type = SEL_CLIPBOARD_REQUEST;
                         event.time = ev.xselectionrequest.time;
@@ -2555,7 +2505,9 @@ bool FXApp::dispatchEvent(FXRawEvent& ev)
                         ddeData = NULL;
                         ddeSize = 0;
                         clipboardWindow->handle(this, FXSEL(SEL_CLIPBOARD_REQUEST, 0), &event);
-                        answer = fxsenddata((Display*)display, ev.xselectionrequest.requestor, ev.xselectionrequest.property, ev.xselectionrequest.target, ddeData, ddeSize);
+                        answer = fxsenddata((Display*)display, ev.xselectionrequest.requestor,
+                                            ev.xselectionrequest.property, ev.xselectionrequest.target, ddeData,
+                                            ddeSize);
                         FXFREE(&ddeData);
                         ddeData = NULL;
                         ddeSize = 0;
@@ -2566,11 +2518,12 @@ bool FXApp::dispatchEvent(FXRawEvent& ev)
             {
                 if (dragWindow)
                 {
-                    if (ev.xselectionrequest.target == ddeTargets)             // Request for TYPES
+                    if (ev.xselectionrequest.target == ddeTargets) // Request for TYPES
                     {
-                        answer = fxsendtypes((Display*)display, ev.xselectionrequest.requestor, ev.xselectionrequest.property, xdndTypeList, xdndNumTypes);
+                        answer = fxsendtypes((Display*)display, ev.xselectionrequest.requestor,
+                                             ev.xselectionrequest.property, xdndTypeList, xdndNumTypes);
                     }
-                    else                                                    // Request for DATA
+                    else                                // Request for DATA
                     {
                         event.type = SEL_DND_REQUEST;
                         event.time = ev.xselectionrequest.time;
@@ -2578,19 +2531,22 @@ bool FXApp::dispatchEvent(FXRawEvent& ev)
                         ddeData = NULL;
                         ddeSize = 0;
                         dragWindow->handle(this, FXSEL(SEL_DND_REQUEST, 0), &event);
-                        answer = fxsenddata((Display*)display, ev.xselectionrequest.requestor, ev.xselectionrequest.property, ev.xselectionrequest.target, ddeData, ddeSize);
+                        answer = fxsenddata((Display*)display, ev.xselectionrequest.requestor,
+                                            ev.xselectionrequest.property, ev.xselectionrequest.target, ddeData,
+                                            ddeSize);
                         FXFREE(&ddeData);
                         ddeData = NULL;
                         ddeSize = 0;
                     }
                 }
             }
-            fxsendreply((Display*)display, ev.xselectionrequest.requestor, ev.xselectionrequest.selection, answer, ev.xselectionrequest.target, ev.xselectionrequest.time);
-            return(true);
+            fxsendreply((Display*)display, ev.xselectionrequest.requestor, ev.xselectionrequest.selection, answer,
+                        ev.xselectionrequest.target, ev.xselectionrequest.time);
+            return true;
 
         // Selection Notify
         case SelectionNotify:
-            return(true);
+            return true;
 
         // Client message
         case ClientMessage:
@@ -2598,10 +2554,11 @@ bool FXApp::dispatchEvent(FXRawEvent& ev)
             // WM_PROTOCOLS
             if (ev.xclient.message_type == wmProtocols)
             {
-                if ((FXID)ev.xclient.data.l[0] == wmDeleteWindow)            // WM_DELETE_WINDOW
+                if ((FXID)ev.xclient.data.l[0] == wmDeleteWindow) // WM_DELETE_WINDOW
                 {
                     event.type = SEL_CLOSE;
-                    if (!invocation || (invocation->modality == MODAL_FOR_NONE) || (invocation->window && invocation->window->isOwnerOf(window)))
+                    if (!invocation || (invocation->modality == MODAL_FOR_NONE) ||
+                        (invocation->window && invocation->window->isOwnerOf(window)))
                     {
                         if (window->handle(this, FXSEL(SEL_CLOSE, 0), &event))
                         {
@@ -2613,10 +2570,11 @@ bool FXApp::dispatchEvent(FXRawEvent& ev)
                         beep();
                     }
                 }
-                else if ((FXID)ev.xclient.data.l[0] == wmQuitApp)            // WM_QUIT_APP
+                else if ((FXID)ev.xclient.data.l[0] == wmQuitApp) // WM_QUIT_APP
                 {
                     event.type = SEL_CLOSE;
-                    if (!invocation || (invocation->modality == MODAL_FOR_NONE) || (invocation->window && invocation->window->isOwnerOf(window)))
+                    if (!invocation || (invocation->modality == MODAL_FOR_NONE) ||
+                        (invocation->window && invocation->window->isOwnerOf(window)))
                     {
                         if (window->handle(this, FXSEL(SEL_CLOSE, 0), &event))
                         {
@@ -2628,7 +2586,7 @@ bool FXApp::dispatchEvent(FXRawEvent& ev)
                         beep();
                     }
                 }
-                else if ((FXID)ev.xclient.data.l[0] == wmTakeFocus)          // WM_TAKE_FOCUS
+                else if ((FXID)ev.xclient.data.l[0] == wmTakeFocus) // WM_TAKE_FOCUS
                 {
                     if (invocation && invocation->window && invocation->window->id())
                     {
@@ -2639,31 +2597,31 @@ bool FXApp::dispatchEvent(FXRawEvent& ev)
                     // XSetInputFocus causes a spurious BadMatch error; we ignore this in xerrorhandler
                     XSetInputFocus((Display*)display, ev.xclient.window, RevertToParent, ev.xclient.data.l[1]);
                 }
-                else if ((FXID)ev.xclient.data.l[0] == wmNetPing)           // NET_WM_PING
+                else if ((FXID)ev.xclient.data.l[0] == wmNetPing) // NET_WM_PING
                 {
                     se.xclient.type = ClientMessage;
-                    se.xclient.display = (Display*)display;                       // This lets a window manager know that
-                    se.xclient.message_type = wmProtocols;                        // we're still alive after having received
-                    se.xclient.format = 32;                                       // a WM_DELETE_WINDOW message
+                    se.xclient.display = (Display*)display;             // This lets a window manager know that
+                    se.xclient.message_type = wmProtocols;              // we're still alive after having received
+                    se.xclient.format = 32;                             // a WM_DELETE_WINDOW message
                     se.xclient.window = XDefaultRootWindow((Display*)display);
                     se.xclient.data.l[0] = ev.xclient.data.l[0];
                     se.xclient.data.l[1] = ev.xclient.data.l[1];
                     se.xclient.data.l[2] = ev.xclient.data.l[2];
                     se.xclient.data.l[3] = 0;
                     se.xclient.data.l[4] = 0;
-                    XSendEvent((Display*)display, se.xclient.window, False, SubstructureRedirectMask | SubstructureNotifyMask, &se);
+                    XSendEvent((Display*)display, se.xclient.window, False,
+                               SubstructureRedirectMask | SubstructureNotifyMask, &se);
                 }
             }
-
             // XDND Enter from source
             else if (ev.xclient.message_type == xdndEnter)
             {
                 FXint ver = (ev.xclient.data.l[1] >> 24) & 255;
                 if (ver > XDND_PROTOCOL_VERSION)
                 {
-                    return(true);
+                    return true;
                 }
-                xdndSource = ev.xclient.data.l[0];                                  // Now we're talking to this guy
+                xdndSource = ev.xclient.data.l[0];                  // Now we're talking to this guy
                 if (ddeTypeList)
                 {
                     FXFREE(&ddeTypeList);
@@ -2694,13 +2652,12 @@ bool FXApp::dispatchEvent(FXRawEvent& ev)
                     }
                 }
             }
-
             // XDND Leave from source
             else if (ev.xclient.message_type == xdndLeave)
             {
                 if (xdndSource != (FXID)ev.xclient.data.l[0])
                 {
-                    return(true);   // We're not talking to this guy
+                    return true; // We're not talking to this guy
                 }
                 if (dropWindow)
                 {
@@ -2718,13 +2675,12 @@ bool FXApp::dispatchEvent(FXRawEvent& ev)
                 }
                 xdndSource = 0;
             }
-
             // XDND Position from source
             else if (ev.xclient.message_type == xdndPosition)
             {
                 if (xdndSource != (FXID)ev.xclient.data.l[0])
                 {
-                    return(true);   // We're not talking to this guy
+                    return true; // We're not talking to this guy
                 }
                 event.time = ev.xclient.data.l[3];
                 event.root_x = ((FXuint)ev.xclient.data.l[2]) >> 16;
@@ -2783,7 +2739,8 @@ bool FXApp::dispatchEvent(FXRawEvent& ev)
                 if (dropWindow)
                 {
                     event.type = SEL_DND_MOTION;
-                    XTranslateCoordinates((Display*)display, XDefaultRootWindow((Display*)display), dropWindow->id(), event.root_x, event.root_y, &event.win_x, &event.win_y, &tmp);
+                    XTranslateCoordinates((Display*)display, XDefaultRootWindow((Display*)display), dropWindow->id(),
+                                          event.root_x, event.root_y, &event.win_x, &event.win_y, &tmp);
                     if (dropWindow->handle(this, FXSEL(SEL_DND_MOTION, 0), &event))
                     {
                         refresh();
@@ -2796,15 +2753,15 @@ bool FXApp::dispatchEvent(FXRawEvent& ev)
                 se.xclient.message_type = xdndStatus;
                 se.xclient.format = 32;
                 se.xclient.window = xdndSource;
-                se.xclient.data.l[0] = ev.xclient.window;                   // Proxy Target window
+                se.xclient.data.l[0] = ev.xclient.window;   // Proxy Target window
                 se.xclient.data.l[1] = 0;
                 if (ansAction != DRAG_REJECT)
                 {
-                    se.xclient.data.l[1] |= 1;       // Target accepted
+                    se.xclient.data.l[1] |= 1; // Target accepted
                 }
                 if (xdndWantUpdates)
                 {
-                    se.xclient.data.l[1] |= 2;              // Target wants continuous position updates
+                    se.xclient.data.l[1] |= 2; // Target wants continuous position updates
                 }
                 se.xclient.data.l[2] = MKUINT(xdndRect.y, xdndRect.x);
                 se.xclient.data.l[3] = MKUINT(xdndRect.h, xdndRect.w);
@@ -2830,13 +2787,12 @@ bool FXApp::dispatchEvent(FXRawEvent& ev)
                 }
                 XSendEvent((Display*)display, xdndSource, True, NoEventMask, &se);
             }
-
             // XDND Drop from source
             else if (ev.xclient.message_type == xdndDrop)
             {
                 if (xdndSource != (FXID)ev.xclient.data.l[0])
                 {
-                    return(true);   // We're not talking to this guy
+                    return true; // We're not talking to this guy
                 }
                 xdndFinishSent = FALSE;
                 event.type = SEL_DND_DROP;
@@ -2852,8 +2808,8 @@ bool FXApp::dispatchEvent(FXRawEvent& ev)
                     se.xclient.message_type = xdndFinished;
                     se.xclient.format = 32;
                     se.xclient.window = xdndSource;
-                    se.xclient.data.l[0] = ev.xclient.window;                     // Proxy Target window
-                    se.xclient.data.l[1] = (ansAction == DRAG_REJECT) ? 0 : 1;    // Bit #0 means accepted
+                    se.xclient.data.l[0] = ev.xclient.window;                           // Proxy Target window
+                    se.xclient.data.l[1] = (ansAction == DRAG_REJECT) ? 0 : 1;          // Bit #0 means accepted
                     if (ansAction == DRAG_COPY)
                     {
                         se.xclient.data.l[2] = xdndActionCopy;
@@ -2887,7 +2843,6 @@ bool FXApp::dispatchEvent(FXRawEvent& ev)
                 xdndSource = 0;
                 refresh();
             }
-
             // XDND Status from target
             else if (ev.xclient.message_type == xdndStatus)
             {
@@ -2923,7 +2878,7 @@ bool FXApp::dispatchEvent(FXRawEvent& ev)
                 xdndStatusReceived = TRUE;
                 xdndStatusPending = FALSE;
             }
-            return(true);
+            return true;
 
         // Property change
         case PropertyNotify:
@@ -2934,7 +2889,8 @@ bool FXApp::dispatchEvent(FXRawEvent& ev)
             if ((ev.xproperty.atom == wmState) || (ev.xproperty.atom == wmNetState))
             {
                 event.type = SEL_CONFIGURE;
-                XTranslateCoordinates((Display*)display, ev.xproperty.window, XDefaultRootWindow((Display*)display), 0, 0, &tmp_x, &tmp_y, &tmp);
+                XTranslateCoordinates((Display*)display, ev.xproperty.window, XDefaultRootWindow((Display*)display), 0,
+                                      0, &tmp_x, &tmp_y, &tmp);
                 event.rect.x = tmp_x;
                 event.rect.y = tmp_y;
                 event.rect.w = window->getWidth();
@@ -2945,7 +2901,7 @@ bool FXApp::dispatchEvent(FXRawEvent& ev)
                     refresh();
                 }
             }
-            return(true);
+            return true;
 
         // Keyboard mapping
         case MappingNotify:
@@ -2953,7 +2909,7 @@ bool FXApp::dispatchEvent(FXRawEvent& ev)
             {
                 XRefreshKeyboardMapping(&ev.xmapping);
             }
-            return(true);
+            return true;
 
         // Other events
         default:
@@ -2965,10 +2921,10 @@ bool FXApp::dispatchEvent(FXRawEvent& ev)
                 root->setHeight(root->getDefaultHeight());
             }
 #endif
-            return(true);
+            return true;
         }
     }
-    return(false);
+    return false;
 }
 
 
@@ -2982,7 +2938,8 @@ bool FXApp::dispatchEvent(FXRawEvent& ev)
 long FXScrollArea::onVMouseWheel(FXObject* sender, FXSelector sel, void* ptr)
 {
     // !!! Hack to scroll in horizontal mode !!!
-    if (!(options & ICONLIST_COLUMNS) && options & (ICONLIST_BIG_ICONS | ICONLIST_MINI_ICONS) && streq(this->getClassName(), "FileList"))
+    if (!(options & ICONLIST_COLUMNS) && options & (ICONLIST_BIG_ICONS | ICONLIST_MINI_ICONS) &&
+        xf_strequal(this->getClassName(), "FileList"))
     {
         horizontal->handle(sender, sel, ptr);
     }
@@ -2992,7 +2949,7 @@ long FXScrollArea::onVMouseWheel(FXObject* sender, FXSelector sel, void* ptr)
         vertical->handle(sender, sel, ptr);
     }
 
-    return(1);
+    return 1;
 }
 
 
@@ -3014,15 +2971,15 @@ long FXButton::onLeftBtnPress(FXObject*, FXSelector, void* ptr)
         grab();
         if (target && target->tryHandle(this, FXSEL(SEL_LEFTBUTTONPRESS, message), ptr))
         {
-            return(1);
+            return 1;
         }
         //if (state!=STATE_ENGAGED) // !!! Hack here !!!
         setState(STATE_DOWN);
         flags |= FLAG_PRESSED;
         flags &= ~FLAG_UPDATE;
-        return(1);
+        return 1;
     }
-    return(0);
+    return 0;
 }
 
 
@@ -3038,7 +2995,7 @@ long FXButton::onHotKeyPress(FXObject*, FXSelector, void* ptr)
         flags &= ~FLAG_UPDATE;
         flags |= FLAG_PRESSED;
     }
-    return(1);
+    return 1;
 }
 
 
@@ -3080,26 +3037,26 @@ void FXTopWindow::resize(int w, int h)
             size.base_height = 0;
 
             // !!! Hack here !!!
-            size.win_gravity = NorthWestGravity;                      // Tim Alexeevsky <realtim@mail.ru>
+            size.win_gravity = NorthWestGravity;          // Tim Alexeevsky <realtim@mail.ru>
             //size.win_gravity=StaticGravity;                       // Account for border (ICCCM)
             // !!! End of hack !!!
 
             if (!(options & DECOR_SHRINKABLE))
             {
-                if (!(options & DECOR_STRETCHABLE))                       // Cannot change at all
+                if (!(options & DECOR_STRETCHABLE))       // Cannot change at all
                 {
                     size.flags |= PMinSize | PMaxSize;
                     size.min_width = size.max_width = width;
                     size.min_height = size.max_height = height;
                 }
-                else                                                    // Cannot get smaller than default
+                else                                    // Cannot get smaller than default
                 {
                     size.flags |= PMinSize;
                     size.min_width = getDefaultWidth();
                     size.min_height = getDefaultHeight();
                 }
             }
-            else if (!(options & DECOR_STRETCHABLE))                      // Cannot get larger than default
+            else if (!(options & DECOR_STRETCHABLE))          // Cannot get larger than default
             {
                 size.flags |= PMaxSize;
                 size.max_width = getDefaultWidth();
@@ -3113,7 +3070,8 @@ void FXTopWindow::resize(int w, int h)
             changes.border_width = 0;
             changes.sibling = None;
             changes.stack_mode = Above;
-            XReconfigureWMWindow(DISPLAY(getApp()), xid, DefaultScreen(DISPLAY(getApp())), CWWidth | CWHeight, &changes);
+            XReconfigureWMWindow(DISPLAY(getApp()), xid, DefaultScreen(DISPLAY(getApp())), CWWidth | CWHeight,
+                                 &changes);
             layout();
         }
     }
@@ -3152,26 +3110,26 @@ void FXTopWindow::position(int x, int y, int w, int h)
             size.base_height = 0;
 
             // !!! Hack here !!!
-            size.win_gravity = NorthWestGravity;                      // Tim Alexeevsky <realtim@mail.ru>
+            size.win_gravity = NorthWestGravity;          // Tim Alexeevsky <realtim@mail.ru>
             //size.win_gravity=StaticGravity;                       // Account for border (ICCCM)
             // !!! End of hack !!!
 
             if (!(options & DECOR_SHRINKABLE))
             {
-                if (!(options & DECOR_STRETCHABLE))                         // Cannot change at all
+                if (!(options & DECOR_STRETCHABLE))         // Cannot change at all
                 {
                     size.flags |= PMinSize | PMaxSize;
                     size.min_width = size.max_width = width;
                     size.min_height = size.max_height = height;
                 }
-                else                                                      // Cannot get smaller than default
+                else                                      // Cannot get smaller than default
                 {
                     size.flags |= PMinSize;
                     size.min_width = getDefaultWidth();
                     size.min_height = getDefaultHeight();
                 }
             }
-            else if (!(options & DECOR_STRETCHABLE))                        // Cannot get larger than default
+            else if (!(options & DECOR_STRETCHABLE))            // Cannot get larger than default
             {
                 size.flags |= PMaxSize;
                 size.max_width = getDefaultWidth();
@@ -3185,7 +3143,8 @@ void FXTopWindow::position(int x, int y, int w, int h)
             changes.border_width = 0;
             changes.sibling = None;
             changes.stack_mode = Above;
-            XReconfigureWMWindow(DISPLAY(getApp()), xid, DefaultScreen(DISPLAY(getApp())), CWX | CWY | CWWidth | CWHeight, &changes);
+            XReconfigureWMWindow(DISPLAY(getApp()), xid, DefaultScreen(DISPLAY(getApp())),
+                                 CWX | CWY | CWWidth | CWHeight, &changes);
             layout();
         }
     }
@@ -3354,8 +3313,8 @@ void FXTopWindow::place(FXuint placement)
     case PLACEMENT_MAXIMIZED:
         wx = rx;
         wy = ry;
-        ww = rw;                // Yes, I know:- we should substract the borders;
-        wh = rh;                // trouble is, no way to know how big those are....
+        ww = rw;        // Yes, I know:- we should substract the borders;
+        wh = rh;        // trouble is, no way to know how big those are....
         break;
 
     // Default placement
@@ -3369,14 +3328,15 @@ void FXTopWindow::place(FXuint placement)
 }
 
 
+
 //
 // Hack of FXAccelTable
 //
 
 // This hack allows to ignore caps lock when using keyboard shortcuts
 
-#define EMPTYSLOT     0xfffffffe     // Previously used, now empty slot
-#define UNUSEDSLOT    0xffffffff     // Unsused slot marker
+#define EMPTYSLOT     0xfffffffe        // Previously used, now empty slot
+#define UNUSEDSLOT    0xffffffff        // Unsused slot marker
 
 // Keyboard press; forward to accelerator target
 long FXAccelTable::onKeyPress(FXObject* sender, FXSelector, void* ptr)
@@ -3405,7 +3365,7 @@ long FXAccelTable::onKeyPress(FXObject* sender, FXSelector, void* ptr)
     {
         if (c == UNUSEDSLOT)
         {
-            return(0);
+            return 0;
         }
         p = (p + 1) & max;
     }
@@ -3413,7 +3373,7 @@ long FXAccelTable::onKeyPress(FXObject* sender, FXSelector, void* ptr)
     {
         key[p].target->tryHandle(sender, key[p].messagedn, ptr);
     }
-    return(1);
+    return 1;
 }
 
 
@@ -3444,7 +3404,7 @@ long FXAccelTable::onKeyRelease(FXObject* sender, FXSelector, void* ptr)
     {
         if (c == UNUSEDSLOT)
         {
-            return(0);
+            return 0;
         }
         p = (p + 1) & max;
     }
@@ -3452,7 +3412,7 @@ long FXAccelTable::onKeyRelease(FXObject* sender, FXSelector, void* ptr)
     {
         key[p].target->tryHandle(sender, key[p].messageup, ptr);
     }
-    return(1);
+    return 1;
 }
 
 
@@ -3502,7 +3462,7 @@ FXString FXURL::encode(const FXString& url)
             result[q++] = c;
         }
     }
-    return(result);
+    return result;
 }
 
 
@@ -3535,7 +3495,7 @@ FXString FXURL::decode(const FXString& url)
             result[q++] = c;
         }
     }
-    return(result);
+    return result;
 }
 
 
@@ -3549,7 +3509,8 @@ FXString FXURL::decode(const FXString& url)
 #define INTMIN    (-INTMAX - 1)
 
 // Construct spinner out of two buttons and a text field
-FXSpinner::FXSpinner(FXComposite* p, FXint cols, FXObject* tgt, FXSelector sel, FXuint opts, FXint x, FXint y, FXint w, FXint h, FXint pl, FXint pr, FXint pt, FXint pb) :
+FXSpinner::FXSpinner(FXComposite* p, FXint cols, FXObject* tgt, FXSelector sel, FXuint opts, FXint x, FXint y, FXint w,
+                     FXint h, FXint pl, FXint pr, FXint pt, FXint pb) :
     FXPacker(p, opts, x, y, w, h, 0, 0, 0, 0, 0, 0)
 {
     flags |= FLAG_ENABLED;
@@ -3557,12 +3518,14 @@ FXSpinner::FXSpinner(FXComposite* p, FXint cols, FXObject* tgt, FXSelector sel, 
     message = sel;
 
     // !!! Hack here !!!
-    //textField=new FXTextField(this,cols,this,ID_ENTRY,TEXTFIELD_INTEGER|JUSTIFY_RIGHT,0,0,0,0,pl,pr,pt,pb);
-    textField = new FXTextField(this, cols, this, ID_ENTRY, TEXTFIELD_INTEGER | JUSTIFY_RIGHT | FRAME_THICK | FRAME_SUNKEN, 0, 0, 0, 0, pl, pr, pt, pb);
+    textField = new FXTextField(this, cols, this, ID_ENTRY, TEXTFIELD_NORMAL | TEXTFIELD_INTEGER | JUSTIFY_RIGHT, 0, 0,
+                                0, 0, pl, pr, pt, pb);
     // !!! End of hack !!!
 
-    upButton = new FXArrowButton(this, this, FXSpinner::ID_INCREMENT, FRAME_RAISED | FRAME_THICK | ARROW_UP | ARROW_REPEAT, 0, 0, 0, 0, 0, 0, 0, 0);
-    downButton = new FXArrowButton(this, this, FXSpinner::ID_DECREMENT, FRAME_RAISED | FRAME_THICK | ARROW_DOWN | ARROW_REPEAT, 0, 0, 0, 0, 0, 0, 0, 0);
+    upButton = new FXArrowButton(this, this, FXSpinner::ID_INCREMENT, FRAME_GROOVE | ARROW_UP | ARROW_REPEAT, 0, 0, 0,
+                                 0, 0, 0, 0, 0);
+    downButton = new FXArrowButton(this, this, FXSpinner::ID_DECREMENT, FRAME_GROOVE | ARROW_DOWN | ARROW_REPEAT, 0, 0,
+                                   0, 0, 0, 0, 0, 0);
     range[0] = (options & SPIN_NOMIN) ? INTMIN : 0;
     range[1] = (options & SPIN_NOMAX) ? INTMAX : 100;
     textField->setText("0");
@@ -3579,11 +3542,12 @@ FXSpinner::FXSpinner(FXComposite* p, FXint cols, FXObject* tgt, FXSelector sel, 
 
 
 // Command menu item
-FXMenuCommand::FXMenuCommand(FXComposite* p, const FXString& text, FXIcon* ic, FXObject* tgt, FXSelector sel, FXuint opts) :
+FXMenuCommand::FXMenuCommand(FXComposite* p, const FXString& text, FXIcon* ic, FXObject* tgt, FXSelector sel,
+                             FXuint opts) :
     FXMenuCaption(p, text, ic, opts)
 {
     FXAccelTable* table;
-    FXWindow*     own;
+    FXWindow* own;
 
     flags |= FLAG_ENABLED;
     defaultCursor = getApp()->getDefaultCursor(DEF_ARROW_CURSOR);
@@ -3618,7 +3582,8 @@ FXPopup::FXPopup(FXWindow* owner, FXuint opts, FXint x, FXint y, FXint w, FXint 
     hiliteColor = getApp()->getHiliteColor();
     shadowColor = getApp()->getShadowColor();
     borderColor = getApp()->getBorderColor();
-    border = (options & FRAME_THICK) ? 2 : (options & (FRAME_SUNKEN | FRAME_RAISED)) ? 1 : 0;
+    // !!! Hack here for modern controls !!!
+    border = 1;
 }
 
 
@@ -3633,7 +3598,8 @@ FXMenuCascade::FXMenuCascade(FXComposite* p, const FXString& text, FXIcon* ic, F
 
 
 // Make a non-floatable menubar
-FXMenuBar::FXMenuBar(FXComposite* p, FXuint opts, FXint x, FXint y, FXint w, FXint h, FXint pl, FXint pr, FXint pt, FXint pb, FXint hs, FXint vs) :
+FXMenuBar::FXMenuBar(FXComposite* p, FXuint opts, FXint x, FXint y, FXint w, FXint h, FXint pl, FXint pr, FXint pt,
+                     FXint pb, FXint hs, FXint vs) :
     FXToolBar(p, opts, x, y, w, h, pl, pr, pt, pb, hs, vs)
 {
     flags |= FLAG_ENABLED;
@@ -3665,11 +3631,11 @@ FXString& FXString::vformat(const FXchar* fmt, va_list args)
 
     if (fmt && *fmt)
     {
-        FXint n = strlen(fmt);       // Result is longer than format string
+        FXint n = strlen(fmt); // Result is longer than format string
 
         // !!! Hack here !!!
         //n+=1024;
-        n += 8192;                            // Add a lot of slop
+        n += 8192;                    // Add a lot of slop
         // !!! End of hack
 
         length(n);
@@ -3678,7 +3644,7 @@ FXString& FXString::vformat(const FXchar* fmt, va_list args)
         FXASSERT(0 <= len && len <= n);
     }
     length(len);
-    return(*this);
+    return *this;
 }
 
 
@@ -3693,24 +3659,32 @@ FXString& FXString::vformat(const FXchar* fmt, va_list args)
 #define DARKCOLOR(r, g, b) (((r) + (g) + (b)) < thresh)
 
 // Determine threshold for etch mask
-static FXshort guessthresh(const FXColor *data, FXint width, FXint height)
+static FXshort guessthresh(const FXColor* data, FXint width, FXint height)
 {
     FXint med = (width * height) >> 1;
     FXint cum, i, j;
     FXshort guess;
     FXint frequency[766];
+
     memset(frequency, 0, sizeof(frequency));
-    for(i = 0; i < width * height; ++i)
+    for (i = 0; i < width * height; ++i)
     {
-        frequency[((const FXuchar*)(data + i))[0] + ((const FXuchar*)(data + i))[1] + ((const FXuchar*)(data + i))[2]]++;
+        frequency[((const FXuchar*)(data + i))[0] + ((const FXuchar*)(data + i))[1] +
+                  ((const FXuchar*)(data + i))[2]]++;
     }
-    for(i = 0, cum = 0; i < 766; ++i)
+    for (i = 0, cum = 0; i < 766; ++i)
     {
-        if((cum += frequency[i]) >= med) break;
+        if ((cum += frequency[i]) >= med)
+        {
+            break;
+        }
     }
-    for(j = 765, cum = 0; j > 0; --j)
+    for (j = 765, cum = 0; j > 0; --j)
     {
-        if((cum += frequency[j]) >= med) break;
+        if ((cum += frequency[j]) >= med)
+        {
+            break;
+        }
     }
     guess = ((i + j + 1) >> 1) + 1; // Fanglin Zhu: raise threshold by one in case of single-color image
     return guess;
@@ -3719,11 +3693,11 @@ static FXshort guessthresh(const FXColor *data, FXint width, FXint height)
 // Render icon X Windows
 void FXIcon::render()
 {
-    if(xid)
+    if (xid)
     {
-        Visual *vis;
-        XImage *xim = NULL;
-        FXColor *img;
+        Visual* vis;
+        XImage* xim = NULL;
+        FXColor* img;
         FXint x, y;
         FXshort thresh; // Local variable in 1.6
         XGCValues values;
@@ -3733,7 +3707,7 @@ void FXIcon::render()
         FXImage::render();
 
         // Fill with pixels if there is data
-        if(data && 0 < width && 0 < height)
+        if (data && 0 < width && 0 < height)
         {
             // Guess threshold
             thresh = guessthresh(data, width, height);
@@ -3743,18 +3717,18 @@ void FXIcon::render()
 
             // Try create image
             xim = XCreateImage(DISPLAY(getApp()), vis, 1, ZPixmap, 0, NULL, width, height, 32, 0);
-            if(!xim)
+            if (!xim)
             {
-            	fxerror("%s::render: unable to render icon.\n", getClassName());
-			}
+                fxerror("%s::render: unable to render icon.\n", getClassName());
+            }
 
             // Try create temp pixel store
 
             // !!! Hack here => replace FXMALLOC with FXCALLOC !!!
-            if(!FXCALLOC(&xim->data, char, xim->bytes_per_line * height))
+            if (!FXCALLOC(&xim->data, char, xim->bytes_per_line * height))
             {
-				fxerror("%s::render: unable to allocate memory.\n", getClassName());
-			}
+                fxerror("%s::render: unable to allocate memory.\n", getClassName());
+            }
             // !!! End of hack !!!
 
             // Make GC
@@ -3766,31 +3740,31 @@ void FXIcon::render()
             FXASSERT(xim);
 
             // Fill shape mask
-            if(options & IMAGE_OPAQUE)                                  // Opaque image
+            if (options & IMAGE_OPAQUE)                     // Opaque image
             {
                 FXTRACE((150, "Shape rectangle\n"));
                 memset(xim->data, 0xff, xim->bytes_per_line * height);
             }
-            else if(options & (IMAGE_ALPHACOLOR | IMAGE_ALPHAGUESS))      // Transparent color
+            else if (options & (IMAGE_ALPHACOLOR | IMAGE_ALPHAGUESS)) // Transparent color
             {
                 FXTRACE((150, "Shape from alpha-color\n"));
                 img = data;
-                for(y = 0; y < height; y++)
+                for (y = 0; y < height; y++)
                 {
-                    for(x = 0; x < width; x++)
+                    for (x = 0; x < width; x++)
                     {
                         XPutPixel(xim, x, y, (img[x] != transp));
                     }
                     img += width;
                 }
             }
-            else                                                      // Transparency channel
+            else                                          // Transparency channel
             {
                 FXTRACE((150, "Shape from alpha-channel\n"));
                 img = data;
-                for(y = 0; y < height; y++)
+                for (y = 0; y < height; y++)
                 {
-                    for(x = 0; x < width; x++)
+                    for (x = 0; x < width; x++)
                     {
                         XPutPixel(xim, x, y, (((FXuchar*)(img + x))[3] != 0));
                     }
@@ -3801,38 +3775,45 @@ void FXIcon::render()
             XPutImage(DISPLAY(getApp()), shape, gc, xim, 0, 0, 0, 0, width, height);
 
             // Fill etch image
-            if(options & IMAGE_OPAQUE)                                  // Opaque image
+            if (options & IMAGE_OPAQUE)                     // Opaque image
             {
                 img = data;
-                for(y = 0; y < height; y++)
+                for (y = 0; y < height; y++)
                 {
-                    for(x = 0; x < width; x++)
+                    for (x = 0; x < width; x++)
                     {
-                        XPutPixel(xim, x, y, DARKCOLOR(((FXuchar*)(img + x))[0], ((FXuchar*)(img + x))[1], ((FXuchar*)(img + x))[2]));
+                        XPutPixel(xim, x, y,
+                                  DARKCOLOR(((FXuchar*)(img + x))[0], ((FXuchar*)(img + x))[1],
+                                            ((FXuchar*)(img + x))[2]));
                     }
                     img += width;
                 }
             }
-            else if(options & (IMAGE_ALPHACOLOR | IMAGE_ALPHAGUESS))      // Transparent color
+            else if (options & (IMAGE_ALPHACOLOR | IMAGE_ALPHAGUESS)) // Transparent color
             {
                 img = data;
-                for(y = 0; y < height; y++)
+                for (y = 0; y < height; y++)
                 {
-                    for(x = 0; x < width; x++)
+                    for (x = 0; x < width; x++)
                     {
-                        XPutPixel(xim, x, y, (img[x] != transp) && DARKCOLOR(((FXuchar*)(img + x))[0], ((FXuchar*)(img + x))[1], ((FXuchar*)(img + x))[2]));
+                        XPutPixel(xim, x, y,
+                                  (img[x] != transp) && DARKCOLOR(((FXuchar*)(img + x))[0], ((FXuchar*)(img + x))[1],
+                                                                  ((FXuchar*)(img + x))[2]));
                     }
                     img += width;
                 }
             }
-            else                                                      // Transparency channel
+            else                                          // Transparency channel
             {
                 img = data;
-                for(y = 0; y < height; y++)
+                for (y = 0; y < height; y++)
                 {
-                    for(x = 0; x < width; x++)
+                    for (x = 0; x < width; x++)
                     {
-                        XPutPixel(xim, x, y, (((FXuchar*)(img + x))[3] != 0) && DARKCOLOR(((FXuchar*)(img + x))[0], ((FXuchar*)(img + x))[1], ((FXuchar*)(img + x))[2]));
+                        XPutPixel(xim, x, y,
+                                  (((FXuchar*)(img + x))[3] != 0) && DARKCOLOR(((FXuchar*)(img + x))[0],
+                                                                               ((FXuchar*)(img + x))[1],
+                                                                               ((FXuchar*)(img + x))[2]));
                     }
                     img += width;
                 }
@@ -3847,4 +3828,528 @@ void FXIcon::render()
             XFreeGC(DISPLAY(getApp()), gc);
         }
     }
+}
+
+
+//
+// Hack of FXListItem
+//
+
+// Blend icon to background or selection background
+
+
+#define ICON_SPACING             4      // Spacing between icon and label
+#define SIDE_SPACING             6      // Left or right spacing between items
+
+
+// Create icon
+void FXListItem::create()
+{
+    if (icon)
+    {
+        // Use IMAGE_KEEP for blending to background
+        icon->setOptions(IMAGE_KEEP);
+
+        icon->create();
+    }
+}
+
+
+// Draw item
+void FXListItem::draw(const FXList* list, FXDC& dc, FXint xx, FXint yy, FXint ww, FXint hh)
+{
+    FXFont* font = list->getFont();
+    FXint ih = 0, th = 0;
+
+    if (icon)
+    {
+        ih = icon->getHeight();
+    }
+
+    if (!label.empty())
+    {
+        th = font->getFontHeight();
+    }
+
+    if (isSelected())
+    {
+        // !!! Hack here !!!
+        if (icon)
+        {
+            FXColor* tmpdata;
+            FXuint w = icon->getWidth();
+            FXuint h = icon->getHeight();
+
+            // Save original pixels
+            if (!FXMEMDUP(&tmpdata, icon->getData(), FXColor, w * h))
+            {
+                throw FXMemoryException(_("Unable to load image"));
+            }
+
+            // Blend to selection color
+            icon->blend(list->getSelBackColor());
+            icon->render();
+
+            // Restore original pixels
+            icon->setData(tmpdata, IMAGE_KEEP | IMAGE_OWNED, w, h);
+        }
+
+        dc.setForeground(list->getSelBackColor());
+    }
+    else
+    {
+        // !!! Hack here !!!
+        if (icon)
+        {
+            FXColor* tmpdata;
+            FXuint w = icon->getWidth();
+            FXuint h = icon->getHeight();
+
+            // Save original pixels
+            if (!FXMEMDUP(&tmpdata, icon->getData(), FXColor, w * h))
+            {
+                throw FXMemoryException(_("Unable to load image"));
+            }
+
+            // Blend to list background color
+            icon->blend(list->getBackColor());
+            icon->render();
+
+            // Restore original pixels
+            icon->setData(tmpdata, IMAGE_KEEP | IMAGE_OWNED, w, h);
+        }
+
+        dc.setForeground(list->getBackColor()); // FIXME maybe paint background in onPaint?
+    }
+    dc.fillRectangle(xx, yy, ww, hh);
+
+    if (hasFocus())
+    {
+        dc.drawFocusRectangle(xx + 1, yy + 1, ww - 2, hh - 2);
+    }
+    xx += SIDE_SPACING / 2;
+
+    if (icon)
+    {
+        dc.drawIcon(icon, xx, yy + (hh - ih) / 2);
+        xx += ICON_SPACING + icon->getWidth();
+    }
+
+    if (!label.empty())
+    {
+        dc.setFont(font);
+
+        if (!isEnabled())
+        {
+            dc.setForeground(makeShadowColor(list->getBackColor()));
+        }
+        else if (isSelected())
+        {
+            dc.setForeground(list->getSelTextColor());
+        }
+        else
+        {
+            dc.setForeground(list->getTextColor());
+        }
+        dc.drawText(xx, yy + (hh - th) / 2 + font->getFontAscent(), label);
+    }
+}
+
+
+//
+// Hack of FXMenuTitle
+//
+
+// Fix a bug in FOX library where navigating with keyboard over a menubar does not work correctly
+
+// Flag is set when left or right key is pressed
+FXbool leftOrRightKeyPressed = false;
+
+
+// Keyboard press; forward to menu pane
+long FXMenuTitle::onKeyPress(FXObject*, FXSelector sel, void* ptr)
+{
+    // !!!! Hack here !!!!
+    FXEvent* event = (FXEvent*)ptr;
+
+    if (event->code == KEY_Left || event->code == KEY_Right)
+    {
+        leftOrRightKeyPressed = true;
+    }
+    else
+    {
+        leftOrRightKeyPressed = false;
+    }
+    // !!!! End of hack !!!!
+
+    if (isEnabled())
+    {
+        FXTRACE((200, "%s::onKeyPress %p keysym=0x%04x state=%04x\n", getClassName(), this,
+                 ((FXEvent*)ptr)->code, ((FXEvent*)ptr)->state));
+
+        if (target && target->tryHandle(this, FXSEL(SEL_KEYPRESS, message), ptr))
+        {
+            return 1;
+        }
+
+        if (pane && pane->shown() && pane->handle(pane, sel, ptr))
+        {
+            return 1;
+        }
+    }
+
+    return 0;
+}
+
+
+// Keyboard release; forward to menu pane
+long FXMenuTitle::onKeyRelease(FXObject*, FXSelector sel, void* ptr)
+{
+    // !!!! Hack here !!!!
+    leftOrRightKeyPressed = false;
+    // !!!! End of hack !!!!
+
+    if (isEnabled())
+    {
+        FXTRACE((200, "%s::onKeyRelease %p keysym=0x%04x state=%04x\n", getClassName(), this,
+                 ((FXEvent*)ptr)->code, ((FXEvent*)ptr)->state));
+
+        if (target && target->tryHandle(this, FXSEL(SEL_KEYRELEASE, message), ptr))
+        {
+            return 1;
+        }
+
+        if (pane && pane->shown() && pane->handle(pane, sel, ptr))
+        {
+            return 1;
+        }
+    }
+
+    return 0;
+}
+
+// Unpost the menu
+long FXMenuTitle::onCmdUnpost(FXObject*, FXSelector, void*)
+{
+    if (pane && pane->shown())
+    {
+        pane->popdown();
+
+        // !!!! Hack here - Don't ungrab when left or right key was pressed !!!!
+        if (!leftOrRightKeyPressed && getParent()->grabbed())
+        {
+            getParent()->ungrab();
+        }
+    }
+    flags |= FLAG_UPDATE;
+    flags &= ~FLAG_ACTIVE;
+    update();
+
+    return 1;
+}
+
+
+//
+// Hack of FXMenuTitle
+//
+
+// Translate menu labels and use custom icons
+
+// Right clicked on bar
+long FXDockBar::onPopupMenu(FXObject*, FXSelector, void* ptr)
+{
+    FXEvent* event = static_cast<FXEvent*>(ptr);
+
+    if (event->moved)
+    {
+        return 1;
+    }
+
+    FXMenuPane dockmenu(this);
+
+    new FXMenuCaption(&dockmenu, _("Docking"));
+    new FXMenuSeparator(&dockmenu);
+    new FXMenuCommand(&dockmenu, _("Top"), docktopicon, this, ID_DOCK_TOP);
+    new FXMenuCommand(&dockmenu, _("Bottom"), dockbottomicon, this, ID_DOCK_BOTTOM);
+    new FXMenuCommand(&dockmenu, _("Left"), docklefticon, this, ID_DOCK_LEFT);
+    new FXMenuCommand(&dockmenu, _("Right"), dockrighticon, this, ID_DOCK_RIGHT);
+    new FXMenuCommand(&dockmenu, _("Float"), dockfreeicon, this, ID_DOCK_FLOAT);
+    new FXMenuCommand(&dockmenu, _("Flip"), dockflipicon, this, ID_DOCK_FLIP);
+
+    dockmenu.create();
+    dockmenu.popup(NULL, event->root_x, event->root_y);
+    dockmenu.forceRefresh();
+    getApp()->runModalWhileShown(&dockmenu);
+
+    return 1;
+}
+
+
+//
+// Hack of FXList
+//
+
+// Allow keyboard scrolling in a ComboBox list
+
+
+#define SELECT_MASK (LIST_SINGLESELECT | LIST_BROWSESELECT)
+
+// Key Press
+long FXList::onKeyPress(FXObject*, FXSelector, void* ptr)
+{
+    FXEvent* event = (FXEvent*)ptr;
+    FXint index = current;
+
+    flags &= ~FLAG_TIP;
+    if (!isEnabled())
+    {
+        return 0;
+    }
+    if (target && target->tryHandle(this, FXSEL(SEL_KEYPRESS, message), ptr))
+    {
+        return 1;
+    }
+    switch (event->code)
+    {
+    case KEY_Control_L:
+    case KEY_Control_R:
+    case KEY_Shift_L:
+    case KEY_Shift_R:
+    case KEY_Alt_L:
+    case KEY_Alt_R:
+        if (flags & FLAG_DODRAG)
+        {
+            handle(this, FXSEL(SEL_DRAGGED, 0), ptr);
+        }
+        return 1;
+    case KEY_Page_Up:
+    case KEY_KP_Page_Up:
+        lookup = FXString::null;
+        setPosition(pos_x, pos_y + verticalScrollBar()->getPage());
+        return 1;
+    case KEY_Page_Down:
+    case KEY_KP_Page_Down:
+        lookup = FXString::null;
+        setPosition(pos_x, pos_y - verticalScrollBar()->getPage());
+        return 1;
+    case KEY_Up:
+    case KEY_KP_Up:
+        index -= 1;
+        goto hop;
+    case KEY_Down:
+    case KEY_KP_Down:
+        index += 1;
+        goto hop;
+    case KEY_Home:
+    case KEY_KP_Home:
+        index = 0;
+        goto hop;
+    case KEY_End:
+    case KEY_KP_End:
+        index = items.no() - 1;
+
+hop:
+        lookup = FXString::null;
+        if (0 <= index && index < items.no())
+        {
+            setCurrentItem(index, TRUE);
+            makeItemVisible(index);
+            if (items[index]->isEnabled())
+            {
+                if ((options & SELECT_MASK) == LIST_EXTENDEDSELECT)
+                {
+                    if (event->state & SHIFTMASK)
+                    {
+                        if (0 <= anchor)
+                        {
+                            selectItem(anchor, TRUE);
+                            extendSelection(index, TRUE);
+                        }
+                        else
+                        {
+                            selectItem(index, TRUE);
+                            setAnchorItem(index);
+                        }
+                    }
+                    else if (!(event->state & CONTROLMASK))
+                    {
+                        killSelection(TRUE);
+                        selectItem(index, TRUE);
+                        setAnchorItem(index);
+                    }
+                }
+            }
+        }
+
+        // !!!! Hack to allow keyboard scrolling in a ComboBox !!!!
+        if (strncmp(getParent()->getClassName(), "FXPopup", 7) != 0)
+        {
+            handle(this, FXSEL(SEL_CLICKED, 0), (void*)(FXival)current);
+
+            if (0 <= current && items[current]->isEnabled())
+            {
+                handle(this, FXSEL(SEL_COMMAND, 0), (void*)(FXival)current);
+            }
+        }
+
+        return 1;
+    case KEY_space:
+    case KEY_KP_Space:
+        lookup = FXString::null;
+        if (0 <= current && items[current]->isEnabled())
+        {
+            switch (options & SELECT_MASK)
+            {
+            case LIST_EXTENDEDSELECT:
+                if (event->state & SHIFTMASK)
+                {
+                    if (0 <= anchor)
+                    {
+                        selectItem(anchor, TRUE);
+                        extendSelection(current, TRUE);
+                    }
+                    else
+                    {
+                        selectItem(current, TRUE);
+                    }
+                }
+                else if (event->state & CONTROLMASK)
+                {
+                    toggleItem(current, TRUE);
+                }
+                else
+                {
+                    killSelection(TRUE);
+                    selectItem(current, TRUE);
+                }
+                break;
+            case LIST_MULTIPLESELECT:
+            case LIST_SINGLESELECT:
+                toggleItem(current, TRUE);
+                break;
+            }
+            setAnchorItem(current);
+        }
+        handle(this, FXSEL(SEL_CLICKED, 0), (void*)(FXival)current);
+        if (0 <= current && items[current]->isEnabled())
+        {
+            handle(this, FXSEL(SEL_COMMAND, 0), (void*)(FXival)(FXival)current);
+        }
+        return 1;
+    case KEY_Return:
+    case KEY_KP_Enter:
+        lookup = FXString::null;
+        handle(this, FXSEL(SEL_DOUBLECLICKED, 0), (void*)(FXival)current);
+        if (0 <= current && items[current]->isEnabled())
+        {
+            handle(this, FXSEL(SEL_COMMAND, 0), (void*)(FXival)current);
+        }
+        return 1;
+    default:
+        if ((FXuchar)event->text[0] < ' ')
+        {
+            return 0;
+        }
+        if (event->state & (CONTROLMASK | ALTMASK))
+        {
+            return 0;
+        }
+        if (!Ascii::isPrint(event->text[0]))
+        {
+            return 0;
+        }
+        lookup.append(event->text);
+        getApp()->addTimeout(this, ID_LOOKUPTIMER, getApp()->getTypingSpeed());
+        index = findItem(lookup, current, SEARCH_FORWARD | SEARCH_WRAP | SEARCH_PREFIX);
+        if (0 <= index)
+        {
+            setCurrentItem(index, TRUE);
+            makeItemVisible(index);
+            if ((options & SELECT_MASK) == LIST_EXTENDEDSELECT)
+            {
+                if (items[index]->isEnabled())
+                {
+                    killSelection(TRUE);
+                    selectItem(index, TRUE);
+                }
+            }
+            setAnchorItem(index);
+        }
+        handle(this, FXSEL(SEL_CLICKED, 0), (void*)(FXival)current);
+        if (0 <= current && items[current]->isEnabled())
+        {
+            handle(this, FXSEL(SEL_COMMAND, 0), (void*)(FXival)current);
+        }
+        return 1;
+    }
+    return 0;
+}
+
+
+
+//
+// Hack of FXComposite
+//
+
+// Avoid first key pressed ignored in a ComboBox list
+
+
+// Keyboard press
+long FXComposite::onKeyPress(FXObject* sender, FXSelector sel, void* ptr)
+{
+    FXEvent* event = (FXEvent*)ptr;
+
+    FXTRACE((200, "%p->%s::onKeyPress keysym=0x%04x state=%04x\n", this, getClassName(), ((FXEvent*)ptr)->code,
+             ((FXEvent*)ptr)->state));
+
+    // Bounce to focus widget
+    if (getFocus() && getFocus()->handle(sender, sel, ptr))
+    {
+        return 1;
+    }
+
+    // Try target first
+    if (isEnabled() && target && target->tryHandle(this, FXSEL(SEL_KEYPRESS, message), ptr))
+    {
+        return 1;
+    }
+
+    // !!!! Hack to avoid first key pressed ignored in a ComboBox list !!!!
+    // Try first child
+    if (getFirst() && getFirst()->handle(sender, sel, ptr))
+    {
+        return 1;
+    }
+
+    // Check the accelerators
+    if (getAccelTable() && getAccelTable()->handle(this, sel, ptr))
+    {
+        return 1;
+    }
+
+    // Otherwise, perform the default keyboard processing
+    switch (MKUINT(event->code, event->state & (SHIFTMASK | CONTROLMASK | ALTMASK | METAMASK)))
+    {
+    case KEY_Tab:
+    case KEY_Next:
+        return handle(this, FXSEL(SEL_FOCUS_NEXT, 0), ptr);
+    case KEY_Prior:
+    case KEY_ISO_Left_Tab:
+    case MKUINT(KEY_ISO_Left_Tab, SHIFTMASK):
+    case MKUINT(KEY_Tab, SHIFTMASK):
+        return handle(this, FXSEL(SEL_FOCUS_PREV, 0), ptr);
+    case KEY_Up:
+    case KEY_KP_Up:
+        return handle(this, FXSEL(SEL_FOCUS_UP, 0), ptr);
+    case KEY_Down:
+    case KEY_KP_Down:
+        return handle(this, FXSEL(SEL_FOCUS_DOWN, 0), ptr);
+    case KEY_Left:
+    case KEY_KP_Left:
+        return handle(this, FXSEL(SEL_FOCUS_LEFT, 0), ptr);
+    case KEY_Right:
+    case KEY_KP_Right:
+        return handle(this, FXSEL(SEL_FOCUS_RIGHT, 0), ptr);
+    }
+    return 0;
 }

@@ -21,16 +21,18 @@
 #include "FilePanel.h"
 #include "XFileExplorer.h"
 
-
 // Add FOX hacks
 #include "foxhacks.cpp"
-#include "clearlooks.cpp"
+#include "moderncontrols.cpp"
 
 // Main window
-FXMainWindow* mainWindow;
+FXMainWindow* mainWindow = NULL;
 
-// Scaling factors for the UI
-extern double scalefrac;
+// Exec path
+FXString execpath;
+
+// Integer UI scaling factor
+FXint scaleint = 1;
 
 
 // Startup notification
@@ -51,28 +53,24 @@ static int x_error_handler(Display* xdisplay, XErrorEvent* error)
         // we ignore this in x_error_handler
         if (error->request_code == 42)
         {
-            return(0);
+            return 0;
         }
 
         fprintf(stderr, "Unexpected X error: %s serial %ld error_code %d request_code %d minor_code %d)\n",
-                buf,
-                error->serial,
-                error->error_code,
-                error->request_code,
-                error->minor_code);
+                buf, error->serial, error->error_code, error->request_code, error->minor_code);
     }
 
-    return(1); // Return value is meaningless
+    return 1; // Return value is meaningless
 }
 
 
-static void error_trap_push(SnDisplay* display, Display*   xdisplay)
+static void error_trap_push(SnDisplay* display, Display* xdisplay)
 {
     ++error_trap_depth;
 }
 
 
-static void error_trap_pop(SnDisplay* display, Display*   xdisplay)
+static void error_trap_pop(SnDisplay* display, Display* xdisplay)
 {
     if (error_trap_depth == 0)
     {
@@ -80,7 +78,7 @@ static void error_trap_pop(SnDisplay* display, Display*   xdisplay)
         exit(EXIT_FAILURE);
     }
 
-    XSync(xdisplay, False);  // Get all errors out of the queue
+    XSync(xdisplay, False); // Get all errors out of the queue
     --error_trap_depth;
 }
 
@@ -106,7 +104,7 @@ static void snmonitor(SnMonitorEvent* event, void* user_data)
         t = time(NULL);
         startup_end = t + STARTUP_TIMEOUT;
 
-        ::setWaitCursor(mainWindow->getApp(), BEGIN_CURSOR);
+        xf_setwaitcursor(mainWindow->getApp(), BEGIN_CURSOR);
 
         /* For debugging purpose
          *
@@ -143,13 +141,13 @@ static void snmonitor(SnMonitorEvent* event, void* user_data)
 
     case SN_MONITOR_EVENT_COMPLETED:
 
-        ::setWaitCursor(mainWindow->getApp(), END_CURSOR);
+        xf_setwaitcursor(mainWindow->getApp(), END_CURSOR);
 
         break;
 
     case SN_MONITOR_EVENT_CANCELED:
 
-        ::setWaitCursor(mainWindow->getApp(), END_CURSOR);
+        xf_setwaitcursor(mainWindow->getApp(), END_CURSOR);
 
         break;
     }
@@ -186,17 +184,17 @@ bool FXApp::runOneEvent(bool blocking)
         t = time(NULL);
         if ((startup_end != 0) && (startup_end - t < 0))
         {
-            ::setWaitCursor(mainWindow->getApp(), END_CURSOR);
+            xf_setwaitcursor(mainWindow->getApp(), END_CURSOR);
             startup_end = 0;
         }
 
         sn_display_process_event(sndisplay, &ev);
 
         dispatchEvent(ev);
-        return(true);
+        return true;
     }
 
-    return(false);
+    return false;
 }
 
 
@@ -205,19 +203,12 @@ bool FXApp::runOneEvent(bool blocking)
 
 // Global variables
 char** args;
-FXbool xim_used = false;
 
-#if defined(linux)
-FXuint pkg_format;
-#endif
 
 // Base directories (according to the Freedesktop specification version 0.7)
 FXString homedir;
 FXString xdgdatahome;
 FXString xdgconfighome;
-
-// Used to force panel view mode from command line
-int panel_mode = -1;
 
 
 // Hand cursor replacement (integer scaling factor = 1)
@@ -330,7 +321,8 @@ static const FXuchar hand3_mask_bits[] =
 
 
 // Usage message
-#define USAGE_MSG    _("\
+#define USAGE_MSG    _( \
+            "\
 \nUsage: xfe [options...] [FOLDER|FILE...]\n\
 \n\
     [options...] are the following:\n\
@@ -360,6 +352,7 @@ int main(int argc, char* argv[])
     FXString startdir2 = "";
     FXbool iconic = false;
     FXbool maximized = false;
+    int panel_mode = -1;
     FXString xmodifiers;
     FXString cmd;
 
@@ -383,17 +376,6 @@ int main(int argc, char* argv[])
         xdgconfighome = homedir + PATHSEPSTRING CONFIGPATH;
     }
 
-    // Detect if an X input method is used
-    xmodifiers = getenv("XMODIFIERS");
-    if ((xmodifiers == "") || (xmodifiers == "@im=none"))
-    {
-        xim_used = false;
-    }
-    else
-    {
-        xim_used = true;
-    }
-
 #ifdef HAVE_SETLOCALE
     // Set locale via LC_ALL.
     setlocale(LC_ALL, "");
@@ -406,6 +388,11 @@ int main(int argc, char* argv[])
     textdomain(PACKAGE);
 #endif
 
+#if defined(__FreeBSD__)
+    FXuint pkg_format;
+    pkg_format = OTHER_PKG;
+#endif
+
 #if defined(linux)
     // For package query on Linux systems, try to guess if the default package format is deb or rpm:
     //   - if dpkg exists then the system uses deb packages
@@ -413,8 +400,9 @@ int main(int argc, char* argv[])
     //   - else another (unsupported) package manager is used
 
     cmd = "dpkg --version";
-    FXString str = getCommandOutput(cmd);
+    FXString str = xf_getcommandoutput(cmd);
 
+    FXuint pkg_format;
     if (str.find("Debian") != -1)
     {
         pkg_format = DEB_PKG; // deb based system
@@ -422,7 +410,7 @@ int main(int argc, char* argv[])
     else
     {
         cmd = "rpm --version";
-        str = getCommandOutput(cmd);
+        str = xf_getcommandoutput(cmd);
 
         if (str.find("RPM") != -1)
         {
@@ -456,7 +444,8 @@ int main(int argc, char* argv[])
         {
             maximized = true;
         }
-        else if ((compare(argv[i], "-p") == 0) || (compare(argv[i], "--panel") == 0) || (compare(argv[i], "--panels") == 0))
+        else if ((compare(argv[i], "-p") == 0) || (compare(argv[i], "--panel") == 0) ||
+                 (compare(argv[i], "--panels") == 0))
         {
             if (++i < argc)
             {
@@ -487,7 +476,7 @@ int main(int argc, char* argv[])
         else
         {
             // Starting URIs, if any
-            startURIs.push_back(::filePath(::fileFromURI(argv[i])));
+            startURIs.push_back(xf_filepath(::xf_filefromuri(argv[i])));
         }
     }
 
@@ -501,34 +490,42 @@ int main(int argc, char* argv[])
     // Read registry thru foxhacks
     application->reg().read();
 
-    // Compute integer and fractional scaling factors depending on the monitor resolution
+    // Write package format
+    application->reg().writeUnsignedEntry("SETTINGS", "package_format", pkg_format);
+
+    // Integer scaling factor depending on the monitor resolution
     FXint res = application->reg().readUnsignedEntry("SETTINGS", "screenres", 100);
     scaleint = round(res / 100.0);
-    scalefrac = FXMAX(1.0, res / 100.0);
 
     // Redefine the default hand cursor depending on the integer scaling factor
     FXCursor* hand;
     if (scaleint == 1)
     {
-        hand = new FXCursor(application, hand1_bits, hand1_mask_bits, hand1_width, hand1_height, hand1_x_hot, hand1_y_hot);
+        hand = new FXCursor(application, hand1_bits, hand1_mask_bits, hand1_width, hand1_height, hand1_x_hot,
+                            hand1_y_hot);
     }
     else if (scaleint == 2)
     {
-        hand = new FXCursor(application, hand2_bits, hand2_mask_bits, hand2_width, hand2_height, hand2_x_hot, hand2_y_hot);
+        hand = new FXCursor(application, hand2_bits, hand2_mask_bits, hand2_width, hand2_height, hand2_x_hot,
+                            hand2_y_hot);
     }
     else
     {
-        hand = new FXCursor(application, hand3_bits, hand3_mask_bits, hand3_width, hand3_height, hand3_x_hot, hand3_y_hot);
+        hand = new FXCursor(application, hand3_bits, hand3_mask_bits, hand3_width, hand3_height, hand3_x_hot,
+                            hand3_y_hot);
     }
     application->setDefaultCursor(DEF_HAND_CURSOR, hand);
 
-    // Set base color (to change the default base color at first run)
-    FXColor basecolor = application->reg().readColorEntry("SETTINGS", "basecolor", FXRGB(237, 233, 227));
+    // Set base and border colors (to change the default colors at first run)
+    FXColor basecolor = application->reg().readColorEntry("SETTINGS", "basecolor", FXRGB(237, 236, 235));
+    FXColor bordercolor = application->reg().readColorEntry("SETTINGS", "bordercolor", FXRGB(125, 125, 125));
     application->setBaseColor(basecolor);
+    application->setBorderColor(bordercolor);
 
     // Load all application icons
-    FXbool iconpathfound = true;
-    loadicons = loadAppIcons(application, &iconpathfound);
+    FXuint iconpathstatus;
+    execpath = xf_execpath(argv[0]);
+    loadicons = loadAppIcons(application, &iconpathstatus);
 
     // Set normal font
     FXString fontspec;
@@ -546,7 +543,7 @@ int main(int argc, char* argv[])
     }
 
     // Create and run application
-    mainWindow = new XFileExplorer(application, startURIs, iconic, maximized, title, xfeicon, minixfeicon);
+    mainWindow = new XFileExplorer(application, startURIs, panel_mode, iconic, maximized, title, xfeicon, minixfeicon);
 
     // Catch SIGCHLD to harvest zombie child processes
     application->addSignal(SIGCHLD, mainWindow, XFileExplorer::ID_HARVEST, true);
@@ -560,17 +557,29 @@ int main(int argc, char* argv[])
     application->setTooltipPause(TOOLTIP_PAUSE);
     application->setTooltipTime(TOOLTIP_TIME);
 
-    // Icon path not found
-    if (!iconpathfound)
+    // Icon path doesn't exist
+    if (iconpathstatus == ICONPATH_NOT_FOUND)
     {
-        MessageBox::error(application, BOX_OK, _("Error loading icons"), _("Icon path doesn't exist, icon theme was set back to default. Please check your icon path!") );
+        MessageBox::error(application->getRootWindow(), BOX_OK, _("Error loading icons"),
+                          _("Icon path doesn't exist, default icon path was selected.\
+\n\nFrom Xfe, please check your icon path in Edit / Preferences / Appearance..."));
     }
 
     // Some icons not found
-    if (!loadicons)
+    if (!loadicons && iconpathstatus == ICONPATH_MISSING_ICONS)
     {
-        MessageBox::error(application, BOX_OK, _("Error loading icons"), _("Unable to load some icons. Please check your icon theme!"));
+        MessageBox::error(application->getRootWindow(), BOX_OK, _("Error loading icons"),
+                          _("Unable to load some icons, default icon theme was selected.\
+\n\nFrom Xfe, please check your icon theme in Edit / Preferences / Appearance..."));       
     }
 
-    return(application->run());
+    // Default icon path doesn't exist
+    if (iconpathstatus == DEFAULTICONPATH_NOT_FOUND)
+    {
+        MessageBox::error(application->getRootWindow(), BOX_OK, _("Error loading icons"),
+                          _("Unable to load default icons, no icons can be shown.\
+\n\nPlease check your Xfe installation..."));       
+    }
+
+    return application->run();
 }

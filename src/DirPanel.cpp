@@ -16,6 +16,7 @@
 #include "xfeutils.h"
 #include "File.h"
 #include "DirList.h"
+#include "Places.h"
 #include "Properties.h"
 #include "BrowseInputDialog.h"
 #include "ArchInputDialog.h"
@@ -26,7 +27,7 @@
 
 
 // Refresh interval for the directory size (ms)
-#define DIRSIZE_REFRESH_INTERVAL    1000
+#define DIRSIZE_REFRESH_INTERVAL      1000
 
 // Duration (in ms) before we can stop refreshing the file list
 // Used for file operations on a large list of files
@@ -41,14 +42,13 @@ extern FXuint clipboard_type;
 
 // Global variables
 extern FXMainWindow* mainWindow;
-extern FXbool allowPopupScroll;
+
+extern FXString xdgdatahome;
+
 #if defined(linux)
 extern FXStringDict* fsdevices;
 extern FXStringDict* mtdevices;
 #endif
-extern FXuint single_click;
-extern FXString xdgdatahome;
-
 
 
 // Dirty hack to change the KEY_up and KEY_down behaviour
@@ -57,7 +57,7 @@ extern FXString xdgdatahome;
 FXbool fromKeyPress = false;
 long FXTreeList::onKeyPress(FXObject*, FXSelector, void* ptr)
 {
-    FXEvent*    event = (FXEvent*)ptr;
+    FXEvent* event = (FXEvent*)ptr;
     FXTreeItem* item = currentitem;
     FXTreeItem* succ;
     int page;
@@ -65,11 +65,11 @@ long FXTreeList::onKeyPress(FXObject*, FXSelector, void* ptr)
     flags &= ~FLAG_TIP;
     if (!isEnabled())
     {
-        return(0);
+        return 0;
     }
     if (target && target->tryHandle(this, FXSEL(SEL_KEYPRESS, message), ptr))
     {
-        return(1);
+        return 1;
     }
     if (item == NULL)
     {
@@ -87,7 +87,7 @@ long FXTreeList::onKeyPress(FXObject*, FXSelector, void* ptr)
         {
             handle(this, FXSEL(SEL_DRAGGED, 0), ptr);
         }
-        return(1);
+        return 1;
 
     case KEY_Page_Up:
     case KEY_KP_Page_Up:
@@ -131,7 +131,7 @@ long FXTreeList::onKeyPress(FXObject*, FXSelector, void* ptr)
         }
         goto hop;
 
-    case KEY_Up:                          // Move up
+    case KEY_Up:                      // Move up
     case KEY_KP_Up:
         if (item)
         {
@@ -150,7 +150,7 @@ long FXTreeList::onKeyPress(FXObject*, FXSelector, void* ptr)
         }
         goto hop;
 
-    case KEY_Down:                        // Move down
+    case KEY_Down:                    // Move down
     case KEY_KP_Down:
         if (item)
         {
@@ -169,7 +169,7 @@ long FXTreeList::onKeyPress(FXObject*, FXSelector, void* ptr)
         }
         goto hop;
 
-    case KEY_Right:                       // Move right/down and open subtree
+    case KEY_Right:                   // Move right/down and open subtree
     case KEY_KP_Right:
         if (item)
         {
@@ -192,7 +192,7 @@ long FXTreeList::onKeyPress(FXObject*, FXSelector, void* ptr)
         }
         goto hop;
 
-    case KEY_Left:                        // Move left/up and close subtree
+    case KEY_Left:                    // Move left/up and close subtree
     case KEY_KP_Left:
         if (item)
         {
@@ -211,12 +211,12 @@ long FXTreeList::onKeyPress(FXObject*, FXSelector, void* ptr)
         }
         goto hop;
 
-    case KEY_Home:                        // Move to first
+    case KEY_Home:                    // Move to first
     case KEY_KP_Home:
         item = firstitem;
         goto hop;
 
-    case KEY_End:                         // Move to last
+    case KEY_End:                     // Move to last
     case KEY_KP_End:
         item = lastitem;
         while (item)
@@ -276,7 +276,7 @@ hop:
         {
             handle(this, FXSEL(SEL_COMMAND, 0), (void*)currentitem);
         }
-        return(1);
+        return 1;
 
     case KEY_space:
     case KEY_KP_Space:
@@ -321,7 +321,7 @@ hop:
         {
             handle(this, FXSEL(SEL_COMMAND, 0), (void*)currentitem);
         }
-        return(1);
+        return 1;
 
     case KEY_Return:
     case KEY_KP_Enter:
@@ -331,20 +331,20 @@ hop:
         {
             handle(this, FXSEL(SEL_COMMAND, 0), (void*)currentitem);
         }
-        return(1);
+        return 1;
 
     default:
         if ((FXuchar)event->text[0] < ' ')
         {
-            return(0);
+            return 0;
         }
         if (event->state & (CONTROLMASK | ALTMASK))
         {
-            return(0);
+            return 0;
         }
         if (!Ascii::isPrint(event->text[0]))
         {
-            return(0);
+            return 0;
         }
         lookup.append(event->text);
         getApp()->addTimeout(this, ID_LOOKUPTIMER, getApp()->getTypingSpeed());
@@ -368,9 +368,9 @@ hop:
         {
             handle(this, FXSEL(SEL_COMMAND, 0), (void*)currentitem);
         }
-        return(1);
+        return 1;
     }
-    return(0);
+    return 0;
 }
 
 
@@ -385,9 +385,36 @@ FXDEFMAP(DirPanel) DirPanelMap[] =
     FXMAPFUNC(SEL_COMMAND, DirPanel::ID_COLLAPSETREE, DirPanel::onCollapseTree),
     FXMAPFUNC(SEL_COMMAND, DirPanel::ID_PROPERTIES, DirPanel::onCmdProperties),
     FXMAPFUNC(SEL_COMMAND, DirPanel::ID_ARCHIVE, DirPanel::onCmdAddToArch),
-    FXMAPFUNC(SEL_RIGHTBUTTONRELEASE, DirPanel::ID_FILELIST, DirPanel::onCmdPopupMenu),
-    FXMAPFUNC(SEL_COMMAND, DirPanel::ID_POPUP_MENU, DirPanel::onCmdPopupMenu),
+    FXMAPFUNC(SEL_RIGHTBUTTONRELEASE, DirPanel::ID_FILELIST, DirPanel::onCmdPopupMenuDirList),
     FXMAPFUNC(SEL_CLICKED, DirPanel::ID_FILELIST, DirPanel::onCmdDirectory),
+    FXMAPFUNC(SEL_RIGHTBUTTONRELEASE, DirPanel::ID_PLACES, DirPanel::onCmdPopupMenuPlaces),
+    FXMAPFUNC(SEL_CLICKED, DirPanel::ID_PLACES, DirPanel::onCmdGotoPlace),
+    FXMAPFUNC(SEL_FOCUSIN, DirPanel::ID_PLACES, DirPanel::onCmdFocus),
+    FXMAPFUNC(SEL_COMMAND, DirPanel::ID_OPEN_PLACE_NEW_TAB, DirPanel::onCmdOpenPlaceNewTab),
+    FXMAPFUNC(SEL_COMMAND, DirPanel::ID_OPEN_PLACE_NEW_WINDOW, DirPanel::onCmdOpenPlaceNewWindow),
+    FXMAPFUNC(SEL_COMMAND, DirPanel::ID_PLACE_PROPERTIES, DirPanel::onCmdPlaceProperties),
+    FXMAPFUNC(SEL_UPDATE, DirPanel::ID_PLACES, DirPanel::onUpdPlaces),
+    FXMAPFUNC(SEL_RIGHTBUTTONRELEASE, DirPanel::ID_MOUNTS, DirPanel::onCmdPopupMenuMounts),
+    FXMAPFUNC(SEL_CLICKED, DirPanel::ID_MOUNTS, DirPanel::onCmdGotoMount),
+    FXMAPFUNC(SEL_FOCUSIN, DirPanel::ID_MOUNTS, DirPanel::onCmdFocus),
+    FXMAPFUNC(SEL_COMMAND, DirPanel::ID_OPEN_MOUNT_NEW_TAB, DirPanel::onCmdOpenMountNewTab),
+    FXMAPFUNC(SEL_COMMAND, DirPanel::ID_OPEN_MOUNT_NEW_WINDOW, DirPanel::onCmdOpenMountNewWindow),
+    FXMAPFUNC(SEL_COMMAND, DirPanel::ID_MOUNT_PROPERTIES, DirPanel::onCmdMountProperties),
+    FXMAPFUNC(SEL_UPDATE, DirPanel::ID_MOUNTS, DirPanel::onUpdMounts),
+    FXMAPFUNC(SEL_RIGHTBUTTONRELEASE, DirPanel::ID_BOOKMARKS, DirPanel::onCmdPopupMenuBookmarks),
+    FXMAPFUNC(SEL_CLICKED, DirPanel::ID_BOOKMARKS, DirPanel::onCmdGotoBookmark),
+    FXMAPFUNC(SEL_FOCUSIN, DirPanel::ID_BOOKMARKS, DirPanel::onCmdFocus),
+    FXMAPFUNC(SEL_COMMAND, DirPanel::ID_ADD_BOOKMARK, DirPanel::onCmdAddBookmark),
+    FXMAPFUNC(SEL_COMMAND, DirPanel::ID_OPEN_BOOKMARK_NEW_TAB, DirPanel::onCmdOpenBookmarkNewTab),
+    FXMAPFUNC(SEL_COMMAND, DirPanel::ID_OPEN_BOOKMARK_NEW_WINDOW, DirPanel::onCmdOpenBookmarkNewWindow),
+    FXMAPFUNC(SEL_COMMAND, DirPanel::ID_BOOKMARK_PROPERTIES, DirPanel::onCmdBookmarkProperties),
+    FXMAPFUNC(SEL_COMMAND, DirPanel::ID_MODIFY_BOOKMARK, DirPanel::onCmdModifyBookmark),
+    FXMAPFUNC(SEL_COMMAND, DirPanel::ID_REMOVE_BOOKMARK, DirPanel::onCmdRemoveBookmark),
+    FXMAPFUNC(SEL_COMMAND, DirPanel::ID_MOVEUP_BOOKMARK, DirPanel::onCmdMoveUpBookmark),
+    FXMAPFUNC(SEL_COMMAND, DirPanel::ID_MOVEDOWN_BOOKMARK, DirPanel::onCmdMoveDownBookmark),
+    FXMAPFUNC(SEL_UPDATE, DirPanel::ID_MOVEUP_BOOKMARK, DirPanel::onUpdMoveUpBookmark),
+    FXMAPFUNC(SEL_UPDATE, DirPanel::ID_MOVEDOWN_BOOKMARK, DirPanel::onUpdMoveDownBookmark),
+    FXMAPFUNC(SEL_UPDATE, DirPanel::ID_BOOKMARKS, DirPanel::onUpdBookmarks),
     FXMAPFUNC(SEL_EXPANDED, DirPanel::ID_FILELIST, DirPanel::onExpand),
     FXMAPFUNC(SEL_COMMAND, DirPanel::ID_COPY_CLIPBOARD, DirPanel::onCmdCopyCut),
     FXMAPFUNC(SEL_COMMAND, DirPanel::ID_COPYNAME_CLIPBOARD, DirPanel::onCmdCopyName),
@@ -407,7 +434,7 @@ FXDEFMAP(DirPanel) DirPanelMap[] =
     FXMAPFUNC(SEL_COMMAND, DirPanel::ID_NEW_DIR, DirPanel::onCmdNewDir),
     FXMAPFUNC(SEL_COMMAND, DirPanel::ID_XTERM, DirPanel::onCmdXTerm),
     FXMAPFUNC(SEL_COMMAND, DirPanel::ID_TOGGLE_HIDDEN, DirPanel::onCmdToggleHidden),
-    FXMAPFUNC(SEL_COMMAND, DirPanel::ID_TOGGLE_TREE, DirPanel::onCmdToggleTree),
+    FXMAPFUNC(SEL_COMMAND, DirPanel::ID_TOGGLE_PANEL, DirPanel::onCmdTogglePanel),
     FXMAPFUNC(SEL_TIMEOUT, DirPanel::ID_DIRSIZE_REFRESH, DirPanel::onCmdDirsizeRefresh),
     FXMAPFUNC(SEL_FOCUSIN, DirPanel::ID_FILELIST, DirPanel::onCmdFocus),
 #if defined(linux)
@@ -418,7 +445,7 @@ FXDEFMAP(DirPanel) DirPanelMap[] =
 #endif
     FXMAPFUNC(SEL_UPDATE, DirPanel::ID_PASTE_CLIPBOARD, DirPanel::onUpdPaste),
     FXMAPFUNC(SEL_UPDATE, DirPanel::ID_TOGGLE_HIDDEN, DirPanel::onUpdToggleHidden),
-    FXMAPFUNC(SEL_UPDATE, DirPanel::ID_TOGGLE_TREE, DirPanel::onUpdToggleTree),
+    FXMAPFUNC(SEL_UPDATE, DirPanel::ID_TOGGLE_PANEL, DirPanel::onUpdTogglePanel),
     FXMAPFUNC(SEL_UPDATE, DirPanel::ID_CUT_CLIPBOARD, DirPanel::onUpdMenu),
     FXMAPFUNC(SEL_UPDATE, DirPanel::ID_ARCHIVE, DirPanel::onUpdMenu),
     FXMAPFUNC(SEL_UPDATE, DirPanel::ID_DIR_MOVETO, DirPanel::onUpdMenu),
@@ -435,43 +462,157 @@ FXDEFMAP(DirPanel) DirPanelMap[] =
 FXIMPLEMENT(DirPanel, FXVerticalFrame, DirPanelMap, ARRAYNUMBER(DirPanelMap))
 
 // Construct Directory Panel
-DirPanel::DirPanel(FXWindow* owner, FXComposite* p, FXColor listbackcolor, FXColor listforecolor, FXbool smoothscroll, FXuint opts, int x, int y, int w, int h) :
+DirPanel::DirPanel(FXWindow* owner, FXComposite* p, FXColor listbackcolor, FXColor listforecolor, FXbool smoothscroll,
+                   FXuint opts, int x, int y, int w, int h) :
     FXVerticalFrame(p, opts, x, y, w, h, 0, 0, 0, 0)
 {
     // Construct directory panel
-    FXVerticalFrame* cont = new FXVerticalFrame(this, LAYOUT_FILL_Y | LAYOUT_FILL_X | FRAME_NONE, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-    FXPacker*        packer = new FXHorizontalFrame(cont, LAYOUT_LEFT | JUSTIFY_LEFT | LAYOUT_FILL_X | FRAME_NONE, 0, 0, 0, 0, 0, 0, 0, 0);
+    FXVerticalFrame* cont = new FXVerticalFrame(this, LAYOUT_FILL_Y | LAYOUT_FILL_X | FRAME_NONE, 0, 0, 0, 0, 0, 0, 0,
+                                                -1);
+    FXPacker* packer = new FXHorizontalFrame(cont, LAYOUT_LEFT | JUSTIFY_LEFT | LAYOUT_FILL_X | FRAME_NONE, 0, 0, 0, 0,
+                                             0, 0, 1, 0);
 
     // Visually indicate if the panel is active
-    activeicon = new FXButton(packer, "", greenbuttonicon, this, DirPanel::ID_FILELIST, BUTTON_TOOLBAR | JUSTIFY_LEFT | LAYOUT_LEFT);
+    activeicon = new FXButton(packer, "", minigreenbuttonicon, this, DirPanel::ID_FILELIST,
+                              BUTTON_TOOLBAR | JUSTIFY_LEFT | LAYOUT_LEFT);
 
     // Panel title
     paneltitle = new TextLabel(packer, 0, this, ID_FILELIST, LAYOUT_FILL_X | LAYOUT_FILL_Y);
     paneltitle->setText(_("Folders"));
     paneltitle->setBackColor(getApp()->getBaseColor());
 
-    FXuint options;
+    // Options
+    FXuint treeoptions = 0, placesoptions = 0;
     if (smoothscroll)
     {
-        options = LAYOUT_FILL_X | LAYOUT_FILL_Y | TREELIST_BROWSESELECT | TREELIST_SHOWS_LINES | TREELIST_SHOWS_BOXES | FRAME_SUNKEN;
+        treeoptions = LAYOUT_FILL_X | LAYOUT_FILL_Y | TREELIST_BROWSESELECT | TREELIST_SHOWS_LINES |
+                      TREELIST_SHOWS_BOXES | FRAME_NONE;
+        placesoptions = LAYOUT_FILL_X | LAYOUT_FILL_Y | FRAME_NONE;
     }
     else
     {
-        options = LAYOUT_FILL_X | LAYOUT_FILL_Y | TREELIST_BROWSESELECT | TREELIST_SHOWS_LINES | TREELIST_SHOWS_BOXES | SCROLLERS_DONT_TRACK;
+        treeoptions = LAYOUT_FILL_X | LAYOUT_FILL_Y | TREELIST_BROWSESELECT | TREELIST_SHOWS_LINES |
+                      TREELIST_SHOWS_BOXES | SCROLLERS_DONT_TRACK;
+        placesoptions = LAYOUT_FILL_X | LAYOUT_FILL_Y | SCROLLERS_DONT_TRACK | FRAME_NONE;
     }
 
-    FXVerticalFrame* cont2 = new FXVerticalFrame(cont, LAYOUT_FILL_Y | LAYOUT_FILL_X | FRAME_SUNKEN, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-    list = new DirList(owner, cont2, this, ID_FILELIST, options);
-    list->setTextColor(listforecolor);
-    list->setBackColor(listbackcolor);
+    // Get panel view mode
+    dirpanel_mode = getApp()->reg().readUnsignedEntry("OPTIONS", "dirpanel_mode", 0);
 
+    // Places and tree mode
+    if (dirpanel_mode == 0)
+    {
+        // Switcher
+        tabbook = new FXTabBook(cont, this, ID_FILELIST, LAYOUT_FILL_X | LAYOUT_FILL_Y | LAYOUT_RIGHT | FRAME_NONE, 0,
+                                0, 0, 0, 0, 0, 0, 0);
+
+        // First tab - Places, mounts and bookmarks lists
+
+        // Places list (fixed size)
+        new FXTabItem(tabbook, _("Places") + FXString("  "), miniplacesicon, TAB_TOP_NORMAL, 0, 0, 0, 0, 0, 0, 3, 5);
+        FXVerticalFrame* frame = new FXVerticalFrame(tabbook, LAYOUT_FILL_X | LAYOUT_FILL_Y | FRAME_NONE, 0, 0, 0, 0, 0,
+                                                     0, 0, 0);
+        frame->setBackColor(getApp()->getBackColor());
+        FXVerticalFrame* plframe = new FXVerticalFrame(frame, LAYOUT_FILL_X | FRAME_NONE, 0, 0, 0, 0, 0, 0, 2, 0);
+        placeslist = new PlacesList(owner, plframe, this, ID_PLACES, listbackcolor, listforecolor, placesoptions);
+
+        // Splitter with mounts and bookmarks lists
+        splitter = new FXSplitter(frame,
+                                  LAYOUT_SIDE_LEFT | LAYOUT_FILL_X | LAYOUT_FILL_Y | SPLITTER_TRACKING |
+                                  SPLITTER_VERTICAL | FRAME_NONE);
+        FXVerticalFrame* mtframe = new FXVerticalFrame(splitter, LAYOUT_FILL_Y | FRAME_NONE, 0, 0, 0, 0, 0, 0, 0, 0);
+        new FXLabel(mtframe, _("Mount Points"), NULL, JUSTIFY_LEFT | LAYOUT_LEFT | LAYOUT_FILL_X | FRAME_GROOVE, 0, 0,
+                    0, 0, 0, 0, 0, 0);
+        mountslist = new MountsList(owner, mtframe, this, ID_MOUNTS, listbackcolor, listforecolor, placesoptions);
+        FXVerticalFrame* bkframe = new FXVerticalFrame(splitter, LAYOUT_FILL_Y | FRAME_NONE, 0, 0, 0, 0, 0, 0, 0, 0);
+        new FXLabel(bkframe, _("Bookmarks"), NULL, JUSTIFY_LEFT | LAYOUT_LEFT | LAYOUT_FILL_X | FRAME_GROOVE, 0, 0, 0,
+                    0, 0, 0, 0, 0);
+        bookmarkslist = new BookmarksList(owner, bkframe, this, ID_BOOKMARKS, listbackcolor, listforecolor,
+                                          placesoptions);
+
+        // Second tab - Directory list
+        new FXTabItem(tabbook, _("Tree") + FXString("  "), minitreeicon, TAB_TOP_NORMAL, 0, 0, 0, 0, 0, 0, 3, 5);
+        frame = new FXVerticalFrame(tabbook, FRAME_NONE, 0, 0, 0, 0, 0, 0, 2, 0);
+        dirlist = new DirList(owner, frame, this, ID_FILELIST, treeoptions);
+        dirlist->setTextColor(listforecolor);
+        dirlist->setBackColor(listbackcolor);
+
+        // Add keyboard shortcuts to select first or second tab
+        FXAccelTable* table = getShell()->getAccelTable();
+        if (table)
+        {
+            FXString key;
+            FXHotKey hotkey;
+
+            key = getApp()->reg().readStringEntry("KEYBINDINGS", "dirpanel_first_tab", "Ctrl-F9");
+            hotkey = xf_parseaccel(key);
+            table->addAccel(hotkey, tabbook, FXSEL(SEL_COMMAND, FXTabBar::ID_OPEN_FIRST));
+
+            key = getApp()->reg().readStringEntry("KEYBINDINGS", "dirpanel_second_tab", "Ctrl-F10");
+            hotkey = xf_parseaccel(key);
+            table->addAccel(hotkey, tabbook, FXSEL(SEL_COMMAND, FXTabBar::ID_OPEN_SECOND));
+        }
+
+        // Open preferred list at startup (0 => places, 1 => tree)
+        FXbool dirpanel_list_startup = getApp()->reg().readUnsignedEntry("OPTIONS", "dirpanel_list_startup", 0);
+        if (dirpanel_list_startup == 1)
+        {
+            tabbook->handle(this, FXSEL(SEL_COMMAND, FXTabBar::ID_OPEN_SECOND), NULL);
+        }
+    }
+    // Places or tree mode
+    else
+    {
+        // Places list (fixed size)
+        FXVerticalFrame* placesframe = new FXVerticalFrame(cont, LAYOUT_FILL_X | LAYOUT_FILL_Y | FRAME_NONE, 0, 0, 0, 0,
+                                                           0, 0, 0, 0);
+        placesframe->setBackColor(getApp()->getBackColor());
+        FXVerticalFrame* plframe = new FXVerticalFrame(placesframe, LAYOUT_FILL_X | FRAME_NONE, 0, 0, 0, 0, 0, 0, 2, 0);
+        placeslist = new PlacesList(owner, plframe, this, ID_PLACES, listbackcolor, listforecolor, placesoptions);
+
+        // Splitter with mounts and bookmarks lists
+        splitter = new FXSplitter(placesframe,
+                                  LAYOUT_SIDE_LEFT | LAYOUT_FILL_X | LAYOUT_FILL_Y | SPLITTER_TRACKING |
+                                  SPLITTER_VERTICAL | FRAME_NONE);
+        FXVerticalFrame* mtframe = new FXVerticalFrame(splitter, LAYOUT_FILL_Y | FRAME_NONE, 0, 0, 0, 0, 0, 0, 0, 0);
+        new FXLabel(mtframe, _("Mount Points"), NULL, JUSTIFY_LEFT | LAYOUT_LEFT | LAYOUT_FILL_X | FRAME_GROOVE, 0, 0,
+                    0, 0, 0, 0, 0, 0);
+        mountslist = new MountsList(owner, mtframe, this, ID_MOUNTS, listbackcolor, listforecolor, placesoptions);
+        FXVerticalFrame* bkframe = new FXVerticalFrame(splitter, LAYOUT_FILL_Y | FRAME_NONE, 0, 0, 0, 0, 0, 0, 0, 0);
+        new FXLabel(bkframe, _("Bookmarks"), NULL, JUSTIFY_LEFT | LAYOUT_LEFT | LAYOUT_FILL_X | FRAME_GROOVE, 0, 0, 0,
+                    0, 0, 0, 0, 0);
+        bookmarkslist = new BookmarksList(owner, bkframe, this, ID_BOOKMARKS, listbackcolor, listforecolor,
+                                          placesoptions);
+
+        FXVerticalFrame* treeframe = new FXVerticalFrame(cont, LAYOUT_FILL_X | LAYOUT_FILL_Y | FRAME_NONE, 0, 0, 0, 0,
+                                                         0, 0, 2, 0);
+        dirlist = new DirList(owner, treeframe, this, ID_FILELIST, treeoptions);
+        dirlist->setTextColor(listforecolor);
+        dirlist->setBackColor(listbackcolor);
+
+        // Display places
+        if (dirpanel_mode == 1)
+        {
+            treeframe->hide();
+        }
+        // Display tree
+        else
+        {
+            placesframe->hide();
+        }
+    }
+
+    // Status bar
     statusbar = new FXHorizontalFrame(cont, JUSTIFY_LEFT | LAYOUT_FILL_X | FRAME_NONE, 0, 0, 0, 0, 3, 3, 3, 3);
 
     FXString key = getApp()->reg().readStringEntry("KEYBINDINGS", "hidden_dirs", "Ctrl-F5");
-    new FXToggleButton(statusbar, TAB + _("Show hidden folders") + PARS(key), TAB + _("Hide hidden folders") + PARS(key), showhiddenicon, hidehiddenicon, this,
-                       ID_TOGGLE_HIDDEN, BUTTON_TOOLBAR | LAYOUT_LEFT | ICON_BEFORE_TEXT | FRAME_NONE);
+    new FXToggleButton(statusbar, TAB + _("Show Hidden Folders") + PARS(key),
+                       TAB + _("Hide hidden Folders") + PARS(key),
+                       minishowhiddenicon, minihidehiddenicon, this, ID_TOGGLE_HIDDEN, BUTTON_TOOLBAR | LAYOUT_LEFT |
+                       ICON_BEFORE_TEXT | FRAME_NONE, 0, 0, 0, 0, 0, 0, 0, 3);
 
-    status = new FXLabel(statusbar, _("0 bytes in root"), NULL, JUSTIFY_LEFT | LAYOUT_LEFT | LAYOUT_FILL_X | FRAME_NONE);
+    status = new FXLabel(statusbar, _("Free space:"), NULL, JUSTIFY_LEFT | LAYOUT_LEFT | LAYOUT_FILL_X | FRAME_NONE,
+                         0, 0, 0, 0, 0, 0, 0, 4);
     status->setTarget(this);
     status->setSelector(FXSEL(SEL_UPDATE, DirPanel::ID_TITLE));
 
@@ -487,27 +628,15 @@ DirPanel::DirPanel(FXWindow* owner, FXComposite* p, FXColor listbackcolor, FXCol
     single_click = getApp()->reg().readUnsignedEntry("SETTINGS", "single_click", SINGLE_CLICK_NONE);
     if (single_click == SINGLE_CLICK_DIR_FILE)
     {
-        list->setDefaultCursor(getApp()->getDefaultCursor(DEF_HAND_CURSOR));
+        dirlist->setDefaultCursor(getApp()->getDefaultCursor(DEF_HAND_CURSOR));
+        placeslist->setDefaultCursor(getApp()->getDefaultCursor(DEF_HAND_CURSOR));
+        mountslist->setDefaultCursor(getApp()->getDefaultCursor(DEF_HAND_CURSOR));
+        bookmarkslist->setDefaultCursor(getApp()->getDefaultCursor(DEF_HAND_CURSOR));
     }
 
-    // Dialogs
-    newdirdialog = NULL;
-    archdialog = NULL;
-    operationdialog = NULL;
-    operationdialogrename = NULL;
-
-    // Initialize clipboard flag
-    fromPaste = false;
-
-    // Initialize control flag for right click popup menu
-    ctrlflag = false;
-
-    // Other initializations
+    // Initializations
     focuswindow = owner;
-    isactive = false;
-    curr_mtime = 0;
     curr_dirpath = "";
-    allowDirsizeRefresh = true;
 }
 
 
@@ -515,7 +644,7 @@ DirPanel::DirPanel(FXWindow* owner, FXComposite* p, FXColor listbackcolor, FXCol
 DirPanel::~DirPanel()
 {
     getApp()->removeTimeout(this, ID_DIRSIZE_REFRESH);
-    delete list;
+    delete dirlist;
     delete statusbar;
     delete status;
     delete newdirdialog;
@@ -523,6 +652,13 @@ DirPanel::~DirPanel()
     delete operationdialog;
     delete operationdialogrename;
     delete paneltitle;
+    delete addbookmarkdialog;
+    delete modifybookmarkdialog;
+    delete placeslist;
+    delete mountslist;
+    delete bookmarkslist;
+    delete splitter;
+    delete tabbook;
 }
 
 
@@ -541,7 +677,12 @@ void DirPanel::create()
     // Register standard UTF-8 text type used for file dialogs
     utf8Type = getApp()->registerDragType("UTF8_STRING");
 
+    // Set mounts list height
+    FXuint mounts_height = getApp()->reg().readUnsignedEntry("DIR PANEL", "mounts_height", 200);
+    splitter->setSplit(0, mounts_height);
+
     getApp()->addTimeout(this, ID_DIRSIZE_REFRESH, DIRSIZE_REFRESH_INTERVAL);
+
     FXVerticalFrame::create();
 }
 
@@ -550,10 +691,15 @@ void DirPanel::create()
 void DirPanel::setActive()
 {
     // Set active icon
-    activeicon->setIcon(greenbuttonicon);
+    activeicon->setIcon(minigreenbuttonicon);
     activeicon->setTipText(_("Panel is active"));
-    list->setFocus();
     isactive = true;
+
+    // Set focus on directory list, if displayed
+    if ( (dirpanel_mode == 0 && tabbook->getCurrent() == 1) || (dirpanel_mode == 2) )
+    {
+        dirlist->setFocus();        
+    }
 
     // Current panel must get an inactive icon (but not get the inactive status!)
     FilePanel* currentpanel = ((XFileExplorer*)mainWindow)->getCurrentPanel();
@@ -565,7 +711,7 @@ void DirPanel::setActive()
 void DirPanel::setInactive()
 {
     // Set active icon
-    activeicon->setIcon(graybuttonicon);
+    activeicon->setIcon(minigraybuttonicon);
     activeicon->setTipText(_("Activate panel"));
     isactive = false;
 }
@@ -575,15 +721,15 @@ void DirPanel::setInactive()
 long DirPanel::onCmdFocus(FXObject* sender, FXSelector sel, void* ptr)
 {
     setActive();
-    return(1);
+    return 1;
 }
 
 
 // To pass the expand message to DirList
 long DirPanel::onExpand(FXObject*, FXSelector, void* ptr)
 {
-    list->handle(this, FXSEL(SEL_EXPANDED, 0), (void*)ptr);
-    return(1);
+    dirlist->handle(this, FXSEL(SEL_EXPANDED, 0), (void*)ptr);
+    return 1;
 }
 
 
@@ -594,14 +740,14 @@ long DirPanel::onCmdDirectory(FXObject*, FXSelector, void* ptr)
 
     if (item)
     {
-        FXString directory = list->getItemPathname(item);
-        if (!::isReadExecutable(directory))
+        FXString directory = dirlist->getItemPathname(item);
+        if (!xf_isreadexecutable(directory))
         {
             MessageBox::error(getApp(), BOX_OK_SU, _("Error"), _(" Permission to: %s denied."), directory.text());
-            return(0);
+            return 0;
         }
-        FilePanel*  currentpanel = ((XFileExplorer*)mainWindow)->getCurrentPanel();
-        FXComboBox* address = ((XFileExplorer*)mainWindow)->getAddressBox();
+        FilePanel* currentpanel = ((XFileExplorer*)mainWindow)->getCurrentPanel();
+        ComboBox* address = ((XFileExplorer*)mainWindow)->getAddressBox();
         currentpanel->setDirectory(directory, true);
         currentpanel->updatePath();
 
@@ -619,7 +765,7 @@ long DirPanel::onCmdDirectory(FXObject*, FXSelector, void* ptr)
         while (i < count)
         {
             item = address->getItem(i++);
-            if (streq((const char*)&p[0], (const char*)&item[0]))
+            if (xf_strequal((const char*)&p[0], (const char*)&item[0]))
             {
                 i--;
                 break;
@@ -634,26 +780,589 @@ long DirPanel::onCmdDirectory(FXObject*, FXSelector, void* ptr)
     // Manage single click navigation
     if (item && (single_click != SINGLE_CLICK_NONE) && !fromKeyPress)
     {
-        list->handle(this, FXSEL(SEL_EXPANDED, 0), (void*)ptr);
+        dirlist->handle(this, FXSEL(SEL_EXPANDED, 0), (void*)ptr);
     }
     fromKeyPress = false;
 
-    return(1);
+    return 1;
+}
+
+
+// Open place in new tab
+long DirPanel::onCmdOpenPlaceNewTab(FXObject*, FXSelector, void*)
+{
+    FXString key = placeslist->getCurrentItem();
+    FXString directory = placeslist->getItemPathname(key);
+
+    TabButtons* tabbuttons = ((XFileExplorer*)mainWindow)->getTabButtons();
+
+    tabbuttons->addTab(directory);
+
+    return 1;
+}
+
+
+// Open place in new window
+long DirPanel::onCmdOpenPlaceNewWindow(FXObject*, FXSelector, void*)
+{
+    FXString key = placeslist->getCurrentItem();
+    FXString directory = placeslist->getItemPathname(key);
+
+    FXString cmd = "xfe " + directory + " &";
+
+    int ret = system(cmd.text());
+
+    if (ret < 0)
+    {
+        MessageBox::error(this, BOX_OK, _("Error"), _("Can't execute command %s"), cmd.text());
+        return 0;
+    }
+
+    return 1;
+}
+
+
+// Go to the directory pointed by the selected place
+long DirPanel::onCmdGotoPlace(FXObject*, FXSelector, void*)
+{
+    FXString key = placeslist->getCurrentItem();
+
+    // Place location
+    FXString directory = placeslist->getItemPathname(key);
+
+    // Permission problem or does not exist
+    if (!xf_existfile(directory))
+    {
+        MessageBox::error(this, BOX_OK, _("Error"), _("Folder %s doesn't exist"), directory.text());
+        return 0;
+    }
+    else if (!xf_isreadexecutable(directory))
+    {
+        MessageBox::error(this, BOX_OK_SU, _("Error"), _(" Permission to: %s denied."), directory.text());
+        return 0;
+    }
+
+    FilePanel* currentpanel = ((XFileExplorer*)mainWindow)->getCurrentPanel();
+    ComboBox* address = ((XFileExplorer*)mainWindow)->getAddressBox();
+    currentpanel->setDirectory(directory, true);
+    currentpanel->updatePath();
+    setDirectory(directory, true);
+
+    // Set place (select and set current)
+    placeslist->setPlace(key);
+
+    // Update address list
+    FXString item;
+    int i = 0;
+    int count = address->getNumItems();
+    if (!count)
+    {
+        count++;
+        address->insertItem(0, address->getText());
+    }
+    while (i < count)
+    {
+        item = address->getItem(i++);
+        if (xf_strequal(directory.text(), (const char*)&item[0]))
+        {
+            i--;
+            break;
+        }
+    }
+    if (i == count)
+    {
+        address->insertItem(0, directory);
+    }
+
+    return 1;
+}
+
+
+// Properties of the folder pointed by the place
+long DirPanel::onCmdPlaceProperties(FXObject*, FXSelector, void*)
+{
+    FilePanel* currentpanel = ((XFileExplorer*)mainWindow)->getCurrentPanel();
+    FXString pathname = currentpanel->getDirectory();
+
+    // Properties dialog
+    PropertiesBox* attrdlg = new PropertiesBox(this, FXPath::name(pathname), FXPath::directory(pathname), true);
+
+    attrdlg->create();
+    attrdlg->show(PLACEMENT_OWNER);
+
+    return 1;
+}
+
+
+// Update places list selection
+long DirPanel::onUpdPlaces(FXObject* sender, FXSelector, void*)
+{
+    FilePanel* currentpanel = ((XFileExplorer*)mainWindow)->getCurrentPanel();
+    FXString currentdir = currentpanel->getDirectory();
+
+    placeslist->deselectAll();
+
+    for (int i = 0; i < placeslist->getNumItems(); i++)
+    {
+        if (placeslist->getItemPathname(placeslist->getItemText(i)) == currentdir)
+        {
+            placeslist->selectItem(i);
+            break;
+        }
+    }
+
+    return 1;
+}
+
+
+// Open mount in new tab
+long DirPanel::onCmdOpenMountNewTab(FXObject*, FXSelector, void*)
+{
+    FXString key = mountslist->getCurrentItem();
+    FXString directory = mountslist->getItemPathname(key);
+
+    TabButtons* tabbuttons = ((XFileExplorer*)mainWindow)->getTabButtons();
+
+    tabbuttons->addTab(directory);
+
+    return 1;
+}
+
+
+// Open mount in new window
+long DirPanel::onCmdOpenMountNewWindow(FXObject*, FXSelector, void*)
+{
+    FXString key = mountslist->getCurrentItem();
+    FXString directory = mountslist->getItemPathname(key);
+
+    FXString cmd = "xfe " + directory + " &";
+
+    int ret = system(cmd.text());
+
+    if (ret < 0)
+    {
+        MessageBox::error(this, BOX_OK, _("Error"), _("Can't execute command %s"), cmd.text());
+        return 0;
+    }
+
+    return 1;
+}
+
+
+// Go to the directory pointed by the selected mount
+long DirPanel::onCmdGotoMount(FXObject*, FXSelector, void*)
+{
+    FXString key = mountslist->getCurrentItem();
+
+    // Mount location
+    FXString directory = mountslist->getItemPathname(key);
+
+    // Permission problem or does not exist
+    if (!xf_existfile(directory))
+    {
+        MessageBox::error(this, BOX_OK, _("Error"), _("Folder %s doesn't exist"), directory.text());
+        return 0;
+    }
+    else if (!xf_isreadexecutable(directory))
+    {
+        MessageBox::error(this, BOX_OK_SU, _("Error"), _(" Permission to: %s denied."), directory.text());
+        return 0;
+    }
+
+    FilePanel* currentpanel = ((XFileExplorer*)mainWindow)->getCurrentPanel();
+    ComboBox* address = ((XFileExplorer*)mainWindow)->getAddressBox();
+    currentpanel->setDirectory(directory, true);
+    currentpanel->updatePath();
+    setDirectory(directory, true);
+
+    // Set mount (select and set current)
+    mountslist->setMount(key);
+
+    // Update address list
+    FXString item;
+    int i = 0;
+    int count = address->getNumItems();
+    if (!count)
+    {
+        count++;
+        address->insertItem(0, address->getText());
+    }
+    while (i < count)
+    {
+        item = address->getItem(i++);
+        if (xf_strequal(directory.text(), (const char*)&item[0]))
+        {
+            i--;
+            break;
+        }
+    }
+    if (i == count)
+    {
+        address->insertItem(0, directory);
+    }
+
+    return 1;
+}
+
+
+// Properties of the folder pointed by the mount
+long DirPanel::onCmdMountProperties(FXObject*, FXSelector, void*)
+{
+    FilePanel* currentpanel = ((XFileExplorer*)mainWindow)->getCurrentPanel();
+    FXString pathname = currentpanel->getDirectory();
+
+    // Properties dialog
+    PropertiesBox* attrdlg = new PropertiesBox(this, FXPath::name(pathname), FXPath::directory(pathname), true);
+
+    attrdlg->create();
+    attrdlg->show(PLACEMENT_OWNER);
+
+    return 1;
+}
+
+
+// Update mounts list selection
+long DirPanel::onUpdMounts(FXObject* sender, FXSelector, void*)
+{
+    FilePanel* currentpanel = ((XFileExplorer*)mainWindow)->getCurrentPanel();
+    FXString currentdir = currentpanel->getDirectory();
+
+    mountslist->deselectAll();
+
+    for (int i = 0; i < mountslist->getNumItems(); i++)
+    {
+        if (mountslist->getItemPathname(mountslist->getItemText(i)) == currentdir)
+        {
+            mountslist->selectItem(i);
+            break;
+        }
+    }
+
+    return 1;
+}
+
+
+// Open bookmark in new tab
+long DirPanel::onCmdOpenBookmarkNewTab(FXObject*, FXSelector, void*)
+{
+    FXString name = bookmarkslist->getCurrentItem();
+    FXString directory = bookmarkslist->getItemPathname(name);
+
+    TabButtons* tabbuttons = ((XFileExplorer*)mainWindow)->getTabButtons();
+
+    tabbuttons->addTab(directory);
+
+    return 1;
+}
+
+
+// Open bookmark in new window
+long DirPanel::onCmdOpenBookmarkNewWindow(FXObject*, FXSelector, void*)
+{
+    FXString name = bookmarkslist->getCurrentItem();
+    FXString directory = bookmarkslist->getItemPathname(name);
+
+    FXString cmd = "xfe " + directory + " &";
+
+    int ret = system(cmd.text());
+
+    if (ret < 0)
+    {
+        MessageBox::error(this, BOX_OK, _("Error"), _("Can't execute command %s"), cmd.text());
+        return 0;
+    }
+
+    return 1;
+}
+
+// Properties of the folder pointed by the bookmark
+long DirPanel::onCmdBookmarkProperties(FXObject*, FXSelector, void*)
+{
+    FilePanel* currentpanel = ((XFileExplorer*)mainWindow)->getCurrentPanel();
+    FXString pathname = currentpanel->getDirectory();
+
+    // Properties dialog
+    PropertiesBox* attrdlg = new PropertiesBox(this, FXPath::name(pathname), FXPath::directory(pathname), true);
+
+    attrdlg->create();
+    attrdlg->show(PLACEMENT_OWNER);
+
+    return 1;
+}
+
+
+// Modify bookmark
+long DirPanel::onCmdModifyBookmark(FXObject*, FXSelector, void*)
+{
+    FXString oldname = bookmarkslist->getCurrentItem();
+    FXString oldiconpathname = bookmarkslist->getItemIconPathname(oldname);
+    FXString pathname = bookmarkslist->getItemPathname(oldname);
+
+    // Bookmark dialog
+    if (modifybookmarkdialog == NULL)
+    {
+        modifybookmarkdialog = new BookmarkDialog(this, "", "", _("Modify Bookmark"), _("Name:"),
+                                                  _("Icon:"), bigeditbookicon);
+    }
+    modifybookmarkdialog->setName(oldname);
+    modifybookmarkdialog->selectAll();
+    if (oldiconpathname != "")
+    {
+        modifybookmarkdialog->setIconPathname(oldiconpathname);
+    }
+    else
+    {
+        modifybookmarkdialog->setIconPathname("minibookmark.png");
+    }
+
+    FXString msg = FXString(_("Location:")) + " " + pathname;
+    modifybookmarkdialog->setMessage(msg);
+
+    // Accept was pressed
+    if (modifybookmarkdialog->execute(PLACEMENT_CURSOR))
+    {
+        // Rename bookmark
+        FXString newname = modifybookmarkdialog->getName();
+        FXString newiconpathname = modifybookmarkdialog->getIconPathname();
+        int ret = bookmarkslist->modifyBookmark(oldname, newname, oldiconpathname, newiconpathname, pathname);
+        if (ret == 0)
+        {
+            return 0;
+        }
+
+        // Rebuild bookmarks menu
+        mainWindow->handle(this, FXSEL(SEL_COMMAND, XFileExplorer::ID_REBUILD_BOOKMARKS_MENU), NULL);
+    }
+    // Cancel was pressed
+    else
+    {
+        return 0;
+    }
+
+    return 1;
+}
+
+
+// Remove bookmark
+long DirPanel::onCmdRemoveBookmark(FXObject*, FXSelector, void*)
+{
+    FXString name = bookmarkslist->getCurrentItem();
+
+    // Confirm dialog
+    FXbool confirm_del = getApp()->reg().readUnsignedEntry("OPTIONS", "confirm_delete", true);
+
+    if (confirm_del)
+    {
+        FXString message;
+        message.format(_("Remove bookmark '%s' ?"), name.text());
+        MessageBox box(this, _("Confirm Remove"), message + "     ", bigremovebookicon,
+                       BOX_OK_CANCEL | DECOR_TITLE | DECOR_BORDER | LAYOUT_FILL_X | LAYOUT_FILL_Y);
+        if (box.execute(PLACEMENT_CURSOR) != BOX_CLICKED_OK)
+        {
+            return 0;
+        }
+    }
+
+    // Remove bookmark
+    bookmarkslist->removeItem(name);
+
+    return 1;
+}
+
+
+// Add bookmark
+long DirPanel::onCmdAddBookmark(FXObject*, FXSelector, void*)
+{
+    FXString dirpathname = dirlist->getDirectory();
+
+    // Bookmark dialog
+    if (addbookmarkdialog == NULL)
+    {
+        addbookmarkdialog = new BookmarkDialog(this, "", "", _("Add Bookmark"), _("Name:"),
+                                               _("Icon:"), bigaddbookicon);
+    }
+    addbookmarkdialog->setName(FXPath::name(dirpathname));
+    addbookmarkdialog->selectAll();
+
+    FXString msg = FXString(_("Location:")) + " " + dirpathname;
+    addbookmarkdialog->setMessage(msg);
+
+    // Accept was pressed
+    if (addbookmarkdialog->execute(PLACEMENT_CURSOR))
+    {
+        // Append bookmark
+        FXString name = addbookmarkdialog->getName();
+        FXString iconpathname = addbookmarkdialog->getIconPathname();
+        int ret = bookmarkslist->appendBookmark(name, dirpathname, iconpathname);
+        if (ret == 0)
+        {
+            return 0;
+        }
+    }
+    // Cancel was pressed
+    else
+    {
+        return 0;
+    }
+
+    return 1;
+}
+
+
+// Go to the directory pointed by the selected bookmark
+long DirPanel::onCmdGotoBookmark(FXObject*, FXSelector, void*)
+{
+    FXString name = bookmarkslist->getCurrentItem();
+
+    // Bookmark location
+    FXString directory = bookmarkslist->getItemPathname(name);
+
+    // Permission problem or does not exist
+    if (!xf_existfile(directory))
+    {
+        MessageBox::error(this, BOX_OK, _("Error"), _("Folder %s doesn't exist"), directory.text());
+        return 0;
+    }
+    else if (!xf_isreadexecutable(directory))
+    {
+        MessageBox::error(this, BOX_OK_SU, _("Error"), _(" Permission to: %s denied."), directory.text());
+        return 0;
+    }
+
+    FilePanel* currentpanel = ((XFileExplorer*)mainWindow)->getCurrentPanel();
+    ComboBox* address = ((XFileExplorer*)mainWindow)->getAddressBox();
+    currentpanel->setDirectory(directory, true);
+    currentpanel->updatePath();
+    setDirectory(directory, true);
+
+    // Set bookmark (select and set current)
+    bookmarkslist->setBookmark(name);
+
+    // Update address list
+    FXString item;
+    int i = 0;
+    int count = address->getNumItems();
+    if (!count)
+    {
+        count++;
+        address->insertItem(0, address->getText());
+    }
+    while (i < count)
+    {
+        item = address->getItem(i++);
+        if (xf_strequal(directory.text(), (const char*)&item[0]))
+        {
+            i--;
+            break;
+        }
+    }
+    if (i == count)
+    {
+        address->insertItem(0, directory);
+    }
+
+    return 1;
+}
+
+
+// Move up bookmark
+long DirPanel::onCmdMoveUpBookmark(FXObject*, FXSelector, void*)
+{
+    // Move current bookmark
+    FXString name = bookmarkslist->getCurrentItem();
+
+    bookmarkslist->moveUp(name);
+
+    // Rebuild bookmarks menu
+    mainWindow->handle(this, FXSEL(SEL_COMMAND, XFileExplorer::ID_REBUILD_BOOKMARKS_MENU), NULL);
+
+
+    return 1;
+}
+
+
+// Move down bookmark
+long DirPanel::onCmdMoveDownBookmark(FXObject*, FXSelector, void*)
+{
+    // Move current bookmark
+    FXString name = bookmarkslist->getCurrentItem();
+
+    bookmarkslist->moveDown(name);
+
+    // Rebuild bookmarks menu
+    mainWindow->handle(this, FXSEL(SEL_COMMAND, XFileExplorer::ID_REBUILD_BOOKMARKS_MENU), NULL);
+
+    return 1;
+}
+
+
+// Update bookmarks move up menu
+long DirPanel::onUpdMoveUpBookmark(FXObject* sender, FXSelector, void*)
+{
+    int index = bookmarkslist->FXList::getCurrentItem();
+
+    (index == 0 ? sender->handle(this, FXSEL(SEL_COMMAND, ID_DISABLE), NULL) :
+     sender->handle(this, FXSEL(SEL_COMMAND, ID_ENABLE), NULL));
+
+    return 1;
+}
+
+
+// Update bookmarks move down menu
+long DirPanel::onUpdMoveDownBookmark(FXObject* sender, FXSelector, void*)
+{
+    int index = bookmarkslist->FXList::getCurrentItem();
+
+    (index == bookmarkslist->getNumItems() - 1 ? sender->handle(this, FXSEL(SEL_COMMAND, ID_DISABLE), NULL) :
+     sender->handle(this, FXSEL(SEL_COMMAND, ID_ENABLE), NULL));
+
+    return 1;
+}
+
+
+// Update bookmarks list selection
+long DirPanel::onUpdBookmarks(FXObject* sender, FXSelector, void*)
+{
+    FilePanel* currentpanel = ((XFileExplorer*)mainWindow)->getCurrentPanel();
+    FXString currentdir = currentpanel->getDirectory();
+
+    bookmarkslist->deselectAll();
+
+    for (int i = 0; i < bookmarkslist->getNumItems(); i++)
+    {
+        // Bookmark directory no more exists
+        if (!xf_existfile(bookmarkslist->getItemPathname(bookmarkslist->getItemText(i))))
+        {
+            // Remove it
+            bookmarkslist->removeItem(bookmarkslist->getItemText(i));
+        }
+        else
+        {
+            // Select bookmark if current directory
+            if (bookmarkslist->getItemPathname(bookmarkslist->getItemText(i)) == currentdir)
+            {
+                bookmarkslist->selectItem(i);
+                break;
+            }
+        }
+    }
+
+    return 1;
 }
 
 
 // Toggle hidden files
 long DirPanel::onCmdToggleHidden(FXObject*, FXSelector, void*)
 {
-    list->showHiddenFiles(!list->shownHiddenFiles());
-    return(1);
+    dirlist->showHiddenFiles(!dirlist->shownHiddenFiles());
+    return 1;
 }
 
 
 // Update toggle hidden files widget
 long DirPanel::onUpdToggleHidden(FXObject* sender, FXSelector, void*)
 {
-    if (list->shownHiddenFiles())
+    if (dirlist->shownHiddenFiles())
     {
         sender->handle(this, FXSEL(SEL_COMMAND, ID_CHECK), NULL);
     }
@@ -661,17 +1370,19 @@ long DirPanel::onUpdToggleHidden(FXObject* sender, FXSelector, void*)
     {
         sender->handle(this, FXSEL(SEL_COMMAND, ID_UNCHECK), NULL);
     }
-    return(1);
+    return 1;
 }
 
 
-long DirPanel::onCmdToggleTree(FXObject* sender, FXSelector sel, void* ptr)
+// Show/hide panel
+long DirPanel::onCmdTogglePanel(FXObject* sender, FXSelector sel, void* ptr)
 {
-    return(this->handle(sender, FXSEL(SEL_COMMAND, FXWindow::ID_TOGGLESHOWN), ptr));
+    return this->handle(sender, FXSEL(SEL_COMMAND, FXWindow::ID_TOGGLESHOWN), ptr);
 }
 
 
-long DirPanel::onUpdToggleTree(FXObject* sender, FXSelector sel, void* ptr)
+// Update menu button
+long DirPanel::onUpdTogglePanel(FXObject* sender, FXSelector sel, void* ptr)
 {
     if (this->shown())
     {
@@ -681,17 +1392,19 @@ long DirPanel::onUpdToggleTree(FXObject* sender, FXSelector sel, void* ptr)
     {
         sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_UNCHECK), ptr);
     }
-    return(1);
+    return 1;
 }
 
 
 // Directory list context menu
-long DirPanel::onCmdPopupMenu(FXObject* o, FXSelector s, void* p)
+long DirPanel::onCmdPopupMenuDirList(FXObject* sender, FXSelector sel, void* ptr)
 {
     // Check if control key was pressed
-    if (p != NULL)
+    FXbool ctrlflag = false;
+
+    if (ptr != NULL)
     {
-        FXEvent* event = (FXEvent*)p;
+        FXEvent* event = (FXEvent*)ptr;
         if (event->state & CONTROLMASK)
         {
             ctrlflag = true;
@@ -702,16 +1415,16 @@ long DirPanel::onCmdPopupMenu(FXObject* o, FXSelector s, void* p)
     int x, y, xitem, yitem;
     FXuint state;
     getRoot()->getCursorPosition(x, y, state);
-    list->getCursorPosition(xitem, yitem, state);
-    DirItem* item = (DirItem*)list->getItemAt(xitem, yitem);
+    dirlist->getCursorPosition(xitem, yitem, state);
+    DirItem* item = (DirItem*)dirlist->getItemAt(xitem, yitem);
 
     // If item, then set it current and set directory in DirList and FileList
     FXString dir;
     if (item)
     {
-        list->setCurrentItem(item, true);
-        dir = list->getItemPathname((TreeItem*)item);
-        list->setDirectory(dir, true);
+        dirlist->setCurrentItem(item, true);
+        dir = dirlist->getItemPathname((TreeItem*)item);
+        dirlist->setDirectory(dir, true);
         ((XFileExplorer*)mainWindow)->getCurrentPanel()->setDirectory(dir, true);
         ((XFileExplorer*)mainWindow)->getCurrentPanel()->updatePath();
     }
@@ -728,72 +1441,346 @@ long DirPanel::onCmdPopupMenu(FXObject* o, FXSelector s, void* p)
     // Control flag set
     if (ctrlflag)
     {
-        // Reset the control flag
+        // Reset control flag
         ctrlflag = false;
 
         // Panel menu items
-        new FXMenuCommand(menu, _("New &folder..."), newfoldericon, this, DirPanel::ID_NEW_DIR);
+        new FXMenuCommand(menu, _("New &Folder..."), minifoldernewicon, this, DirPanel::ID_NEW_DIR);
+        new FXMenuCommand(menu, _("&Add Bookmark..."), miniaddbookicon, this, DirPanel::ID_ADD_BOOKMARK);
 
         new FXMenuSeparator(menu);
-        new FXMenuCheck(menu, _("&Hidden folders"), this, DirPanel::ID_TOGGLE_HIDDEN);
-        new FXMenuCheck(menu, _("Ignore c&ase"), list, DirList::ID_SORT_CASE);
-        new FXMenuCheck(menu, _("&Reverse order"), list, DirList::ID_SORT_REVERSE);
-        new FXMenuCommand(menu, _("E&xpand tree"), exptreeicon, this, DirPanel::ID_EXPANDTREE);
-        new FXMenuCommand(menu, _("Collap&se tree"), colltreeicon, this, DirPanel::ID_COLLAPSETREE);
+        new FXMenuCheck(menu, _("&Hidden Folders"), this, DirPanel::ID_TOGGLE_HIDDEN);
+        new FXMenuCheck(menu, _("Ignore C&ase"), dirlist, DirList::ID_SORT_CASE);
+        new FXMenuCheck(menu, _("&Reverse Order"), dirlist, DirList::ID_SORT_REVERSE);
+        new FXMenuCommand(menu, _("E&xpand Tree"), miniexptreeicon, this, DirPanel::ID_EXPANDTREE);
+        new FXMenuCommand(menu, _("Collap&se Tree"), minicolltreeicon, this, DirPanel::ID_COLLAPSETREE);
     }
     else
     {
         // Panel submenu items
         FXMenuPane* submenu = new FXMenuPane(this);
 
-        new FXMenuCommand(submenu, _("New &folder..."), newfoldericon, this, DirPanel::ID_NEW_DIR);
+        new FXMenuCommand(submenu, _("New &Folder..."), minifoldernewicon, this, DirPanel::ID_NEW_DIR);
+        new FXMenuCommand(submenu, _("&Add Bookmark..."), miniaddbookicon, this, DirPanel::ID_ADD_BOOKMARK);
 
         new FXMenuSeparator(submenu);
-        new FXMenuCheck(submenu, _("&Hidden folders"), this, DirPanel::ID_TOGGLE_HIDDEN);
-        new FXMenuCheck(submenu, _("Ignore c&ase"), list, DirList::ID_SORT_CASE);
-        new FXMenuCheck(submenu, _("&Reverse order"), list, DirList::ID_SORT_REVERSE);
-        new FXMenuCommand(submenu, _("E&xpand tree"), exptreeicon, this, DirPanel::ID_EXPANDTREE);
-        new FXMenuCommand(submenu, _("Collap&se tree"), colltreeicon, this, DirPanel::ID_COLLAPSETREE);
+        new FXMenuCheck(submenu, _("&Hidden Folders"), this, DirPanel::ID_TOGGLE_HIDDEN);
+        new FXMenuCheck(submenu, _("Ignore C&ase"), dirlist, DirList::ID_SORT_CASE);
+        new FXMenuCheck(submenu, _("&Reverse Order"), dirlist, DirList::ID_SORT_REVERSE);
+        new FXMenuCommand(submenu, _("E&xpand Tree"), miniexptreeicon, this, DirPanel::ID_EXPANDTREE);
+        new FXMenuCommand(submenu, _("Collap&se Tree"), minicolltreeicon, this, DirPanel::ID_COLLAPSETREE);
 
         new FXMenuCascade(menu, _("Pane&l"), NULL, submenu);
         new FXMenuSeparator(menu);
 
 #if defined(linux)
-        if (::isLink(dir))
+        if (xf_islink(dir))
         {
-            dir = ::readLink(dir);
+            dir = xf_readlink(dir);
         }
         if (fsdevices->find(dir.text()) || mtdevices->find(dir.text()))
         {
-            new FXMenuCommand(menu, _("M&ount"), maphosticon, this, ID_MOUNT);
-            new FXMenuCommand(menu, _("Unmoun&t"), unmaphosticon, this, ID_UMOUNT);
+            new FXMenuCommand(menu, _("M&ount"), minimounticon, this, ID_MOUNT);
+            new FXMenuCommand(menu, _("Unmoun&t"), miniunmounticon, this, ID_UMOUNT);
             new FXMenuSeparator(menu);
         }
 #endif
-        new FXMenuCommand(menu, _("&Add to archive..."), archaddicon, this, DirPanel::ID_ARCHIVE);
+        new FXMenuCommand(menu, _("&Add to Archive..."), miniarchaddicon, this, DirPanel::ID_ARCHIVE);
         new FXMenuSeparator(menu);
-        new FXMenuCommand(menu, _("&Copy"), copy_clpicon, this, DirPanel::ID_COPY_CLIPBOARD);
-        new FXMenuCommand(menu, _("C&ut"), cut_clpicon, this, DirPanel::ID_CUT_CLIPBOARD);
-        new FXMenuCommand(menu, _("&Paste"), paste_clpicon, this, DirPanel::ID_PASTE_CLIPBOARD);
+        new FXMenuCommand(menu, _("&Copy"), minicopyicon, this, DirPanel::ID_COPY_CLIPBOARD);
+        new FXMenuCommand(menu, _("C&ut"), minicuticon, this, DirPanel::ID_CUT_CLIPBOARD);
+        new FXMenuCommand(menu, _("&Paste"), minipasteicon, this, DirPanel::ID_PASTE_CLIPBOARD);
+        new FXMenuCommand(menu, _("Cop&y Name"), minicopyicon, this, DirPanel::ID_COPYNAME_CLIPBOARD);
         new FXMenuSeparator(menu);
-        new FXMenuCommand(menu, _("Re&name..."), renameiticon, this, DirPanel::ID_DIR_RENAME);
-        new FXMenuCommand(menu, _("Cop&y to..."), copy_clpicon, this, DirPanel::ID_DIR_COPYTO);
-        new FXMenuCommand(menu, _("&Move to..."), moveiticon, this, DirPanel::ID_DIR_MOVETO);
-        new FXMenuCommand(menu, _("Symlin&k to..."), minilinkicon, this, DirPanel::ID_DIR_SYMLINK);
-        new FXMenuCommand(menu, _("Mo&ve to trash"), filedeleteicon, this, DirPanel::ID_DIR_TRASH);
-        new FXMenuCommand(menu, _("R&estore from trash"), filerestoreicon, this, DirPanel::ID_DIR_RESTORE);
-        new FXMenuCommand(menu, _("&Delete"), filedelete_permicon, this, DirPanel::ID_DIR_DELETE);
+        new FXMenuCommand(menu, _("Re&name..."), minirenameicon, this, DirPanel::ID_DIR_RENAME);
+        new FXMenuCommand(menu, _("Cop&y to..."), minicopyicon, this, DirPanel::ID_DIR_COPYTO);
+        new FXMenuCommand(menu, _("&Move to..."), minimoveicon, this, DirPanel::ID_DIR_MOVETO);
+        new FXMenuCommand(menu, _("Symlin&k to..."), minilinktoicon, this, DirPanel::ID_DIR_SYMLINK);
+        new FXMenuCommand(menu, _("Mo&ve to Trash"), minideleteicon, this, DirPanel::ID_DIR_TRASH);
+        new FXMenuCommand(menu, _("R&estore From Trash"), minirestoreicon, this, DirPanel::ID_DIR_RESTORE);
+        new FXMenuCommand(menu, _("&Delete"), minideletepermicon, this, DirPanel::ID_DIR_DELETE);
         new FXMenuSeparator(menu);
-        new FXMenuCommand(menu, _("Cop&y name"), copy_clpicon, this, DirPanel::ID_COPYNAME_CLIPBOARD);
-        new FXMenuCommand(menu, _("Prop&erties"), attribicon, this, DirPanel::ID_PROPERTIES);
+        new FXMenuCommand(menu, _("Prop&erties"), miniattribicon, this, DirPanel::ID_PROPERTIES);
     }
 
     menu->create();
-    allowPopupScroll = true;  // Allow keyboard scrolling
     menu->popup(NULL, x, y);
     getApp()->runModalWhileShown(menu);
-    allowPopupScroll = false;
-    return(1);
+    return 1;
+}
+
+
+// Places list context menu
+long DirPanel::onCmdPopupMenuPlaces(FXObject* sender, FXSelector sel, void* ptr)
+{
+    // Current item becomes item under cursor
+    int x, y, xitem, yitem;
+    FXuint state;
+
+    getRoot()->getCursorPosition(x, y, state);
+    placeslist->getCursorPosition(xitem, yitem, state);
+
+    int item = placeslist->getItemAt(xitem, yitem);
+    if (item > -1)
+    {
+        FXString key = placeslist->getItemText(item);
+        FXString directory = placeslist->getItemPathname(key);
+
+        // Permission problem or does not exist
+        if (!xf_existfile(directory))
+        {
+            MessageBox::error(this, BOX_OK, _("Error"), _("Folder %s doesn't exist"), directory.text());
+            return 0;
+        }
+        else if (!xf_isreadexecutable(directory))
+        {
+            MessageBox::error(this, BOX_OK_SU, _("Error"), _(" Permission to: %s denied."), directory.text());
+            return 0;
+        }
+
+        FilePanel* currentpanel = ((XFileExplorer*)mainWindow)->getCurrentPanel();
+        ComboBox* address = ((XFileExplorer*)mainWindow)->getAddressBox();
+        currentpanel->setDirectory(directory, true);
+        currentpanel->updatePath();
+        setDirectory(directory, true);
+        placeslist->setPlace(key);
+
+        // Update address list
+        FXString item;
+        int i = 0;
+        int count = address->getNumItems();
+        if (!count)
+        {
+            count++;
+            address->insertItem(0, address->getText());
+        }
+        while (i < count)
+        {
+            item = address->getItem(i++);
+            if (xf_strequal(directory.text(), (const char*)&item[0]))
+            {
+                i--;
+                break;
+            }
+        }
+        if (i == count)
+        {
+            address->insertItem(0, directory);
+        }
+    }
+    else
+    {
+        return 0;
+    }
+
+    // Popup menu pane
+    FXMenuPane* menu = new FXMenuPane(this);
+
+    // Menu
+    new FXMenuCommand(menu, _("New &Tab"), mininewtabicon, this, DirPanel::ID_OPEN_PLACE_NEW_TAB);
+    new FXMenuCommand(menu, _("New &Window"), minixfeicon, this, DirPanel::ID_OPEN_PLACE_NEW_WINDOW);
+    new FXMenuSeparator(menu);
+    new FXMenuCommand(menu, _("&Properties"), miniattribicon, this, DirPanel::ID_PLACE_PROPERTIES);
+
+    menu->create();
+    menu->popup(NULL, x, y);
+    getApp()->runModalWhileShown(menu);
+
+    return 1;
+}
+
+
+// Mounts list context menu
+long DirPanel::onCmdPopupMenuMounts(FXObject* sender, FXSelector sel, void* ptr)
+{
+    // Current item becomes item under cursor
+    int x, y, xitem, yitem;
+    FXuint state;
+
+    getRoot()->getCursorPosition(x, y, state);
+    mountslist->getCursorPosition(xitem, yitem, state);
+
+    int item = mountslist->getItemAt(xitem, yitem);
+    if (item > -1)
+    {
+        FXString key = mountslist->getItemText(item);
+        FXString directory = mountslist->getItemPathname(key);
+
+        // Permission problem or does not exist
+        if (!xf_existfile(directory))
+        {
+            MessageBox::error(this, BOX_OK, _("Error"), _("Folder %s doesn't exist"), directory.text());
+            return 0;
+        }
+        else if (!xf_isreadexecutable(directory))
+        {
+            MessageBox::error(this, BOX_OK_SU, _("Error"), _(" Permission to: %s denied."), directory.text());
+            return 0;
+        }
+
+        FilePanel* currentpanel = ((XFileExplorer*)mainWindow)->getCurrentPanel();
+        ComboBox* address = ((XFileExplorer*)mainWindow)->getAddressBox();
+        currentpanel->setDirectory(directory, true);
+        currentpanel->updatePath();
+        setDirectory(directory, true);
+        mountslist->setMount(key);
+
+        // Update address list
+        FXString item;
+        int i = 0;
+        int count = address->getNumItems();
+        if (!count)
+        {
+            count++;
+            address->insertItem(0, address->getText());
+        }
+        while (i < count)
+        {
+            item = address->getItem(i++);
+            if (xf_strequal(directory.text(), (const char*)&item[0]))
+            {
+                i--;
+                break;
+            }
+        }
+        if (i == count)
+        {
+            address->insertItem(0, directory);
+        }
+    }
+    else
+    {
+        return 0;
+    }
+
+    // Popup menu pane
+    FXMenuPane* menu = new FXMenuPane(this);
+
+    // Menu
+    new FXMenuCommand(menu, _("New &Tab"), mininewtabicon, this, DirPanel::ID_OPEN_MOUNT_NEW_TAB);
+    new FXMenuCommand(menu, _("New &Window"), minixfeicon, this, DirPanel::ID_OPEN_MOUNT_NEW_WINDOW);
+    new FXMenuSeparator(menu);
+#if defined(linux)
+    new FXMenuCommand(menu, _("M&ount"), minimounticon, this, DirPanel::ID_MOUNT);
+    new FXMenuCommand(menu, _("&Unmount"), miniunmounticon, this, DirPanel::ID_UMOUNT);
+    new FXMenuSeparator(menu);
+#endif
+    new FXMenuCommand(menu, _("&Properties"), miniattribicon, this, DirPanel::ID_MOUNT_PROPERTIES);
+
+    menu->create();
+    menu->popup(NULL, x, y);
+    getApp()->runModalWhileShown(menu);
+
+    return 1;
+}
+
+
+// Bookmarks list context menu
+long DirPanel::onCmdPopupMenuBookmarks(FXObject* sender, FXSelector sel, void* ptr)
+{
+    // Check if control key was pressed
+    FXbool ctrlflag = false;
+
+    if (ptr != NULL)
+    {
+        FXEvent* event = (FXEvent*)ptr;
+        if (event->state & CONTROLMASK)
+        {
+            ctrlflag = true;
+        }
+    }
+
+    // Current item becomes item under cursor
+    int x, y, xitem, yitem;
+    FXuint state;
+
+    getRoot()->getCursorPosition(x, y, state);
+    bookmarkslist->getCursorPosition(xitem, yitem, state);
+
+    int item = bookmarkslist->getItemAt(xitem, yitem);
+    if (item > -1)
+    {
+        FXString key = bookmarkslist->getItemText(item);
+        FXString directory = bookmarkslist->getItemPathname(key);
+
+        // Permission problem or does not exist
+        if (!xf_existfile(directory))
+        {
+            MessageBox::error(this, BOX_OK, _("Error"), _("Folder %s doesn't exist"), directory.text());
+            return 0;
+        }
+        else if (!xf_isreadexecutable(directory))
+        {
+            MessageBox::error(this, BOX_OK_SU, _("Error"), _(" Permission to: %s denied."), directory.text());
+            return 0;
+        }
+
+        FilePanel* currentpanel = ((XFileExplorer*)mainWindow)->getCurrentPanel();
+        ComboBox* address = ((XFileExplorer*)mainWindow)->getAddressBox();
+        currentpanel->setDirectory(directory, true);
+        currentpanel->updatePath();
+        setDirectory(directory, true);
+        bookmarkslist->setBookmark(key);
+
+        // Update address list
+        FXString item;
+        int i = 0;
+        int count = address->getNumItems();
+        if (!count)
+        {
+            count++;
+            address->insertItem(0, address->getText());
+        }
+        while (i < count)
+        {
+            item = address->getItem(i++);
+            if (xf_strequal(directory.text(), (const char*)&item[0]))
+            {
+                i--;
+                break;
+            }
+        }
+        if (i == count)
+        {
+            address->insertItem(0, directory);
+        }
+    }
+    else
+    {
+        ctrlflag = true;
+    }
+
+    // Popup menu pane
+    FXMenuPane* menu = new FXMenuPane(this);
+
+    // Menu
+
+    // Control flag set
+    if (ctrlflag)
+    {
+        // Reset control flag
+        ctrlflag = false;
+
+        new FXMenuCommand(menu, _("&Add Bookmark..."), miniaddbookicon, this, DirPanel::ID_ADD_BOOKMARK);
+    }
+    else
+    {
+        new FXMenuCommand(menu, _("New &Tab"), mininewtabicon, this, DirPanel::ID_OPEN_BOOKMARK_NEW_TAB);
+        new FXMenuCommand(menu, _("New &Window"), minixfeicon, this, DirPanel::ID_OPEN_BOOKMARK_NEW_WINDOW);
+        new FXMenuCommand(menu, _("&Modify..."), minieditbookicon, this, DirPanel::ID_MODIFY_BOOKMARK);
+        new FXMenuCommand(menu, _("&Remove"), miniremovebookicon, this, DirPanel::ID_REMOVE_BOOKMARK);
+        new FXMenuSeparator(menu);
+        new FXMenuCommand(menu, _("Move &Up"), miniupicon, this, DirPanel::ID_MOVEUP_BOOKMARK);
+        new FXMenuCommand(menu, _("Move &Down"), minidownicon, this, DirPanel::ID_MOVEDOWN_BOOKMARK);
+        new FXMenuSeparator(menu);
+        new FXMenuCommand(menu, _("&Properties"), miniattribicon, this, DirPanel::ID_BOOKMARK_PROPERTIES);
+    }
+
+    menu->create();
+    menu->popup(NULL, x, y);
+    getApp()->runModalWhileShown(menu);
+
+    return 1;
 }
 
 
@@ -804,11 +1791,11 @@ long DirPanel::exploreUp(DirItem* item, const DirItem* rootitem, const int task)
 
     if (task == ID_EXPANDTREE)
     {
-        list->expandTree((TreeItem*)item, true);
+        dirlist->expandTree((TreeItem*)item, true);
     }
     else
     {
-        list->collapseTree((TreeItem*)item, true);
+        dirlist->collapseTree((TreeItem*)item, true);
     }
 
     item = (DirItem*)item->getFirst();
@@ -820,7 +1807,7 @@ long DirPanel::exploreUp(DirItem* item, const DirItem* rootitem, const int task)
     {
         exploreUp(item, rootitem, task);
     }
-    return(1);
+    return 1;
 }
 
 
@@ -829,18 +1816,18 @@ long DirPanel::exploreDown(DirItem* item, const DirItem* rootitem, const int tas
 {
     if (item == rootitem)
     {
-        return(1);
+        return 1;
     }
 
     DirItem* parentitem = (DirItem*)item->getParent();
 
     if (task == ID_EXPANDTREE)
     {
-        list->expandTree((TreeItem*)item, true);
+        dirlist->expandTree((TreeItem*)item, true);
     }
     else
     {
-        list->collapseTree((TreeItem*)item, true);
+        dirlist->collapseTree((TreeItem*)item, true);
     }
     item = (DirItem*)item->getNext();
 
@@ -852,13 +1839,13 @@ long DirPanel::exploreDown(DirItem* item, const DirItem* rootitem, const int tas
     {
         if (task == ID_EXPANDTREE)
         {
-            list->expandTree((TreeItem*)item, true);
+            dirlist->expandTree((TreeItem*)item, true);
         }
         else
         {
-            list->collapseTree((TreeItem*)item, true);
+            dirlist->collapseTree((TreeItem*)item, true);
         }
-        if (!list->isItemLeaf(item))
+        if (!dirlist->isItemLeaf(item))
         {
             exploreUp(item, rootitem, task);
         }
@@ -867,33 +1854,33 @@ long DirPanel::exploreDown(DirItem* item, const DirItem* rootitem, const int tas
             exploreDown(item, rootitem, task);
         }
     }
-    return(1);
+    return 1;
 }
 
 
 // Expand the directory tree under cursor
 long DirPanel::onExpandTree(FXObject* sender, FXSelector sel, void*)
 {
-    DirItem* rootitem = (DirItem*)list->getCurrentItem();
+    DirItem* rootitem = (DirItem*)dirlist->getCurrentItem();
 
     getApp()->beginWaitCursor();
     exploreUp(rootitem, rootitem, ID_EXPANDTREE);
     getApp()->endWaitCursor();
 
-    return(1);
+    return 1;
 }
 
 
 // Collapse the directory tree under cursor
 long DirPanel::onCollapseTree(FXObject* sender, FXSelector sel, void*)
 {
-    DirItem* rootitem = (DirItem*)list->getCurrentItem();
+    DirItem* rootitem = (DirItem*)dirlist->getCurrentItem();
 
     getApp()->beginWaitCursor();
     exploreUp(rootitem, rootitem, ID_COLLAPSETREE);
     getApp()->endWaitCursor();
 
-    return(1);
+    return 1;
 }
 
 
@@ -901,30 +1888,31 @@ long DirPanel::onCollapseTree(FXObject* sender, FXSelector sel, void*)
 long DirPanel::onCmdProperties(FXObject* sender, FXSelector, void*)
 {
     // Current item
-    DirItem* item = (DirItem*)list->getCurrentItem();
-    FXString pathname = list->getItemPathname((TreeItem*)item);
+    DirItem* item = (DirItem*)dirlist->getCurrentItem();
+    FXString pathname = dirlist->getItemPathname((TreeItem*)item);
 
     // Properties dialog
     PropertiesBox* attrdlg = new PropertiesBox(this, FXPath::name(pathname), FXPath::directory(pathname));
+
     attrdlg->create();
     attrdlg->show(PLACEMENT_OWNER);
-    list->setDirectory(pathname, true);
+    dirlist->setDirectory(pathname, true);
 
-    return(1);
+    return 1;
 }
 
 
 // Add files or directory to an archive
-long DirPanel::onCmdAddToArch(FXObject* o, FXSelector, void*)
+long DirPanel::onCmdAddToArch(FXObject* sender, FXSelector, void*)
 {
     int ret;
     FXString ext1, ext2, cmd, archive;
-    File*    f;
+    File* f;
 
     // Name and path of the current item
-    DirItem* item = (DirItem*)list->getCurrentItem();
-    FXString name = list->getItemText(item);
-    FXString pathname = list->getItemPathname((TreeItem*)item);
+    DirItem* item = (DirItem*)dirlist->getCurrentItem();
+    FXString name = dirlist->getItemText(item);
+    FXString pathname = dirlist->getItemPathname((TreeItem*)item);
     FXString parentdir = FXPath::directory(pathname);
 
     // Initial archive name with full path and default extension
@@ -950,14 +1938,15 @@ long DirPanel::onCmdAddToArch(FXObject* o, FXSelector, void*)
         int errcode = errno;
         if (errcode)
         {
-            MessageBox::error(this, BOX_OK, _("Error"), _("Can't enter folder %s: %s"), parentdir.text(), strerror(errcode));
+            MessageBox::error(this, BOX_OK, _("Error"), _("Can't enter folder %s: %s"), parentdir.text(),
+                              strerror(errcode));
         }
         else
         {
             MessageBox::error(this, BOX_OK, _("Error"), _("Can't enter folder %s"), parentdir.text());
         }
 
-        return(0);
+        return 0;
     }
 
     // Archive dialog
@@ -973,32 +1962,25 @@ long DirPanel::onCmdAddToArch(FXObject* o, FXSelector, void*)
         if (archdialog->getText() == "")
         {
             MessageBox::warning(this, BOX_OK, _("Warning"), _("File name is empty, operation cancelled"));
-            return(0);
+            return 0;
         }
 
         // Get string and preserve escape characters
-        archive = ::quote(archdialog->getText());
+        archive = xf_quote(archdialog->getText());
 
         // Get extensions of the archive name
         ext1 = archdialog->getText().rafter('.', 1).lower();
         ext2 = archdialog->getText().rafter('.', 2).lower();
 
         // Handle different archive formats
-        if (ext2 == "tar.gz")
+        if ((ext2 == "tar.gz") || (ext2 == "tar.bz2") || (ext2 == "tar.xz") || (ext2 == "tar.zst") || (ext2 == "tar.z"))
         {
-            cmd = "tar -zcvf " + archive + " ";
+            cmd = "tar -acvf " + archive + " ";
         }
-        else if (ext2 == "tar.bz2")
+        else if ((ext1 == "tgz") || (ext1 == "tbz2") || (ext1 == "tbz") || (ext1 == "txz") || (ext1 == "taz") ||
+                 (ext1 == "tzst"))
         {
-            cmd = "tar -jcvf " + archive + " ";
-        }
-        else if (ext2 == "tar.xz")
-        {
-            cmd = "tar -Jcvf " + archive + " ";
-        }
-        else if (ext2 == "tar.z")
-        {
-            cmd = "tar -Zcvf " + archive + " ";
+            cmd = "tar -acvf " + archive + " ";
         }
         else if (ext1 == "tar")
         {
@@ -1008,29 +1990,17 @@ long DirPanel::onCmdAddToArch(FXObject* o, FXSelector, void*)
         {
             cmd = "gzip -v ";
         }
-        else if (ext1 == "tgz")
-        {
-            cmd = "tar -zcvf " + archive + " ";
-        }
-        else if (ext1 == "taz")
-        {
-            cmd = "tar -Zcvf " + archive + " ";
-        }
         else if (ext1 == "bz2")
         {
             cmd = "bzip2 -v ";
         }
+        else if (ext1 == "zst")
+        {
+            cmd = "zstd ";
+        }
         else if (ext1 == "xz")
         {
             cmd = "xz -v ";
-        }
-        else if ((ext1 == "tbz2") || (ext1 == "tbz"))
-        {
-            cmd = "tar -jcvf " + archive + " ";
-        }
-        else if (ext1 == "txz")
-        {
-            cmd = "tar -Jcvf " + archive + " ";
         }
         else if (ext1 == "z")
         {
@@ -1044,22 +2014,25 @@ long DirPanel::onCmdAddToArch(FXObject* o, FXSelector, void*)
         {
             cmd = "7z a " + archive + " ";
         }
-
+        else if (ext1 == "rar")
+        {
+            cmd = "rar a " + archive + " ";
+        }
         // Default archive format
         else
         {
             archive += ".tar.gz";
-            cmd = "tar -zcvf " + archive + " ";
+            cmd = "tar -acvf " + archive + " ";
         }
 
         // Archive command name
-        cmd = cmd + ::quote(name);
+        cmd = cmd + xf_quote(name);
 
         // Wait cursor
         getApp()->beginWaitCursor();
 
         // File object
-        f = new File(this, _("Create archive"), ARCHIVE);
+        f = new File(this, _("Create Archive"), ARCHIVE);
         f->create();
 
         // Create archive
@@ -1070,26 +2043,27 @@ long DirPanel::onCmdAddToArch(FXObject* o, FXSelector, void*)
             int errcode = errno;
             if (errcode)
             {
-                MessageBox::error(this, BOX_OK, _("Error"), _("Can't enter folder %s: %s"), startlocation.text(), strerror(errcode));
+                MessageBox::error(this, BOX_OK, _("Error"), _("Can't enter folder %s: %s"), startlocation.text(),
+                                  strerror(errcode));
             }
             else
             {
                 MessageBox::error(this, BOX_OK, _("Error"), _("Can't enter folder %s"), startlocation.text());
             }
 
-			delete f;
-            return(0);
+            delete f;
+            return 0;
         }
 
         getApp()->endWaitCursor();
         delete f;
 
         // Display parent directory in DirList and FileList
-        list->setDirectory(parentdir, true);
+        dirlist->setDirectory(parentdir, true);
         ((XFileExplorer*)mainWindow)->getCurrentPanel()->setDirectory(parentdir);
         ((XFileExplorer*)mainWindow)->getCurrentPanel()->updatePath();
     }
-    return(1);
+    return 1;
 }
 
 
@@ -1097,7 +2071,7 @@ long DirPanel::onCmdAddToArch(FXObject* o, FXSelector, void*)
 long DirPanel::onClipboardGained(FXObject* sender, FXSelector sel, void* ptr)
 {
     FXVerticalFrame::onClipboardGained(sender, sel, ptr);
-    return(1);
+    return 1;
 }
 
 
@@ -1105,7 +2079,7 @@ long DirPanel::onClipboardGained(FXObject* sender, FXSelector sel, void* ptr)
 long DirPanel::onClipboardLost(FXObject* sender, FXSelector sel, void* ptr)
 {
     FXVerticalFrame::onClipboardLost(sender, sel, ptr);
-    return(1);
+    return 1;
 }
 
 
@@ -1119,7 +2093,7 @@ long DirPanel::onClipboardRequest(FXObject* sender, FXSelector sel, void* ptr)
     // Perhaps the target wants to supply its own data for the clipboard
     if (FXVerticalFrame::onClipboardRequest(sender, sel, ptr))
     {
-        return(1);
+        return 1;
     }
 
     // Clipboard target is xfelistType (Xfe, Gnome or XFCE)
@@ -1152,7 +2126,7 @@ long DirPanel::onClipboardRequest(FXObject* sender, FXSelector sel, void* ptr)
                 setDNDData(FROM_CLIPBOARD, event->target, data, len);
 
                 // Return because xfelistType is not compatible with other types
-                return(1);
+                return 1;
             }
         }
     }
@@ -1189,7 +2163,7 @@ long DirPanel::onClipboardRequest(FXObject* sender, FXSelector sel, void* ptr)
             FXMEMDUP(&data, clipboard.text(), FXuchar, len);
             setDNDData(FROM_CLIPBOARD, event->target, data, len);
 
-            return(1);
+            return 1;
         }
     }
 
@@ -1224,9 +2198,8 @@ long DirPanel::onClipboardRequest(FXObject* sender, FXSelector sel, void* ptr)
                     beg = end;
                 }
                 end = str.length();
-                str = str.mid(0, end - 2);  // Why is it end-2 here????
+                str = str.mid(0, end - 2); // Why is it end-2 here????
             }
-
             // Clipboard contains 'copy\n' or 'cut\n' as first line, thus skip it
             else
             {
@@ -1261,11 +2234,11 @@ long DirPanel::onClipboardRequest(FXObject* sender, FXSelector sel, void* ptr)
                 FXMEMDUP(&data, str.text(), FXuchar, len);
                 setDNDData(FROM_CLIPBOARD, event->target, data, len);
 
-                return(1);
+                return 1;
             }
         }
     }
-    return(0);
+    return 0;
 }
 
 
@@ -1277,7 +2250,6 @@ long DirPanel::onCmdCopyCut(FXObject*, FXSelector sel, void*)
     {
         clipboard.clear();
     }
-
     // Add an '\n' at the end if addcopy or addcut
     else
     {
@@ -1295,9 +2267,9 @@ long DirPanel::onCmdCopyCut(FXObject*, FXSelector sel, void*)
     }
 
     // Current item
-    DirItem* item = (DirItem*)list->getCurrentItem();
-    FXString pathname = list->getItemPathname((TreeItem*)item);
-    clipboard += FXURL::encode(::fileToURI(pathname));
+    DirItem* item = (DirItem*)dirlist->getCurrentItem();
+    FXString pathname = dirlist->getItemPathname((TreeItem*)item);
+    clipboard += FXURL::encode(::xf_filetouri(pathname));
 
     // Acquire the clipboard
     FXDragType types[4];
@@ -1307,10 +2279,10 @@ long DirPanel::onCmdCopyCut(FXObject*, FXSelector sel, void*)
     types[3] = utf8Type;
     if (acquireClipboard(types, 4))
     {
-        return(0);
+        return 0;
     }
 
-    return(1);
+    return 1;
 }
 
 
@@ -1322,9 +2294,9 @@ long DirPanel::onCmdCopyName(FXObject*, FXSelector sel, void*)
     clipboard_type = COPYNAME_CLIPBOARD;
 
     // Current item
-    DirItem* item = (DirItem*)list->getCurrentItem();
-    FXString pathname = list->getItemPathname((TreeItem*)item);
-    clipboard += FXURL::encode(::fileToURI(FXPath::name(pathname)));
+    DirItem* item = (DirItem*)dirlist->getCurrentItem();
+    FXString pathname = dirlist->getItemPathname((TreeItem*)item);
+    clipboard += FXURL::encode(::xf_filetouri(FXPath::name(pathname)));
 
     // Acquire the clipboard
     FXDragType types[4];
@@ -1334,10 +2306,10 @@ long DirPanel::onCmdCopyName(FXObject*, FXSelector sel, void*)
     types[3] = utf8Type;
     if (acquireClipboard(types, 4))
     {
-        return(0);
+        return 0;
     }
 
-    return(1);
+    return 1;
 }
 
 
@@ -1373,7 +2345,7 @@ long DirPanel::onCmdPaste(FXObject*, FXSelector sel, void*)
             // Obtain item url
             url = clipboard.mid(beg, end - beg);
 
-            // Eventually remove the trailing '\r' if any
+            // Remove the trailing '\r' if any
             if ((pos = url.rfind('\r')) > 0)
             {
                 url.erase(pos);
@@ -1393,7 +2365,6 @@ long DirPanel::onCmdPaste(FXObject*, FXSelector sel, void*)
                     clipboard_type = CUT_CLIPBOARD;
                     num++;
                 }
-
                 // If first item is not "copy" nor "cut", process it as a normal url
                 // and use default clipboard type
                 else
@@ -1405,7 +2376,6 @@ long DirPanel::onCmdPaste(FXObject*, FXSelector sel, void*)
                     num += 2;
                 }
             }
-
             // Process other items
             else
             {
@@ -1437,7 +2407,7 @@ long DirPanel::onCmdPaste(FXObject*, FXSelector sel, void*)
         FXFREE(&data);
 
         // Return here because xfelistType is not compatible with other types
-        return(1);
+        return 1;
     }
 
     // If source type is kdelistType (KDE)
@@ -1486,7 +2456,7 @@ long DirPanel::onCmdPaste(FXObject*, FXSelector sel, void*)
             // Obtain item url
             url = clipboard.mid(beg, end - beg);
 
-            // Eventually remove the trailing '\r' if any
+            // Remove the trailing '\r' if any
             if ((pos = url.rfind('\r')) > 0)
             {
                 url.erase(pos);
@@ -1516,7 +2486,7 @@ long DirPanel::onCmdPaste(FXObject*, FXSelector sel, void*)
         handle(this, sel, (void*)param.text());
 
         FXFREE(&data);
-        return(1);
+        return 1;
     }
 
     // If source type is utf8Type (simple text)
@@ -1538,7 +2508,7 @@ long DirPanel::onCmdPaste(FXObject*, FXSelector sel, void*)
             // Obtain item file path
             filepath = clipboard.mid(beg, end - beg);
 
-            // Eventually remove the trailing '\r' if any
+            // Remove the trailing '\r' if any
             if ((pos = filepath.rfind('\r')) > 0)
             {
                 filepath.erase(pos);
@@ -1558,10 +2528,10 @@ long DirPanel::onCmdPaste(FXObject*, FXSelector sel, void*)
         handle(this, sel, (void*)param.text());
 
         FXFREE(&data);
-        return(1);
+        return 1;
     }
 
-    return(0);
+    return 0;
 }
 
 
@@ -1569,7 +2539,7 @@ long DirPanel::onCmdPaste(FXObject*, FXSelector sel, void*)
 long DirPanel::onCmdStopListRefreshTimer(FXObject*, FXSelector, void*)
 {
     stopListRefresh = true;
-    return(0);
+    return 0;
 }
 
 
@@ -1581,6 +2551,10 @@ long DirPanel::onCmdDirMan(FXObject* sender, FXSelector sel, void* ptr)
 
     // Confirmation dialog?
     FXbool ask_before_copy = getApp()->reg().readUnsignedEntry("OPTIONS", "ask_before_copy", true);
+
+    // Copy suffix
+    FXString copysuffix = getApp()->reg().readStringEntry("OPTIONS", "copysuffix", DEFAULT_COPY_SUFFIX);
+    FXuint copysuffix_pos = getApp()->reg().readUnsignedEntry("OPTIONS", "copysuffix_pos", 0);
 
     // If we are called from the paste command, get the parameters from the pointer
     // Multiple sources are allowed
@@ -1599,15 +2573,14 @@ long DirPanel::onCmdDirMan(FXObject* sender, FXSelector sel, void* ptr)
         // If no item, return
         if (num <= 0)
         {
-            return(0);
+            return 0;
         }
     }
-
     // Obtain the parameters from the dir panel (only one source)
     else
     {
         // Current item
-        DirItem* item = (DirItem*)list->getCurrentItem();
+        DirItem* item = (DirItem*)dirlist->getCurrentItem();
 
         // Number of items
         if (item)
@@ -1616,11 +2589,11 @@ long DirPanel::onCmdDirMan(FXObject* sender, FXSelector sel, void* ptr)
         }
         else
         {
-            return(0);
+            return 0;
         }
 
         // Source directory
-        source = list->getItemPathname((TreeItem*)item);
+        source = dirlist->getItemPathname((TreeItem*)item);
 
         // Target directory
         targetdir = FXPath::directory(source);
@@ -1644,28 +2617,28 @@ long DirPanel::onCmdDirMan(FXObject* sender, FXSelector sel, void* ptr)
     }
 
     // Configure the command, title, message, etc.
-    FXIcon*  icon = NULL;
+    FXIcon* icon = NULL;
     FXString command, title, message;
     if (FXSELID(sel) == ID_DIR_COPY)
     {
         command = "copy";
         title = _("Copy");
-        icon = copy_bigicon;
+        icon = bigcopyicon;
         if (num == 1)
         {
             message = _("Copy ");
             message += source;
-            if (::isFile(source))
+            if (xf_isfile(source))
             {
                 target += name;
             }
 
             // Source and target are identical => add a suffix to the name
-            FXString tgt = ::cleanPath(target); // Remove trailing / if any
-            if ((::identical(source, tgt)) ||
-                (::isDirectory(source) && (source == tgt + PATHSEPSTRING + FXPath::name(source))))
+            FXString tgt = xf_cleanpath(target); // Remove trailing / if any
+            if ((xf_isidentical(source, tgt)) ||
+                (xf_isdirectory(source) && (source == tgt + PATHSEPSTRING + FXPath::name(source))))
             {
-                target = ::buildCopyName(source, ::isDirectory(source));
+                target = xf_buildcopyname(source, xf_isdirectory(source), copysuffix, copysuffix_pos);
             }
         }
         else
@@ -1677,7 +2650,7 @@ long DirPanel::onCmdDirMan(FXObject* sender, FXSelector sel, void* ptr)
     {
         command = "rename";
         title = _("Rename");
-        icon = move_bigicon;
+        icon = bigrenameicon;
         if (num == 1)
         {
             message = _("Rename ");
@@ -1687,14 +2660,14 @@ long DirPanel::onCmdDirMan(FXObject* sender, FXSelector sel, void* ptr)
         }
         else
         {
-            return(0);
+            return 0;
         }
     }
     if (FXSELID(sel) == ID_DIR_COPYTO)
     {
         command = "copy";
         title = _("Copy to");
-        icon = copy_bigicon;
+        icon = bigcopyicon;
         if (num == 1)
         {
             message = _("Copy ");
@@ -1709,7 +2682,7 @@ long DirPanel::onCmdDirMan(FXObject* sender, FXSelector sel, void* ptr)
     {
         command = "move";
         title = _("Move");
-        icon = move_bigicon;
+        icon = bigmoveicon;
         if (num == 1)
         {
             message = _("Move ");
@@ -1725,12 +2698,12 @@ long DirPanel::onCmdDirMan(FXObject* sender, FXSelector sel, void* ptr)
     {
         command = "move";
         title = _("Move");
-        icon = move_bigicon;
+        icon = bigmoveicon;
         if (num == 1)
         {
             message = _("Move ");
             message += source;
-            if (::isFile(source))
+            if (xf_isfile(source))
             {
                 target += name;
             }
@@ -1745,7 +2718,7 @@ long DirPanel::onCmdDirMan(FXObject* sender, FXSelector sel, void* ptr)
     {
         command = "symlink";
         title = _("Symlink");
-        icon = link_bigicon;
+        icon = biglinktoicon;
         if (num == 1)
         {
             message = _("Symlink ");
@@ -1759,7 +2732,8 @@ long DirPanel::onCmdDirMan(FXObject* sender, FXSelector sel, void* ptr)
     }
 
     // File operation dialog, if needed
-    if (ask_before_copy || (source == target) || (FXSELID(sel) == ID_DIR_COPYTO) || (FXSELID(sel) == ID_DIR_MOVETO) || (FXSELID(sel) == ID_DIR_RENAME) || (FXSELID(sel) == ID_DIR_SYMLINK))
+    if (ask_before_copy || (source == target) || (FXSELID(sel) == ID_DIR_COPYTO) || (FXSELID(sel) == ID_DIR_MOVETO) ||
+        (FXSELID(sel) == ID_DIR_RENAME) || (FXSELID(sel) == ID_DIR_SYMLINK))
     {
         if (FXSELID(sel) == ID_DIR_RENAME)
         {
@@ -1779,13 +2753,14 @@ long DirPanel::onCmdDirMan(FXObject* sender, FXSelector sel, void* ptr)
             // Target name contains '/'
             if (target.contains(PATHSEPCHAR))
             {
-                MessageBox::error(this, BOX_OK, _("Error"), _("The / character is not allowed in folder names, operation cancelled"));
-                return(0);
+                MessageBox::error(this, BOX_OK, _("Error"),
+                                  _("The / character is not allowed in folder names, operation cancelled"));
+                return 0;
             }
 
             if (!rc)
             {
-                return(0);
+                return 0;
             }
         }
         else
@@ -1804,14 +2779,14 @@ long DirPanel::onCmdDirMan(FXObject* sender, FXSelector sel, void* ptr)
             target = operationdialog->getText();
             if (!rc)
             {
-                return(0);
+                return 0;
             }
         }
     }
 
     // Update target and target parent directory
-    target = ::filePath(target, targetdir);
-    if (::isDirectory(target))
+    target = xf_filepath(target, targetdir);
+    if (xf_isdirectory(target))
     {
         targetdir = target;
     }
@@ -1821,57 +2796,60 @@ long DirPanel::onCmdDirMan(FXObject* sender, FXSelector sel, void* ptr)
     }
 
     // Target directory not writable
-    if (!::isWritable(targetdir))
+    if (!xf_iswritable(targetdir))
     {
         MessageBox::error(getApp(), BOX_OK_SU, _("Error"), _("Can't write to %s: Permission denied"), targetdir.text());
-        return(0);
+        return 0;
     }
 
     // Multiple sources and non existent destination
-    if ((num > 1) && !existFile(target))
+    if ((num > 1) && !xf_existfile(target))
     {
         MessageBox::error(this, BOX_OK, _("Error"), _("Folder %s doesn't exist"), target.text());
-        return(0);
+        return 0;
     }
 
     // Multiple sources and target is a file
-    if ((num > 1) && ::isFile(target))
+    if ((num > 1) && xf_isfile(target))
     {
         MessageBox::error(this, BOX_OK, _("Error"), _("%s is not a folder"), target.text());
-        return(0);
+        return 0;
     }
 
     // Target is a directory and is not writable
-    if (::isDirectory(target) && !::isWritable(target))
+    if (xf_isdirectory(target) && !xf_iswritable(target))
     {
         MessageBox::error(getApp(), BOX_OK_SU, _("Error"), _("Can't write to %s: Permission denied"), target.text());
-        return(0);
+        return 0;
     }
 
     // Target is a file and its parent directory is not writable
-    if (::isFile(target) && !::isWritable(targetdir))
+    if (xf_isfile(target) && !xf_iswritable(targetdir))
     {
         MessageBox::error(getApp(), BOX_OK_SU, _("Error"), _("Can't write to %s: Permission denied"), targetdir.text());
-        return(0);
+        return 0;
     }
 
     // Target parent directory doesn't exist
-    if (!existFile(targetdir))
+    if (!xf_existfile(targetdir))
     {
         MessageBox::error(this, BOX_OK, _("Error"), _("Folder %s doesn't exist"), targetdir.text());
-        return(0);
+        return 0;
     }
 
     // Target parent directory is not a directory
-    if (!::isDirectory(targetdir))
+    if (!xf_isdirectory(targetdir))
     {
         MessageBox::error(this, BOX_OK, _("Error"), _("%s is not a folder"), targetdir.text());
-        return(0);
+        return 0;
     }
 
     // Current and next panel
     FilePanel* currentpanel = ((XFileExplorer*)mainWindow)->getCurrentPanel();
     FilePanel* nextpanel = ((XFileExplorer*)mainWindow)->getNextPanel();
+
+    FXString hsourcesize;
+    FXulong sourcesize = 0, tstart = 0;
 
     // One source
     File* f;
@@ -1883,7 +2861,7 @@ long DirPanel::onCmdDirMan(FXObject* sender, FXSelector sel, void* ptr)
         // Don't perform any file operation on it!
         if (source == "")
         {
-            return(0);
+            return 0;
         }
 
         // Wait cursor
@@ -1892,8 +2870,20 @@ long DirPanel::onCmdDirMan(FXObject* sender, FXSelector sel, void* ptr)
         // File object
         if (command == "copy")
         {
-            f = new File(this, _("File copy"), COPY);
+            f = new File(this, _("Copy Files"), COPY);
             f->create();
+
+            // Get total source size and start time
+            hsourcesize = f->sourcesize(source, &sourcesize);
+            tstart = xf_getcurrenttime();
+
+            // If action is cancelled in progress dialog
+            if (f->isCancelled())
+            {
+                f->hideProgressDialog();
+                MessageBox::error(this, BOX_OK, _("Warning"), _("Copy file operation cancelled!"));
+                goto out;
+            }
 
             // If target file is located at trash location, also create the corresponding trashinfo file
             // Do it silently and don't report any error if it fails
@@ -1901,22 +2891,21 @@ long DirPanel::onCmdDirMan(FXObject* sender, FXSelector sel, void* ptr)
             if (use_trash_can && (target == trashfileslocation))
             {
                 // Trash files path name
-                FXString trashpathname = createTrashpathname(source, trashfileslocation);
+                FXString trashpathname = xf_create_trashpathname(source, trashfileslocation);
 
                 // Adjust target name to get the _N suffix if any
                 FXString trashtarget = target + PATHSEPSTRING + FXPath::name(trashpathname);
 
                 // Create trashinfo file
-                createTrashinfo(source, trashpathname, trashfileslocation, trashinfolocation);
+                xf_create_trashinfo(source, trashpathname, trashfileslocation, trashinfolocation);
 
                 // Copy source to trash target
-                ret = f->copy(source, trashtarget);
+                ret = f->copy(source, trashtarget, hsourcesize, sourcesize, tstart);
             }
-
             // Copy source to target
             else
             {
-                ret = f->copy(source, target);
+                ret = f->copy(source, target, hsourcesize, sourcesize, tstart);
             }
 
             // An error has occurred
@@ -1924,6 +2913,7 @@ long DirPanel::onCmdDirMan(FXObject* sender, FXSelector sel, void* ptr)
             {
                 f->hideProgressDialog();
                 MessageBox::error(this, BOX_OK, _("Error"), _("An error has occurred during the copy file operation!"));
+                goto out;
             }
 
             // If action is cancelled in progress dialog
@@ -1931,11 +2921,12 @@ long DirPanel::onCmdDirMan(FXObject* sender, FXSelector sel, void* ptr)
             {
                 f->hideProgressDialog();
                 MessageBox::error(this, BOX_OK, _("Warning"), _("Copy file operation cancelled!"));
+                goto out;
             }
         }
         else if (command == "rename")
         {
-            f = new File(this, _("File rename"), RENAME);
+            f = new File(this, _("Rename Files"), RENAME);
             f->create();
             ret = f->rename(source, target);
 
@@ -1945,13 +2936,25 @@ long DirPanel::onCmdDirMan(FXObject* sender, FXSelector sel, void* ptr)
             if (use_trash_can && ret && (source.left(trashfileslocation.length()) == trashfileslocation))
             {
                 FXString trashinfopathname = trashinfolocation + PATHSEPSTRING + FXPath::name(source) + ".trashinfo";
-                ::unlink(trashinfopathname.text());
+                unlink(trashinfopathname.text());
             }
         }
         else if (command == "move")
         {
-            f = new File(this, _("File move"), MOVE);
+            f = new File(this, _("Move Files"), MOVE);
             f->create();
+
+            // Get total source size and start time
+            hsourcesize = f->sourcesize(src, &sourcesize);
+            tstart = xf_getcurrenttime();
+
+            // If action is cancelled in progress dialog
+            if (f->isCancelled())
+            {
+                f->hideProgressDialog();
+                MessageBox::error(this, BOX_OK, _("Warning"), _("Move file operation cancelled!"));
+                goto out;
+            }
 
             // If target file is located at trash location, also create the corresponding trashinfo file
             // Do it silently and don't report any error if it fails
@@ -1959,22 +2962,21 @@ long DirPanel::onCmdDirMan(FXObject* sender, FXSelector sel, void* ptr)
             if (use_trash_can && (target == trashfileslocation))
             {
                 // Trash files path name
-                FXString trashpathname = createTrashpathname(source, trashfileslocation);
+                FXString trashpathname = xf_create_trashpathname(source, trashfileslocation);
 
                 // Adjust target name to get the _N suffix if any
                 FXString trashtarget = target + PATHSEPSTRING + FXPath::name(trashpathname);
 
                 // Create trashinfo file
-                createTrashinfo(source, trashpathname, trashfileslocation, trashinfolocation);
+                xf_create_trashinfo(source, trashpathname, trashfileslocation, trashinfolocation);
 
                 // Move source to trash target
-                ret = f->move(source, trashtarget);
+                ret = f->fmove(source, trashtarget, hsourcesize, sourcesize, tstart);
             }
-
             // Move source to target
             else
             {
-                ret = f->move(source, target);
+                ret = f->fmove(source, target, hsourcesize, sourcesize, tstart);
             }
 
             // If source file is located at trash location, try to also remove the corresponding trashinfo file if it exists
@@ -1982,7 +2984,7 @@ long DirPanel::onCmdDirMan(FXObject* sender, FXSelector sel, void* ptr)
             if (use_trash_can && ret && (source.left(trashfileslocation.length()) == trashfileslocation))
             {
                 FXString trashinfopathname = trashinfolocation + PATHSEPSTRING + FXPath::name(source) + ".trashinfo";
-                ::unlink(trashinfopathname.text());
+                unlink(trashinfopathname.text());
             }
 
             // An error has occurred
@@ -1990,6 +2992,7 @@ long DirPanel::onCmdDirMan(FXObject* sender, FXSelector sel, void* ptr)
             {
                 f->hideProgressDialog();
                 MessageBox::error(this, BOX_OK, _("Error"), _("An error has occurred during the move file operation!"));
+                goto out;
             }
 
             // If action is cancelled in progress dialog
@@ -1997,6 +3000,7 @@ long DirPanel::onCmdDirMan(FXObject* sender, FXSelector sel, void* ptr)
             {
                 f->hideProgressDialog();
                 MessageBox::error(this, BOX_OK, _("Warning"), _("Move file operation cancelled!"));
+                goto out;
             }
         }
         else if (command == "symlink")
@@ -2005,7 +3009,6 @@ long DirPanel::onCmdDirMan(FXObject* sender, FXSelector sel, void* ptr)
             f->create();
             f->symlink(source, target);
         }
-
         // Shouldn't happen
         else
         {
@@ -2015,7 +3018,6 @@ long DirPanel::onCmdDirMan(FXObject* sender, FXSelector sel, void* ptr)
         getApp()->endWaitCursor();
         delete f;
     }
-
     // Multiple sources
     // Note : rename cannot be used in this case!
     else if (num > 1)
@@ -2026,25 +3028,53 @@ long DirPanel::onCmdDirMan(FXObject* sender, FXSelector sel, void* ptr)
         // File object
         if (command == "copy")
         {
-            f = new File(this, _("File copy"), COPY);
+            f = new File(this, _("Copy Files"), COPY);
+            f->create();
+
+            // Get total source size and start time
+            hsourcesize = f->sourcesize(src, &sourcesize);
+            tstart = xf_getcurrenttime();
+
+            // If action is cancelled in progress dialog
+            if (f->isCancelled())
+            {
+                f->hideProgressDialog();
+                MessageBox::error(this, BOX_OK, _("Warning"), _("Copy file operation cancelled!"));
+                goto out;
+            }
         }
         else if (command == "move")
         {
-            f = new File(this, _("File move"), MOVE);
+            f = new File(this, _("Move Files"), MOVE);
+            f->create();
+
+            // Get total source size and start time
+            hsourcesize = f->sourcesize(src, &sourcesize);
+            tstart = xf_getcurrenttime();
+
+            // If action is cancelled in progress dialog
+            if (f->isCancelled())
+            {
+                f->hideProgressDialog();
+                MessageBox::error(this, BOX_OK, _("Warning"), _("Move file operation cancelled!"));
+                goto out;
+            }
         }
         else if (command == "symlink")
         {
             f = new File(this, _("Symlink"), SYMLINK);
+            f->create();
+        }
+        // Shouldn't happen
+        else
+        {
+            exit(EXIT_FAILURE);
         }
 
         if (f == NULL)
         {
             fprintf(stderr, "%s::onCmdDirMan: NULL pointer specified.\n", getClassName());
             exit(EXIT_FAILURE);
-        }
-        else
-        {
-            f->create();
         }
 
         // Initialize file list stop refresh timer and flag
@@ -2082,7 +3112,12 @@ long DirPanel::onCmdDirMan(FXObject* sender, FXSelector sel, void* ptr)
             }
 
             // Individual source file
-            source = src.section('\n', i);
+            //~ source = src.section('\n', i);
+
+            // NB: src string is altered by strtok()
+            char* token;
+            (i == 0 ? token = strtok((char*)src.text(), "\n") : token = strtok(NULL, "\n"));
+            source = FXString(token);
 
             // An empty file name corresponds to the ".." file (why?)
             // Don't perform any file operation on it!
@@ -2096,29 +3131,29 @@ long DirPanel::onCmdDirMan(FXObject* sender, FXSelector sel, void* ptr)
                     if (use_trash_can && (target == trashfileslocation))
                     {
                         // Trash files path name
-                        FXString trashpathname = createTrashpathname(source, trashfileslocation);
+                        FXString trashpathname = xf_create_trashpathname(source, trashfileslocation);
 
                         // Adjust target name to get the _N suffix if any
                         FXString trashtarget = target + PATHSEPSTRING + FXPath::name(trashpathname);
 
                         // Create trashinfo file
-                        createTrashinfo(source, trashpathname, trashfileslocation, trashinfolocation);
+                        xf_create_trashinfo(source, trashpathname, trashfileslocation, trashinfolocation);
 
                         // Copy source to trash target
-                        ret = f->copy(source, trashtarget);
+                        ret = f->copy(source, trashtarget, hsourcesize, sourcesize, tstart);
                     }
-
                     // Copy source to target
                     else
                     {
-                        ret = f->copy(source, target);
+                        ret = f->copy(source, target, hsourcesize, sourcesize, tstart);
                     }
 
                     // An error has occurred
                     if ((ret == 0) && !f->isCancelled())
                     {
                         f->hideProgressDialog();
-                        MessageBox::error(this, BOX_OK, _("Error"), _("An error has occurred during the copy file operation!"));
+                        MessageBox::error(this, BOX_OK, _("Error"),
+                                          _("An error has occurred during the copy file operation!"));
                         break;
                     }
 
@@ -2138,37 +3173,38 @@ long DirPanel::onCmdDirMan(FXObject* sender, FXSelector sel, void* ptr)
                     if (use_trash_can && (target == trashfileslocation))
                     {
                         // Trash files path name
-                        FXString trashpathname = createTrashpathname(source, trashfileslocation);
+                        FXString trashpathname = xf_create_trashpathname(source, trashfileslocation);
 
                         // Adjust target name to get the _N suffix if any
                         FXString trashtarget = target + PATHSEPSTRING + FXPath::name(trashpathname);
 
                         // Create trashinfo file
-                        createTrashinfo(source, trashpathname, trashfileslocation, trashinfolocation);
+                        xf_create_trashinfo(source, trashpathname, trashfileslocation, trashinfolocation);
 
                         // Move source to trash target
-                        ret = f->move(source, trashtarget);
+                        ret = f->fmove(source, trashtarget);
                     }
-
                     // Move source to target
                     else
                     {
-                        ret = f->move(source, target);
+                        ret = f->fmove(source, target, hsourcesize, sourcesize, tstart);
                     }
 
                     // If source file is located at trash location, try to also remove the corresponding trashinfo file if it exists
                     // Do it silently and don't report any error if it fails
                     if (use_trash_can && ret && (source.left(trashfileslocation.length()) == trashfileslocation))
                     {
-                        FXString trashinfopathname = trashinfolocation + PATHSEPSTRING + FXPath::name(source) + ".trashinfo";
-                        ::unlink(trashinfopathname.text());
+                        FXString trashinfopathname = trashinfolocation + PATHSEPSTRING + FXPath::name(source) +
+                                                     ".trashinfo";
+                        unlink(trashinfopathname.text());
                     }
 
                     // An error has occurred
                     if ((ret == 0) && !f->isCancelled())
                     {
                         f->hideProgressDialog();
-                        MessageBox::error(this, BOX_OK, _("Error"), _("An error has occurred during the move file operation!"));
+                        MessageBox::error(this, BOX_OK, _("Error"),
+                                          _("An error has occurred during the move file operation!"));
                         break;
                     }
 
@@ -2188,7 +3224,8 @@ long DirPanel::onCmdDirMan(FXObject* sender, FXSelector sel, void* ptr)
                     if ((ret == 0) && !f->isCancelled())
                     {
                         f->hideProgressDialog();
-                        MessageBox::error(this, BOX_OK, _("Error"), _("An error has occurred during the symlink operation!"));
+                        MessageBox::error(this, BOX_OK, _("Error"),
+                                          _("An error has occurred during the symlink operation!"));
                         break;
                     }
 
@@ -2209,6 +3246,7 @@ long DirPanel::onCmdDirMan(FXObject* sender, FXSelector sel, void* ptr)
         }
 
         // Reinit timer and refresh flags
+out:
         getApp()->removeTimeout(this, ID_STOP_LIST_REFRESH_TIMER);
         currentpanel->setAllowRefresh(true);
         nextpanel->setAllowRefresh(true);
@@ -2220,8 +3258,8 @@ long DirPanel::onCmdDirMan(FXObject* sender, FXSelector sel, void* ptr)
 
     // Refresh the path link and the directory list
     currentpanel->updatePath();
-    list->handle(this, FXSEL(SEL_COMMAND, DirList::ID_REFRESH), NULL);
-    return(1);
+    dirlist->handle(this, FXSEL(SEL_COMMAND, DirList::ID_REFRESH), NULL);
+    return 1;
 }
 
 
@@ -2229,15 +3267,15 @@ long DirPanel::onCmdDirMan(FXObject* sender, FXSelector sel, void* ptr)
 long DirPanel::onCmdDirDelete(FXObject*, FXSelector, void*)
 {
     // Current item
-    DirItem* item = (DirItem*)list->getCurrentItem();
-    FXString pathname = list->getItemPathname((TreeItem*)item);
+    DirItem* item = (DirItem*)dirlist->getCurrentItem();
+    FXString pathname = dirlist->getItemPathname((TreeItem*)item);
     FXString parentdir = FXPath::directory(pathname);
 
     // If we don't have permission to write to the parent directory
-    if (!::isWritable(parentdir))
+    if (!xf_iswritable(parentdir))
     {
         MessageBox::error(getApp(), BOX_OK_SU, _("Error"), _("Can't write to %s: Permission denied"), parentdir.text());
-        return(0);
+        return 0;
     }
 
     FXbool confirm_del = getApp()->reg().readUnsignedEntry("OPTIONS", "confirm_delete", true);
@@ -2247,27 +3285,29 @@ long DirPanel::onCmdDirDelete(FXObject*, FXSelector, void*)
     {
         FXString message;
         message.format(_("Definitively delete folder %s ?"), pathname.text());
-        MessageBox box(this, _("Confirm Delete"), message, delete_big_permicon, BOX_OK_CANCEL | DECOR_TITLE | DECOR_BORDER);
+        MessageBox box(this, _("Confirm Delete"), message, bigdeletepermicon,
+                       BOX_OK_CANCEL | DECOR_TITLE | DECOR_BORDER);
         if (box.execute(PLACEMENT_CURSOR) != BOX_CLICKED_OK)
         {
-            return(0);
+            return 0;
         }
     }
 
     // File object
-    File* f = new File(this, _("File delete"), DELETE);
+    File* f = new File(this, _("Delete files"), DELETE);
     f->create();
 
     // Confirm empty directory deletion
     if (confirm_del & confirm_del_emptydir)
     {
-        if ((::isEmptyDir(pathname) == 0) && !::isLink(pathname))
+        if ((xf_isemptydir(pathname) == 0) && !xf_islink(pathname))
         {
             // Dialog to confirm file deletion
             f->hideProgressDialog();
             FXString msg;
             msg.format(_("Folder %s is not empty, delete it anyway?"), pathname.text());
-            MessageBox box(this, _("Confirm Delete"), msg, delete_big_permicon, BOX_OK_CANCEL | DECOR_TITLE | DECOR_BORDER);
+            MessageBox box(this, _("Confirm Delete"), msg, bigdeletepermicon,
+                           BOX_OK_CANCEL | DECOR_TITLE | DECOR_BORDER);
             if (box.execute(PLACEMENT_CURSOR) == BOX_CLICKED_CANCEL)
             {
                 goto end;
@@ -2277,13 +3317,13 @@ long DirPanel::onCmdDirDelete(FXObject*, FXSelector, void*)
     }
 
     // If we don't have permission to write to the directory
-    if (!::isWritable(pathname))
+    if (!xf_iswritable(pathname))
     {
         // Dialog to confirm directory deletion
         f->hideProgressDialog();
         FXString msg;
         msg.format(_("Folder %s is write-protected, definitively delete it anyway?"), pathname.text());
-        MessageBox box(this, _("Confirm Delete"), msg, errorbigicon, BOX_OK_CANCEL | DECOR_TITLE | DECOR_BORDER);
+        MessageBox box(this, _("Confirm Delete"), msg, bigerroricon, BOX_OK_CANCEL | DECOR_TITLE | DECOR_BORDER);
         FXuint answer = box.execute(PLACEMENT_OWNER);
         if (answer == BOX_CLICKED_OK)
         {
@@ -2298,12 +3338,11 @@ long DirPanel::onCmdDirDelete(FXObject*, FXSelector, void*)
             }
 
             // Return to parent directory in DirList and FileList
-            list->setDirectory(parentdir, true);
+            dirlist->setDirectory(parentdir, true);
             ((XFileExplorer*)mainWindow)->getCurrentPanel()->setDirectory(parentdir);
             ((XFileExplorer*)mainWindow)->getCurrentPanel()->updatePath();
         }
     }
-
     // If we have permission to write
     else
     {
@@ -2315,7 +3354,7 @@ long DirPanel::onCmdDirDelete(FXObject*, FXSelector, void*)
         if (use_trash_can && (pathname.left(trashfileslocation.length()) == trashfileslocation))
         {
             FXString trashinfopathname = trashinfolocation + PATHSEPSTRING + FXPath::name(pathname) + ".trashinfo";
-            ::unlink(trashinfopathname.text());
+            unlink(trashinfopathname.text());
         }
 
         // If action is cancelled in progress dialog
@@ -2325,7 +3364,7 @@ long DirPanel::onCmdDirDelete(FXObject*, FXSelector, void*)
             MessageBox::error(this, BOX_OK, _("Warning"), _("Delete folder operation cancelled!"));
         }
         // Return to parent directory in DirList and FileList
-        list->setDirectory(parentdir, true);
+        dirlist->setDirectory(parentdir, true);
         ((XFileExplorer*)mainWindow)->getCurrentPanel()->setDirectory(parentdir);
         ((XFileExplorer*)mainWindow)->getCurrentPanel()->updatePath();
     }
@@ -2335,8 +3374,8 @@ end:
 
     // Force DirPanel and FilePanel refresh
     setAllowDirsizeRefresh(true);
-    list->handle(this, FXSEL(SEL_COMMAND, DirList::ID_REFRESH), NULL);
-    return(1);
+    dirlist->handle(this, FXSEL(SEL_COMMAND, DirList::ID_REFRESH), NULL);
+    return 1;
 }
 
 
@@ -2344,15 +3383,15 @@ end:
 long DirPanel::onCmdDirTrash(FXObject*, FXSelector, void*)
 {
     // Current item
-    DirItem* item = (DirItem*)list->getCurrentItem();
-    FXString pathname = list->getItemPathname((TreeItem*)item);
+    DirItem* item = (DirItem*)dirlist->getCurrentItem();
+    FXString pathname = dirlist->getItemPathname((TreeItem*)item);
     FXString parentdir = FXPath::directory(pathname);
 
     // If we don't have permission to write to the parent directory
-    if (!::isWritable(parentdir))
+    if (!xf_iswritable(parentdir))
     {
         MessageBox::error(getApp(), BOX_OK_SU, _("Error"), _("Can't write to %s: Permission denied"), parentdir.text());
-        return(0);
+        return 0;
     }
 
     FXbool confirm_trash = getApp()->reg().readUnsignedEntry("OPTIONS", "confirm_trash", true);
@@ -2361,25 +3400,25 @@ long DirPanel::onCmdDirTrash(FXObject*, FXSelector, void*)
     {
         FXString message;
         message.format(_("Move folder %s to trash can?"), pathname.text());
-        MessageBox box(this, _("Confirm Trash"), message, delete_bigicon, BOX_OK_CANCEL | DECOR_TITLE | DECOR_BORDER);
+        MessageBox box(this, _("Confirm Trash"), message, bigdeleteicon, BOX_OK_CANCEL | DECOR_TITLE | DECOR_BORDER);
         if (box.execute(PLACEMENT_CURSOR) != BOX_CLICKED_OK)
         {
-            return(0);
+            return 0;
         }
     }
 
     // File object
-    File* f = new File(this, _("Move to trash"), DELETE);
+    File* f = new File(this, _("Move to Trash"), DELETE);
     f->create();
 
     // If we don't have permission to write to the directory
-    if (!::isWritable(pathname))
+    if (!xf_iswritable(pathname))
     {
         // Dialog to confirm directory deletion
         f->hideProgressDialog();
         FXString str;
         str.format(_("Folder %s is write-protected, move it to trash can anyway?"), pathname.text());
-        MessageBox box(this, _("Confirm Trash"), str, errorbigicon, BOX_OK_CANCEL | DECOR_TITLE | DECOR_BORDER);
+        MessageBox box(this, _("Confirm Trash"), str, bigerroricon, BOX_OK_CANCEL | DECOR_TITLE | DECOR_BORDER);
         FXuint answer = box.execute(PLACEMENT_OWNER);
         if (answer == BOX_CLICKED_OK)
         {
@@ -2387,19 +3426,20 @@ long DirPanel::onCmdDirTrash(FXObject*, FXSelector, void*)
             f->showProgressDialog();
 
             // Trash files path name
-            FXString trashpathname = createTrashpathname(pathname, trashfileslocation);
+            FXString trashpathname = xf_create_trashpathname(pathname, trashfileslocation);
 
             // Create trashinfo file
-            createTrashinfo(pathname, trashpathname, trashfileslocation, trashinfolocation);
+            xf_create_trashinfo(pathname, trashpathname, trashfileslocation, trashinfolocation);
 
             // Move file to trash files location
-            int ret = f->move(pathname, trashpathname);
+            int ret = f->fmove(pathname, trashpathname);
 
             // An error has occurred
             if ((ret == 0) && !f->isCancelled())
             {
                 f->hideProgressDialog();
-                MessageBox::error(this, BOX_OK, _("Error"), _("An error has occurred during the move to trash operation!"));
+                MessageBox::error(this, BOX_OK, _("Error"),
+                                  _("An error has occurred during the move to trash operation!"));
             }
 
             // If action is cancelled in progress dialog
@@ -2410,23 +3450,22 @@ long DirPanel::onCmdDirTrash(FXObject*, FXSelector, void*)
             }
 
             // Return to parent directory in DirList and FileList
-            list->setDirectory(parentdir, true);
+            dirlist->setDirectory(parentdir, true);
             ((XFileExplorer*)mainWindow)->getCurrentPanel()->setDirectory(parentdir);
             ((XFileExplorer*)mainWindow)->getCurrentPanel()->updatePath();
         }
     }
-
     // If we have permission to write
     else
     {
         // Trash files path name
-        FXString trashpathname = createTrashpathname(pathname, trashfileslocation);
+        FXString trashpathname = xf_create_trashpathname(pathname, trashfileslocation);
 
         // Create trashinfo file
-        createTrashinfo(pathname, trashpathname, trashfileslocation, trashinfolocation);
+        xf_create_trashinfo(pathname, trashpathname, trashfileslocation, trashinfolocation);
 
         // Move file to trash files location
-        int ret = f->move(pathname, trashpathname);
+        int ret = f->fmove(pathname, trashpathname);
 
         // An error has occurred
         if ((ret == 0) && !f->isCancelled())
@@ -2442,7 +3481,7 @@ long DirPanel::onCmdDirTrash(FXObject*, FXSelector, void*)
             MessageBox::error(this, BOX_OK, _("Warning"), _("Move to trash folder operation cancelled!"));
         }
         // Return to parent directory in DirList and FileList
-        list->setDirectory(parentdir, true);
+        dirlist->setDirectory(parentdir, true);
         ((XFileExplorer*)mainWindow)->getCurrentPanel()->setDirectory(parentdir);
         ((XFileExplorer*)mainWindow)->getCurrentPanel()->updatePath();
     }
@@ -2450,8 +3489,8 @@ long DirPanel::onCmdDirTrash(FXObject*, FXSelector, void*)
 
     // Force DirPanel and FilePanel refresh
     setAllowDirsizeRefresh(true);
-    list->handle(this, FXSEL(SEL_COMMAND, DirList::ID_REFRESH), NULL);
-    return(1);
+    dirlist->handle(this, FXSEL(SEL_COMMAND, DirList::ID_REFRESH), NULL);
+    return 1;
 }
 
 
@@ -2459,13 +3498,13 @@ long DirPanel::onCmdDirTrash(FXObject*, FXSelector, void*)
 long DirPanel::onCmdDirRestore(FXObject*, FXSelector, void*)
 {
     // Current item
-    DirItem* item = (DirItem*)list->getCurrentItem();
-    FXString pathname = list->getItemPathname((TreeItem*)item);
+    DirItem* item = (DirItem*)dirlist->getCurrentItem();
+    FXString pathname = dirlist->getItemPathname((TreeItem*)item);
     FXString parentdir = FXPath::directory(pathname);
     FXbool confirm_trash = getApp()->reg().readUnsignedEntry("OPTIONS", "confirm_trash", true);
 
     // File object
-    File* f = new File(this, _("Restore from trash"), DELETE);
+    File* f = new File(this, _("Restore From Trash"), DELETE);
 
     f->create();
 
@@ -2480,7 +3519,7 @@ long DirPanel::onCmdDirRestore(FXObject*, FXSelector, void*)
     subpath.erase(0, trashbasename.length());
 
     // Read the .trashinfo file
-    FILE*    fp;
+    FILE* fp;
     char line[1024];
     FXbool success = true;
     FXString trashinfopathname = trashinfolocation + PATHSEPSTRING + trashbasename + ".trashinfo";
@@ -2511,14 +3550,15 @@ long DirPanel::onCmdDirRestore(FXObject*, FXSelector, void*)
     if (confirm_trash)
     {
         FXString message;
-        message.format(_("Restore folder %s to its original location %s ?"), FXPath::name(pathname).text(), origpathname.text());
+        message.format(_("Restore folder %s to its original location %s ?"), FXPath::name(pathname).text(),
+                       origpathname.text());
         f->hideProgressDialog();
-        MessageBox box(this, _("Confirm Restore"), message, restore_bigicon, BOX_OK_CANCEL | DECOR_TITLE | DECOR_BORDER);
+        MessageBox box(this, _("Confirm Restore"), message, bigrestoreicon, BOX_OK_CANCEL | DECOR_TITLE | DECOR_BORDER);
         if (box.execute(PLACEMENT_CURSOR) != BOX_CLICKED_OK)
         {
             getApp()->endWaitCursor();
             delete f;
-            return(0);
+            return 0;
         }
         f->showProgressDialog();
     }
@@ -2534,13 +3574,14 @@ long DirPanel::onCmdDirRestore(FXObject*, FXSelector, void*)
 
         // If parent dir of the original location does not exist
         FXString origparentdir = FXPath::directory(origpathname);
-        if (!existFile(origparentdir))
+        if (!xf_existfile(origparentdir))
         {
             // Ask the user if he wants to create it
             f->hideProgressDialog();
             FXString message;
             message.format(_("Parent folder %s does not exist, do you want to create it?"), origparentdir.text());
-            MessageBox box(this, _("Confirm Restore"), message, restore_bigicon, BOX_OK_CANCEL | DECOR_TITLE | DECOR_BORDER);
+            MessageBox box(this, _("Confirm Restore"), message, bigrestoreicon,
+                           BOX_OK_CANCEL | DECOR_TITLE | DECOR_BORDER);
             if (box.execute(PLACEMENT_CURSOR) != BOX_CLICKED_OK)
             {
                 goto end;
@@ -2549,14 +3590,15 @@ long DirPanel::onCmdDirRestore(FXObject*, FXSelector, void*)
             {
                 f->showProgressDialog();
                 errno = 0;
-                int ret = mkpath(origparentdir.text(), 0755);
+                int ret = xf_mkpath(origparentdir.text(), 0755);
                 int errcode = errno;
                 if (ret == -1)
                 {
                     f->hideProgressDialog();
                     if (errcode)
                     {
-                        MessageBox::error(this, BOX_OK, _("Error"), _("Can't create folder %s : %s"), origparentdir.text(), strerror(errcode));
+                        MessageBox::error(this, BOX_OK, _("Error"), _("Can't create folder %s : %s"),
+                                          origparentdir.text(), strerror(errcode));
                     }
                     else
                     {
@@ -2568,21 +3610,22 @@ long DirPanel::onCmdDirRestore(FXObject*, FXSelector, void*)
         }
 
         // Move file to original location (with restore option)
-        int ret = f->move(pathname, origpathname, true);
+        int ret = f->fmove(pathname, origpathname, "", true);
 
         // An error has occurred
         if ((ret == 0) && !f->isCancelled())
         {
             f->hideProgressDialog();
-            MessageBox::error(this, BOX_OK, _("Error"), _("An error has occurred during the restore from trash operation!"));
+            MessageBox::error(this, BOX_OK, _("Error"),
+                              _("An error has occurred during the restore from trash operation!"));
             goto end;
         }
 
         // Silently remove trashinfo file
         FXString trashfilespathname = trashfileslocation + PATHSEPSTRING + trashbasename;
-        if ((pathname == trashfilespathname) && !existFile(trashfilespathname))
+        if ((pathname == trashfilespathname) && !xf_existfile(trashfilespathname))
         {
-            ::unlink(trashinfopathname.text());
+            unlink(trashinfopathname.text());
         }
 
         // If action is cancelled in progress dialog
@@ -2594,7 +3637,7 @@ long DirPanel::onCmdDirRestore(FXObject*, FXSelector, void*)
         }
 
         // Return to parent directory in DirList and FileList
-        list->setDirectory(parentdir, true);
+        dirlist->setDirectory(parentdir, true);
         ((XFileExplorer*)mainWindow)->getCurrentPanel()->setDirectory(parentdir);
         ((XFileExplorer*)mainWindow)->getCurrentPanel()->updatePath();
     }
@@ -2604,8 +3647,8 @@ end:
 
     // Force DirPanel and FilePanel refresh
     setAllowDirsizeRefresh(true);
-    list->handle(this, FXSEL(SEL_COMMAND, DirList::ID_REFRESH), NULL);
-    return(1);
+    dirlist->handle(this, FXSEL(SEL_COMMAND, DirList::ID_REFRESH), NULL);
+    return 1;
 }
 
 
@@ -2613,9 +3656,9 @@ end:
 long DirPanel::onCmdNewDir(FXObject*, FXSelector, void*)
 {
     // Current item
-    DirItem* item = (DirItem*)list->getCurrentItem();
+    DirItem* item = (DirItem*)dirlist->getCurrentItem();
 
-    FXString dirpath = list->getItemPathname((TreeItem*)item);
+    FXString dirpath = dirlist->getItemPathname((TreeItem*)item);
 
     if (dirpath != ROOTDIR)
     {
@@ -2624,7 +3667,7 @@ long DirPanel::onCmdNewDir(FXObject*, FXSelector, void*)
 
     if (newdirdialog == NULL)
     {
-        newdirdialog = new InputDialog(this, "", _("Create new folder:"), _("New Folder"), "", bignewfoldericon);
+        newdirdialog = new InputDialog(this, "", _("Create new folder:"), _("New Folder"), "", bigfoldernewicon);
     }
     newdirdialog->setText("");
     if (newdirdialog->execute(PLACEMENT_CURSOR))
@@ -2632,24 +3675,25 @@ long DirPanel::onCmdNewDir(FXObject*, FXSelector, void*)
         if (newdirdialog->getText() == "")
         {
             MessageBox::warning(this, BOX_OK, _("Warning"), _("Folder name is empty, operation cancelled"));
-            return(0);
+            return 0;
         }
 
         // Directory name contains '/'
         if (newdirdialog->getText().contains(PATHSEPCHAR))
         {
-            MessageBox::warning(this, BOX_OK, _("Warning"), _("The / character is not allowed in folder names, operation cancelled"));
-            return(0);
+            MessageBox::warning(this, BOX_OK, _("Warning"),
+                                _("The / character is not allowed in folder names, operation cancelled"));
+            return 0;
         }
 
         FXString dirname = dirpath + newdirdialog->getText();
         if (dirname != dirpath)
         {
             // Check if file or folder already exists
-            if (existFile(dirname))
+            if (xf_existfile(dirname))
             {
                 MessageBox::error(this, BOX_OK, _("Error"), _("File or folder %s already exists"), dirname.text());
-                return(0);
+                return 0;
             }
 
             // Create the new dir according to the current umask
@@ -2665,20 +3709,21 @@ long DirPanel::onCmdNewDir(FXObject*, FXSelector, void*)
             {
                 if (errcode)
                 {
-                    MessageBox::error(getApp(), BOX_OK_SU, _("Error"), _("Can't create folder %s : %s"), dirname.text(), strerror(errcode));
+                    MessageBox::error(getApp(), BOX_OK_SU, _("Error"), _("Can't create folder %s : %s"),
+                                      dirname.text(), strerror(errcode));
                 }
                 else
                 {
                     MessageBox::error(getApp(), BOX_OK_SU, _("Error"), _("Can't create folder %s"), dirname.text());
                 }
-                return(0);
+                return 0;
             }
         }
     }
 
     // Force dirpanel refresh
-    list->handle(this, FXSEL(SEL_COMMAND, DirList::ID_REFRESH), NULL);
-    return(1);
+    dirlist->handle(this, FXSEL(SEL_COMMAND, DirList::ID_REFRESH), NULL);
+    return 1;
 }
 
 
@@ -2688,8 +3733,8 @@ long DirPanel::onCmdXTerm(FXObject*, FXSelector, void*)
     int ret;
 
     getApp()->beginWaitCursor();
-    DirItem* item = (DirItem*)list->getCurrentItem();
-    FXString buf = list->getItemPathname((TreeItem*)item);
+    DirItem* item = (DirItem*)dirlist->getCurrentItem();
+    FXString buf = dirlist->getItemPathname((TreeItem*)item);
     ret = chdir(buf.text());
     if (ret < 0)
     {
@@ -2703,7 +3748,7 @@ long DirPanel::onCmdXTerm(FXObject*, FXSelector, void*)
             MessageBox::error(this, BOX_OK, _("Error"), _("Can't enter folder %s"), buf.text());
         }
 
-        return(0);
+        return 0;
     }
 
     FXString cmd = getApp()->reg().readStringEntry("PROGS", "xterm", "xterm -sb");
@@ -2713,7 +3758,7 @@ long DirPanel::onCmdXTerm(FXObject*, FXSelector, void*)
     if (ret < 0)
     {
         MessageBox::error(this, BOX_OK, _("Error"), _("Can't execute command %s"), cmd.text());
-        return(0);
+        return 0;
     }
 
     ret = chdir(startlocation.text());
@@ -2722,18 +3767,19 @@ long DirPanel::onCmdXTerm(FXObject*, FXSelector, void*)
         int errcode = errno;
         if (errcode)
         {
-            MessageBox::error(this, BOX_OK, _("Error"), _("Can't enter folder %s: %s"), startlocation.text(), strerror(errcode));
+            MessageBox::error(this, BOX_OK, _("Error"), _("Can't enter folder %s: %s"),
+                              startlocation.text(), strerror(errcode));
         }
         else
         {
             MessageBox::error(this, BOX_OK, _("Error"), _("Can't enter folder %s"), startlocation.text());
         }
 
-        return(0);
+        return 0;
     }
 
     getApp()->endWaitCursor();
-    return(1);
+    return 1;
 }
 
 
@@ -2742,146 +3788,373 @@ long DirPanel::onCmdXTerm(FXObject*, FXSelector, void*)
 long DirPanel::onCmdMount(FXObject*, FXSelector sel, void*)
 {
     int ret;
-    FXString cmd, msg, text;
+    FXString cmd, msg, msgwait;
     FXuint op;
-    File*    f;
+    File* f;
 
     // Current item
-    DirItem* item = (DirItem*)list->getCurrentItem();
-    FXString dir = list->getItemPathname((TreeItem*)item);
+    DirItem* item = (DirItem*)dirlist->getCurrentItem();
+    FXString dir = dirlist->getItemPathname((TreeItem*)item);
 
-    // If symbolic link
-    if (::isLink(dir))
-    {
-        dir = FXFile::symlink(dir);
-    }
+    // GVFS mount directory
+    FXString gvfsdir = "/run/user/" + FXStringVal(FXSystem::user()) + "/gvfs";
 
-    // Select the command and set the appropriate message
-    if (FXSELID(sel) == ID_MOUNT)
+    // GVFS mount name
+    FXString gvfsname = FXPath::name(dir);
+
+    if (FXPath::directory(dir) == gvfsdir)
     {
-        op = MOUNT;
-        msg = _("Mount");
-        cmd = getApp()->reg().readStringEntry("PROGS", "mount", DEFAULT_MOUNTCMD) + FXString(" ");
+        // GVFS mount URI
+        FXString mounturi = "";
+
+        // Get mount type
+        FXString mounttype = gvfsname.before(':');
+
+        // Samba share
+        if (mounttype == "smb-share")
+        {
+            FXString tmp;
+            int pos = 0;
+
+            // Domain name
+            FXString domain;
+            pos = gvfsname.find("domain=");
+            if (pos < 0)
+            {
+                domain = "";
+            }
+            else
+            {
+                pos += 7;
+                tmp = gvfsname.right(gvfsname.length() - pos);
+                domain = tmp.before(',');
+            }
+
+            // User name
+            FXString user;
+            pos = gvfsname.find("user=");
+            if (pos < 0)
+            {
+                user = "";
+            }
+            else
+            {
+                pos += 5;
+                tmp = gvfsname.right(gvfsname.length() - pos);
+                user = tmp.before(',');
+            }
+
+            // Server name
+            FXString server;
+            pos = gvfsname.find("server=");
+            if (pos < 0)
+            {
+                MessageBox::error(this, BOX_OK, _("Error"), _("Can't find server name"));
+                return 0;
+            }
+            else
+            {
+                pos += 7;
+                tmp = gvfsname.right(gvfsname.length() - pos);
+                server = tmp.before(',');
+            }
+
+            // Share name
+            FXString share;
+            pos = gvfsname.find("share=");
+            if (pos < 0)
+            {
+                MessageBox::error(this, BOX_OK, _("Error"), _("Can't find share name"));
+                return 0;
+            }
+            else
+            {
+                pos += 6;
+                tmp = gvfsname.right(gvfsname.length() - pos);
+                share = tmp.before(',');
+            }
+
+            // Build mount URI
+            if (domain != "")
+            {
+                domain += ";";
+            }
+            if (user != "")
+            {
+                user += "@";
+            }
+            server += "/";
+            share += "/";
+
+            mounturi = "'smb://" + domain + user + server + share + "'";
+        }
+
+        // SSH mount
+        if (mounttype == "sftp")
+        {
+            FXString tmp;
+            int pos = 0;
+
+            // Host name
+            FXString host;
+            pos = gvfsname.find("host=") + 5;
+            if (pos < 0)
+            {
+                MessageBox::error(this, BOX_OK, _("Error"), _("Can't find server name"));
+                return 0;
+            }
+            else
+            {
+                tmp = gvfsname.right(gvfsname.length() - pos);
+                host = tmp.before(',');
+            }
+
+            // Port
+            FXString port = "";
+            pos = gvfsname.find("port=") + 5;
+            if (pos != -1)
+            {
+                tmp = gvfsname.right(gvfsname.length() - pos);
+                port = tmp.before(',');
+            }
+
+            // User name
+            FXString user;
+            pos = gvfsname.find("user=") + 5;
+            if (pos < 0)
+            {
+                MessageBox::error(this, BOX_OK, _("Error"), _("Can't find user name"));
+                return 0;
+            }
+            else
+            {
+                tmp = gvfsname.right(gvfsname.length() - pos);
+                user = tmp.before(',');
+            }
+
+            // Build mount URI
+            user += "@";
+            if (port == "")
+            {
+                mounturi = "'sftp://" + user + host + "'";
+            }
+            else
+            {
+                mounturi = "'sftp://" + user + host + ":" + port + "'";
+            }
+        }
+
+        // MTP device
+        if (mounttype == "mtp")
+        {
+            FXString name = gvfsname.after('=');
+
+            // BUILD mount URI
+            mounturi = "'mtp://" + name + "/'";
+        }
+
+        // Select command and set appropriate message
+        if (FXSELID(sel) == ID_MOUNT)
+        {
+            op = MOUNT;
+            msg = _("Mount file system...");
+            msgwait = _("Volume busy, please wait while mounting folder:");
+            cmd = "gio mount ";
+        }
+        else
+        {
+            op = UNMOUNT;
+            msg = _("Unmount file system...");
+            msgwait = _("Volume busy, please wait while unmounting folder:");
+            cmd = "gio mount -u ";
+        }
+        cmd += mounturi;
+        cmd += " 2>&1";
+
+        ret = chdir(ROOTDIR);
+        if (ret < 0)
+        {
+            int errcode = errno;
+            if (errcode)
+            {
+                MessageBox::error(this, BOX_OK, _("Error"), _("Can't enter folder %s: %s"), ROOTDIR, strerror(errcode));
+            }
+            else
+            {
+                MessageBox::error(this, BOX_OK, _("Error"), _("Can't enter folder %s"), ROOTDIR);
+            }
+
+            return 0;
+        }
+
+        // Wait cursor
+        getApp()->beginWaitCursor();
+
+        // File object
+        f = new File(this, msg.text(), op);
+        f->create();
+
+        // Mount/unmount file system
+        f->mount(dir, msgwait, cmd);
+        ret = chdir(startlocation.text());
+
+        if (ret < 0)
+        {
+            int errcode = errno;
+            if (errcode)
+            {
+                MessageBox::error(this, BOX_OK, _("Error"), _("Can't enter folder %s: %s"),
+                                  startlocation.text(), strerror(errcode));
+            }
+            else
+            {
+                MessageBox::error(this, BOX_OK, _("Error"), _("Can't enter folder %s"), startlocation.text());
+            }
+
+            delete f;
+            return 0;
+        }
+
+        getApp()->endWaitCursor();
+        delete f;
     }
+    // MTAB mount
     else
     {
-        op = UNMOUNT;
-        msg = _("Unmount");
-        cmd = getApp()->reg().readStringEntry("PROGS", "unmount", DEFAULT_UMOUNTCMD) + FXString(" ");
-    }
-    cmd += ::quote(dir);
-    cmd += " 2>&1";
-
-    ret = chdir(ROOTDIR);
-    if (ret < 0)
-    {
-        int errcode = errno;
-        if (errcode)
+        // If symbolic link
+        if (xf_islink(dir))
         {
-            MessageBox::error(this, BOX_OK, _("Error"), _("Can't enter folder %s: %s"), ROOTDIR, strerror(errcode));
+            dir = FXFile::symlink(dir);
+        }
+
+        // Select the command and set the appropriate message
+        if (FXSELID(sel) == ID_MOUNT)
+        {
+            op = MOUNT;
+            msg = _("Mount file system...");
+            msgwait = _("Volume busy, please wait while mounting folder:");
+            cmd = getApp()->reg().readStringEntry("PROGS", "mount", DEFAULT_MOUNTCMD) + FXString(" ");
         }
         else
         {
-            MessageBox::error(this, BOX_OK, _("Error"), _("Can't enter folder %s"), ROOTDIR);
+            op = UNMOUNT;
+            msg = _("Unmount file system...");
+            msgwait = _("Volume busy, please wait while unmounting folder:");
+            cmd = getApp()->reg().readStringEntry("PROGS", "unmount", DEFAULT_UMOUNTCMD) + FXString(" ");
         }
+        cmd += xf_quote(dir);
+        cmd += " 2>&1";
 
-        return(0);
-    }
-
-    // Wait cursor
-    getApp()->beginWaitCursor();
-
-    // File object
-    text = msg + _(" file system...");
-    f = new File(this, text.text(), op);
-    f->create();
-
-    // Mount/unmount file system
-    text = msg + _(" the folder:");
-    f->mount(dir, text, cmd, op);
-    ret = chdir(startlocation.text());
-    if (ret < 0)
-    {
-        int errcode = errno;
-        if (errcode)
+        ret = chdir(ROOTDIR);
+        if (ret < 0)
         {
-            MessageBox::error(this, BOX_OK, _("Error"), _("Can't enter folder %s: %s"), startlocation.text(), strerror(errcode));
+            int errcode = errno;
+            if (errcode)
+            {
+                MessageBox::error(this, BOX_OK, _("Error"), _("Can't enter folder %s: %s"), ROOTDIR, strerror(errcode));
+            }
+            else
+            {
+                MessageBox::error(this, BOX_OK, _("Error"), _("Can't enter folder %s"), ROOTDIR);
+            }
+
+            return 0;
         }
-        else
+
+        // Wait cursor
+        getApp()->beginWaitCursor();
+
+        // File object
+        f = new File(this, msg.text(), op);
+        f->create();
+
+        // Mount/unmount file system
+        f->mount(dir, msgwait, cmd);
+        ret = chdir(startlocation.text());
+
+        if (ret < 0)
         {
-            MessageBox::error(this, BOX_OK, _("Error"), _("Can't enter folder %s"), startlocation.text());
+            int errcode = errno;
+            if (errcode)
+            {
+                MessageBox::error(this, BOX_OK, _("Error"), _("Can't enter folder %s: %s"),
+                                  startlocation.text(), strerror(errcode));
+            }
+            else
+            {
+                MessageBox::error(this, BOX_OK, _("Error"), _("Can't enter folder %s"), startlocation.text());
+            }
+
+            delete f;
+            return 0;
         }
 
-		delete f;
-        return(0);
-    }
-
-    // If action is cancelled in progress dialog
-    if (f->isCancelled())
-    {
         getApp()->endWaitCursor();
-        f->hide();
-        text = msg + _(" operation cancelled!");
-        MessageBox::error(this, BOX_OK, _("Error"), "%s", text.text());
         delete f;
-        return(0);
     }
 
-    getApp()->endWaitCursor();
-    delete f;
+    // If unmount, return to start location
+    if (FXSELID(sel) == ID_UMOUNT)
+    {
+        dirlist->setDirectory(startlocation, true);
+        ((XFileExplorer*)mainWindow)->getCurrentPanel()->setDirectory(startlocation);
+        ((XFileExplorer*)mainWindow)->getCurrentPanel()->updatePath();        
+    }
 
     // Force dirpanel refresh
-    list->handle(this, FXSEL(SEL_COMMAND, DirList::ID_REFRESH), NULL);
+    dirlist->handle(this, FXSEL(SEL_COMMAND, DirList::ID_REFRESH), NULL);
 
-    return(1);
+    return 1;
 }
 
 
 // Update the Mount menu item
-long DirPanel::onUpdMount(FXObject* o, FXSelector sel, void*)
+long DirPanel::onUpdMount(FXObject* sender, FXSelector sel, void*)
 {
     // Current item
-    DirItem* item = (DirItem*)list->getCurrentItem();
-    FXString dir = list->getItemPathname((TreeItem*)item);
+    DirItem* item = (DirItem*)dirlist->getCurrentItem();
+    FXString dir = dirlist->getItemPathname((TreeItem*)item);
 
     if (fsdevices->find(dir.text()) && !mtdevices->find(dir.text()))
     {
-        o->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_ENABLE), NULL);
+        sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_ENABLE), NULL);
     }
     else
     {
-        o->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_DISABLE), NULL);
+        sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_DISABLE), NULL);
     }
 
-    return(1);
+    return 1;
 }
 
 
 // Update the Unmount menu item
-long DirPanel::onUpdUnmount(FXObject* o, FXSelector sel, void*)
+long DirPanel::onUpdUnmount(FXObject* sender, FXSelector sel, void*)
 {
     // Current item
-    DirItem* item = (DirItem*)list->getCurrentItem();
-    FXString dir = list->getItemPathname((TreeItem*)item);
+    DirItem* item = (DirItem*)dirlist->getCurrentItem();
+    FXString dir = dirlist->getItemPathname((TreeItem*)item);
 
-    if (fsdevices->find(dir.text()) || mtdevices->find(dir.text()))
+    // GVFS directory
+    FXString gvfsdir = "/run/user/" + FXStringVal(FXSystem::user()) + "/gvfs";
+
+    if ((FXPath::directory(dir) == gvfsdir) || (fsdevices->find(dir.text()) || mtdevices->find(dir.text())))
     {
-        o->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_ENABLE), NULL);
+        sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_ENABLE), NULL);
     }
     else
     {
-        o->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_DISABLE), NULL);
+        sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_DISABLE), NULL);
     }
 
-    return(1);
+    return 1;
 }
-
 
 #endif
 
 
 // Update the paste button
-long DirPanel::onUpdPaste(FXObject* o, FXSelector, void*)
+long DirPanel::onUpdPaste(FXObject* sender, FXSelector, void*)
 {
     FXuchar* data;
     FXuint len;
@@ -2907,7 +4180,6 @@ long DirPanel::onUpdPaste(FXObject* o, FXSelector, void*)
         // Free data pointer
         FXFREE(&data);
     }
-
     // If source type is urilistType (KDE apps ; non Gnome, non XFCE and non Xfe apps)
     else if (getDNDData(FROM_CLIPBOARD, urilistType, data, len))
     {
@@ -2924,7 +4196,6 @@ long DirPanel::onUpdPaste(FXObject* o, FXSelector, void*)
         // Free data pointer
         FXFREE(&data);
     }
-
     // If source is utf8Type (simple text)
     else if (getDNDData(FROM_CLIPBOARD, utf8Type, data, len))
     {
@@ -2952,11 +4223,10 @@ long DirPanel::onUpdPaste(FXObject* o, FXSelector, void*)
                 clipboard_valid = false;
                 break;
             }
-
             // File path is not an existing file or directory
             else
             {
-                if (!existFile(filepath))
+                if (!xf_existfile(filepath))
                 {
                     clipboard_valid = false;
                     break;
@@ -2977,82 +4247,82 @@ long DirPanel::onUpdPaste(FXObject* o, FXSelector, void*)
     // Gray out the paste button, if necessary
     if (clipboard_empty || clipboard_type == COPYNAME_CLIPBOARD)
     {
-        o->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_DISABLE), NULL);
+        sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_DISABLE), NULL);
     }
     else
     {
-        o->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_ENABLE), NULL);
+        sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_ENABLE), NULL);
     }
 
     // Unlock clipboard
     clipboard_locked = false;
 
-    return(1);
+    return 1;
 }
 
 
 // Update menu items and toolbar buttons that are related to file operations
-long DirPanel::onUpdMenu(FXObject* o, FXSelector, void*)
+long DirPanel::onUpdMenu(FXObject* sender, FXSelector, void*)
 {
     // Name of the current selected item
-    TreeItem* item = (TreeItem*)list->getCurrentItem();
+    TreeItem* item = (TreeItem*)dirlist->getCurrentItem();
 
     // There is no selected item
     if (item == NULL)
     {
-        return(0);
+        return 0;
     }
 
     // Path name of the selected item
-    FXString dir = list->getItemPathname(item);
-    return(1);
+    FXString dir = dirlist->getItemPathname(item);
+    return 1;
 }
 
 
 // Update menu items and toolbar buttons that are related to file operations
-long DirPanel::onUpdDirDelete(FXObject* o, FXSelector, void*)
+long DirPanel::onUpdDirDelete(FXObject* sender, FXSelector, void*)
 {
     // Name of the current selected item
-    TreeItem* item = (TreeItem*)list->getCurrentItem();
+    TreeItem* item = (TreeItem*)dirlist->getCurrentItem();
 
     // There is no selected item
     if (item == NULL)
     {
-        return(0);
+        return 0;
     }
 
     // Path name of the selected item
-    FXString dir = list->getItemPathname(item);
+    FXString dir = dirlist->getItemPathname(item);
 
     FXbool use_trash_can = getApp()->reg().readUnsignedEntry("OPTIONS", "use_trash_can", true);
     FXbool use_trash_bypass = getApp()->reg().readUnsignedEntry("OPTIONS", "use_trash_bypass", false);
-    if ( (!use_trash_can) | use_trash_bypass)
+    if ((!use_trash_can) | use_trash_bypass)
     {
-        o->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_ENABLE), NULL);
+        sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_ENABLE), NULL);
     }
     else
     {
-        o->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_DISABLE), NULL);
+        sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_DISABLE), NULL);
     }
 
-    return(1);
+    return 1;
 }
 
 
 // Update menu items and toolbar buttons that are related to file operations
-long DirPanel::onUpdDirTrash(FXObject* o, FXSelector, void*)
+long DirPanel::onUpdDirTrash(FXObject* sender, FXSelector, void*)
 {
     // Name of the current selected item
-    TreeItem* item = (TreeItem*)list->getCurrentItem();
+    TreeItem* item = (TreeItem*)dirlist->getCurrentItem();
 
     // There is no selected item
     if (item == NULL)
     {
-        return(0);
+        return 0;
     }
 
     // Path name of the selected item
-    FXString dir = list->getItemPathname(item);
+    FXString dir = dirlist->getItemPathname(item);
 
     // Disable move to trash menu if we are in trash can
     // or if the trash can directory is selected
@@ -3072,30 +4342,30 @@ long DirPanel::onUpdDirTrash(FXObject* o, FXSelector, void*)
     FXbool use_trash_can = getApp()->reg().readUnsignedEntry("OPTIONS", "use_trash_can", true);
     if (use_trash_can && trashenable)
     {
-        o->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_ENABLE), NULL);
+        sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_ENABLE), NULL);
     }
     else
     {
-        o->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_DISABLE), NULL);
+        sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_DISABLE), NULL);
     }
 
-    return(1);
+    return 1;
 }
 
 
-long DirPanel::onUpdDirRestore(FXObject* o, FXSelector, void*)
+long DirPanel::onUpdDirRestore(FXObject* sender, FXSelector, void*)
 {
     // Name of the current selected item
-    TreeItem* item = (TreeItem*)list->getCurrentItem();
+    TreeItem* item = (TreeItem*)dirlist->getCurrentItem();
 
     // There is no selected item
     if (item == NULL)
     {
-        return(0);
+        return 0;
     }
 
     // Path name of the selected item
-    FXString dir = list->getItemPathname(item);
+    FXString dir = dirlist->getItemPathname(item);
 
     // Enable restore from trash menu if we are in trash can
     FXbool restoreenable = false;
@@ -3107,14 +4377,14 @@ long DirPanel::onUpdDirRestore(FXObject* o, FXSelector, void*)
     FXbool use_trash_can = getApp()->reg().readUnsignedEntry("OPTIONS", "use_trash_can", true);
     if (use_trash_can && restoreenable)
     {
-        o->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_ENABLE), NULL);
+        sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_ENABLE), NULL);
     }
     else
     {
-        o->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_DISABLE), NULL);
+        sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_DISABLE), NULL);
     }
 
-    return(1);
+    return 1;
 }
 
 
@@ -3138,29 +4408,29 @@ long DirPanel::onCmdDirsizeRefresh(FXObject* sender, FXSelector, void*)
     // Don't refresh if not allowed or window is minimized
     if (!allowDirsizeRefresh || ((FXTopWindow*)focuswindow)->isMinimized())
     {
-        return(0);
+        return 0;
     }
 
-    FXulong dnsize;
+    FXulong dnsize = 0;
     char dsize[64];
     FXString hsize;
 
     // Name of the current selected item
-    TreeItem* item = (TreeItem*)list->getCurrentItem();
+    TreeItem* item = (TreeItem*)dirlist->getCurrentItem();
 
     // There is no selected item
     if (item == NULL)
     {
-        status->setText(_("0 bytes in root"));
-        return(0);
+        status->setText(_("Free space:"));
+        return 0;
     }
 
     // Path name of the selected item (without trailing '/' except for the root path)
-    FXString path = ::filePath(list->getItemPathname(item), "");
+    FXString path = xf_filepath(dirlist->getItemPathname(item), "");
 
-    // Compute directory size only if something has changed in directory
+    // Compute free space only if something has changed in directory
     struct stat statbuf;
-    if (lstatrep(path.text(), &statbuf) == 0)
+    if (xf_lstat(path.text(), &statbuf) == 0)
     {
         if (!((path == curr_dirpath) && (statbuf.st_mtime == curr_mtime)))
         {
@@ -3170,21 +4440,29 @@ long DirPanel::onCmdDirsizeRefresh(FXObject* sender, FXSelector, void*)
             // Update curr directory path
             curr_dirpath = path;
 
-            // Size of the files present in the directory
-            //strlcpy(buf,path.text(),path.length()+1);
-            dnsize = ::dirsize(path.text());
+            // Free space on file system
+            struct statvfs info;
 
-            // Size in human readable form
+            if (::statvfs(path.text(), &info) != -1)
+            {
+                dnsize = info.f_bavail * info.f_bsize;
+
+                // Size in human readable form
 #if __WORDSIZE == 64
-            snprintf(dsize, sizeof(dsize) - 1, "%lu", dnsize);
+                snprintf(dsize, sizeof(dsize), "%lu", dnsize);
 #else
-            snprintf(dsize, sizeof(dsize) - 1, "%llu", dnsize);
+                snprintf(dsize, sizeof(dsize), "%llu", dnsize);
 #endif
-            hsize = ::hSize(dsize);
+                hsize = xf_humansize(dsize);
+            }
+            else
+            {
+                hsize = "";
+            }
 
             // Refresh the status label
-            FXString string = hsize + _(" in root");
-            status->setText(string);
+            FXString str = _("Free space:") + FXString(" ") + hsize;
+            status->setText(str);
         }
     }
 
@@ -3192,7 +4470,7 @@ long DirPanel::onCmdDirsizeRefresh(FXObject* sender, FXSelector, void*)
     getApp()->addTimeout(this, ID_DIRSIZE_REFRESH, DIRSIZE_REFRESH_INTERVAL);
 
     // Important : returning 0 here avoids to continuously update the GUI!
-    return(0);
+    return 0;
 }
 
 
@@ -3200,13 +4478,13 @@ long DirPanel::onCmdDirsizeRefresh(FXObject* sender, FXSelector, void*)
 long DirPanel::onUpdTitle(FXObject* sender, FXSelector, void*)
 {
     // Name of the current selected item
-    TreeItem* item = (TreeItem*)list->getCurrentItem();
+    TreeItem* item = (TreeItem*)dirlist->getCurrentItem();
 
     // There is no selected item
     if (item == NULL)
     {
         mainWindow->setTitle("Xfe - ");
-        return(0);
+        return 0;
     }
 
     // Path of the current directory in the file panel
@@ -3223,7 +4501,7 @@ long DirPanel::onUpdTitle(FXObject* sender, FXSelector, void*)
         mainWindow->setTitle("Xfe - " + path);
     }
 
-    return(1);
+    return 1;
 }
 
 
@@ -3249,5 +4527,5 @@ long DirPanel::onUpdDirsizeRefresh(FXObject*, FXSelector, void*)
         onCmdDirsizeRefresh(0, 0, 0);
     }
 
-    return(1);
+    return 1;
 }

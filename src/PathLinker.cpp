@@ -2,39 +2,35 @@
 // Initially proposed and coded by Julian Mitchell <jupeos@gmail.com>
 
 #include <sstream>
-#include <fx.h>
 
-#include "xfedefs.h"
-#include "xfeutils.h"
-#include "XFileExplorer.h"
 #include "PathLinker.h"
-
-#define REFRESH_INTERVAL    1000
 
 
 FXDEFMAP(PathLinker) PathLinkerMap[] =
 {
     FXMAPFUNC(SEL_FOCUSIN, PathLinker::ID_FOCUS_BUTTON, PathLinker::onCmdFocusButton),
-    FXMAPFUNCS(SEL_LEFTBUTTONPRESS, PathLinker::ID_START_LINK, PathLinker::ID_END_LINK, PathLinker::pathButtonPressed),
+    FXMAPFUNCS(SEL_COMMAND, PathLinker::ID_START_LINK, PathLinker::ID_END_LINK, PathLinker::onCmdLinkButton),
     FXMAPFUNC(SEL_UPDATE, 0, PathLinker::onUpdPath),
 };
 
 FXIMPLEMENT(PathLinker, FXHorizontalFrame, PathLinkerMap, ARRAYNUMBER(PathLinkerMap))
 
 
-// Construct object
-PathLinker::PathLinker(FXComposite* a, FileList* flist, DirList* dlist, FXuint opts) : FXHorizontalFrame(a, opts, 0, 0, 0, 0, 0, 0, 2, 2, 2, 2)
+// Construct
+PathLinker::PathLinker(FXComposite* a, FileList* flist, DirList* dlist, FXuint opts) :
+    FXHorizontalFrame(a, opts, 0, 0, 0, 0, 0, 0, 2,2, 2, 2)
 {
     filelist = flist;
     dirlist = dlist;
 
     // Add some path links
     int id = ID_START_LINK;
-    for (int i = 0; i < MAX_LINKS; i++)
+    for (int i = 0; i < NMAX_LINKS; i++)
     {
         std::stringstream ss;
         ss << i;
-        linkButtons.push_back(new FXButton(this, (ss.str() + PATHSEPSTRING).c_str(), NULL, this, id, BUTTON_NORMAL, 0, 0, 0, 0, 5, 5, 0, 0));
+        linkButtons.push_back(new FXButton(this, (ss.str() + PATHSEPSTRING).c_str(), NULL, this, id, BUTTON_NORMAL, 0,
+                                           0, 0, 0, 5, 5, 0, 0));
         id++;
         linkButtons[i]->hide();
         linkButtons[i]->setDefaultCursor(getApp()->getDefaultCursor(DEF_HAND_CURSOR));
@@ -89,7 +85,7 @@ void PathLinker::setPath(FXString text)
     int previousPos = 0;
 
     // Remove trailing /
-    FXString path = ::cleanPath(text);
+    FXString path = xf_cleanpath(text);
 
     // Indicates if actual path is included in the visited path
     int visited;
@@ -122,7 +118,7 @@ void PathLinker::setPath(FXString text)
     }
 
     // Hide all of the link buttons
-    for (int i = 0; i < MAX_LINKS; i++)
+    for (int i = 0; i < NMAX_LINKS; i++)
     {
         linkButtons[i]->hide();
         linkButtons[i]->setFont(normalFont);
@@ -143,7 +139,6 @@ void PathLinker::setPath(FXString text)
         {
             setText(ind, displayText.mid(previousPos, nextPos - previousPos + 1));
         }
-
         // Other path
         else
         {
@@ -157,7 +152,7 @@ void PathLinker::setPath(FXString text)
     nbActiveButtons = ind + 1;
     setText(ind, displayText.mid(previousPos, displayText.length()));
 
-    if (ind < MAX_LINKS) // Avoid crashing when the number of path links is too high
+    if (ind < NMAX_LINKS) // Avoid crashing when the number of path links is too high
     {
         // If actual path is included in the visited path
         if (visited >= 0)
@@ -176,14 +171,14 @@ void PathLinker::setPath(FXString text)
 }
 
 
-// Update current path according to the clicked button
+// Update current path according to the clicked link button
 void PathLinker::updatePath(FXString text, FXuint index)
 {
     // Remove trailing /
-    FXString path = ::cleanPath(text);
+    FXString path = xf_cleanpath(text);
 
     // Hide all of the link buttons
-    for (int i = 0; i < MAX_LINKS; i++)
+    for (int i = 0; i < NMAX_LINKS; i++)
     {
         linkButtons[i]->hide();
         linkButtons[i]->setFont(normalFont);
@@ -205,7 +200,6 @@ void PathLinker::updatePath(FXString text, FXuint index)
         {
             setText(ind, displayText.mid(previousPos, nextPos - previousPos + 1));
         }
-
         // Other path
         else
         {
@@ -226,9 +220,10 @@ void PathLinker::updatePath(FXString text, FXuint index)
 }
 
 
+// Change link button text
 void PathLinker::setText(FXuint index, FXString displayText)
 {
-    if (index < MAX_LINKS)
+    if (index < NMAX_LINKS)
     {
         // Avoid interpretation of the & character
         if (displayText.contains('&'))
@@ -246,8 +241,8 @@ void PathLinker::setText(FXuint index, FXString displayText)
 }
 
 
-// Button was pressed
-long PathLinker::pathButtonPressed(FXObject* obj, FXSelector sel, void* ptr)
+// Link button was pressed
+long PathLinker::onCmdLinkButton(FXObject* sender, FXSelector sel, void* ptr)
 {
     // Set the focus on the file list
     filelist->setFocus();
@@ -277,28 +272,28 @@ long PathLinker::pathButtonPressed(FXObject* obj, FXSelector sel, void* ptr)
         dirlist->setDirectory(filePath, true);
     }
 
-    return(1);
+    return 1;
 }
 
 
 // Gives the focus to the file list when clicking on the focus button
-long PathLinker::onCmdFocusButton(FXObject* obj, FXSelector sel, void* ptr)
+long PathLinker::onCmdFocusButton(FXObject* sender, FXSelector sel, void* ptr)
 {
     // Set the focus on the file list
     filelist->setFocus();
-    return(1);
+    return 1;
 }
 
 
 // Update visited path to delete directories that don't exist anymore
 // Also update in the case where the actual link differs from the actual path
-long PathLinker::onUpdPath(FXObject* obj, FXSelector sel, void* ptr)
+long PathLinker::onUpdPath(FXObject* sender, FXSelector sel, void* ptr)
 {
     // It is not necessary to update when the path linker is not visible
     if (shown())
     {
         // Current path of the file list (the real path)
-        FXString currentpath = ::cleanPath(filelist->getDirectory());
+        FXString currentpath = xf_cleanpath(filelist->getDirectory());
 
         // Current path link (the one corresponding to the down button)
         FXString currentlink;
@@ -316,7 +311,7 @@ long PathLinker::onUpdPath(FXObject* obj, FXSelector sel, void* ptr)
         FXuint n = 1;
         while (path != "")
         {
-            if (!existFile(path))
+            if (!xf_existfile(path))
             {
                 visitedPath = filelist->getDirectory();
                 setPath(visitedPath);
@@ -335,14 +330,14 @@ long PathLinker::onUpdPath(FXObject* obj, FXSelector sel, void* ptr)
         }
     }
 
-    return(0);
+    return 0;
 }
 
 
 void PathLinker::unfocus(void)
 {
     this->setBackColor(FXRGB(128, 128, 128));
-    for (int i = 0; i < MAX_LINKS; i++)
+    for (int i = 0; i < NMAX_LINKS; i++)
     {
         linkButtons[i]->setBackColor(FXRGB(128, 128, 128));
         linkButtons[i]->setTextColor(FXRGB(255, 255, 255));
@@ -354,7 +349,7 @@ void PathLinker::unfocus(void)
 void PathLinker::focus(void)
 {
     this->setBackColor(getApp()->getBaseColor());
-    for (int i = 0; i < MAX_LINKS; i++)
+    for (int i = 0; i < NMAX_LINKS; i++)
     {
         linkButtons[i]->setBackColor(getApp()->getBaseColor());
         linkButtons[i]->setTextColor(getApp()->getForeColor());
