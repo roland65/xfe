@@ -1,0 +1,62 @@
+#!/bin/bash
+
+# This script creates a .run installer for Xfe (Linux only)
+# It is assumed that linuxdeploy and makeself are installed in the system
+# 01/03/2025
+
+
+# Number of cores
+ncores=`nproc --all`
+
+# Compile and install to AppDir/usr/local directory 
+rm -rf ./AppDir
+./configure --prefix=/usr/local --enable-release
+make -j $ncores
+DESTDIR=/`pwd`/AppDir make install
+
+# Check if AppDir directory exists
+if [ ! -d ./AppDir ]; then
+
+    echo ""
+    echo "AppDir directory does not exist. Abort..."
+    echo ""
+    
+    exit
+    
+fi
+
+# Move files one level up
+mv AppDir/usr/local/* AppDir/usr
+rmdir AppDir/usr/local
+
+# Deploy libs
+linuxdeploy --desktop-file=AppDir/usr/share/applications/xfe.desktop --appdir=AppDir
+
+# Rename usr directory
+mv AppDir/usr AppDir/xfe
+
+# Remove unused files
+rm -f AppDir/xfe.svg
+rm -f AppDir/xfe.desktop
+rm -f AppDir/AppRun
+
+# Change iconpath in xferc
+sed -i "s|iconpath = `pwd`/AppDir/usr|iconpath = /usr/local/xfe|g" AppDir/xfe/share/xfe/xferc
+
+# Change exec path in pkexec rule
+sed -i "s|`pwd`/AppDir/usr|/usr/local|g" AppDir/xfe/share/polkit-1/actions/org.xfe.root.policy
+
+# Copy install and uninstall script
+cp installrun AppDir
+cp uninstall-xfe AppDir/xfe/bin
+
+# Get Xfe version
+version=`cat configure.ac|  grep 'AC_INIT([xfe]*' | awk -F'[][]' -v n=2 '{ print $(2*n) }'`
+
+# Build run file
+makeself --xz ./AppDir ./xfe-$version-install-linux-amd64.run "Install xfe..." ./installrun
+
+# End
+echo ""
+echo "Done!"
+echo ""

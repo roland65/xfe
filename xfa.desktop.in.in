@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=Xfa
+GenericName=Archive viewer
+Comment=A simple archive viewer and extractor for Xfe
+Exec=xfa %F
+Terminal=false
+Type=Application
+StartupNotify=@STARTUPNOTIFY@
+MimeType=text/plain;
+Icon=xfa
+Categories=Utility;Archiving;Compression;

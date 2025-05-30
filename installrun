@@ -1,0 +1,261 @@
+#!/bin/bash
+
+# Xfe install script for .run installer
+# This script is invoked when the .run installer is launched
+# 03/02/2025
+
+
+# Read install directory
+echo ""
+read -r -p "Enter xfe installation folder (press return to use /usr/local): " installdir
+
+
+# Install directory
+if [ "$installdir" = "" ]; then
+
+    installdir=/usr/local
+
+fi
+
+
+# Check that install directory exists
+if [ ! -d $installdir ]; then
+
+    echo ""
+    echo "Install directory $installdir does not exist. Abort..."
+    echo ""
+
+else
+
+    # Check that install directory has write permission
+    if [ ! -w $installdir ]; then
+        
+        echo ""
+        echo "Install directory $installdir does not have write permission. Abort..."
+        echo ""
+        
+        exit
+        
+    fi
+   
+fi
+
+   
+# Perform installation
+
+echo ""
+echo "Install xfe to $installdir ..."
+
+
+# Copy xfe directory to install directory
+cp -R ./xfe $installdir
+
+# Set permissions
+find $installdir/xfe -type d -exec chmod 755 {} \;
+find $installdir/xfe/bin -type f -exec chmod 755 {} \;
+find $installdir/xfe/lib -type f -exec chmod 644 {} \;
+find $installdir/xfe/share -type f -exec chmod 644 {} \;
+
+echo ""
+read -r -p "Create symbolic links to executables in /usr/local/bin and to data in /usr/local/share (recommended, press enter for yes or any other key for no)?" ans
+
+if [ "$ans" = "" ]; then
+
+    echo ""
+    echo "Create links..."
+    
+    # Create symbolic links for executables
+    if [ ! -d /usr/local/bin ]; then
+        umask 022; mkdir -m 755 -p /usr/local/bin
+    fi
+    ln -s $installdir/xfe/bin/xfe /usr/local/bin/xfe
+    ln -s $installdir/xfe/bin/xfa /usr/local/bin/xfa
+    ln -s $installdir/xfe/bin/xfi /usr/local/bin/xfi
+    ln -s $installdir/xfe/bin/xfp /usr/local/bin/xfp
+    ln -s $installdir/xfe/bin/xfw /usr/local/bin/xfw
+    ln -s $installdir/xfe/bin/xfe-automount /usr/local/bin/xfe-automount
+    ln -s $installdir/xfe/bin/uninstall-xfe /usr/local/bin/uninstall-xfe
+  
+    # Change executable path in pkexec rule
+    if [ "$installdir" != "/usr/local" ]; then
+        
+        sed -i "s|usr/local|$installdir|g" $installdir/xfe/share/polkit-1/actions/org.xfe.root.policy
+        
+    fi
+
+    # Create symbolic link for pkexec rule
+    if [ ! -d /usr/share/polkit-1/actions ]; then
+        umask 022; mkdir -m 755 -p /usr/share/polkit-1/actions
+    fi
+    ln -s $installdir/xfe/share/polkit-1/actions/org.xfe.root.policy /usr/share/polkit-1/actions/org.xfe.root.policy
+
+    # Create symbolic link for xfe share directory
+    if [ ! -d /usr/local/share ]; then
+        umask 022; mkdir -m 755 -p /usr/local/share
+    fi
+    ln -s $installdir/xfe/share/xfe /usr/local/share/xfe
+
+    # Create symbolic links for desktop files
+    if [ ! -d /usr/local/share/applications ]; then
+        umask 022; mkdir -m 755 -p /usr/local/share/applications
+    fi
+    ln -s $installdir/xfe/share/applications/xfe.desktop /usr/local/share/applications/xfe.desktop
+    ln -s $installdir/xfe/share/applications/xfa.desktop /usr/local/share/applications/xfa.desktop
+    ln -s $installdir/xfe/share/applications/xfi.desktop /usr/local/share/applications/xfi.desktop
+    ln -s $installdir/xfe/share/applications/xfp.desktop /usr/local/share/applications/xfp.desktop
+    ln -s $installdir/xfe/share/applications/xfw.desktop /usr/local/share/applications/xfw.desktop
+    
+    # Create symbolic links for man files
+    if [ ! -d /usr/local/share/man/man1 ]; then
+        umask 022; mkdir -m 755 -p /usr/local/share/man/man1
+    fi
+    ln -s $installdir/xfe/share/man/man1/xfe.1 /usr/local/share/man/man1/xfe.1
+    ln -s $installdir/xfe/share/man/man1/xfa.1 /usr/local/share/man/man1/xfa.1
+    ln -s $installdir/xfe/share/man/man1/xfi.1 /usr/local/share/man/man1/xfi.1
+    ln -s $installdir/xfe/share/man/man1/xfp.1 /usr/local/share/man/man1/xfp.1
+    ln -s $installdir/xfe/share/man/man1/xfw.1 /usr/local/share/man/man1/xfw.1
+
+
+    # Create symbolic links for locale files
+    if [ ! -d /usr/local/share/locale/bs/LC_MESSAGES/ ]; then
+        umask 022; mkdir -m 755 -p /usr/local/share/locale/bs/LC_MESSAGES
+    fi
+    ln -s $installdir/xfe/share/locale/bs/LC_MESSAGES/xfe.mo /usr/local/share/locale/bs/LC_MESSAGES/xfe.mo
+    
+    if [ ! -d /usr/local/share/locale/es_AR/LC_MESSAGES/ ]; then
+        umask 022; mkdir -m 755 -p /usr/local/share/locale/es_AR/LC_MESSAGES
+    fi
+    ln -s $installdir/xfe/share/locale/es/LC_MESSAGES/xfe.mo /usr/local/share/locale/es_AR/LC_MESSAGES/xfe.mo
+
+    if [ ! -d /usr/local/share/locale/cs/LC_MESSAGES/ ]; then
+        umask 022; mkdir -m 755 -p /usr/local/share/locale/cs/LC_MESSAGES
+    fi
+    ln -s $installdir/xfe/share/locale/cs/LC_MESSAGES/xfe.mo /usr/local/share/locale/cs/LC_MESSAGES/xfe.mo
+
+    if [ ! -d /usr/local/share/locale/pt_PT/LC_MESSAGES/ ]; then
+        umask 022; mkdir -m 755 -p /usr/local/share/locale/pt_PT/LC_MESSAGES
+    fi
+    ln -s $installdir/xfe/share/locale/pt_PT/LC_MESSAGES/xfe.mo /usr/local/share/locale/pt_PT/LC_MESSAGES/xfe.mo
+
+    if [ ! -d /usr/local/share/locale/hu/LC_MESSAGES/ ]; then
+        umask 022; mkdir -m 755 -p /usr/local/share/locale/hu/LC_MESSAGES
+    fi
+    ln -s $installdir/xfe/share/locale/hu/LC_MESSAGES/xfe.mo /usr/local/share/locale/hu/LC_MESSAGES/xfe.mo
+
+    if [ ! -d /usr/local/share/locale/tr/LC_MESSAGES/ ]; then
+        umask 022; mkdir -m 755 -p /usr/local/share/locale/tr/LC_MESSAGES
+    fi
+    ln -s $installdir/xfe/share/locale/tr/LC_MESSAGES/xfe.mo /usr/local/share/locale/tr/LC_MESSAGES/xfe.mo
+
+    if [ ! -d /usr/local/share/locale/it/LC_MESSAGES/ ]; then
+        umask 022; mkdir -m 755 -p /usr/local/share/locale/it/LC_MESSAGES
+    fi
+    ln -s $installdir/xfe/share/locale/it/LC_MESSAGES/xfe.mo /usr/local/share/locale/it/LC_MESSAGES/xfe.mo
+
+    if [ ! -d /usr/local/share/locale/es_CO/LC_MESSAGES/ ]; then
+        umask 022; mkdir -m 755 -p /usr/local/share/locale/es_CO/LC_MESSAGES
+    fi
+    ln -s $installdir/xfe/share/locale/es_CO/LC_MESSAGES/xfe.mo /usr/local/share/locale/es_CO/LC_MESSAGES/xfe.mo
+
+    if [ ! -d /usr/local/share/locale/es/LC_MESSAGES/ ]; then
+        umask 022; mkdir -m 755 -p /usr/local/share/locale/es/LC_MESSAGES
+    fi
+    ln -s $installdir/xfe/share/locale/es/LC_MESSAGES/xfe.mo /usr/local/share/locale/es/LC_MESSAGES/xfe.mo
+
+    if [ ! -d /usr/local/share/locale/de/LC_MESSAGES/ ]; then
+        umask 022; mkdir -m 755 -p /usr/local/share/locale/de/LC_MESSAGES
+    fi
+    ln -s $installdir/xfe/share/locale/de/LC_MESSAGES/xfe.mo /usr/local/share/locale/de/LC_MESSAGES/xfe.mo
+
+    if [ ! -d /usr/local/share/locale/ja/LC_MESSAGES/ ]; then
+        umask 022; mkdir -m 755 -p /usr/local/share/locale/ja/LC_MESSAGES
+    fi
+    ln -s $installdir/xfe/share/locale/ja/LC_MESSAGES/xfe.mo /usr/local/share/locale/ja/LC_MESSAGES/xfe.mo
+
+    if [ ! -d /usr/local/share/locale/fr/LC_MESSAGES/ ]; then
+        umask 022; mkdir -m 755 -p /usr/local/share/locale/fr/LC_MESSAGES
+    fi
+    ln -s $installdir/xfe/share/locale/fr/LC_MESSAGES/xfe.mo /usr/local/share/locale/fr/LC_MESSAGES/xfe.mo
+
+    if [ ! -d /usr/local/share/locale/fi/LC_MESSAGES/ ]; then
+        umask 022; mkdir -m 755 -p /usr/local/share/locale/fi/LC_MESSAGES
+    fi
+    ln -s $installdir/xfe/share/locale/fi/LC_MESSAGES/xfe.mo /usr/local/share/locale/fi/LC_MESSAGES/xfe.mo
+
+    if [ ! -d /usr/local/share/locale/da/LC_MESSAGES/ ]; then
+        umask 022; mkdir -m 755 -p /usr/local/share/locale/da/LC_MESSAGES
+    fi
+    ln -s $installdir/xfe/share/locale/da/LC_MESSAGES/xfe.mo /usr/local/share/locale/da/LC_MESSAGES/xfe.mo
+
+    if [ ! -d /usr/local/share/locale/zh_CN/LC_MESSAGES/ ]; then
+        umask 022; mkdir -m 755 -p /usr/local/share/locale/zh_CN/LC_MESSAGES
+    fi
+    ln -s $installdir/xfe/share/locale/zh_CN/LC_MESSAGES/xfe.mo /usr/local/share/locale/zh_CN/LC_MESSAGES/xfe.mo
+
+    if [ ! -d /usr/local/share/locale/el/LC_MESSAGES/ ]; then
+        umask 022; mkdir -m 755 -p /usr/local/share/locale/el/LC_MESSAGES
+    fi
+    ln -s $installdir/xfe/share/locale/el/LC_MESSAGES/xfe.mo /usr/local/share/locale/el/LC_MESSAGES/xfe.mo
+
+    if [ ! -d /usr/local/share/locale/nl/LC_MESSAGES/ ]; then
+        umask 022; mkdir -m 755 -p /usr/local/share/locale/nl/LC_MESSAGES
+    fi
+    ln -s $installdir/xfe/share/locale/nl/LC_MESSAGES/xfe.mo /usr/local/share/locale/nl/LC_MESSAGES/xfe.mo
+
+    if [ ! -d /usr/local/share/locale/no/LC_MESSAGES/ ]; then
+        umask 022; mkdir -m 755 -p /usr/local/share/locale/no/LC_MESSAGES
+    fi
+    ln -s $installdir/xfe/share/locale/no/LC_MESSAGES/xfe.mo /usr/local/share/locale/no/LC_MESSAGES/xfe.mo
+
+    if [ ! -d /usr/local/share/locale/sv/LC_MESSAGES/ ]; then
+        umask 022; mkdir -m 755 -p /usr/local/share/locale/sv/LC_MESSAGES
+    fi
+    ln -s $installdir/xfe/share/locale/sv/LC_MESSAGES/xfe.mo /usr/local/share/locale/sv/LC_MESSAGES/xfe.mo
+
+    if [ ! -d /usr/local/share/locale/ru/LC_MESSAGES/ ]; then
+        umask 022; mkdir -m 755 -p /usr/local/share/locale/ru/LC_MESSAGES
+    fi
+    ln -s $installdir/xfe/share/locale/ru/LC_MESSAGES/xfe.mo /usr/local/share/locale/ru/LC_MESSAGES/xfe.mo
+
+    if [ ! -d /usr/local/share/locale/pt_BR/LC_MESSAGES/ ]; then
+        umask 022; mkdir -m 755 -p /usr/local/share/locale/pt_BR/LC_MESSAGES
+    fi
+    ln -s $installdir/xfe/share/locale/pt_BR/LC_MESSAGES/xfe.mo /usr/local/share/locale/pt_BR/LC_MESSAGES/xfe.mo
+
+    if [ ! -d /usr/local/share/locale/pl/LC_MESSAGES/ ]; then
+        umask 022; mkdir -m 755 -p /usr/local/share/locale/pl/LC_MESSAGES
+    fi
+    ln -s $installdir/xfe/share/locale/pl/LC_MESSAGES/xfe.mo /usr/local/share/locale/pl/LC_MESSAGES/xfe.mo
+
+    if [ ! -d /usr/local/share/locale/ca/LC_MESSAGES/ ]; then
+        umask 022; mkdir -m 755 -p /usr/local/share/locale/ca/LC_MESSAGES
+    fi
+    ln -s $installdir/xfe/share/locale/ca/LC_MESSAGES/xfe.mo /usr/local/share/locale/ca/LC_MESSAGES/xfe.mo
+
+    if [ ! -d /usr/local/share/locale/zh_TW/LC_MESSAGES/ ]; then
+        umask 022; mkdir -m 755 -p /usr/local/share/locale/zh_TW/LC_MESSAGES
+    fi
+    ln -s $installdir/xfe/share/locale/zh_TW/LC_MESSAGES/xfe.mo /usr/local/share/locale/zh_TW/LC_MESSAGES/xfe.mo
+
+    # Create symbolic links for svg icons
+    if [ ! -d /usr/local/share/icons/hicolor/scalable/apps ]; then
+        umask 022; mkdir -m 755 -p /usr/local/share/icons/hicolor/scalable/apps
+    fi
+    ln -s $installdir/xfe/share/icons/hicolor/scalable/apps/xfe.svg /usr/local/share/icons/hicolor/scalable/apps/xfe.svg
+    ln -s $installdir/xfe/share/icons/hicolor/scalable/apps/xfa.svg /usr/local/share/icons/hicolor/scalable/apps/xfa.svg
+    ln -s $installdir/xfe/share/icons/hicolor/scalable/apps/xfi.svg /usr/local/share/icons/hicolor/scalable/apps/xfi.svg
+    ln -s $installdir/xfe/share/icons/hicolor/scalable/apps/xfp.svg /usr/local/share/icons/hicolor/scalable/apps/xfp.svg
+    ln -s $installdir/xfe/share/icons/hicolor/scalable/apps/xfw.svg /usr/local/share/icons/hicolor/scalable/apps/xfw.svg
+   
+else
+
+    echo ""
+    echo "Don't create links..."
+    
+fi
+
+echo ""
+echo "Xfe installation to $installdir succeeded!"
+echo ""
+echo "Uninstallation of Xfe can be done by running /usr/local/bin/uninstall-xfe"
+echo ""

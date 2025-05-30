@@ -1,0 +1,9 @@
+usr/bin/
+usr/share/applications/
+usr/share/menu/
+usr/share/man/man1/
+usr/share/locale/
+usr/share/xfe/
+usr/share/pixmaps/
+usr/share/icons/hicolor/scalable/apps/
+usr/share/polkit-1/actions/

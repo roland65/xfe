@@ -1,0 +1,81 @@
+#!/bin/bash
+
+# Xfe uninstall script for .run installation
+# 03/02/2025
+
+
+# Read install directory
+echo ""
+read -r -p "Enter xfe installation folder (press return to use /usr/local): " installdir
+
+
+# Install directory
+if [ "$installdir" = "" ]; then
+
+    installdir=/usr/local
+
+fi
+
+
+# Remove xfe install directory
+echo ""
+echo "Remove install folder..."
+
+rm -rf $installdir/xfe
+
+
+# Remove symbolic links from /usr/local
+echo ""
+read -r -p "Remove xfe symbolic links from /usr/local (press enter for yes or any other key for no)?" ans
+
+if [ "$ans" = "" ]; then
+
+    echo ""
+    echo "Remove symbolic links..."
+
+    # Remove symbolic links for executables
+    rm -f /usr/local/bin/xfe
+    rm -f /usr/local/bin/xfa
+    rm -f /usr/local/bin/xfi
+    rm -f /usr/local/bin/xfp
+    rm -f /usr/local/bin/xfw
+    rm -f /usr/local/bin/xfe-automount
+    
+    # Remove symbolic links for desktop files
+    rm -f /usr/local/share/applications/xfe.desktop    
+    rm -f /usr/local/share/applications/xfa.desktop
+    rm -f /usr/local/share/applications/xfi.desktop
+    rm -f /usr/local/share/applications/xfp.desktop
+    rm -f /usr/local/share/applications/xfw.desktop
+    
+    # Remove symbolic links for man files
+    rm -f /usr/local/share/man/man1/xfe.1
+    rm -f /usr/local/share/man/man1/xfa.1
+    rm -f /usr/local/share/man/man1/xfi.1
+    rm -f /usr/local/share/man/man1/xfp.1
+    rm -f /usr/local/share/man/man1/xfw.1
+    
+    # Remove symbolic links for locale files
+    rm -f /usr/local/share/locale/*/LC_MESSAGES/xfe.mo
+    
+    # Remove symbolic links for icons
+    rm -f /usr/local/share/icons/hicolor/scalable/apps/xfe.svg
+    rm -f /usr/local/share/icons/hicolor/scalable/apps/xfa.svg
+    rm -f /usr/local/share/icons/hicolor/scalable/apps/xfi.svg
+    rm -f /usr/local/share/icons/hicolor/scalable/apps/xfp.svg
+    rm -f /usr/local/share/icons/hicolor/scalable/apps/xfw.svg
+
+    # Remove symbolic link for polkit rule
+    rm -f /usr/share/polkit-1/actions/org.xfe.root.policy
+    
+    # Remove symbolic link for share directory
+    rm -f /usr/local/share/xfe
+
+    # Remove symbolic link for uninstall script
+    rm -f /usr/local/bin/uninstall-xfe
+
+fi
+
+echo ""
+echo "Uninstalling Xfe from $installdir succeeded!"
+echo ""
