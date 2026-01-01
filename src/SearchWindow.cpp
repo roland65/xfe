@@ -1253,8 +1253,8 @@ void SearchWindow::show(FXuint placement)
     findfile->sortItems();
 
     // Set focus on the find search field and select all chars
-    findfile->setFocus();
     findfile->selectAll();
+    findfile->CursorEnd();
 
     // Empty find text at first call
     if (firstcall)

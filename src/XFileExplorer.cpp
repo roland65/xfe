@@ -1520,7 +1520,9 @@ XFileExplorer::XFileExplorer(FXApp* app, vector_FXString URIs, const int pm, con
 
     for (int i = 0; i < dirpanel->getNumBookmarks(); i++)
     {
-        bookmarkmc.push_back(new FXMenuCommand(bookmarksmenu, dirpanel->getBookmarkName(i), NULL, this, ID_BOOKMARK));
+        // Escape ampersand character 
+        FXString str = dirpanel->getBookmarkName(i);
+        bookmarkmc.push_back(new FXMenuCommand(bookmarksmenu, str.substitute("&", "&&"), NULL, this, ID_BOOKMARK));
     }
 
     bookmarksmenutitle = new FXMenuTitle(menubar, _("&Bookmarks"), NULL, bookmarksmenu);
@@ -3644,20 +3646,28 @@ void XFileExplorer::create()
         // Show tab bar if needed
         if (always_show_tabbar)
         {
-            // Add first tab
-            if (startdirmode == START_HOMEDIR)
+            // Show start directory if any
+            if (startdirs)
             {
-                tabbuttons->addTab(homedir);
+                tabbuttons->addTab(startdir1);
             }
-            else if (startdirmode == START_CURRENTDIR)
+            else
             {
-                tabbuttons->addTab(lpanel->getCurrent()->getDirectory());       
+                // Add first tab
+                if (startdirmode == START_HOMEDIR)
+                {
+                    tabbuttons->addTab(homedir);
+                }
+                else if (startdirmode == START_CURRENTDIR)
+                {
+                    tabbuttons->addTab(lpanel->getCurrent()->getDirectory());       
+                }
+                else // Last directory
+                {
+                    FXString lastdir = getApp()->reg().readStringEntry("LEFT PANEL", "lastdir", ROOTDIR);
+                    tabbuttons->addTab(lastdir);
+                }                
             }
-            else // Last directory
-            {
-                FXString lastdir = getApp()->reg().readStringEntry("LEFT PANEL", "lastdir", ROOTDIR);
-                tabbuttons->addTab(lastdir);
-            }       
         }
     }
 
@@ -4411,9 +4421,24 @@ long XFileExplorer::onUpdBookmarksMenu(FXObject* sender, FXSelector, void* ptr)
         // Add items to the menu
         for (int i = 0; i < dirpanel->getNumBookmarks(); i++)
         {
-            bookmarkmc.push_back(new FXMenuCommand(bookmarksmenu, dirpanel->getBookmarkName(i), NULL, this,
+            // Escape ampersand character 
+            FXString key = dirpanel->getBookmarkName(i);
+            bookmarkmc.push_back(new FXMenuCommand(bookmarksmenu, key.substitute("&", "&&"), NULL, this,
                                                    ID_BOOKMARK));
-            bookmarkmc[i]->create();
+            bookmarkmc[i]->create();            
+        }
+    }
+
+    // Enable / disable items
+    for (int i = 0; i < dirpanel->getNumBookmarks(); i++)
+    {        
+        if (!xf_existfile(dirpanel->getBookmarkLocation(dirpanel->getBookmarkName(i))))
+        {
+            bookmarkmc[i]->disable();
+        }
+        else
+        {
+            bookmarkmc[i]->enable();
         }
     }
 
@@ -4434,7 +4459,10 @@ long XFileExplorer::onCmdRebuildBookmarksMenu(FXObject*, FXSelector, void*)
     // Add sorted items to the menu
     for (int i = 0; i < dirpanel->getNumBookmarks(); i++)
     {
-        bookmarkmc.push_back(new FXMenuCommand(bookmarksmenu, dirpanel->getBookmarkName(i), NULL, this, ID_BOOKMARK));
+        // Escape ampersand character 
+        FXString str = dirpanel->getBookmarkName(i);
+        bookmarkmc.push_back(new FXMenuCommand(bookmarksmenu, str.substitute("&", "&&"), NULL, this, ID_BOOKMARK));
+
         bookmarkmc[i]->create();
     }
 

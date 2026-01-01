@@ -687,28 +687,24 @@ BookmarksList::BookmarksList(FXWindow* owner, FXComposite* p, FXObject* tgt, FXS
                 FXString pathname = getBookmarkPathname(data);
                 FXString iconpathname = getBookmarkIconPathname(data);
 
-                // If directory exists
-                if (xf_existfile(pathname))
+                // Append to vector
+                bookmarks.push_back(data);
+
+                // Append to list
+                if (iconpathname == "" || !xf_existfile(iconpathname))
                 {
-                    // Append to vector
-                    bookmarks.push_back(data);
-
-                    // Append to list
-                    if (iconpathname == "" || !xf_existfile(iconpathname))
+                    FXList::appendItem(name, minibookmarkicon);   // Default icon
+                }
+                else
+                {
+                    FXIcon* icon = xf_loadiconfile(getApp(), FXPath::directory(iconpathname),
+                                                FXPath::name(iconpathname), scalefrac, this->getBackColor());
+                    if (icon)
                     {
-                        FXList::appendItem(name, minibookmarkicon);   // Default icon
+                        icon->create();
                     }
-                    else
-                    {
-                        FXIcon* icon = xf_loadiconfile(getApp(), FXPath::directory(iconpathname),
-                                                    FXPath::name(iconpathname), scalefrac, this->getBackColor());
-                        if (icon)
-                        {
-                            icon->create();
-                        }
 
-                        FXList::appendItem(name, icon);  // Dedicated icon
-                    }
+                    FXList::appendItem(name, icon);  // Dedicated icon
                 }
 
                 i++;

@@ -1229,6 +1229,14 @@ long DirPanel::onCmdGotoBookmark(FXObject*, FXSelector, void*)
         return 0;
     }
 
+
+    if (!xf_isreadexecutable(directory))
+    {
+        MessageBox::error(this, BOX_OK_SU, _("Error"), _(" Permission to: %s denied."), directory.text());
+        return 0;
+    }
+
+
     FilePanel* currentpanel = ((XFileExplorer*)mainWindow)->getCurrentPanel();
     ComboBox* address = ((XFileExplorer*)mainWindow)->getAddressBox();
     currentpanel->setDirectory(directory, true);
@@ -1276,7 +1284,6 @@ long DirPanel::onCmdMoveUpBookmark(FXObject*, FXSelector, void*)
     // Rebuild bookmarks menu
     mainWindow->handle(this, FXSEL(SEL_COMMAND, XFileExplorer::ID_REBUILD_BOOKMARKS_MENU), NULL);
 
-
     return 1;
 }
 
@@ -1304,6 +1311,19 @@ long DirPanel::onUpdMoveUpBookmark(FXObject* sender, FXSelector, void*)
     (index == 0 ? sender->handle(this, FXSEL(SEL_COMMAND, ID_DISABLE), NULL) :
      sender->handle(this, FXSEL(SEL_COMMAND, ID_ENABLE), NULL));
 
+    for (int i = 0; i < bookmarkslist->getNumItems(); i++)
+    {
+        // Bookmark directory no more exists
+        if (!xf_existfile(bookmarkslist->getItemPathname(bookmarkslist->getItemText(i))))
+        {
+            bookmarkslist->disableItem(i);
+        }
+        else
+        {
+            bookmarkslist->enableItem(i);
+        }
+    }
+
     return 1;
 }
 
@@ -1315,6 +1335,19 @@ long DirPanel::onUpdMoveDownBookmark(FXObject* sender, FXSelector, void*)
 
     (index == bookmarkslist->getNumItems() - 1 ? sender->handle(this, FXSEL(SEL_COMMAND, ID_DISABLE), NULL) :
      sender->handle(this, FXSEL(SEL_COMMAND, ID_ENABLE), NULL));
+
+    for (int i = 0; i < bookmarkslist->getNumItems(); i++)
+    {
+        // Bookmark directory no more exists
+        if (!xf_existfile(bookmarkslist->getItemPathname(bookmarkslist->getItemText(i))))
+        {
+            bookmarkslist->disableItem(i);
+        }
+        else
+        {
+            bookmarkslist->enableItem(i);
+        }
+    }
 
     return 1;
 }
@@ -1333,11 +1366,12 @@ long DirPanel::onUpdBookmarks(FXObject* sender, FXSelector, void*)
         // Bookmark directory no more exists
         if (!xf_existfile(bookmarkslist->getItemPathname(bookmarkslist->getItemText(i))))
         {
-            // Remove it
-            bookmarkslist->removeItem(bookmarkslist->getItemText(i));
+            bookmarkslist->disableItem(i);
         }
         else
         {
+            bookmarkslist->enableItem(i);
+
             // Select bookmark if current directory
             if (bookmarkslist->getItemPathname(bookmarkslist->getItemText(i)) == currentdir)
             {
@@ -1706,10 +1740,21 @@ long DirPanel::onCmdPopupMenuBookmarks(FXObject* sender, FXSelector sel, void* p
         // Permission problem or does not exist
         if (!xf_existfile(directory))
         {
-            MessageBox::error(this, BOX_OK, _("Error"), _("Folder %s doesn't exist"), directory.text());
-            return 0;
+            // Set item as current
+            bookmarkslist->setBookmark(key);
+
+            // Popup menu pane
+            FXMenuPane* menu = new FXMenuPane(this);
+            new FXMenuCommand(menu, _("&Remove"), miniremovebookicon, this, DirPanel::ID_REMOVE_BOOKMARK);
+
+            menu->create();
+            menu->popup(NULL, x, y);
+            getApp()->runModalWhileShown(menu);
+
+            return 1;
         }
-        else if (!xf_isreadexecutable(directory))
+        
+        if (!xf_isreadexecutable(directory))
         {
             MessageBox::error(this, BOX_OK_SU, _("Error"), _(" Permission to: %s denied."), directory.text());
             return 0;
@@ -4445,7 +4490,7 @@ long DirPanel::onCmdDirsizeRefresh(FXObject* sender, FXSelector, void*)
 
             if (::statvfs(path.text(), &info) != -1)
             {
-                dnsize = info.f_bavail * info.f_bsize;
+                dnsize = info.f_bavail * info.f_frsize;
 
                 // Size in human readable form
 #if __WORDSIZE == 64

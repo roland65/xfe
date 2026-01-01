@@ -1,10 +1,16 @@
-xfe (2.1.1-1jammy) noble; urgency=medium
+xfe (2.1.2-1rb) noble; urgency=medium
+
+  * New upstream release
+
+ -- Roland Baudin <roland65@free.fr>  Thu, 01 Jan 2026 11:07:04 +0100
+
+xfe (2.1.1-1jammy) jammy; urgency=medium
 
   * New upstream release
 
  -- Roland Baudin <roland65@free.fr>  Fri, 30 May 2025 10:12:11 +0100
 
-xfe (2.1-1jammy) noble; urgency=medium
+xfe (2.1-1jammy) jammy; urgency=medium
 
   * New upstream release
 

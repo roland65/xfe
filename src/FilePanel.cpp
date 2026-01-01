@@ -1335,7 +1335,16 @@ long FilePanel::onCmdItemDoubleClicked(FXObject* sender, FXSelector sel, void* p
             {
                 // Update associations dictionary
                 FileDict* assocdict = new FileDict(getApp());
-                FileAssoc* association = assocdict->findFileBinding(pathname.text());
+                
+                FileAssoc* association;
+                if (xf_islink(pathname))
+                {
+                    association = assocdict->findFileBinding(xf_readlink(pathname).text());
+                }
+                else
+                {
+                    association = assocdict->findFileBinding(pathname.text());
+                }
 
                 // If there is an association
                 if (association)
@@ -1530,7 +1539,16 @@ long FilePanel::onCmdItemClicked(FXObject* sender, FXSelector sel, void* ptr)
                 {
                     // Update associations dictionary
                     FileDict* assocdict = new FileDict(getApp());
-                    FileAssoc* association = assocdict->findFileBinding(pathname.text());
+
+                    FileAssoc* association;
+                    if (xf_islink(pathname))
+                    {
+                        association = assocdict->findFileBinding(xf_readlink(pathname).text());
+                    }
+                    else
+                    {
+                        association = assocdict->findFileBinding(pathname.text());
+                    }
 
                     // If there is an association
                     if (association)
@@ -3405,7 +3423,14 @@ long FilePanel::onCmdEdit(FXObject*, FXSelector sel, void*)
         {
             // Increment number of selected items
             pathname = current->list->getItemPathname(u);
-            association = assocdict->findFileBinding(pathname.text());
+            if (xf_islink(pathname))
+            {
+                association = assocdict->findFileBinding(xf_readlink(pathname).text());
+            }
+            else
+            {
+                association = assocdict->findFileBinding(pathname.text());
+            }
 
             // If there is an association
             if (association)
@@ -3587,7 +3612,14 @@ long FilePanel::onCmdEdit(FXObject*, FXSelector sel, void*)
                 // Only View / Edit regular files (not directories)
                 if (xf_isfile(pathname))
                 {
-                    association = assocdict->findFileBinding(pathname.text());
+                    if (xf_islink(pathname))
+                    {
+                        association = assocdict->findFileBinding(xf_readlink(pathname).text());
+                    }
+                    else
+                    {
+                        association = assocdict->findFileBinding(pathname.text());
+                    }
 
                     // If there is an association
                     if (association)
@@ -4319,7 +4351,15 @@ long FilePanel::onCmdOpen(FXObject*, FXSelector, void*)
             }
 
             // If association found
-            association = assocdict->findFileBinding(pathname.text());
+            if (xf_islink(pathname))
+            {
+                association = assocdict->findFileBinding(xf_readlink(pathname).text());
+            }
+            else
+            {
+                association = assocdict->findFileBinding(pathname.text());
+            }
+
             if (association)
             {
                 FXString cmd = association->command.section(',', 0);

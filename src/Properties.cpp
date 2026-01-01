@@ -426,8 +426,8 @@ PropertiesBox::PropertiesBox(FXWindow* win, FXString file, FXString path, FXbool
         // If it is a mount point
         if (isMountpoint)
         {
-            // Caution : use the -P option to be POSIX compatible!
-            snprintf(buf, sizeof(buf), "df -P -B 1 '%s'", pathname.text());
+            // Use block size 1024
+            snprintf(buf, sizeof(buf), "df -k '%s'", pathname.text());
             p = popen(buf, "r");
             FXbool success = true;
             if (fgets(buf, sizeof(buf), p) == NULL)
@@ -444,11 +444,18 @@ PropertiesBox::PropertiesBox(FXWindow* win, FXString file, FXString path, FXbool
                 strtok(NULL, " ");
                 char* pstr;
                 pstr = strtok(NULL, " ");
-                xf_strlcpy(used, pstr, strlen(pstr) + 1);         // get used
+                xf_strlcpy(used, pstr, strlen(pstr) + 1);         // get used (block size 1024)
                 pstr = strtok(NULL, " ");
-                xf_strlcpy(avail, pstr, strlen(pstr) + 1);        // get available
+                xf_strlcpy(avail, pstr, strlen(pstr) + 1);        // get available (block size 1024)
                 pstr = strtok(NULL, " ");
                 xf_strlcpy(pctr, pstr, strlen(pstr) + 1);         // get percentage
+
+                // Conversion to block size 1
+                FXString str;
+                str = FXStringVal(FXULongVal(used) * 1024);
+                xf_strlcpy(used, str.text(), strlen(str.text()) + 1);
+                str = FXStringVal(FXULongVal(avail) * 1024);
+                xf_strlcpy(avail, str.text(), strlen(str.text()) + 1);
             }
             else
             {

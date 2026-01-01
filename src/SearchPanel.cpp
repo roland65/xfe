@@ -89,6 +89,8 @@ FXDEFMAP(SearchPanel) SearchPanelMap[] =
     FXMAPFUNC(SEL_COMMAND, SearchPanel::ID_EXTRACT, SearchPanel::onCmdExtract),
     FXMAPFUNC(SEL_COMMAND, SearchPanel::ID_FILE_TRASH, SearchPanel::onCmdFileTrash),
     FXMAPFUNC(SEL_COMMAND, SearchPanel::ID_FILE_DELETE, SearchPanel::onCmdFileDelete),
+    FXMAPFUNC(SEL_COMMAND, SearchPanel::ID_RUN_SCRIPT, SearchPanel::onCmdRunScript),
+    FXMAPFUNC(SEL_UPDATE, SearchPanel::ID_RUN_SCRIPT, SearchPanel::onUpdRunScript),
     FXMAPFUNC(SEL_COMMAND, SearchPanel::ID_GO_SCRIPTDIR, SearchPanel::onCmdGoScriptDir),
     FXMAPFUNC(SEL_COMMAND, SearchPanel::ID_DIR_USAGE, SearchPanel::onCmdDirUsage),
     FXMAPFUNC(SEL_UPDATE, SearchPanel::ID_STATUS, SearchPanel::onUpdStatus),
@@ -347,6 +349,9 @@ SearchPanel::SearchPanel(FXComposite* p, FXuint* ic, FXuint nc, FXuint name_size
     progs["<videoplayer>"] = VIDEOPLAYER;
     progs["<archiver>"] = ARCHIVER;
 
+    // Start location (we return to the start location after each chdir)
+    startlocation = FXSystem::getCurrentDirectory();
+
     // Class variable initializations
     ctrlflag = false;
     shiftf10 = false;
@@ -433,7 +438,8 @@ long SearchPanel::onKeyPress(FXObject* sender, FXSelector sel, void* ptr)
 
     case KEY_KP_Enter:
     case KEY_Return:
-        handle(this, FXSEL(SEL_DOUBLECLICKED, FilePanel::ID_KEY_RETURN), (void*)(FXival)(currentitem));
+
+        handle(this, FXSEL(SEL_DOUBLECLICKED, SearchPanel::ID_KEY_RETURN), (void*)(FXival)(currentitem));
         return 1;
 
     default:
@@ -527,7 +533,16 @@ long SearchPanel::onCmdItemDoubleClicked(FXObject* sender, FXSelector sel, void*
 
                 // Update associations dictionary
                 FileDict* assocdict = new FileDict(getApp());
-                FileAssoc* association = assocdict->findFileBinding(pathname.text());
+
+                FileAssoc* association;
+                if (xf_islink(pathname))
+                {
+                    association = assocdict->findFileBinding(xf_readlink(pathname).text());
+                }
+                else
+                {
+                    association = assocdict->findFileBinding(pathname.text());
+                }
 
                 // If there is an association
                 if (association)
@@ -722,7 +737,16 @@ long SearchPanel::onCmdItemClicked(FXObject* sender, FXSelector sel, void* ptr)
 
                     // Update associations dictionary
                     FileDict* assocdict = new FileDict(getApp());
-                    FileAssoc* association = assocdict->findFileBinding(pathname.text());
+                    
+                    FileAssoc* association;
+                    if (xf_islink(pathname))
+                    {
+                        association = assocdict->findFileBinding(xf_readlink(pathname).text());
+                    }
+                    else
+                    {
+                        association = assocdict->findFileBinding(pathname.text());
+                    }
 
                     // If there is an association
                     if (association)
@@ -1199,7 +1223,15 @@ long SearchPanel::onCmdOpen(FXObject*, FXSelector, void*)
             }
 
             // If association found
-            association = assocdict->findFileBinding(pathname.text());
+            if (xf_islink(pathname))
+            {
+                association = assocdict->findFileBinding(xf_readlink(pathname).text());
+            }
+            else
+            {
+                association = assocdict->findFileBinding(pathname.text());
+            }
+
             if (association)
             {
                 FXString cmd = association->command.section(',', 0);
@@ -1366,7 +1398,14 @@ long SearchPanel::onCmdEdit(FXObject*, FXSelector sel, void*)
         {
             // Increment number of selected items
             pathname = list->getItemFullPathname(u);
-            association = assocdict->findFileBinding(pathname.text());
+            if (xf_islink(pathname))
+            {
+                association = assocdict->findFileBinding(xf_readlink(pathname).text());
+            }
+            else
+            {
+                association = assocdict->findFileBinding(pathname.text());
+            }
 
             // If there is an association
             if (association)
@@ -1548,7 +1587,14 @@ long SearchPanel::onCmdEdit(FXObject*, FXSelector sel, void*)
                 // Only View / Edit regular files (not directories)
                 if (xf_isfile(pathname))
                 {
-                    association = assocdict->findFileBinding(pathname.text());
+                    if (xf_islink(pathname))
+                    {
+                        association = assocdict->findFileBinding(xf_readlink(pathname).text());
+                    }
+                    else
+                    {
+                        association = assocdict->findFileBinding(pathname.text());
+                    }
 
                     // If there is an association
                     if (association)
@@ -2626,7 +2672,7 @@ int SearchPanel::readScriptDir(FXMenuPane* scriptsmenu, FXString dir)
                 else if (xf_isreadexecutable(pathname))
                 {
                     new FXMenuCommand(scriptsmenu, namelist[k]->d_name + FXString("\t\t") + pathname,
-                                      miniexecicon, this, FilePanel::ID_RUN_SCRIPT);
+                                      miniexecicon, this, SearchPanel::ID_RUN_SCRIPT);
                 }
             }
             free(namelist[k]);
@@ -4443,6 +4489,84 @@ out:
 }
 
 
+// Run script
+long SearchPanel::onCmdRunScript(FXObject* sender, FXSelector sel, void*)
+{
+    // Wait cursor
+    getApp()->beginWaitCursor();
+
+    FXString pathname, cmd, itemslist = " ";
+    FXString scriptpath = dynamic_cast<FXMenuCommand*>(sender)->getHelpText();
+
+    // Construct selected files list
+    list->setFocus();
+    for (int u = 0; u < list->getNumItems(); u++)
+    {
+        if (list->isItemSelected(u))
+        {
+            pathname = list->getItemPathname(u);
+
+            // List of selected items
+            itemslist += xf_quote(pathname) + " ";
+        }
+    }
+
+    // Construct command line
+    cmd = xf_quote(scriptpath) + itemslist + " &";
+
+    // Go to the current directory
+    int ret = chdir(list->getDirectory().text());
+    if (ret < 0)
+    {
+        int errcode = errno;
+        if (errcode)
+        {
+            MessageBox::error(this, BOX_OK, _("Error"), _("Can't enter folder %s: %s"),
+                              list->getDirectory().text(), strerror(errcode));
+        }
+        else
+        {
+            MessageBox::error(this, BOX_OK, _("Error"), _("Can't enter folder %s"),
+                              list->getDirectory().text());
+        }
+    }
+
+    // Execute command
+    static pid_t child_pid = 0;
+    switch ((child_pid = fork()))
+    {
+    case -1:
+        fprintf(stderr, _("Error: Fork failed: %s\n"), strerror(errno));
+        break;
+
+    case 0:
+        execl("/bin/sh", "sh", "-c", cmd.text(), (char*)NULL);
+        _exit(EXIT_SUCCESS);
+        break;
+    }
+
+    // Return to the starting directory
+    ret = chdir(startlocation.text());
+    if (ret < 0)
+    {
+        int errcode = errno;
+        if (errcode)
+        {
+            MessageBox::error(this, BOX_OK, _("Error"), _("Can't enter folder %s: %s"), startlocation.text(),
+                              strerror(errcode));
+        }
+        else
+        {
+            MessageBox::error(this, BOX_OK, _("Error"), _("Can't enter folder %s"), startlocation.text());
+        }
+    }
+
+    getApp()->endWaitCursor();
+
+    return 1;
+}
+
+
 // Go to script directory
 long SearchPanel::onCmdGoScriptDir(FXObject* sender, FXSelector sel, void*)
 {
@@ -4765,6 +4889,25 @@ long SearchPanel::onUpdFileTrash(FXObject* sender, FXSelector sel, void*)
         sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_DISABLE), NULL);
     }
 
+    return 1;
+}
+
+
+// Update scripts menu item
+long SearchPanel::onUpdRunScript(FXObject* sender, FXSelector, void*)
+{
+    // Menu item is disabled when nothing or ".." is selected
+    int num, item;
+
+    num = list->getNumSelectedItems(&item);
+    if (num == 0)
+    {
+        sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_DISABLE), NULL);
+    }
+    else
+    {
+        sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_ENABLE), NULL);
+    }
     return 1;
 }
 

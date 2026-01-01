@@ -1,3 +1,16 @@
+Version 2.1.2
+- fix broken script execution in Search Panel
+- fix return key not working in Search Panel
+- fix double clicking on a symbolic link doesn't open the target file (bug #312)
+- gray out bookmarks when the target directory does not exist (bug #311)
+- fix 'xfe startfolder' not working anymore when always_show_tabbar is set to 1 (bug #307)
+- fix wrong file list sort when returning from search list (bug #304)
+- add wma audio file type
+- fix ampersand character not showing bookmark menu (bug #308)
+- fix keyboard cursor invisible in the search window (bug #301) and in some other dialogs
+- don't display link size anymore
+- fix wrong free space size in FreeBSD (bug #309)
+
 Version 2.1.1 (released 30/05/2025)
 - fix translations to handle capitals at the beginning of words in english menus
 - fix FreeBSD compilation issues
@@ -2063,7 +2076,7 @@ Version 0.44
 - add of an option '--with-static=yes/no' to the configure script,
   to be able to link a static version of Xfe. This is useful for
   computers that don't have the required libraries.
-- modification of the spec file to deal with the '--with-static' option.
+- modification of the spec file to deal with the '--with-static' option
 
 Version 0.43
 - symlink command with multiple files selection cannot be used anymore
@@ -2100,55 +2113,55 @@ Version 0.39 (released)
 
 Version 0.38
 - add of X File Query (Xfq), a simple RPM package viewer and installer, with the same look and feel
-as Xfe.
+as Xfe
 
 Version 0.37
-- the color theme of Xfv is now the same as Xfe. Removed the color option box.
+- the color theme of Xfv is now the same as Xfe. Removed the color option box
 
 Version 0.36
 - fix some bugs relative to the move, rename and copy operations when the destination is a directory. Seems
 to work correctly now!
 
 Version 0.35 (released)
-- add of X File View (Xfv), a simple text viewer with the same look and feel as Xfe.
+- add of X File View (Xfv), a simple text viewer with the same look and feel as Xfe
 
 Version 0.34
-- add of a progress dialog for mount / unmount file system operations.
+- add of a progress dialog for mount / unmount file system operations
 
 Version 0.33
-- add of a progress dialog for archive (extraction and creation) operations.
+- add of a progress dialog for archive (extraction and creation) operations
 
 Version 0.32
-- add of a progress dialog for chmod and chown operations.
+- add of a progress dialog for chmod and chown operations
 - now dead links are seen! (was not the case even in Xwc!)
-- fix a number of bugs related to the chown and chmod operations.
+- fix a number of bugs related to the chown and chmod operations
 
 Version 0.31
-- add of a GNOME color theme.
+- add of a GNOME color theme
 
 Version 0.30
-- add of a progress dialog for file move operations.
+- add of a progress dialog for file move operations
 
 Version 0.29
-- add of a progress dialog for file delete operations.
+- add of a progress dialog for file delete operations
 
 Version 0.28
-- add of a progress bar for file copy operations.
+- add of a progress bar for file copy operations
 
 Version 0.27.1 (released)
-- correct a bug introduced in the previous release. Sorry for the inconvenience.
+- correct a bug introduced in the previous release. Sorry for the inconvenience
 
 Version 0.27 (released)
-- add Overwrite Box for file copy / move /symlink operations.
+- add Overwrite Box for file copy / move /symlink operations
 
 Version 0.26 (released)
-- correct a compilation problem with gcc 3.2.
-- add a toolbar button for switching between one / two panels.
+- correct a compilation problem with gcc 3.2
+- add a toolbar button for switching between one / two panels
 
 Version 0.25 (released)
-- correct an important bug in the file deletion process.
-- add a toolbar button for showing / hiding hidden files. 
+- correct an important bug in the file deletion process
+- add a toolbar button for showing / hiding hidden files
 
 Version 0.24 (released)
 - initial release of X File Explorer
-- fully functional with a lot of bugs, I suppose.
+- fully functional with a lot of bugs, I suppose

@@ -1,5 +1,5 @@
 # Xfe - X File Explorer, a file manager for X
-# Copyright (C) 2002-2024 Roland Baudin
+# Copyright (C) 2002-2026 Roland Baudin
 # This file is distributed under the same license as the Xfe package.
 # Pere Orga <pere@orga.cat>, 2022.
 #
@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Xfe 1.45\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-21 10:40+0200\n"
+"POT-Creation-Date: 2025-12-10 10:38+0100\n"
 "PO-Revision-Date: 2022-12-19 12:44+0100\n"
 "Last-Translator: Pere Orga <pere@orga.cat>\n"
 "Language-Team: \n"
@@ -26,7 +26,7 @@ msgstr "Afegeix a l'arxiu"
 #: src/ConnectDialog.cpp:146 src/FontDialog.cpp:47 src/InputDialog.cpp:33
 #: src/KeyBindings.cpp:81 src/KeyBindingsDialog.cpp:31
 #: src/HistInputDialog.cpp:60 src/Preferences.cpp:329 src/Properties.cpp:207
-#: src/Properties.cpp:992 src/RenameDialog.cpp:232 src/WriteWindow.cpp:192
+#: src/Properties.cpp:999 src/RenameDialog.cpp:234 src/WriteWindow.cpp:192
 msgid "&Accept"
 msgstr "&Accepta"
 
@@ -39,8 +39,8 @@ msgstr "&Accepta"
 #: src/MessageBox.cpp:113 src/MessageBox.cpp:135 src/MessageBox.cpp:149
 #: src/MessageBox.cpp:159 src/MessageBox.cpp:172 src/OverwriteBox.cpp:55
 #: src/OverwriteBox.cpp:74 src/OverwriteBox.cpp:136 src/OverwriteBox.cpp:155
-#: src/Preferences.cpp:336 src/Properties.cpp:213 src/Properties.cpp:997
-#: src/RenameDialog.cpp:237 src/WriteWindow.cpp:197 src/foxhacks.cpp:691
+#: src/Preferences.cpp:336 src/Properties.cpp:213 src/Properties.cpp:1004
+#: src/RenameDialog.cpp:239 src/WriteWindow.cpp:197 src/foxhacks.cpp:691
 #: src/foxhacks.cpp:784
 msgid "&Cancel"
 msgstr "&Cancel·la"
@@ -133,15 +133,15 @@ msgid "zst\tArchive format zst"
 msgstr "7z\tL'arxiu és en format 7z"
 
 #: src/ArchInputDialog.cpp:139 src/BrowseInputDialog.cpp:133
-#: src/FilePanel.cpp:5362 src/HistInputDialog.cpp:152 src/SearchPanel.cpp:2797
+#: src/FilePanel.cpp:5402 src/HistInputDialog.cpp:152 src/SearchPanel.cpp:2843
 #: src/XFileArchive.cpp:525 src/XFileArchive.cpp:1228
 msgid "Select a Destination Folder"
 msgstr "Seleccioneu una carpeta de destinació"
 
 #: src/ArchInputDialog.cpp:143 src/BookmarkDialog.cpp:167
-#: src/BrowseInputDialog.cpp:149 src/FilePanel.cpp:5365
-#: src/HistInputDialog.cpp:172 src/Preferences.cpp:1315 src/Properties.cpp:2001
-#: src/SearchPanel.cpp:2800 src/SearchWindow.cpp:1328 src/WriteWindow.cpp:1661
+#: src/BrowseInputDialog.cpp:149 src/FilePanel.cpp:5405
+#: src/HistInputDialog.cpp:172 src/Preferences.cpp:1315 src/Properties.cpp:2008
+#: src/SearchPanel.cpp:2846 src/SearchWindow.cpp:1328 src/WriteWindow.cpp:1661
 #: src/XFileArchive.cpp:387 src/XFileArchive.cpp:528 src/XFileArchive.cpp:1231
 #: src/XFileImage.cpp:181 src/XFilePackage.cpp:351
 msgid "All Files"
@@ -151,15 +151,15 @@ msgstr "Tots els fitxers"
 msgid "\tSelect Icon..."
 msgstr "\tSelecciona un fitxer..."
 
-#: src/BookmarkDialog.cpp:164 src/Properties.cpp:2049
+#: src/BookmarkDialog.cpp:164 src/Properties.cpp:2056
 msgid "PNG Images"
 msgstr "Imatges PNG"
 
-#: src/BookmarkDialog.cpp:165 src/Properties.cpp:2050
+#: src/BookmarkDialog.cpp:165 src/Properties.cpp:2057
 msgid "GIF Images"
 msgstr "Imatges GIF"
 
-#: src/BookmarkDialog.cpp:166 src/Properties.cpp:2051
+#: src/BookmarkDialog.cpp:166 src/Properties.cpp:2058
 msgid "BMP Images"
 msgstr "Imatges BMP"
 
@@ -259,19 +259,19 @@ msgstr "Nom"
 msgid "Clear\tReset history list"
 msgstr "&Esborra els marcadors"
 
-#: src/ComboBox.cpp:906 src/DirPanel.cpp:1490 src/FilePanel.cpp:4997
-#: src/SearchPanel.cpp:2551 src/WriteWindow.cpp:879 src/WriteWindow.cpp:920
+#: src/ComboBox.cpp:906 src/DirPanel.cpp:1524 src/FilePanel.cpp:5037
+#: src/SearchPanel.cpp:2597 src/WriteWindow.cpp:879 src/WriteWindow.cpp:920
 #: src/XFileExplorer.cpp:1429
 msgid "&Copy"
 msgstr "&Copia"
 
-#: src/ComboBox.cpp:907 src/DirPanel.cpp:1491 src/FilePanel.cpp:4998
-#: src/SearchPanel.cpp:2552 src/XFileExplorer.cpp:1435
+#: src/ComboBox.cpp:907 src/DirPanel.cpp:1525 src/FilePanel.cpp:5038
+#: src/SearchPanel.cpp:2598 src/XFileExplorer.cpp:1435
 msgid "C&ut"
 msgstr "Re&talla"
 
-#: src/ComboBox.cpp:908 src/DirPanel.cpp:1492 src/FilePanel.cpp:4815
-#: src/FilePanel.cpp:4860 src/FilePanel.cpp:4999 src/WriteWindow.cpp:891
+#: src/ComboBox.cpp:908 src/DirPanel.cpp:1526 src/FilePanel.cpp:4855
+#: src/FilePanel.cpp:4900 src/FilePanel.cpp:5039 src/WriteWindow.cpp:891
 #: src/WriteWindow.cpp:922 src/XFileExplorer.cpp:1441
 msgid "&Paste"
 msgstr "&Enganxa"
@@ -296,39 +296,39 @@ msgstr ""
 "Espereu...\n"
 "\n"
 
-#: src/CommandWindow.cpp:196 src/FilePanel.cpp:6032 src/SearchWindow.cpp:970
-#: src/XFileArchive.cpp:1612 src/startupnotification.cpp:165
-#: src/xfeutils.cpp:1843
+#: src/CommandWindow.cpp:196 src/FilePanel.cpp:6072 src/SearchPanel.cpp:4539
+#: src/SearchWindow.cpp:970 src/XFileArchive.cpp:1612
+#: src/startupnotification.cpp:165 src/xfeutils.cpp:1843
 #, c-format
 msgid "Error: Fork failed: %s\n"
 msgstr "Error: la bifurcació ha fallat: %s\n"
 
 #: src/CommandWindow.cpp:211 src/CommandWindow.cpp:215
-#: src/ConnectDialog.cpp:222 src/ConnectDialog.cpp:255
-#: src/ConnectDialog.cpp:275 src/ConnectDialog.cpp:287
-#: src/ConnectDialog.cpp:352 src/ConnectDialog.cpp:380
-#: src/ConnectDialog.cpp:411 src/ConnectDialog.cpp:423 src/DirList.cpp:896
+#: src/ConnectDialog.cpp:244 src/ConnectDialog.cpp:277
+#: src/ConnectDialog.cpp:297 src/ConnectDialog.cpp:309
+#: src/ConnectDialog.cpp:374 src/ConnectDialog.cpp:402
+#: src/ConnectDialog.cpp:433 src/ConnectDialog.cpp:445 src/DirList.cpp:896
 #: src/DirList.cpp:943 src/DirPanel.cpp:746 src/DirPanel.cpp:817
 #: src/DirPanel.cpp:836 src/DirPanel.cpp:841 src/DirPanel.cpp:944
 #: src/DirPanel.cpp:963 src/DirPanel.cpp:968 src/DirPanel.cpp:1071
-#: src/DirPanel.cpp:1223 src/DirPanel.cpp:1228 src/DirPanel.cpp:1532
-#: src/DirPanel.cpp:1537 src/DirPanel.cpp:1612 src/DirPanel.cpp:1617
-#: src/DirPanel.cpp:1709 src/DirPanel.cpp:1714 src/DirPanel.cpp:1941
-#: src/DirPanel.cpp:1946 src/DirPanel.cpp:2046 src/DirPanel.cpp:2051
-#: src/DirPanel.cpp:2756 src/DirPanel.cpp:2801 src/DirPanel.cpp:2808
-#: src/DirPanel.cpp:2815 src/DirPanel.cpp:2822 src/DirPanel.cpp:2829
-#: src/DirPanel.cpp:2836 src/DirPanel.cpp:2843 src/DirPanel.cpp:2915
-#: src/DirPanel.cpp:2994 src/DirPanel.cpp:3155 src/DirPanel.cpp:3206
-#: src/DirPanel.cpp:3227 src/DirPanel.cpp:3277 src/DirPanel.cpp:3393
-#: src/DirPanel.cpp:3441 src/DirPanel.cpp:3474 src/DirPanel.cpp:3571
-#: src/DirPanel.cpp:3600 src/DirPanel.cpp:3605 src/DirPanel.cpp:3619
-#: src/DirPanel.cpp:3695 src/DirPanel.cpp:3712 src/DirPanel.cpp:3717
-#: src/DirPanel.cpp:3744 src/DirPanel.cpp:3748 src/DirPanel.cpp:3760
-#: src/DirPanel.cpp:3770 src/DirPanel.cpp:3775 src/DirPanel.cpp:3852
-#: src/DirPanel.cpp:3867 src/DirPanel.cpp:3903 src/DirPanel.cpp:3926
-#: src/DirPanel.cpp:3980 src/DirPanel.cpp:3984 src/DirPanel.cpp:4006
-#: src/DirPanel.cpp:4011 src/DirPanel.cpp:4054 src/DirPanel.cpp:4058
-#: src/DirPanel.cpp:4080 src/DirPanel.cpp:4085 src/File.cpp:335
+#: src/DirPanel.cpp:1223 src/DirPanel.cpp:1228 src/DirPanel.cpp:1235
+#: src/DirPanel.cpp:1566 src/DirPanel.cpp:1571 src/DirPanel.cpp:1646
+#: src/DirPanel.cpp:1651 src/DirPanel.cpp:1759 src/DirPanel.cpp:1986
+#: src/DirPanel.cpp:1991 src/DirPanel.cpp:2091 src/DirPanel.cpp:2096
+#: src/DirPanel.cpp:2801 src/DirPanel.cpp:2846 src/DirPanel.cpp:2853
+#: src/DirPanel.cpp:2860 src/DirPanel.cpp:2867 src/DirPanel.cpp:2874
+#: src/DirPanel.cpp:2881 src/DirPanel.cpp:2888 src/DirPanel.cpp:2960
+#: src/DirPanel.cpp:3039 src/DirPanel.cpp:3200 src/DirPanel.cpp:3251
+#: src/DirPanel.cpp:3272 src/DirPanel.cpp:3322 src/DirPanel.cpp:3438
+#: src/DirPanel.cpp:3486 src/DirPanel.cpp:3519 src/DirPanel.cpp:3616
+#: src/DirPanel.cpp:3645 src/DirPanel.cpp:3650 src/DirPanel.cpp:3664
+#: src/DirPanel.cpp:3740 src/DirPanel.cpp:3757 src/DirPanel.cpp:3762
+#: src/DirPanel.cpp:3789 src/DirPanel.cpp:3793 src/DirPanel.cpp:3805
+#: src/DirPanel.cpp:3815 src/DirPanel.cpp:3820 src/DirPanel.cpp:3897
+#: src/DirPanel.cpp:3912 src/DirPanel.cpp:3948 src/DirPanel.cpp:3971
+#: src/DirPanel.cpp:4025 src/DirPanel.cpp:4029 src/DirPanel.cpp:4051
+#: src/DirPanel.cpp:4056 src/DirPanel.cpp:4099 src/DirPanel.cpp:4103
+#: src/DirPanel.cpp:4125 src/DirPanel.cpp:4130 src/File.cpp:335
 #: src/File.cpp:1157 src/File.cpp:1165 src/File.cpp:1174 src/File.cpp:1198
 #: src/File.cpp:1455 src/File.cpp:1462 src/File.cpp:1472 src/File.cpp:1532
 #: src/File.cpp:1557 src/File.cpp:1577 src/File.cpp:1585 src/File.cpp:1594
@@ -341,74 +341,75 @@ msgstr "Error: la bifurcació ha fallat: %s\n"
 #: src/FileDialog.cpp:1234 src/FileDialog.cpp:1239 src/FileList.cpp:886
 #: src/FileList.cpp:929 src/FilePanel.cpp:1145 src/FilePanel.cpp:1150
 #: src/FilePanel.cpp:1170 src/FilePanel.cpp:1175 src/FilePanel.cpp:1313
-#: src/FilePanel.cpp:1507 src/FilePanel.cpp:2029 src/FilePanel.cpp:2036
-#: src/FilePanel.cpp:2043 src/FilePanel.cpp:2050 src/FilePanel.cpp:2057
-#: src/FilePanel.cpp:2064 src/FilePanel.cpp:2071 src/FilePanel.cpp:2138
-#: src/FilePanel.cpp:2217 src/FilePanel.cpp:2347 src/FilePanel.cpp:2461
-#: src/FilePanel.cpp:2519 src/FilePanel.cpp:2547 src/FilePanel.cpp:2615
-#: src/FilePanel.cpp:2622 src/FilePanel.cpp:2795 src/FilePanel.cpp:2822
-#: src/FilePanel.cpp:2996 src/FilePanel.cpp:3026 src/FilePanel.cpp:3031
-#: src/FilePanel.cpp:3047 src/FilePanel.cpp:3102 src/FilePanel.cpp:3825
-#: src/FilePanel.cpp:3875 src/FilePanel.cpp:3880 src/FilePanel.cpp:3918
-#: src/FilePanel.cpp:3923 src/FilePanel.cpp:3978 src/FilePanel.cpp:3995
-#: src/FilePanel.cpp:4000 src/FilePanel.cpp:4076 src/FilePanel.cpp:4086
-#: src/FilePanel.cpp:4091 src/FilePanel.cpp:4107 src/FilePanel.cpp:4112
-#: src/FilePanel.cpp:4180 src/FilePanel.cpp:4195 src/FilePanel.cpp:5125
-#: src/FilePanel.cpp:5130 src/FilePanel.cpp:5142 src/FilePanel.cpp:5152
-#: src/FilePanel.cpp:5157 src/FilePanel.cpp:5181 src/FilePanel.cpp:5186
-#: src/FilePanel.cpp:5330 src/FilePanel.cpp:5335 src/FilePanel.cpp:5471
-#: src/FilePanel.cpp:5524 src/FilePanel.cpp:5529 src/FilePanel.cpp:5728
-#: src/FilePanel.cpp:6017 src/FilePanel.cpp:6022 src/FilePanel.cpp:6048
-#: src/FilePanel.cpp:6053 src/FilePanel.cpp:6080 src/FilePanel.cpp:6085
-#: src/FilePanel.cpp:6159 src/FilePanel.cpp:6163 src/FilePanel.cpp:6185
-#: src/FilePanel.cpp:6190 src/FilePanel.cpp:6313 src/FilePanel.cpp:6327
-#: src/FilePanel.cpp:6344 src/FilePanel.cpp:6441 src/FilePanel.cpp:6446
-#: src/FilePanel.cpp:6494 src/FilePanel.cpp:6499 src/KeyBindings.cpp:977
+#: src/FilePanel.cpp:1516 src/FilePanel.cpp:2047 src/FilePanel.cpp:2054
+#: src/FilePanel.cpp:2061 src/FilePanel.cpp:2068 src/FilePanel.cpp:2075
+#: src/FilePanel.cpp:2082 src/FilePanel.cpp:2089 src/FilePanel.cpp:2156
+#: src/FilePanel.cpp:2235 src/FilePanel.cpp:2365 src/FilePanel.cpp:2479
+#: src/FilePanel.cpp:2537 src/FilePanel.cpp:2565 src/FilePanel.cpp:2633
+#: src/FilePanel.cpp:2640 src/FilePanel.cpp:2813 src/FilePanel.cpp:2840
+#: src/FilePanel.cpp:3014 src/FilePanel.cpp:3044 src/FilePanel.cpp:3049
+#: src/FilePanel.cpp:3065 src/FilePanel.cpp:3120 src/FilePanel.cpp:3857
+#: src/FilePanel.cpp:3907 src/FilePanel.cpp:3912 src/FilePanel.cpp:3950
+#: src/FilePanel.cpp:3955 src/FilePanel.cpp:4010 src/FilePanel.cpp:4027
+#: src/FilePanel.cpp:4032 src/FilePanel.cpp:4108 src/FilePanel.cpp:4118
+#: src/FilePanel.cpp:4123 src/FilePanel.cpp:4139 src/FilePanel.cpp:4144
+#: src/FilePanel.cpp:4212 src/FilePanel.cpp:4227 src/FilePanel.cpp:5165
+#: src/FilePanel.cpp:5170 src/FilePanel.cpp:5182 src/FilePanel.cpp:5192
+#: src/FilePanel.cpp:5197 src/FilePanel.cpp:5221 src/FilePanel.cpp:5226
+#: src/FilePanel.cpp:5370 src/FilePanel.cpp:5375 src/FilePanel.cpp:5511
+#: src/FilePanel.cpp:5564 src/FilePanel.cpp:5569 src/FilePanel.cpp:5768
+#: src/FilePanel.cpp:6057 src/FilePanel.cpp:6062 src/FilePanel.cpp:6088
+#: src/FilePanel.cpp:6093 src/FilePanel.cpp:6120 src/FilePanel.cpp:6125
+#: src/FilePanel.cpp:6199 src/FilePanel.cpp:6203 src/FilePanel.cpp:6225
+#: src/FilePanel.cpp:6230 src/FilePanel.cpp:6353 src/FilePanel.cpp:6367
+#: src/FilePanel.cpp:6384 src/FilePanel.cpp:6481 src/FilePanel.cpp:6486
+#: src/FilePanel.cpp:6534 src/FilePanel.cpp:6539 src/KeyBindings.cpp:977
 #: src/KeyBindings.cpp:997 src/KeyBindings.cpp:1017 src/KeyBindings.cpp:1037
 #: src/KeyBindings.cpp:1129 src/KeyBindings.cpp:1149 src/KeyBindings.cpp:1241
 #: src/KeyBindings.cpp:1261 src/KeyBindings.cpp:1353 src/KeyBindings.cpp:1373
-#: src/MessageBox.cpp:240 src/MessageBox.cpp:304 src/Places.cpp:822
-#: src/Places.cpp:828 src/Places.cpp:840 src/Places.cpp:891 src/Places.cpp:897
-#: src/Properties.cpp:1480 src/Properties.cpp:1488 src/Properties.cpp:1493
-#: src/Properties.cpp:1567 src/Properties.cpp:1571 src/Properties.cpp:1597
-#: src/Properties.cpp:1649 src/Properties.cpp:1653 src/Properties.cpp:1772
-#: src/Properties.cpp:1776 src/Properties.cpp:1858 src/Properties.cpp:1863
-#: src/SearchPanel.cpp:502 src/SearchPanel.cpp:696 src/SearchPanel.cpp:909
-#: src/SearchPanel.cpp:914 src/SearchPanel.cpp:1774 src/SearchPanel.cpp:1819
-#: src/SearchPanel.cpp:2658 src/SearchPanel.cpp:2663 src/SearchPanel.cpp:2908
-#: src/SearchPanel.cpp:2961 src/SearchPanel.cpp:3115 src/SearchPanel.cpp:3138
-#: src/SearchPanel.cpp:3829 src/SearchPanel.cpp:3924 src/SearchPanel.cpp:3931
-#: src/SearchPanel.cpp:3938 src/SearchPanel.cpp:3945 src/SearchPanel.cpp:3952
-#: src/SearchPanel.cpp:3959 src/SearchPanel.cpp:3966 src/SearchPanel.cpp:4033
-#: src/SearchPanel.cpp:4110 src/SearchPanel.cpp:4265 src/SearchPanel.cpp:4340
-#: src/SearchPanel.cpp:4391 src/SearchPanel.cpp:4412 src/SearchPanel.cpp:4463
-#: src/SearchPanel.cpp:4468 src/SearchPanel.cpp:4815 src/SearchPanel.cpp:4829
-#: src/SearchPanel.cpp:4846 src/SearchWindow.cpp:990 src/SearchWindow.cpp:994
-#: src/SearchWindow.cpp:1119 src/WriteWindow.cpp:1177 src/WriteWindow.cpp:1187
-#: src/WriteWindow.cpp:1265 src/WriteWindow.cpp:1271 src/WriteWindow.cpp:1284
-#: src/WriteWindow.cpp:1291 src/WriteWindow.cpp:1313 src/WriteWindow.cpp:2017
-#: src/XFileExplorer.cpp:3499 src/XFileExplorer.cpp:3504
-#: src/XFileExplorer.cpp:3542 src/XFileExplorer.cpp:3566
-#: src/XFileExplorer.cpp:3571 src/XFileExplorer.cpp:3590
-#: src/XFileExplorer.cpp:3595 src/XFileExplorer.cpp:3692
-#: src/XFileExplorer.cpp:4457 src/XFileExplorer.cpp:4462
-#: src/XFileExplorer.cpp:4594 src/XFileExplorer.cpp:4644
-#: src/XFileExplorer.cpp:4649 src/XFileExplorer.cpp:4661
+#: src/MessageBox.cpp:240 src/MessageBox.cpp:304 src/Places.cpp:818
+#: src/Places.cpp:824 src/Places.cpp:836 src/Places.cpp:887 src/Places.cpp:893
+#: src/Properties.cpp:1487 src/Properties.cpp:1495 src/Properties.cpp:1500
+#: src/Properties.cpp:1574 src/Properties.cpp:1578 src/Properties.cpp:1604
+#: src/Properties.cpp:1656 src/Properties.cpp:1660 src/Properties.cpp:1779
+#: src/Properties.cpp:1783 src/Properties.cpp:1865 src/Properties.cpp:1870
+#: src/SearchPanel.cpp:508 src/SearchPanel.cpp:711 src/SearchPanel.cpp:933
+#: src/SearchPanel.cpp:938 src/SearchPanel.cpp:1820 src/SearchPanel.cpp:1865
+#: src/SearchPanel.cpp:2704 src/SearchPanel.cpp:2709 src/SearchPanel.cpp:2954
+#: src/SearchPanel.cpp:3007 src/SearchPanel.cpp:3161 src/SearchPanel.cpp:3184
+#: src/SearchPanel.cpp:3875 src/SearchPanel.cpp:3970 src/SearchPanel.cpp:3977
+#: src/SearchPanel.cpp:3984 src/SearchPanel.cpp:3991 src/SearchPanel.cpp:3998
+#: src/SearchPanel.cpp:4005 src/SearchPanel.cpp:4012 src/SearchPanel.cpp:4079
+#: src/SearchPanel.cpp:4156 src/SearchPanel.cpp:4311 src/SearchPanel.cpp:4386
+#: src/SearchPanel.cpp:4437 src/SearchPanel.cpp:4458 src/SearchPanel.cpp:4524
+#: src/SearchPanel.cpp:4529 src/SearchPanel.cpp:4555 src/SearchPanel.cpp:4560
+#: src/SearchPanel.cpp:4587 src/SearchPanel.cpp:4592 src/SearchPanel.cpp:4958
+#: src/SearchPanel.cpp:4972 src/SearchPanel.cpp:4989 src/SearchWindow.cpp:990
+#: src/SearchWindow.cpp:994 src/SearchWindow.cpp:1119 src/WriteWindow.cpp:1177
+#: src/WriteWindow.cpp:1187 src/WriteWindow.cpp:1265 src/WriteWindow.cpp:1271
+#: src/WriteWindow.cpp:1284 src/WriteWindow.cpp:1291 src/WriteWindow.cpp:1313
+#: src/WriteWindow.cpp:2017 src/XFileExplorer.cpp:3501
+#: src/XFileExplorer.cpp:3506 src/XFileExplorer.cpp:3544
+#: src/XFileExplorer.cpp:3568 src/XFileExplorer.cpp:3573
+#: src/XFileExplorer.cpp:3592 src/XFileExplorer.cpp:3597
+#: src/XFileExplorer.cpp:3702 src/XFileExplorer.cpp:4485
+#: src/XFileExplorer.cpp:4490 src/XFileExplorer.cpp:4622
 #: src/XFileExplorer.cpp:4672 src/XFileExplorer.cpp:4677
-#: src/XFileExplorer.cpp:5348 src/XFileExplorer.cpp:5353
-#: src/XFileExplorer.cpp:5401 src/XFileExplorer.cpp:5453
-#: src/XFileExplorer.cpp:5458 src/XFileExplorer.cpp:5500
-#: src/XFileExplorer.cpp:5526 src/XFileExplorer.cpp:5531
-#: src/XFileExplorer.cpp:5584 src/XFileExplorer.cpp:5589
-#: src/XFileExplorer.cpp:5598 src/XFileExplorer.cpp:5732
-#: src/XFileExplorer.cpp:5737 src/XFileExplorer.cpp:5753
-#: src/XFileExplorer.cpp:5758 src/XFileExplorer.cpp:5813
-#: src/XFileExplorer.cpp:6410 src/XFileExplorer.cpp:6484
-#: src/XFileExplorer.cpp:6490 src/XFileExplorer.cpp:6497
-#: src/XFileArchive.cpp:457 src/XFileArchive.cpp:520 src/XFileArchive.cpp:605
-#: src/XFileArchive.cpp:628 src/XFileArchive.cpp:719 src/XFileArchive.cpp:808
-#: src/XFileArchive.cpp:872 src/XFileArchive.cpp:882 src/XFileArchive.cpp:901
-#: src/XFileArchive.cpp:1012 src/XFileArchive.cpp:1022
+#: src/XFileExplorer.cpp:4689 src/XFileExplorer.cpp:4700
+#: src/XFileExplorer.cpp:4705 src/XFileExplorer.cpp:5376
+#: src/XFileExplorer.cpp:5381 src/XFileExplorer.cpp:5429
+#: src/XFileExplorer.cpp:5481 src/XFileExplorer.cpp:5486
+#: src/XFileExplorer.cpp:5528 src/XFileExplorer.cpp:5554
+#: src/XFileExplorer.cpp:5559 src/XFileExplorer.cpp:5612
+#: src/XFileExplorer.cpp:5617 src/XFileExplorer.cpp:5626
+#: src/XFileExplorer.cpp:5760 src/XFileExplorer.cpp:5765
+#: src/XFileExplorer.cpp:5781 src/XFileExplorer.cpp:5786
+#: src/XFileExplorer.cpp:5841 src/XFileExplorer.cpp:6438
+#: src/XFileExplorer.cpp:6512 src/XFileExplorer.cpp:6518
+#: src/XFileExplorer.cpp:6525 src/XFileArchive.cpp:457 src/XFileArchive.cpp:520
+#: src/XFileArchive.cpp:605 src/XFileArchive.cpp:628 src/XFileArchive.cpp:719
+#: src/XFileArchive.cpp:808 src/XFileArchive.cpp:872 src/XFileArchive.cpp:882
+#: src/XFileArchive.cpp:901 src/XFileArchive.cpp:1012 src/XFileArchive.cpp:1022
 #: src/XFileArchive.cpp:1041 src/XFileArchive.cpp:1163
 #: src/XFileArchive.cpp:1191 src/XFileArchive.cpp:1199
 #: src/XFileArchive.cpp:1223 src/XFileArchive.cpp:1263
@@ -467,19 +468,19 @@ msgstr "Arxivador:"
 msgid "PORT:"
 msgstr ""
 
-#: src/ConnectDialog.cpp:81 src/Properties.cpp:715 src/Properties.cpp:1013
+#: src/ConnectDialog.cpp:81 src/Properties.cpp:722 src/Properties.cpp:1020
 msgid "Type:"
 msgstr "Tipus:"
 
-#: src/ConnectDialog.cpp:85 src/ConnectDialog.cpp:188 src/ConnectDialog.cpp:522
-#: src/ConnectDialog.cpp:560
+#: src/ConnectDialog.cpp:85 src/ConnectDialog.cpp:210 src/ConnectDialog.cpp:544
+#: src/ConnectDialog.cpp:582
 #, fuzzy
 #| msgid "&Window"
 msgid "Windows share"
 msgstr "&Finestra"
 
-#: src/ConnectDialog.cpp:86 src/ConnectDialog.cpp:194 src/ConnectDialog.cpp:535
-#: src/ConnectDialog.cpp:573
+#: src/ConnectDialog.cpp:86 src/ConnectDialog.cpp:216 src/ConnectDialog.cpp:557
+#: src/ConnectDialog.cpp:595
 msgid "SSH"
 msgstr ""
 
@@ -511,7 +512,7 @@ msgstr ""
 msgid "Save password"
 msgstr "Introduïu la contrasenya d'usuari:"
 
-#: src/ConnectDialog.cpp:222 src/ConnectDialog.cpp:352
+#: src/ConnectDialog.cpp:244 src/ConnectDialog.cpp:374
 msgid ""
 "Password cannot be retrieved because the secret-tool utility was not found "
 "on your system.\n"
@@ -520,52 +521,52 @@ msgid ""
 "Debian based systems, libsecret on RedHat based systems)..."
 msgstr ""
 
-#: src/ConnectDialog.cpp:255 src/ConnectDialog.cpp:380
+#: src/ConnectDialog.cpp:277 src/ConnectDialog.cpp:402
 msgid "Connection failed, please check your parameters..."
 msgstr ""
 
-#: src/ConnectDialog.cpp:275 src/ConnectDialog.cpp:411
+#: src/ConnectDialog.cpp:297 src/ConnectDialog.cpp:433
 msgid ""
 "gio command was not found on your system.\n"
 "\n"
 "Please install gio and gvfs to be able to connect to a server..."
 msgstr ""
 
-#: src/ConnectDialog.cpp:319 src/ConnectDialog.cpp:463 src/DirList.cpp:774
+#: src/ConnectDialog.cpp:341 src/ConnectDialog.cpp:485 src/DirList.cpp:774
 #: src/DirList.cpp:778 src/DirList.cpp:905 src/DirList.cpp:952
-#: src/DirList.cpp:1552 src/DirPanel.cpp:1964 src/DirPanel.cpp:2884
-#: src/DirPanel.cpp:2923 src/DirPanel.cpp:2955 src/DirPanel.cpp:3002
-#: src/DirPanel.cpp:3042 src/DirPanel.cpp:3059 src/DirPanel.cpp:3164
-#: src/DirPanel.cpp:3215 src/DirPanel.cpp:3236 src/DirPanel.cpp:3337
-#: src/DirPanel.cpp:3364 src/DirPanel.cpp:3449 src/DirPanel.cpp:3481
-#: src/DirPanel.cpp:3635 src/DirPanel.cpp:3677 src/DirPanel.cpp:3684
+#: src/DirList.cpp:1552 src/DirPanel.cpp:2009 src/DirPanel.cpp:2929
+#: src/DirPanel.cpp:2968 src/DirPanel.cpp:3000 src/DirPanel.cpp:3047
+#: src/DirPanel.cpp:3087 src/DirPanel.cpp:3104 src/DirPanel.cpp:3209
+#: src/DirPanel.cpp:3260 src/DirPanel.cpp:3281 src/DirPanel.cpp:3382
+#: src/DirPanel.cpp:3409 src/DirPanel.cpp:3494 src/DirPanel.cpp:3526
+#: src/DirPanel.cpp:3680 src/DirPanel.cpp:3722 src/DirPanel.cpp:3729
 #: src/FileDialog.cpp:1114 src/FileDialog.cpp:1122 src/FileDialog.cpp:1184
 #: src/FileDialog.cpp:1192 src/FileList.cpp:760 src/FileList.cpp:764
-#: src/FileList.cpp:895 src/FileList.cpp:938 src/FilePanel.cpp:1942
-#: src/FilePanel.cpp:2011 src/FilePanel.cpp:2107 src/FilePanel.cpp:2146
-#: src/FilePanel.cpp:2178 src/FilePanel.cpp:2225 src/FilePanel.cpp:2264
-#: src/FilePanel.cpp:2281 src/FilePanel.cpp:2335 src/FilePanel.cpp:2470
-#: src/FilePanel.cpp:2528 src/FilePanel.cpp:2556 src/FilePanel.cpp:2831
-#: src/FilePanel.cpp:3063 src/FilePanel.cpp:3351 src/FilePanel.cpp:3960
-#: src/FilePanel.cpp:3967 src/FilePanel.cpp:4057 src/FilePanel.cpp:4064
-#: src/FilePanel.cpp:4170 src/FilePanel.cpp:4448 src/FilePanel.cpp:4493
-#: src/FilePanel.cpp:5241 src/Preferences.cpp:1144 src/Preferences.cpp:1163
-#: src/Preferences.cpp:1203 src/Preferences.cpp:1222 src/Properties.cpp:1452
-#: src/Properties.cpp:1465 src/Properties.cpp:1470 src/Properties.cpp:1554
-#: src/Properties.cpp:1584 src/Properties.cpp:1636 src/Properties.cpp:1760
-#: src/Properties.cpp:1791 src/Properties.cpp:1846 src/SearchPanel.cpp:1006
-#: src/SearchPanel.cpp:1329 src/SearchPanel.cpp:2698 src/SearchPanel.cpp:3147
-#: src/SearchPanel.cpp:3386 src/SearchPanel.cpp:3899 src/SearchPanel.cpp:3906
-#: src/SearchPanel.cpp:4002 src/SearchPanel.cpp:4040 src/SearchPanel.cpp:4071
-#: src/SearchPanel.cpp:4117 src/SearchPanel.cpp:4155 src/SearchPanel.cpp:4172
-#: src/SearchPanel.cpp:4254 src/SearchPanel.cpp:4349 src/SearchPanel.cpp:4400
-#: src/SearchPanel.cpp:4421 src/XFileExplorer.cpp:3455
-#: src/XFileExplorer.cpp:3471 src/XFileArchive.cpp:1068
+#: src/FileList.cpp:895 src/FileList.cpp:938 src/FilePanel.cpp:1960
+#: src/FilePanel.cpp:2029 src/FilePanel.cpp:2125 src/FilePanel.cpp:2164
+#: src/FilePanel.cpp:2196 src/FilePanel.cpp:2243 src/FilePanel.cpp:2282
+#: src/FilePanel.cpp:2299 src/FilePanel.cpp:2353 src/FilePanel.cpp:2488
+#: src/FilePanel.cpp:2546 src/FilePanel.cpp:2574 src/FilePanel.cpp:2849
+#: src/FilePanel.cpp:3081 src/FilePanel.cpp:3369 src/FilePanel.cpp:3992
+#: src/FilePanel.cpp:3999 src/FilePanel.cpp:4089 src/FilePanel.cpp:4096
+#: src/FilePanel.cpp:4202 src/FilePanel.cpp:4488 src/FilePanel.cpp:4533
+#: src/FilePanel.cpp:5281 src/Preferences.cpp:1144 src/Preferences.cpp:1163
+#: src/Preferences.cpp:1203 src/Preferences.cpp:1222 src/Properties.cpp:1459
+#: src/Properties.cpp:1472 src/Properties.cpp:1477 src/Properties.cpp:1561
+#: src/Properties.cpp:1591 src/Properties.cpp:1643 src/Properties.cpp:1767
+#: src/Properties.cpp:1798 src/Properties.cpp:1853 src/SearchPanel.cpp:1030
+#: src/SearchPanel.cpp:1361 src/SearchPanel.cpp:2744 src/SearchPanel.cpp:3193
+#: src/SearchPanel.cpp:3432 src/SearchPanel.cpp:3945 src/SearchPanel.cpp:3952
+#: src/SearchPanel.cpp:4048 src/SearchPanel.cpp:4086 src/SearchPanel.cpp:4117
+#: src/SearchPanel.cpp:4163 src/SearchPanel.cpp:4201 src/SearchPanel.cpp:4218
+#: src/SearchPanel.cpp:4300 src/SearchPanel.cpp:4395 src/SearchPanel.cpp:4446
+#: src/SearchPanel.cpp:4467 src/XFileExplorer.cpp:3457
+#: src/XFileExplorer.cpp:3473 src/XFileArchive.cpp:1068
 #: src/XFileArchive.cpp:1347
 msgid "Warning"
 msgstr "Advertència"
 
-#: src/ConnectDialog.cpp:319 src/ConnectDialog.cpp:463
+#: src/ConnectDialog.cpp:341 src/ConnectDialog.cpp:485
 msgid ""
 "Password cannot be saved because the secret-tool utility was not found on "
 "your system.\n"
@@ -590,16 +591,16 @@ msgstr "Enllaça aquí"
 msgid "Cancel"
 msgstr "Cancel·la"
 
-#: src/DirList.cpp:732 src/DirPanel.cpp:2873 src/DirPanel.cpp:3031
-#: src/FileList.cpp:718 src/FilePanel.cpp:2253 src/SearchPanel.cpp:4144
+#: src/DirList.cpp:732 src/DirPanel.cpp:2918 src/DirPanel.cpp:3076
+#: src/FileList.cpp:718 src/FilePanel.cpp:2271 src/SearchPanel.cpp:4190
 #, fuzzy
 #| msgid "Empty files:"
 msgid "Copy Files"
 msgstr "Fitxers buits:"
 
-#: src/DirList.cpp:737 src/DirPanel.cpp:2944 src/DirPanel.cpp:3048
-#: src/FileList.cpp:723 src/FilePanel.cpp:2167 src/FilePanel.cpp:2270
-#: src/SearchPanel.cpp:4060 src/SearchPanel.cpp:4161
+#: src/DirList.cpp:737 src/DirPanel.cpp:2989 src/DirPanel.cpp:3093
+#: src/FileList.cpp:723 src/FilePanel.cpp:2185 src/FilePanel.cpp:2288
+#: src/SearchPanel.cpp:4106 src/SearchPanel.cpp:4207
 #, fuzzy
 #| msgid "Move %s items"
 msgid "Move Files"
@@ -611,26 +612,26 @@ msgstr "Mou els elements %s"
 msgid "Symlink Files"
 msgstr "Enllaç simbòlic "
 
-#: src/DirList.cpp:774 src/DirList.cpp:952 src/DirPanel.cpp:2884
-#: src/DirPanel.cpp:2923 src/DirPanel.cpp:3042 src/DirPanel.cpp:3164
-#: src/FileList.cpp:760 src/FileList.cpp:938 src/FilePanel.cpp:2107
-#: src/FilePanel.cpp:2146 src/FilePanel.cpp:2264 src/FilePanel.cpp:2470
-#: src/SearchPanel.cpp:4002 src/SearchPanel.cpp:4040 src/SearchPanel.cpp:4155
-#: src/SearchPanel.cpp:4349
+#: src/DirList.cpp:774 src/DirList.cpp:952 src/DirPanel.cpp:2929
+#: src/DirPanel.cpp:2968 src/DirPanel.cpp:3087 src/DirPanel.cpp:3209
+#: src/FileList.cpp:760 src/FileList.cpp:938 src/FilePanel.cpp:2125
+#: src/FilePanel.cpp:2164 src/FilePanel.cpp:2282 src/FilePanel.cpp:2488
+#: src/SearchPanel.cpp:4048 src/SearchPanel.cpp:4086 src/SearchPanel.cpp:4201
+#: src/SearchPanel.cpp:4395
 msgid "Copy file operation cancelled!"
 msgstr "S'ha cancel·lat l'operació de còpia de fitxers."
 
-#: src/DirList.cpp:778 src/DirList.cpp:905 src/DirPanel.cpp:2955
-#: src/DirPanel.cpp:3002 src/DirPanel.cpp:3059 src/DirPanel.cpp:3215
-#: src/FileList.cpp:764 src/FileList.cpp:895 src/FilePanel.cpp:2178
-#: src/FilePanel.cpp:2225 src/FilePanel.cpp:2281 src/FilePanel.cpp:2528
-#: src/SearchPanel.cpp:4071 src/SearchPanel.cpp:4117 src/SearchPanel.cpp:4172
-#: src/SearchPanel.cpp:4400
+#: src/DirList.cpp:778 src/DirList.cpp:905 src/DirPanel.cpp:3000
+#: src/DirPanel.cpp:3047 src/DirPanel.cpp:3104 src/DirPanel.cpp:3260
+#: src/FileList.cpp:764 src/FileList.cpp:895 src/FilePanel.cpp:2196
+#: src/FilePanel.cpp:2243 src/FilePanel.cpp:2299 src/FilePanel.cpp:2546
+#: src/SearchPanel.cpp:4117 src/SearchPanel.cpp:4163 src/SearchPanel.cpp:4218
+#: src/SearchPanel.cpp:4446
 msgid "Move file operation cancelled!"
 msgstr "S'ha cancel·lat l'operació de moviment de fitxers."
 
-#: src/DirList.cpp:805 src/DirPanel.cpp:2625 src/FileList.cpp:791
-#: src/FilePanel.cpp:1798 src/FilePanel.cpp:1837 src/SearchPanel.cpp:3744
+#: src/DirList.cpp:805 src/DirPanel.cpp:2670 src/FileList.cpp:791
+#: src/FilePanel.cpp:1816 src/FilePanel.cpp:1855 src/SearchPanel.cpp:3790
 #: src/WriteWindow.cpp:725
 msgid "Copy"
 msgstr "Copia"
@@ -640,10 +641,10 @@ msgstr "Copia"
 msgid "Copy %s files/folders from: %s"
 msgstr "Copia %s fitxers/carpetes des de: %s"
 
-#: src/DirList.cpp:818 src/DirPanel.cpp:2684 src/DirPanel.cpp:2690
-#: src/DirPanel.cpp:2700 src/DirPanel.cpp:2710 src/FileList.cpp:805
-#: src/FilePanel.cpp:1852 src/FilePanel.cpp:1858 src/FilePanel.cpp:1868
-#: src/FilePanel.cpp:1878 src/SearchPanel.cpp:3759 src/SearchPanel.cpp:3765
+#: src/DirList.cpp:818 src/DirPanel.cpp:2729 src/DirPanel.cpp:2735
+#: src/DirPanel.cpp:2745 src/DirPanel.cpp:2755 src/FileList.cpp:805
+#: src/FilePanel.cpp:1870 src/FilePanel.cpp:1876 src/FilePanel.cpp:1886
+#: src/FilePanel.cpp:1896 src/SearchPanel.cpp:3805 src/SearchPanel.cpp:3811
 msgid "Move"
 msgstr "Desplaça"
 
@@ -652,47 +653,47 @@ msgstr "Desplaça"
 msgid "Move %s files/folders from: %s"
 msgstr "Desplaça %s fitxers/carpetes des de: %s"
 
-#: src/DirList.cpp:831 src/DirPanel.cpp:2720 src/DirPanel.cpp:3008
-#: src/DirPanel.cpp:3065 src/FileList.cpp:819 src/FilePanel.cpp:1888
-#: src/FilePanel.cpp:2231 src/FilePanel.cpp:2287 src/FilePanel.cpp:4200
-#: src/SearchPanel.cpp:3775 src/SearchPanel.cpp:4122 src/SearchPanel.cpp:4178
+#: src/DirList.cpp:831 src/DirPanel.cpp:2765 src/DirPanel.cpp:3053
+#: src/DirPanel.cpp:3110 src/FileList.cpp:819 src/FilePanel.cpp:1906
+#: src/FilePanel.cpp:2249 src/FilePanel.cpp:2305 src/FilePanel.cpp:4232
+#: src/SearchPanel.cpp:3821 src/SearchPanel.cpp:4168 src/SearchPanel.cpp:4224
 msgid "Symlink"
 msgstr "Enllaç simbòlic"
 
-#: src/DirList.cpp:836 src/DirPanel.cpp:2742 src/DirPanel.cpp:2770
-#: src/FileList.cpp:824 src/FilePanel.cpp:1912 src/FilePanel.cpp:1956
-#: src/SearchPanel.cpp:3799 src/SearchPanel.cpp:3843
+#: src/DirList.cpp:836 src/DirPanel.cpp:2787 src/DirPanel.cpp:2815
+#: src/FileList.cpp:824 src/FilePanel.cpp:1930 src/FilePanel.cpp:1974
+#: src/SearchPanel.cpp:3845 src/SearchPanel.cpp:3889
 msgid "To:"
 msgstr "A:"
 
-#: src/DirList.cpp:897 src/DirPanel.cpp:2994 src/DirPanel.cpp:3207
-#: src/FileList.cpp:887 src/FilePanel.cpp:2217 src/FilePanel.cpp:2520
-#: src/SearchPanel.cpp:4110 src/SearchPanel.cpp:4392
+#: src/DirList.cpp:897 src/DirPanel.cpp:3039 src/DirPanel.cpp:3252
+#: src/FileList.cpp:887 src/FilePanel.cpp:2235 src/FilePanel.cpp:2538
+#: src/SearchPanel.cpp:4156 src/SearchPanel.cpp:4438
 msgid "An error has occurred during the move file operation!"
 msgstr "S'ha produït un error durant l'operació de desplaçament de fitxers."
 
-#: src/DirList.cpp:944 src/DirPanel.cpp:2915 src/DirPanel.cpp:3156
-#: src/FileList.cpp:930 src/FilePanel.cpp:2138 src/FilePanel.cpp:2462
-#: src/SearchPanel.cpp:4033 src/SearchPanel.cpp:4341
+#: src/DirList.cpp:944 src/DirPanel.cpp:2960 src/DirPanel.cpp:3201
+#: src/FileList.cpp:930 src/FilePanel.cpp:2156 src/FilePanel.cpp:2480
+#: src/SearchPanel.cpp:4079 src/SearchPanel.cpp:4387
 msgid "An error has occurred during the copy file operation!"
 msgstr "S'ha produït un error durant l'operació de còpia de fitxers."
 
-#: src/DirList.cpp:1552 src/XFileExplorer.cpp:3471
+#: src/DirList.cpp:1552 src/XFileExplorer.cpp:3473
 #, c-format
 msgid "Mount point %s is not responding..."
 msgstr "El punt de muntatge %s no respon..."
 
-#: src/DirList.cpp:1985 src/FileList.cpp:4887 src/FileList.cpp:4893
-#: src/FileList.cpp:4997 src/FileList.cpp:5693 src/FileList.cpp:5699
-#: src/FileList.cpp:5821 src/Properties.cpp:464 src/Properties.cpp:586
-#: src/Properties.cpp:1151 src/RenameDialog.cpp:247 src/SearchPanel.cpp:2022
-#: src/SearchPanel.cpp:2028 src/SearchWindow.cpp:218
+#: src/DirList.cpp:1985 src/FileList.cpp:4911 src/FileList.cpp:4917
+#: src/FileList.cpp:5021 src/FileList.cpp:5717 src/FileList.cpp:5723
+#: src/FileList.cpp:5845 src/Properties.cpp:471 src/Properties.cpp:593
+#: src/Properties.cpp:1158 src/RenameDialog.cpp:249 src/SearchPanel.cpp:2068
+#: src/SearchPanel.cpp:2074 src/SearchWindow.cpp:218
 msgid "Folder"
 msgstr "Directori"
 
-#: src/DirList.cpp:2020 src/DirList.cpp:2037 src/FileList.cpp:5161
-#: src/FileList.cpp:5986 src/FileList.cpp:6003 src/Properties.cpp:695
-#: src/SearchPanel.cpp:2145
+#: src/DirList.cpp:2020 src/DirList.cpp:2037 src/FileList.cpp:5185
+#: src/FileList.cpp:6010 src/FileList.cpp:6027 src/Properties.cpp:702
+#: src/SearchPanel.cpp:2191
 msgid "Mount Point"
 msgstr "Punt de muntatge"
 
@@ -768,7 +769,7 @@ msgstr "Mostra els directoris ocults"
 msgid "Hide hidden Folders"
 msgstr "Amaga les carpetes ocultes"
 
-#: src/DirPanel.cpp:614 src/DirPanel.cpp:4424 src/DirPanel.cpp:4464
+#: src/DirPanel.cpp:614 src/DirPanel.cpp:4469 src/DirPanel.cpp:4509
 #, fuzzy
 #| msgid "Free:"
 msgid "Free space:"
@@ -783,19 +784,19 @@ msgid "Activate panel"
 msgstr "Activa el panell"
 
 #: src/DirPanel.cpp:746 src/DirPanel.cpp:841 src/DirPanel.cpp:968
-#: src/DirPanel.cpp:1228 src/DirPanel.cpp:1537 src/DirPanel.cpp:1617
-#: src/DirPanel.cpp:1714 src/FileDialog.cpp:436 src/FileDialog.cpp:501
-#: src/FilePanel.cpp:1313 src/FilePanel.cpp:1507 src/SearchPanel.cpp:502
-#: src/SearchPanel.cpp:696 src/SearchPanel.cpp:1819 src/XFileExplorer.cpp:4462
-#: src/XFileImage.cpp:2221 src/XFileImage.cpp:2266
+#: src/DirPanel.cpp:1228 src/DirPanel.cpp:1235 src/DirPanel.cpp:1571
+#: src/DirPanel.cpp:1651 src/DirPanel.cpp:1759 src/FileDialog.cpp:436
+#: src/FileDialog.cpp:501 src/FilePanel.cpp:1313 src/FilePanel.cpp:1516
+#: src/SearchPanel.cpp:508 src/SearchPanel.cpp:711 src/SearchPanel.cpp:1865
+#: src/XFileExplorer.cpp:4490 src/XFileImage.cpp:2221 src/XFileImage.cpp:2266
 #, c-format
 msgid " Permission to: %s denied."
 msgstr " S'ha denegat el permís a: %s."
 
 #: src/DirPanel.cpp:817 src/DirPanel.cpp:944 src/DirPanel.cpp:1071
-#: src/DirPanel.cpp:3760 src/FilePanel.cpp:5142 src/WriteWindow.cpp:2017
-#: src/XFileExplorer.cpp:4594 src/XFileExplorer.cpp:4661
-#: src/XFileExplorer.cpp:5401 src/XFileArchive.cpp:901
+#: src/DirPanel.cpp:3805 src/FilePanel.cpp:5182 src/WriteWindow.cpp:2017
+#: src/XFileExplorer.cpp:4622 src/XFileExplorer.cpp:4689
+#: src/XFileExplorer.cpp:5429 src/XFileArchive.cpp:901
 #: src/XFileArchive.cpp:1041 src/XFileArchive.cpp:1191
 #: src/XFileArchive.cpp:1263 src/XFileImage.cpp:1954
 #, c-format
@@ -803,10 +804,10 @@ msgid "Can't execute command %s"
 msgstr "No s'ha pogut executar l'ordre %s"
 
 #: src/DirPanel.cpp:836 src/DirPanel.cpp:963 src/DirPanel.cpp:1223
-#: src/DirPanel.cpp:1532 src/DirPanel.cpp:1612 src/DirPanel.cpp:1709
-#: src/DirPanel.cpp:2808 src/DirPanel.cpp:2836 src/FilePanel.cpp:2029
-#: src/FilePanel.cpp:2050 src/Properties.cpp:1488 src/SearchPanel.cpp:3931
-#: src/SearchPanel.cpp:3959 src/XFileExplorer.cpp:4457
+#: src/DirPanel.cpp:1566 src/DirPanel.cpp:1646 src/DirPanel.cpp:2853
+#: src/DirPanel.cpp:2881 src/FilePanel.cpp:2047 src/FilePanel.cpp:2068
+#: src/Properties.cpp:1495 src/SearchPanel.cpp:3977 src/SearchPanel.cpp:4005
+#: src/XFileExplorer.cpp:4485
 #, c-format
 msgid "Folder %s doesn't exist"
 msgstr "La carpeta %s no existeix"
@@ -815,22 +816,22 @@ msgstr "La carpeta %s no existeix"
 msgid "Modify Bookmark"
 msgstr "Afegeix un punt d'interès"
 
-#: src/DirPanel.cpp:1104 src/DirPanel.cpp:1181 src/FilePanel.cpp:4243
-#: src/XFileExplorer.cpp:4329
+#: src/DirPanel.cpp:1104 src/DirPanel.cpp:1181 src/FilePanel.cpp:4275
+#: src/XFileExplorer.cpp:4339
 #, fuzzy
 #| msgid "Name: "
 msgid "Name:"
 msgstr "Nom: "
 
-#: src/DirPanel.cpp:1105 src/DirPanel.cpp:1182 src/FilePanel.cpp:4244
-#: src/XFileExplorer.cpp:4330
+#: src/DirPanel.cpp:1105 src/DirPanel.cpp:1182 src/FilePanel.cpp:4276
+#: src/XFileExplorer.cpp:4340
 #, fuzzy
 #| msgid "Big Icon:"
 msgid "Icon:"
 msgstr "Icona gran:"
 
-#: src/DirPanel.cpp:1118 src/DirPanel.cpp:1187 src/FilePanel.cpp:4249
-#: src/Properties.cpp:706 src/Properties.cpp:721 src/XFileExplorer.cpp:4335
+#: src/DirPanel.cpp:1118 src/DirPanel.cpp:1187 src/FilePanel.cpp:4281
+#: src/Properties.cpp:713 src/Properties.cpp:728 src/XFileExplorer.cpp:4345
 msgid "Location:"
 msgstr "Ubicació:"
 
@@ -846,419 +847,421 @@ msgstr "&Esborra els marcadors"
 msgid "Confirm Remove"
 msgstr "Confirma la restauració"
 
-#: src/DirPanel.cpp:1181 src/FilePanel.cpp:4243 src/XFileExplorer.cpp:4329
+#: src/DirPanel.cpp:1181 src/FilePanel.cpp:4275 src/XFileExplorer.cpp:4339
 msgid "Add Bookmark"
 msgstr "Afegeix un punt d'interès"
 
-#: src/DirPanel.cpp:1448 src/DirPanel.cpp:1463
+#: src/DirPanel.cpp:1482 src/DirPanel.cpp:1497
 msgid "New &Folder..."
 msgstr "Carpeta nova..."
 
-#: src/DirPanel.cpp:1449 src/DirPanel.cpp:1464 src/DirPanel.cpp:1764
-#: src/FilePanel.cpp:4812 src/FilePanel.cpp:4857
+#: src/DirPanel.cpp:1483 src/DirPanel.cpp:1498 src/DirPanel.cpp:1809
+#: src/FilePanel.cpp:4852 src/FilePanel.cpp:4897
 msgid "&Add Bookmark..."
 msgstr "&Afegeix un marcador"
 
-#: src/DirPanel.cpp:1452 src/DirPanel.cpp:1467
+#: src/DirPanel.cpp:1486 src/DirPanel.cpp:1501
 msgid "&Hidden Folders"
 msgstr "&Carpetes ocultes"
 
-#: src/DirPanel.cpp:1453 src/DirPanel.cpp:1468 src/FileDialog.cpp:1924
-#: src/FilePanel.cpp:4839 src/FilePanel.cpp:4884 src/SearchPanel.cpp:2467
+#: src/DirPanel.cpp:1487 src/DirPanel.cpp:1502 src/FileDialog.cpp:1924
+#: src/FilePanel.cpp:4879 src/FilePanel.cpp:4924 src/SearchPanel.cpp:2513
 #: src/XFileImage.cpp:1134
 msgid "Ignore C&ase"
 msgstr "Ignora les m&ajúscules"
 
-#: src/DirPanel.cpp:1454 src/DirPanel.cpp:1469
+#: src/DirPanel.cpp:1488 src/DirPanel.cpp:1503
 msgid "&Reverse Order"
 msgstr "Inve&rteix l'ordre"
 
-#: src/DirPanel.cpp:1455 src/DirPanel.cpp:1470
+#: src/DirPanel.cpp:1489 src/DirPanel.cpp:1504
 msgid "E&xpand Tree"
 msgstr "E&xpandeix l'arbre"
 
-#: src/DirPanel.cpp:1456 src/DirPanel.cpp:1471
+#: src/DirPanel.cpp:1490 src/DirPanel.cpp:1505
 msgid "Collap&se Tree"
 msgstr "Col·lap&sa l'arbre"
 
-#: src/DirPanel.cpp:1473 src/FilePanel.cpp:4887 src/SearchPanel.cpp:2470
+#: src/DirPanel.cpp:1507 src/FilePanel.cpp:4927 src/SearchPanel.cpp:2516
 msgid "Pane&l"
 msgstr "Pane&ll"
 
-#: src/DirPanel.cpp:1483 src/DirPanel.cpp:1664
+#: src/DirPanel.cpp:1517 src/DirPanel.cpp:1698
 msgid "M&ount"
 msgstr "&Munta"
 
-#: src/DirPanel.cpp:1484
+#: src/DirPanel.cpp:1518
 msgid "Unmoun&t"
 msgstr "Desmun&tar"
 
-#: src/DirPanel.cpp:1488 src/FilePanel.cpp:4978 src/SearchPanel.cpp:2531
+#: src/DirPanel.cpp:1522 src/FilePanel.cpp:5018 src/SearchPanel.cpp:2577
 msgid "&Add to Archive..."
 msgstr "&Afegeix a l'arxiu..."
 
-#: src/DirPanel.cpp:1493 src/FilePanel.cpp:5002 src/SearchPanel.cpp:2564
-#: src/XFileExplorer.cpp:6181 src/XFileExplorer.cpp:6204
+#: src/DirPanel.cpp:1527 src/FilePanel.cpp:5042 src/SearchPanel.cpp:2610
+#: src/XFileExplorer.cpp:6209 src/XFileExplorer.cpp:6232
 msgid "Cop&y Name"
 msgstr "Cop&ia el nom"
 
-#: src/DirPanel.cpp:1495 src/FilePanel.cpp:5009 src/Preferences.cpp:1112
-#: src/SearchPanel.cpp:2554 src/XFileExplorer.cpp:1362
+#: src/DirPanel.cpp:1529 src/FilePanel.cpp:5049 src/Preferences.cpp:1112
+#: src/SearchPanel.cpp:2600 src/XFileExplorer.cpp:1362
 msgid "Re&name..."
 msgstr "Rea&nomena..."
 
-#: src/DirPanel.cpp:1496
+#: src/DirPanel.cpp:1530
 msgid "Cop&y to..."
 msgstr "Copia a..."
 
-#: src/DirPanel.cpp:1497 src/FilePanel.cpp:5011 src/SearchPanel.cpp:2556
+#: src/DirPanel.cpp:1531 src/FilePanel.cpp:5051 src/SearchPanel.cpp:2602
 #: src/XFileExplorer.cpp:1374
 msgid "&Move to..."
 msgstr "&Mou a..."
 
-#: src/DirPanel.cpp:1498 src/FilePanel.cpp:5012 src/SearchPanel.cpp:2557
+#: src/DirPanel.cpp:1532 src/FilePanel.cpp:5052 src/SearchPanel.cpp:2603
 msgid "Symlin&k to..."
 msgstr "Enllaça simbòlicament a..."
 
-#: src/DirPanel.cpp:1499 src/XFileExplorer.cpp:1386
+#: src/DirPanel.cpp:1533 src/XFileExplorer.cpp:1386
 msgid "Mo&ve to Trash"
 msgstr "&Llença-ho a la paperera"
 
-#: src/DirPanel.cpp:1500 src/XFileExplorer.cpp:1392
+#: src/DirPanel.cpp:1534 src/XFileExplorer.cpp:1392
 msgid "R&estore From Trash"
 msgstr "R&estaura de la paperera"
 
-#: src/DirPanel.cpp:1501 src/FilePanel.cpp:5015 src/SearchPanel.cpp:2559
+#: src/DirPanel.cpp:1535 src/FilePanel.cpp:5055 src/SearchPanel.cpp:2605
 #: src/XFileExplorer.cpp:1398
 msgid "&Delete"
 msgstr "Su&primeix"
 
-#: src/DirPanel.cpp:1503
+#: src/DirPanel.cpp:1537
 msgid "Prop&erties"
 msgstr "Propi&etats"
 
-#: src/DirPanel.cpp:1580 src/DirPanel.cpp:1660 src/DirPanel.cpp:1768
+#: src/DirPanel.cpp:1614 src/DirPanel.cpp:1694 src/DirPanel.cpp:1813
 #: src/TabButtons.cpp:437
 #, fuzzy
 #| msgid "Name"
 msgid "New &Tab"
 msgstr "Nom"
 
-#: src/DirPanel.cpp:1581 src/DirPanel.cpp:1661 src/DirPanel.cpp:1769
-#: src/XFileExplorer.cpp:1609
+#: src/DirPanel.cpp:1615 src/DirPanel.cpp:1695 src/DirPanel.cpp:1814
+#: src/XFileExplorer.cpp:1611
 msgid "New &Window"
 msgstr "Finestra no&va"
 
-#: src/DirPanel.cpp:1583 src/DirPanel.cpp:1668 src/DirPanel.cpp:1776
+#: src/DirPanel.cpp:1617 src/DirPanel.cpp:1702 src/DirPanel.cpp:1821
 #: src/XFileExplorer.cpp:1410
 msgid "&Properties"
 msgstr "&Propietats"
 
-#: src/DirPanel.cpp:1665 src/XFileExplorer.cpp:1663
+#: src/DirPanel.cpp:1699 src/XFileExplorer.cpp:1665
 msgid "&Unmount"
 msgstr "Desm&unta"
 
-#: src/DirPanel.cpp:1770
-msgid "&Modify..."
-msgstr ""
-
-#: src/DirPanel.cpp:1771 src/Preferences.cpp:1113
+#: src/DirPanel.cpp:1748 src/DirPanel.cpp:1816 src/Preferences.cpp:1113
 #, fuzzy
 #| msgid "File move"
 msgid "&Remove"
 msgstr "Mou el fitxer"
 
-#: src/DirPanel.cpp:1773
+#: src/DirPanel.cpp:1815
+msgid "&Modify..."
+msgstr ""
+
+#: src/DirPanel.cpp:1818
 #, fuzzy
 #| msgid "Move "
 msgid "Move &Up"
 msgstr "Mou "
 
-#: src/DirPanel.cpp:1774
+#: src/DirPanel.cpp:1819
 #, fuzzy
 #| msgid "Move "
 msgid "Move &Down"
 msgstr "Mou "
 
-#: src/DirPanel.cpp:1941 src/DirPanel.cpp:2046 src/DirPanel.cpp:3744
-#: src/DirPanel.cpp:3770 src/DirPanel.cpp:3980 src/DirPanel.cpp:4006
-#: src/DirPanel.cpp:4054 src/DirPanel.cpp:4080 src/File.cpp:2307
+#: src/DirPanel.cpp:1986 src/DirPanel.cpp:2091 src/DirPanel.cpp:3789
+#: src/DirPanel.cpp:3815 src/DirPanel.cpp:4025 src/DirPanel.cpp:4051
+#: src/DirPanel.cpp:4099 src/DirPanel.cpp:4125 src/File.cpp:2307
 #: src/File.cpp:2331 src/FilePanel.cpp:1145 src/FilePanel.cpp:1170
-#: src/FilePanel.cpp:3875 src/FilePanel.cpp:3918 src/FilePanel.cpp:5125
-#: src/FilePanel.cpp:5152 src/FilePanel.cpp:5181 src/FilePanel.cpp:5330
-#: src/FilePanel.cpp:6017 src/FilePanel.cpp:6048 src/FilePanel.cpp:6159
-#: src/FilePanel.cpp:6185 src/FilePanel.cpp:6441 src/FilePanel.cpp:6494
-#: src/SearchPanel.cpp:909 src/SearchPanel.cpp:2658 src/XFileExplorer.cpp:4644
-#: src/XFileExplorer.cpp:4672 src/XFileExplorer.cpp:5348
-#: src/XFileExplorer.cpp:5453 src/XFileExplorer.cpp:5526
-#: src/XFileExplorer.cpp:5584
+#: src/FilePanel.cpp:3907 src/FilePanel.cpp:3950 src/FilePanel.cpp:5165
+#: src/FilePanel.cpp:5192 src/FilePanel.cpp:5221 src/FilePanel.cpp:5370
+#: src/FilePanel.cpp:6057 src/FilePanel.cpp:6088 src/FilePanel.cpp:6199
+#: src/FilePanel.cpp:6225 src/FilePanel.cpp:6481 src/FilePanel.cpp:6534
+#: src/SearchPanel.cpp:933 src/SearchPanel.cpp:2704 src/SearchPanel.cpp:4524
+#: src/SearchPanel.cpp:4555 src/XFileExplorer.cpp:4672
+#: src/XFileExplorer.cpp:4700 src/XFileExplorer.cpp:5376
+#: src/XFileExplorer.cpp:5481 src/XFileExplorer.cpp:5554
+#: src/XFileExplorer.cpp:5612
 #, c-format
 msgid "Can't enter folder %s: %s"
 msgstr "No s'ha pogut accedir a la carpeta %s: %s"
 
-#: src/DirPanel.cpp:1946 src/DirPanel.cpp:2051 src/DirPanel.cpp:3748
-#: src/DirPanel.cpp:3775 src/DirPanel.cpp:3984 src/DirPanel.cpp:4011
-#: src/DirPanel.cpp:4058 src/DirPanel.cpp:4085 src/File.cpp:2311
+#: src/DirPanel.cpp:1991 src/DirPanel.cpp:2096 src/DirPanel.cpp:3793
+#: src/DirPanel.cpp:3820 src/DirPanel.cpp:4029 src/DirPanel.cpp:4056
+#: src/DirPanel.cpp:4103 src/DirPanel.cpp:4130 src/File.cpp:2311
 #: src/File.cpp:2336 src/FilePanel.cpp:1150 src/FilePanel.cpp:1175
-#: src/FilePanel.cpp:3880 src/FilePanel.cpp:3923 src/FilePanel.cpp:5130
-#: src/FilePanel.cpp:5157 src/FilePanel.cpp:5186 src/FilePanel.cpp:5335
-#: src/FilePanel.cpp:6022 src/FilePanel.cpp:6053 src/FilePanel.cpp:6163
-#: src/FilePanel.cpp:6190 src/FilePanel.cpp:6446 src/FilePanel.cpp:6499
-#: src/SearchPanel.cpp:914 src/SearchPanel.cpp:2663 src/XFileExplorer.cpp:4649
-#: src/XFileExplorer.cpp:4677 src/XFileExplorer.cpp:5353
-#: src/XFileExplorer.cpp:5458 src/XFileExplorer.cpp:5531
-#: src/XFileExplorer.cpp:5589
+#: src/FilePanel.cpp:3912 src/FilePanel.cpp:3955 src/FilePanel.cpp:5170
+#: src/FilePanel.cpp:5197 src/FilePanel.cpp:5226 src/FilePanel.cpp:5375
+#: src/FilePanel.cpp:6062 src/FilePanel.cpp:6093 src/FilePanel.cpp:6203
+#: src/FilePanel.cpp:6230 src/FilePanel.cpp:6486 src/FilePanel.cpp:6539
+#: src/SearchPanel.cpp:938 src/SearchPanel.cpp:2709 src/SearchPanel.cpp:4529
+#: src/SearchPanel.cpp:4560 src/XFileExplorer.cpp:4677
+#: src/XFileExplorer.cpp:4705 src/XFileExplorer.cpp:5381
+#: src/XFileExplorer.cpp:5486 src/XFileExplorer.cpp:5559
+#: src/XFileExplorer.cpp:5617
 #, c-format
 msgid "Can't enter folder %s"
 msgstr "No s'ha pogut accedir a la carpeta %s"
 
-#: src/DirPanel.cpp:1964 src/FileDialog.cpp:1184 src/FilePanel.cpp:2011
-#: src/FilePanel.cpp:4057 src/FilePanel.cpp:4170 src/FilePanel.cpp:4493
-#: src/FilePanel.cpp:5241 src/SearchPanel.cpp:1006 src/SearchPanel.cpp:2698
-#: src/SearchPanel.cpp:3899 src/XFileArchive.cpp:1068
+#: src/DirPanel.cpp:2009 src/FileDialog.cpp:1184 src/FilePanel.cpp:2029
+#: src/FilePanel.cpp:4089 src/FilePanel.cpp:4202 src/FilePanel.cpp:4533
+#: src/FilePanel.cpp:5281 src/SearchPanel.cpp:1030 src/SearchPanel.cpp:2744
+#: src/SearchPanel.cpp:3945 src/XFileArchive.cpp:1068
 msgid "File name is empty, operation cancelled"
 msgstr "El nom del fitxer és buit, s'ha cancel·lat la operació"
 
-#: src/DirPanel.cpp:2035 src/SearchPanel.cpp:2777
+#: src/DirPanel.cpp:2080 src/SearchPanel.cpp:2823
 msgid "Create Archive"
 msgstr "Crea un arxiu"
 
-#: src/DirPanel.cpp:2629 src/DirPanel.cpp:2673 src/FilePanel.cpp:1802
-#: src/FilePanel.cpp:1841 src/SearchPanel.cpp:3748
+#: src/DirPanel.cpp:2674 src/DirPanel.cpp:2718 src/FilePanel.cpp:1820
+#: src/FilePanel.cpp:1859 src/SearchPanel.cpp:3794
 msgid "Copy "
 msgstr "Copia "
 
-#: src/DirPanel.cpp:2646 src/DirPanel.cpp:2678 src/FilePanel.cpp:1819
-#: src/FilePanel.cpp:1846
+#: src/DirPanel.cpp:2691 src/DirPanel.cpp:2723 src/FilePanel.cpp:1837
+#: src/FilePanel.cpp:1864
 #, c-format
 msgid "Copy %s items from: %s"
 msgstr "Copia %s elements de: %s"
 
-#: src/DirPanel.cpp:2652 src/DirPanel.cpp:2659 src/FilePanel.cpp:1825
-#: src/SearchPanel.cpp:3732
+#: src/DirPanel.cpp:2697 src/DirPanel.cpp:2704 src/FilePanel.cpp:1843
+#: src/SearchPanel.cpp:3778
 msgid "Rename"
 msgstr "Canvia el nom"
 
-#: src/DirPanel.cpp:2656 src/FilePanel.cpp:1829 src/SearchPanel.cpp:3736
+#: src/DirPanel.cpp:2701 src/FilePanel.cpp:1847 src/SearchPanel.cpp:3782
 msgid "Rename "
 msgstr "Canvia el nom "
 
-#: src/DirPanel.cpp:2669
+#: src/DirPanel.cpp:2714
 msgid "Copy to"
 msgstr "Copia a"
 
-#: src/DirPanel.cpp:2688 src/DirPanel.cpp:2704 src/FilePanel.cpp:1856
-#: src/FilePanel.cpp:1872 src/SearchPanel.cpp:3763
+#: src/DirPanel.cpp:2733 src/DirPanel.cpp:2749 src/FilePanel.cpp:1874
+#: src/FilePanel.cpp:1890 src/SearchPanel.cpp:3809
 msgid "Move "
 msgstr "Mou "
 
-#: src/DirPanel.cpp:2694 src/DirPanel.cpp:2714 src/FilePanel.cpp:1862
-#: src/FilePanel.cpp:1882
+#: src/DirPanel.cpp:2739 src/DirPanel.cpp:2759 src/FilePanel.cpp:1880
+#: src/FilePanel.cpp:1900
 #, c-format
 msgid "Move %s items from: %s"
 msgstr "Mou %s elements de: %s"
 
-#: src/DirPanel.cpp:2724 src/FilePanel.cpp:1892 src/SearchPanel.cpp:3779
+#: src/DirPanel.cpp:2769 src/FilePanel.cpp:1910 src/SearchPanel.cpp:3825
 msgid "Symlink "
 msgstr "Enllaç simbòlic "
 
-#: src/DirPanel.cpp:2730 src/FilePanel.cpp:1898
+#: src/DirPanel.cpp:2775 src/FilePanel.cpp:1916
 #, c-format
 msgid "Symlink %s items from: %s"
 msgstr "Crea l'enllaç simbòlic %s de: %s"
 
-#: src/DirPanel.cpp:2757 src/DirPanel.cpp:3685 src/FileDialog.cpp:1123
-#: src/FilePanel.cpp:3968 src/Properties.cpp:1466
+#: src/DirPanel.cpp:2802 src/DirPanel.cpp:3730 src/FileDialog.cpp:1123
+#: src/FilePanel.cpp:4000 src/Properties.cpp:1473
 msgid "The / character is not allowed in folder names, operation cancelled"
 msgstr ""
 "El caràcter / no està permès en noms de carpeta, s'ha cancel·lat l'operació"
 
-#: src/DirPanel.cpp:2801 src/DirPanel.cpp:2822 src/DirPanel.cpp:2829
-#: src/DirPanel.cpp:3277 src/DirPanel.cpp:3393 src/FilePanel.cpp:2036
-#: src/FilePanel.cpp:2064 src/FilePanel.cpp:2071 src/FilePanel.cpp:2615
-#: src/FilePanel.cpp:3102 src/FilePanel.cpp:5471 src/FilePanel.cpp:5728
-#: src/Properties.cpp:1480 src/Properties.cpp:1493 src/SearchPanel.cpp:2908
-#: src/SearchPanel.cpp:3924 src/SearchPanel.cpp:3945 src/SearchPanel.cpp:3952
+#: src/DirPanel.cpp:2846 src/DirPanel.cpp:2867 src/DirPanel.cpp:2874
+#: src/DirPanel.cpp:3322 src/DirPanel.cpp:3438 src/FilePanel.cpp:2054
+#: src/FilePanel.cpp:2082 src/FilePanel.cpp:2089 src/FilePanel.cpp:2633
+#: src/FilePanel.cpp:3120 src/FilePanel.cpp:5511 src/FilePanel.cpp:5768
+#: src/Properties.cpp:1487 src/Properties.cpp:1500 src/SearchPanel.cpp:2954
+#: src/SearchPanel.cpp:3970 src/SearchPanel.cpp:3991 src/SearchPanel.cpp:3998
 #: src/XFileArchive.cpp:605 src/XFileArchive.cpp:808 src/XFileArchive.cpp:1199
 #: src/XFileArchive.cpp:1271
 #, c-format
 msgid "Can't write to %s: Permission denied"
 msgstr "No es pot escriure a %s: S'ha denegat el permís"
 
-#: src/DirPanel.cpp:2815 src/DirPanel.cpp:2843 src/FilePanel.cpp:2043
-#: src/FilePanel.cpp:2057 src/SearchPanel.cpp:3938 src/SearchPanel.cpp:3966
+#: src/DirPanel.cpp:2860 src/DirPanel.cpp:2888 src/FilePanel.cpp:2061
+#: src/FilePanel.cpp:2075 src/SearchPanel.cpp:3984 src/SearchPanel.cpp:4012
 #, c-format
 msgid "%s is not a folder"
 msgstr "%s no és una carpeta"
 
-#: src/DirPanel.cpp:2929 src/FilePanel.cpp:2152 src/FilePanel.cpp:2308
-#: src/Properties.cpp:1501 src/SearchPanel.cpp:4045 src/SearchPanel.cpp:4227
+#: src/DirPanel.cpp:2974 src/FilePanel.cpp:2170 src/FilePanel.cpp:2326
+#: src/Properties.cpp:1508 src/SearchPanel.cpp:4091 src/SearchPanel.cpp:4273
 msgid "Rename Files"
 msgstr "Reanomena el fitxer"
 
-#: src/DirPanel.cpp:3228 src/FilePanel.cpp:2548 src/SearchPanel.cpp:4413
+#: src/DirPanel.cpp:3273 src/FilePanel.cpp:2566 src/SearchPanel.cpp:4459
 msgid "An error has occurred during the symlink operation!"
 msgstr "S'ha produït un error durant l'operació d'enllaç simbòlic."
 
-#: src/DirPanel.cpp:3236 src/FilePanel.cpp:2556 src/SearchPanel.cpp:4421
+#: src/DirPanel.cpp:3281 src/FilePanel.cpp:2574 src/SearchPanel.cpp:4467
 msgid "Symlink operation cancelled!"
 msgstr "S'ha cancel·lat l'operació d'enllaç simbòlic."
 
-#: src/DirPanel.cpp:3287 src/FilePanel.cpp:3138 src/SearchPanel.cpp:3200
+#: src/DirPanel.cpp:3332 src/FilePanel.cpp:3156 src/SearchPanel.cpp:3246
 #, c-format
 msgid "Definitively delete folder %s ?"
 msgstr "Esteu segur que voleu suprimir definitivament la carpeta %s ?"
 
-#: src/DirPanel.cpp:3288 src/DirPanel.cpp:3309 src/DirPanel.cpp:3326
-#: src/FilePanel.cpp:3149 src/FilePanel.cpp:3214 src/FilePanel.cpp:3225
-#: src/FilePanel.cpp:3272 src/FilePanel.cpp:3286 src/SearchPanel.cpp:3211
-#: src/SearchPanel.cpp:3268 src/SearchPanel.cpp:3314 src/SearchPanel.cpp:3328
+#: src/DirPanel.cpp:3333 src/DirPanel.cpp:3354 src/DirPanel.cpp:3371
+#: src/FilePanel.cpp:3167 src/FilePanel.cpp:3232 src/FilePanel.cpp:3243
+#: src/FilePanel.cpp:3290 src/FilePanel.cpp:3304 src/SearchPanel.cpp:3257
+#: src/SearchPanel.cpp:3314 src/SearchPanel.cpp:3360 src/SearchPanel.cpp:3374
 msgid "Confirm Delete"
 msgstr "Confirma la supressió"
 
-#: src/DirPanel.cpp:3297 src/Preferences.cpp:1585 src/SearchPanel.cpp:3222
+#: src/DirPanel.cpp:3342 src/Preferences.cpp:1585 src/SearchPanel.cpp:3268
 msgid "Delete files"
 msgstr "Suprimeix fitxers"
 
-#: src/DirPanel.cpp:3308 src/FilePanel.cpp:3210 src/SearchPanel.cpp:3267
+#: src/DirPanel.cpp:3353 src/FilePanel.cpp:3228 src/SearchPanel.cpp:3313
 #, c-format
 msgid "Folder %s is not empty, delete it anyway?"
 msgstr "La carpeta %s no està buida, voleu suprimiu-la de totes maneres?"
 
-#: src/DirPanel.cpp:3325
+#: src/DirPanel.cpp:3370
 #, c-format
 msgid "Folder %s is write-protected, definitively delete it anyway?"
 msgstr ""
 "La carpeta %s està protegida contra escriptura, voleu suprimir-la de totes "
 "maneres?"
 
-#: src/DirPanel.cpp:3337 src/DirPanel.cpp:3364
+#: src/DirPanel.cpp:3382 src/DirPanel.cpp:3409
 msgid "Delete folder operation cancelled!"
 msgstr "S'ha cancel·lat la supressió de directoris."
 
-#: src/DirPanel.cpp:3402 src/FilePanel.cpp:2659 src/SearchPanel.cpp:2988
+#: src/DirPanel.cpp:3447 src/FilePanel.cpp:2677 src/SearchPanel.cpp:3034
 #, c-format
 msgid "Move folder %s to trash can?"
 msgstr "Voleu llençar la carpeta %s a la paperera?"
 
-#: src/DirPanel.cpp:3403 src/DirPanel.cpp:3421 src/FilePanel.cpp:2671
-#: src/FilePanel.cpp:2731 src/FilePanel.cpp:2745 src/SearchPanel.cpp:3000
-#: src/SearchPanel.cpp:3054 src/SearchPanel.cpp:3068
+#: src/DirPanel.cpp:3448 src/DirPanel.cpp:3466 src/FilePanel.cpp:2689
+#: src/FilePanel.cpp:2749 src/FilePanel.cpp:2763 src/SearchPanel.cpp:3046
+#: src/SearchPanel.cpp:3100 src/SearchPanel.cpp:3114
 msgid "Confirm Trash"
 msgstr "Confirma abans de llençar a la paperera"
 
-#: src/DirPanel.cpp:3411 src/FilePanel.cpp:2683 src/SearchPanel.cpp:3011
+#: src/DirPanel.cpp:3456 src/FilePanel.cpp:2701 src/SearchPanel.cpp:3057
 msgid "Move to Trash"
 msgstr "Llença a la paperera"
 
-#: src/DirPanel.cpp:3420
+#: src/DirPanel.cpp:3465
 #, c-format
 msgid "Folder %s is write-protected, move it to trash can anyway?"
 msgstr ""
 "La carpeta %s està protegida contra escriptura, voleu llençar-la a la "
 "paperera de totes maneres?"
 
-#: src/DirPanel.cpp:3442 src/DirPanel.cpp:3474 src/FilePanel.cpp:2796
-#: src/FilePanel.cpp:2823 src/SearchPanel.cpp:3116 src/SearchPanel.cpp:3139
+#: src/DirPanel.cpp:3487 src/DirPanel.cpp:3519 src/FilePanel.cpp:2814
+#: src/FilePanel.cpp:2841 src/SearchPanel.cpp:3162 src/SearchPanel.cpp:3185
 msgid "An error has occurred during the move to trash operation!"
 msgstr "S'ha produït un error durant l'operació de llençar-ho a la paperera."
 
-#: src/DirPanel.cpp:3449 src/DirPanel.cpp:3481
+#: src/DirPanel.cpp:3494 src/DirPanel.cpp:3526
 msgid "Move to trash folder operation cancelled!"
 msgstr "S'ha cancel·lat l'operació d'enviar a la paperera."
 
-#: src/DirPanel.cpp:3507 src/FilePanel.cpp:2887
+#: src/DirPanel.cpp:3552 src/FilePanel.cpp:2905
 msgid "Restore From Trash"
 msgstr "Restaura-ho de la paperera"
 
-#: src/DirPanel.cpp:3553 src/FilePanel.cpp:2967
+#: src/DirPanel.cpp:3598 src/FilePanel.cpp:2985
 #, c-format
 msgid "Restore folder %s to its original location %s ?"
 msgstr "Voleu restaurar la carpeta %s a la seva ubicació original %s ?"
 
-#: src/DirPanel.cpp:3556 src/DirPanel.cpp:3583 src/FilePanel.cpp:2982
-#: src/FilePanel.cpp:3010
+#: src/DirPanel.cpp:3601 src/DirPanel.cpp:3628 src/FilePanel.cpp:3000
+#: src/FilePanel.cpp:3028
 msgid "Confirm Restore"
 msgstr "Confirma la restauració"
 
-#: src/DirPanel.cpp:3571 src/FilePanel.cpp:2996
+#: src/DirPanel.cpp:3616 src/FilePanel.cpp:3014
 #, c-format
 msgid "Restore information not available for %s"
 msgstr "La informació de restauració no està disponible per %s"
 
-#: src/DirPanel.cpp:3582 src/FilePanel.cpp:3008
+#: src/DirPanel.cpp:3627 src/FilePanel.cpp:3026
 #, c-format
 msgid "Parent folder %s does not exist, do you want to create it?"
 msgstr "La carpeta pare %s no existeix, voleu crear-la?"
 
-#: src/DirPanel.cpp:3600 src/DirPanel.cpp:3712
+#: src/DirPanel.cpp:3645 src/DirPanel.cpp:3757
 #, c-format
 msgid "Can't create folder %s : %s"
 msgstr "No s'ha pogut crear la carpeta %s: %s"
 
-#: src/DirPanel.cpp:3605 src/DirPanel.cpp:3717 src/FilePanel.cpp:3031
-#: src/FilePanel.cpp:4000 src/FilePanel.cpp:5529 src/XFileArchive.cpp:882
+#: src/DirPanel.cpp:3650 src/DirPanel.cpp:3762 src/FilePanel.cpp:3049
+#: src/FilePanel.cpp:4032 src/FilePanel.cpp:5569 src/XFileArchive.cpp:882
 #: src/XFileArchive.cpp:1022
 #, c-format
 msgid "Can't create folder %s"
 msgstr "No s'ha pogut crear la carpeta %s"
 
-#: src/DirPanel.cpp:3620 src/FilePanel.cpp:3048
+#: src/DirPanel.cpp:3665 src/FilePanel.cpp:3066
 msgid "An error has occurred during the restore from trash operation!"
 msgstr "S'ha produït un error durant la restauració de la paperera."
 
-#: src/DirPanel.cpp:3635 src/FilePanel.cpp:3063
+#: src/DirPanel.cpp:3680 src/FilePanel.cpp:3081
 msgid "Restore from trash file operation cancelled!"
 msgstr "S'ha cancel·lat l'operació de restauració."
 
-#: src/DirPanel.cpp:3670 src/FilePanel.cpp:3951
+#: src/DirPanel.cpp:3715 src/FilePanel.cpp:3983
 msgid "Create new folder:"
 msgstr "Crea una carpeta nova:"
 
-#: src/DirPanel.cpp:3670 src/FileDialog.cpp:297 src/FileDialog.cpp:1107
-#: src/FilePanel.cpp:3951
+#: src/DirPanel.cpp:3715 src/FileDialog.cpp:297 src/FileDialog.cpp:1107
+#: src/FilePanel.cpp:3983
 msgid "New Folder"
 msgstr "Directori Nou"
 
-#: src/DirPanel.cpp:3677 src/FileDialog.cpp:1114 src/FilePanel.cpp:3960
+#: src/DirPanel.cpp:3722 src/FileDialog.cpp:1114 src/FilePanel.cpp:3992
 msgid "Folder name is empty, operation cancelled"
 msgstr "El nom de la carpeta és buit, l'operació s'ha cancel·lat"
 
-#: src/DirPanel.cpp:3695 src/FileDialog.cpp:1205 src/FilePanel.cpp:3978
-#: src/FilePanel.cpp:4076 src/FilePanel.cpp:4180
+#: src/DirPanel.cpp:3740 src/FileDialog.cpp:1205 src/FilePanel.cpp:4010
+#: src/FilePanel.cpp:4108 src/FilePanel.cpp:4212
 #, c-format
 msgid "File or folder %s already exists"
 msgstr "El fitxer o carpeta %s ja existeix"
 
-#: src/DirPanel.cpp:3852 src/DirPanel.cpp:3903
+#: src/DirPanel.cpp:3897 src/DirPanel.cpp:3948
 msgid "Can't find server name"
 msgstr ""
 
-#: src/DirPanel.cpp:3867
+#: src/DirPanel.cpp:3912
 msgid "Can't find share name"
 msgstr ""
 
-#: src/DirPanel.cpp:3926
+#: src/DirPanel.cpp:3971
 #, fuzzy
 #| msgid "\tFilter by user name"
 msgid "Can't find user name"
 msgstr "\tFiltra per nom d'usuari"
 
-#: src/DirPanel.cpp:3960 src/DirPanel.cpp:4034 src/File.cpp:277
-#: src/FilePanel.cpp:6140
+#: src/DirPanel.cpp:4005 src/DirPanel.cpp:4079 src/File.cpp:277
+#: src/FilePanel.cpp:6180
 msgid "Mount file system..."
 msgstr "S'està muntant el sistema d'arxius..."
 
-#: src/DirPanel.cpp:3961 src/DirPanel.cpp:4035 src/FilePanel.cpp:6141
+#: src/DirPanel.cpp:4006 src/DirPanel.cpp:4080 src/FilePanel.cpp:6181
 msgid "Volume busy, please wait while mounting folder:"
 msgstr ""
 
-#: src/DirPanel.cpp:3967 src/DirPanel.cpp:4041 src/File.cpp:288
-#: src/FilePanel.cpp:6147
+#: src/DirPanel.cpp:4012 src/DirPanel.cpp:4086 src/File.cpp:288
+#: src/FilePanel.cpp:6187
 msgid "Unmount file system..."
 msgstr "Desmunta el sistema de fitxers..."
 
-#: src/DirPanel.cpp:3968 src/DirPanel.cpp:4042 src/FilePanel.cpp:6148
+#: src/DirPanel.cpp:4013 src/DirPanel.cpp:4087 src/FilePanel.cpp:6188
 msgid "Volume busy, please wait while unmounting folder:"
 msgstr ""
 
@@ -1270,7 +1273,7 @@ msgstr "E&xecuta"
 msgid "Execute in Console &Mode"
 msgstr "Executa en &mode consola"
 
-#: src/ExecuteBox.cpp:51 src/FilePanel.cpp:4962 src/SearchPanel.cpp:2518
+#: src/ExecuteBox.cpp:51 src/FilePanel.cpp:5002 src/SearchPanel.cpp:2564
 #: src/WriteWindow.cpp:615 src/XFileExplorer.cpp:1470
 msgid "&Edit"
 msgstr "&Edita"
@@ -1485,7 +1488,7 @@ msgstr ""
 msgid "Computing the size of files to move: "
 msgstr ""
 
-#: src/File.cpp:2480 src/FilePanel.cpp:6327 src/SearchPanel.cpp:4829
+#: src/File.cpp:2480 src/FilePanel.cpp:6367 src/SearchPanel.cpp:4972
 #, c-format
 msgid "Failed command: %s"
 msgstr "Ha fallat l'ordre: %s"
@@ -1547,7 +1550,7 @@ msgstr "Ves a la carpeta anterior"
 msgid "Go to Next Folder"
 msgstr "Ves a la carpeta següent"
 
-#: src/FileDialog.cpp:279 src/SearchPanel.cpp:225 src/XFileExplorer.cpp:1099
+#: src/FileDialog.cpp:279 src/SearchPanel.cpp:227 src/XFileExplorer.cpp:1099
 #: src/XFileImage.cpp:548
 msgid "Go to Parent Folder"
 msgstr "Ves a la carpeta pare"
@@ -1560,17 +1563,17 @@ msgstr "Ves a la carpeta d'usuari"
 msgid "Go to Working Folder"
 msgstr "Ves a la carpeta de treball"
 
-#: src/FileDialog.cpp:303 src/SearchPanel.cpp:291 src/XFileExplorer.cpp:1286
+#: src/FileDialog.cpp:303 src/SearchPanel.cpp:293 src/XFileExplorer.cpp:1286
 #: src/XFileImage.cpp:573
 msgid "Big Icon List"
 msgstr "Llista d'icones grans"
 
-#: src/FileDialog.cpp:310 src/SearchPanel.cpp:298 src/XFileExplorer.cpp:1293
+#: src/FileDialog.cpp:310 src/SearchPanel.cpp:300 src/XFileExplorer.cpp:1293
 #: src/XFileImage.cpp:579
 msgid "Small Icon List"
 msgstr "Llista d'icones petites"
 
-#: src/FileDialog.cpp:317 src/SearchPanel.cpp:305 src/XFileExplorer.cpp:1300
+#: src/FileDialog.cpp:317 src/SearchPanel.cpp:307 src/XFileExplorer.cpp:1300
 #: src/XFileImage.cpp:585
 msgid "Detailed File List"
 msgstr "Llista de fitxers detallada"
@@ -1583,7 +1586,7 @@ msgstr "Mostra els fitxers ocults"
 msgid "Hide Hidden Files"
 msgstr "Amaga els fitxers ocults"
 
-#: src/FileDialog.cpp:332 src/FilePanel.cpp:295 src/SearchPanel.cpp:318
+#: src/FileDialog.cpp:332 src/FilePanel.cpp:295 src/SearchPanel.cpp:320
 #: src/XFileImage.cpp:796
 msgid "Show Thumbnails"
 msgstr "Mostra les miniatures"
@@ -1593,7 +1596,7 @@ msgid "Hide thumbnails"
 msgstr "Amaga les miniatures"
 
 #: src/FileDialog.cpp:339 src/FileDialog.cpp:1321 src/FilePanel.cpp:301
-#: src/FilePanel.cpp:4655
+#: src/FilePanel.cpp:4695
 msgid "Filter"
 msgstr "Filtre"
 
@@ -1609,22 +1612,22 @@ msgstr "Crea un nou directori..."
 msgid "Create new file..."
 msgstr "Crea un fitxer nou..."
 
-#: src/FileDialog.cpp:1176 src/FilePanel.cpp:4048
+#: src/FileDialog.cpp:1176 src/FilePanel.cpp:4080
 msgid "New File"
 msgstr "Nou Fitxer"
 
-#: src/FileDialog.cpp:1193 src/FilePanel.cpp:4065 src/Properties.cpp:1471
+#: src/FileDialog.cpp:1193 src/FilePanel.cpp:4097 src/Properties.cpp:1478
 msgid "The / character is not allowed in file names, operation cancelled"
 msgstr ""
 "El caràcter / no està permès en noms de fitxer, s'ha cancel·lat l'operació"
 
-#: src/FileDialog.cpp:1321 src/FilePanel.cpp:4655
+#: src/FileDialog.cpp:1321 src/FilePanel.cpp:4695
 #, fuzzy
 #| msgid "Show files:"
 msgid "Show:"
 msgstr "Mostra els fitxers:"
 
-#: src/FileDialog.cpp:1322 src/FilePanel.cpp:4656
+#: src/FileDialog.cpp:1322 src/FilePanel.cpp:4696
 #, fuzzy
 #| msgid "Files and folders"
 msgid "Also apply to folders"
@@ -1659,170 +1662,170 @@ msgstr "Ves a la &feina"
 msgid "New &File..."
 msgstr "&Fitxer nou..."
 
-#: src/FileDialog.cpp:1901 src/FilePanel.cpp:4810 src/FilePanel.cpp:4855
+#: src/FileDialog.cpp:1901 src/FilePanel.cpp:4850 src/FilePanel.cpp:4895
 msgid "New F&older..."
 msgstr "Carpeta n&ova..."
 
-#: src/FileDialog.cpp:1903 src/FilePanel.cpp:4817 src/FilePanel.cpp:4862
-#: src/XFileExplorer.cpp:1531 src/XFileExplorer.cpp:1562 src/XFileImage.cpp:973
+#: src/FileDialog.cpp:1903 src/FilePanel.cpp:4857 src/FilePanel.cpp:4902
+#: src/XFileExplorer.cpp:1533 src/XFileExplorer.cpp:1564 src/XFileImage.cpp:973
 #: src/XFileImage.cpp:1113
 msgid "&Hidden Files"
 msgstr "&Fitxers ocults"
 
-#: src/FileDialog.cpp:1904 src/FilePanel.cpp:4818 src/FilePanel.cpp:4863
-#: src/SearchPanel.cpp:2418 src/SearchPanel.cpp:2447 src/XFileImage.cpp:1114
+#: src/FileDialog.cpp:1904 src/FilePanel.cpp:4858 src/FilePanel.cpp:4903
+#: src/SearchPanel.cpp:2464 src/SearchPanel.cpp:2493 src/XFileImage.cpp:1114
 msgid "Thum&bnails"
 msgstr "&Miniatures"
 
-#: src/FileDialog.cpp:1906 src/FilePanel.cpp:4820 src/FilePanel.cpp:4865
-#: src/SearchPanel.cpp:2420 src/SearchPanel.cpp:2449 src/XFileImage.cpp:1116
+#: src/FileDialog.cpp:1906 src/FilePanel.cpp:4860 src/FilePanel.cpp:4905
+#: src/SearchPanel.cpp:2466 src/SearchPanel.cpp:2495 src/XFileImage.cpp:1116
 msgid "B&ig Icons"
 msgstr "Icones &grans"
 
-#: src/FileDialog.cpp:1907 src/FilePanel.cpp:4821 src/FilePanel.cpp:4866
-#: src/SearchPanel.cpp:2421 src/SearchPanel.cpp:2450 src/XFileExplorer.cpp:1535
-#: src/XFileExplorer.cpp:1566 src/XFileImage.cpp:993 src/XFileImage.cpp:1117
+#: src/FileDialog.cpp:1907 src/FilePanel.cpp:4861 src/FilePanel.cpp:4906
+#: src/SearchPanel.cpp:2467 src/SearchPanel.cpp:2496 src/XFileExplorer.cpp:1537
+#: src/XFileExplorer.cpp:1568 src/XFileImage.cpp:993 src/XFileImage.cpp:1117
 msgid "&Small Icons"
 msgstr "Icones &petites"
 
-#: src/FileDialog.cpp:1908 src/FilePanel.cpp:4822 src/FilePanel.cpp:4867
-#: src/SearchPanel.cpp:2422 src/SearchPanel.cpp:2451 src/XFileExplorer.cpp:1536
-#: src/XFileExplorer.cpp:1567 src/XFileImage.cpp:999 src/XFileImage.cpp:1118
+#: src/FileDialog.cpp:1908 src/FilePanel.cpp:4862 src/FilePanel.cpp:4907
+#: src/SearchPanel.cpp:2468 src/SearchPanel.cpp:2497 src/XFileExplorer.cpp:1538
+#: src/XFileExplorer.cpp:1569 src/XFileImage.cpp:999 src/XFileImage.cpp:1118
 msgid "&Detailed File List"
 msgstr "Llista de fitxers &detallada"
 
-#: src/FileDialog.cpp:1910 src/FilePanel.cpp:4824 src/FilePanel.cpp:4869
-#: src/SearchPanel.cpp:2424 src/SearchPanel.cpp:2453 src/XFileExplorer.cpp:1538
-#: src/XFileExplorer.cpp:1569 src/XFileImage.cpp:1015 src/XFileImage.cpp:1120
+#: src/FileDialog.cpp:1910 src/FilePanel.cpp:4864 src/FilePanel.cpp:4909
+#: src/SearchPanel.cpp:2470 src/SearchPanel.cpp:2499 src/XFileExplorer.cpp:1540
+#: src/XFileExplorer.cpp:1571 src/XFileImage.cpp:1015 src/XFileImage.cpp:1120
 #, fuzzy
 #| msgid "Autosize"
 msgid "Autos&ize"
 msgstr "Mida automàtica"
 
-#: src/FileDialog.cpp:1911 src/FilePanel.cpp:4825 src/FilePanel.cpp:4870
-#: src/SearchPanel.cpp:2425 src/SearchPanel.cpp:2454 src/XFileExplorer.cpp:1539
-#: src/XFileExplorer.cpp:1570 src/XFileImage.cpp:1016 src/XFileImage.cpp:1121
+#: src/FileDialog.cpp:1911 src/FilePanel.cpp:4865 src/FilePanel.cpp:4910
+#: src/SearchPanel.cpp:2471 src/SearchPanel.cpp:2500 src/XFileExplorer.cpp:1541
+#: src/XFileExplorer.cpp:1572 src/XFileImage.cpp:1016 src/XFileImage.cpp:1121
 msgid "&Rows"
 msgstr "&Files"
 
-#: src/FileDialog.cpp:1912 src/FilePanel.cpp:4826 src/FilePanel.cpp:4871
-#: src/SearchPanel.cpp:2426 src/SearchPanel.cpp:2455 src/XFileExplorer.cpp:1540
-#: src/XFileExplorer.cpp:1571 src/XFileImage.cpp:1017 src/XFileImage.cpp:1122
+#: src/FileDialog.cpp:1912 src/FilePanel.cpp:4866 src/FilePanel.cpp:4911
+#: src/SearchPanel.cpp:2472 src/SearchPanel.cpp:2501 src/XFileExplorer.cpp:1542
+#: src/XFileExplorer.cpp:1573 src/XFileImage.cpp:1017 src/XFileImage.cpp:1122
 msgid "&Columns"
 msgstr "&Columnes"
 
-#: src/FileDialog.cpp:1914 src/FilePanel.cpp:4828 src/FilePanel.cpp:4873
-#: src/SearchPanel.cpp:2428 src/SearchPanel.cpp:2457 src/XFileExplorer.cpp:1542
-#: src/XFileExplorer.cpp:1573 src/XFileImage.cpp:1124
+#: src/FileDialog.cpp:1914 src/FilePanel.cpp:4868 src/FilePanel.cpp:4913
+#: src/SearchPanel.cpp:2474 src/SearchPanel.cpp:2503 src/XFileExplorer.cpp:1544
+#: src/XFileExplorer.cpp:1575 src/XFileImage.cpp:1124
 msgid "&Name"
 msgstr "&Nom"
 
-#: src/FileDialog.cpp:1915 src/FilePanel.cpp:4829 src/FilePanel.cpp:4874
-#: src/SearchPanel.cpp:2429 src/SearchPanel.cpp:2458 src/XFileExplorer.cpp:1543
-#: src/XFileExplorer.cpp:1574 src/XFileImage.cpp:1125
+#: src/FileDialog.cpp:1915 src/FilePanel.cpp:4869 src/FilePanel.cpp:4914
+#: src/SearchPanel.cpp:2475 src/SearchPanel.cpp:2504 src/XFileExplorer.cpp:1545
+#: src/XFileExplorer.cpp:1576 src/XFileImage.cpp:1125
 msgid "Si&ze"
 msgstr "&Mida"
 
-#: src/FileDialog.cpp:1916 src/FilePanel.cpp:4830 src/FilePanel.cpp:4875
-#: src/SearchPanel.cpp:2430 src/SearchPanel.cpp:2459 src/XFileImage.cpp:1126
+#: src/FileDialog.cpp:1916 src/FilePanel.cpp:4870 src/FilePanel.cpp:4915
+#: src/SearchPanel.cpp:2476 src/SearchPanel.cpp:2505 src/XFileImage.cpp:1126
 msgid "&Type"
 msgstr "&Tipus"
 
-#: src/FileDialog.cpp:1917 src/FilePanel.cpp:4831 src/FilePanel.cpp:4876
-#: src/SearchPanel.cpp:2431 src/SearchPanel.cpp:2460 src/XFileExplorer.cpp:1545
-#: src/XFileExplorer.cpp:1576 src/XFileImage.cpp:1127
+#: src/FileDialog.cpp:1917 src/FilePanel.cpp:4871 src/FilePanel.cpp:4916
+#: src/SearchPanel.cpp:2477 src/SearchPanel.cpp:2506 src/XFileExplorer.cpp:1547
+#: src/XFileExplorer.cpp:1578 src/XFileImage.cpp:1127
 msgid "E&xtension"
 msgstr "E&xtensió"
 
-#: src/FileDialog.cpp:1918 src/FilePanel.cpp:4832 src/FilePanel.cpp:4877
-#: src/SearchPanel.cpp:2432 src/SearchPanel.cpp:2461 src/XFileImage.cpp:1128
+#: src/FileDialog.cpp:1918 src/FilePanel.cpp:4872 src/FilePanel.cpp:4917
+#: src/SearchPanel.cpp:2478 src/SearchPanel.cpp:2507 src/XFileImage.cpp:1128
 msgid "&Date"
 msgstr "&Data"
 
-#: src/FileDialog.cpp:1919 src/FilePanel.cpp:4833 src/FilePanel.cpp:4878
-#: src/SearchPanel.cpp:2433 src/SearchPanel.cpp:2462 src/XFileImage.cpp:1129
+#: src/FileDialog.cpp:1919 src/FilePanel.cpp:4873 src/FilePanel.cpp:4918
+#: src/SearchPanel.cpp:2479 src/SearchPanel.cpp:2508 src/XFileImage.cpp:1129
 msgid "&User"
 msgstr "&Usuari"
 
-#: src/FileDialog.cpp:1920 src/FilePanel.cpp:4834 src/FilePanel.cpp:4879
-#: src/SearchPanel.cpp:2434 src/SearchPanel.cpp:2463 src/XFileImage.cpp:1130
+#: src/FileDialog.cpp:1920 src/FilePanel.cpp:4874 src/FilePanel.cpp:4919
+#: src/SearchPanel.cpp:2480 src/SearchPanel.cpp:2509 src/XFileImage.cpp:1130
 msgid "&Group"
 msgstr "&Grup"
 
-#: src/FileDialog.cpp:1921 src/Properties.cpp:226 src/Properties.cpp:1021
-#: src/XFileExplorer.cpp:1549 src/XFileExplorer.cpp:1580
+#: src/FileDialog.cpp:1921 src/Properties.cpp:226 src/Properties.cpp:1028
+#: src/XFileExplorer.cpp:1551 src/XFileExplorer.cpp:1582
 #: src/XFileImage.cpp:1131
 msgid "&Permissions"
 msgstr "&Permisos"
 
-#: src/FileDialog.cpp:1922 src/FilePanel.cpp:4836 src/FilePanel.cpp:4881
-#: src/SearchPanel.cpp:2436 src/SearchPanel.cpp:2465 src/XFileExplorer.cpp:1550
-#: src/XFileExplorer.cpp:1581 src/XFileImage.cpp:1132
+#: src/FileDialog.cpp:1922 src/FilePanel.cpp:4876 src/FilePanel.cpp:4921
+#: src/SearchPanel.cpp:2482 src/SearchPanel.cpp:2511 src/XFileExplorer.cpp:1552
+#: src/XFileExplorer.cpp:1583 src/XFileImage.cpp:1132
 #, fuzzy
 #| msgid "Link"
 msgid "&Link"
 msgstr "Enllaç"
 
-#: src/FileDialog.cpp:1925 src/FilePanel.cpp:4840 src/FilePanel.cpp:4885
-#: src/SearchPanel.cpp:2439 src/SearchPanel.cpp:2468 src/XFileImage.cpp:1135
+#: src/FileDialog.cpp:1925 src/FilePanel.cpp:4880 src/FilePanel.cpp:4925
+#: src/SearchPanel.cpp:2485 src/SearchPanel.cpp:2514 src/XFileImage.cpp:1135
 msgid "Fold&ers First"
 msgstr "Carpetes primer"
 
-#: src/FileDialog.cpp:1926 src/FilePanel.cpp:4841 src/FilePanel.cpp:4886
-#: src/SearchPanel.cpp:2440 src/SearchPanel.cpp:2469 src/XFileExplorer.cpp:1556
-#: src/XFileExplorer.cpp:1587 src/XFileImage.cpp:1136
+#: src/FileDialog.cpp:1926 src/FilePanel.cpp:4881 src/FilePanel.cpp:4926
+#: src/SearchPanel.cpp:2486 src/SearchPanel.cpp:2515 src/XFileExplorer.cpp:1558
+#: src/XFileExplorer.cpp:1589 src/XFileImage.cpp:1136
 msgid "Re&verse Order"
 msgstr "Re&verteix l'ordre"
 
-#: src/FileList.cpp:4900 src/FileList.cpp:5001 src/FileList.cpp:5706
-#: src/FileList.cpp:5825 src/Properties.cpp:470 src/Properties.cpp:618
-#: src/SearchPanel.cpp:2035
+#: src/FileList.cpp:4924 src/FileList.cpp:5025 src/FileList.cpp:5730
+#: src/FileList.cpp:5849 src/Properties.cpp:477 src/Properties.cpp:625
+#: src/SearchPanel.cpp:2081
 msgid "Character Device"
 msgstr "Dispositiu de caràcter"
 
-#: src/FileList.cpp:4906 src/FileList.cpp:5005 src/FileList.cpp:5712
-#: src/FileList.cpp:5829 src/Properties.cpp:474 src/Properties.cpp:622
-#: src/SearchPanel.cpp:2041
+#: src/FileList.cpp:4930 src/FileList.cpp:5029 src/FileList.cpp:5736
+#: src/FileList.cpp:5853 src/Properties.cpp:481 src/Properties.cpp:629
+#: src/SearchPanel.cpp:2087
 msgid "Block Device"
 msgstr "Dispositiu de bloc"
 
-#: src/FileList.cpp:4912 src/FileList.cpp:5009 src/FileList.cpp:5718
-#: src/FileList.cpp:5833 src/Properties.cpp:478 src/Properties.cpp:626
-#: src/SearchPanel.cpp:2047
+#: src/FileList.cpp:4936 src/FileList.cpp:5033 src/FileList.cpp:5742
+#: src/FileList.cpp:5857 src/Properties.cpp:485 src/Properties.cpp:633
+#: src/SearchPanel.cpp:2093
 msgid "Named Pipe"
 msgstr "Conducte designat"
 
-#: src/FileList.cpp:4918 src/FileList.cpp:5013 src/FileList.cpp:5724
-#: src/FileList.cpp:5837 src/Properties.cpp:482 src/Properties.cpp:630
-#: src/SearchPanel.cpp:2053 src/SearchWindow.cpp:220
+#: src/FileList.cpp:4942 src/FileList.cpp:5037 src/FileList.cpp:5748
+#: src/FileList.cpp:5861 src/Properties.cpp:489 src/Properties.cpp:637
+#: src/SearchPanel.cpp:2099 src/SearchWindow.cpp:220
 msgid "Socket"
 msgstr "Connector (socket)"
 
-#: src/FileList.cpp:4924 src/FileList.cpp:4971 src/FileList.cpp:5017
-#: src/FileList.cpp:5730 src/FileList.cpp:5795 src/FileList.cpp:5841
-#: src/Properties.cpp:513 src/Properties.cpp:558 src/Properties.cpp:634
-#: src/SearchPanel.cpp:2061
+#: src/FileList.cpp:4948 src/FileList.cpp:4995 src/FileList.cpp:5041
+#: src/FileList.cpp:5754 src/FileList.cpp:5819 src/FileList.cpp:5865
+#: src/Properties.cpp:520 src/Properties.cpp:565 src/Properties.cpp:641
+#: src/SearchPanel.cpp:2107
 msgid "Executable"
 msgstr "Executable"
 
-#: src/FileList.cpp:4934 src/FileList.cpp:5021 src/FileList.cpp:5740
-#: src/FileList.cpp:5845 src/Properties.cpp:518 src/Properties.cpp:563
-#: src/Properties.cpp:639 src/Properties.cpp:1123 src/Properties.cpp:1139
-#: src/SearchPanel.cpp:2071
+#: src/FileList.cpp:4958 src/FileList.cpp:5045 src/FileList.cpp:5764
+#: src/FileList.cpp:5869 src/Properties.cpp:525 src/Properties.cpp:570
+#: src/Properties.cpp:646 src/Properties.cpp:1130 src/Properties.cpp:1146
+#: src/SearchPanel.cpp:2117
 msgid "Document"
 msgstr "Document"
 
-#: src/FileList.cpp:4964 src/FileList.cpp:5788 src/SearchPanel.cpp:2096
+#: src/FileList.cpp:4988 src/FileList.cpp:5812 src/SearchPanel.cpp:2142
 msgid "Broken Link"
 msgstr "Enllaç trencat"
 
-#: src/FileList.cpp:4971 src/FileList.cpp:4981 src/FileList.cpp:5024
-#: src/FileList.cpp:5795 src/FileList.cpp:5805 src/FileList.cpp:5848
-#: src/Properties.cpp:644 src/SearchPanel.cpp:2106 src/SearchPanel.cpp:2119
+#: src/FileList.cpp:4995 src/FileList.cpp:5005 src/FileList.cpp:5048
+#: src/FileList.cpp:5819 src/FileList.cpp:5829 src/FileList.cpp:5872
+#: src/Properties.cpp:651 src/SearchPanel.cpp:2152 src/SearchPanel.cpp:2165
 msgid "Link to "
 msgstr "Enllaç a "
 
-#: src/FileList.cpp:5115 src/FileList.cpp:5939 src/IconList.cpp:316
+#: src/FileList.cpp:5139 src/FileList.cpp:5963 src/IconList.cpp:316
 #: src/IconList.cpp:331 src/IconList.cpp:671 src/XFileImage.cpp:1741
 #: src/XFileImage.cpp:2385 src/XFileImage.cpp:2439 src/XFileImage.cpp:2530
 #: src/foxhacks.cpp:3886 src/foxhacks.cpp:3911
@@ -1833,133 +1836,133 @@ msgstr "No es pot carregar la imatge"
 msgid "Show Hidden Files"
 msgstr "Mostra els fitxers ocults"
 
-#: src/FilePanel.cpp:295 src/SearchPanel.cpp:319 src/XFileImage.cpp:796
+#: src/FilePanel.cpp:295 src/SearchPanel.cpp:321 src/XFileImage.cpp:796
 msgid "Hide Thumbnails"
 msgstr "Amaga les miniatures"
 
-#: src/FilePanel.cpp:311 src/SearchPanel.cpp:327
+#: src/FilePanel.cpp:311 src/SearchPanel.cpp:329
 msgid "Status"
 msgstr "Estat"
 
-#: src/FilePanel.cpp:1118 src/SearchPanel.cpp:882
+#: src/FilePanel.cpp:1118 src/SearchPanel.cpp:906
 #, c-format
 msgid "File %s is an executable text file, what do you want to do?"
 msgstr "El fitxer %s és un fitxer de text executable, què voleu fer?"
 
-#: src/FilePanel.cpp:1119 src/SearchPanel.cpp:883
+#: src/FilePanel.cpp:1119 src/SearchPanel.cpp:907
 msgid "Confirm Execute"
 msgstr "Confirma l'execució"
 
-#: src/FilePanel.cpp:1160 src/XFileExplorer.cpp:5388
+#: src/FilePanel.cpp:1160 src/XFileExplorer.cpp:5416
 msgid "Command log"
 msgstr "Fitxer de registre d'ordres"
 
-#: src/FilePanel.cpp:1943
+#: src/FilePanel.cpp:1961
 msgid ""
 "The / character is not allowed in file or folder names, operation cancelled"
 msgstr ""
 "No es permet el caràcter / en noms de fitxer o de carpeta, l'operació s'ha "
 "cancel·lat"
 
-#: src/FilePanel.cpp:1989 src/SearchPanel.cpp:3877
+#: src/FilePanel.cpp:2007 src/SearchPanel.cpp:3923
 msgid "To folder:"
 msgstr "A la carpeta:"
 
-#: src/FilePanel.cpp:2096 src/SearchPanel.cpp:3991
+#: src/FilePanel.cpp:2114 src/SearchPanel.cpp:4037
 #, fuzzy
 #| msgid "Empty files:"
 msgid "Copy files"
 msgstr "Fitxers buits:"
 
-#: src/FilePanel.cpp:2335 src/SearchPanel.cpp:4254
+#: src/FilePanel.cpp:2353 src/SearchPanel.cpp:4300
 #, fuzzy
 #| msgid "Delete file operation cancelled!"
 msgid "Rename file operation cancelled!"
 msgstr "S'ha cancel·lat la supressió de fitxers."
 
-#: src/FilePanel.cpp:2348 src/SearchPanel.cpp:4266
+#: src/FilePanel.cpp:2366 src/SearchPanel.cpp:4312
 #, fuzzy
 #| msgid "An error has occurred during the move file operation!"
 msgid "An error has occurred during the rename file operation!"
 msgstr "S'ha produït un error durant l'operació de desplaçament de fitxers."
 
-#: src/FilePanel.cpp:2622 src/SearchPanel.cpp:2961
+#: src/FilePanel.cpp:2640 src/SearchPanel.cpp:3007
 #, c-format
 msgid "Can't write to trash location %s: Permission denied"
 msgstr "No s'ha pogut escriure a la ubicació de la paperera %s: Permís denegat"
 
-#: src/FilePanel.cpp:2663 src/SearchPanel.cpp:2992
+#: src/FilePanel.cpp:2681 src/SearchPanel.cpp:3038
 #, c-format
 msgid "Move file %s to trash can?"
 msgstr "Voleu llençar el fitxer %s a la paperera?"
 
-#: src/FilePanel.cpp:2668 src/SearchPanel.cpp:2997
+#: src/FilePanel.cpp:2686 src/SearchPanel.cpp:3043
 #, c-format
 msgid "Move %s selected items to trash can?"
 msgstr "Voleu llençar els elements seleccionats %s a la paperera?"
 
-#: src/FilePanel.cpp:2727 src/SearchPanel.cpp:3050
+#: src/FilePanel.cpp:2745 src/SearchPanel.cpp:3096
 #, c-format
 msgid "File %s is write-protected, move it anyway to trash can?"
 msgstr ""
 "El fitxer %s està protegit contra escriptura, segur que el voleu llençar a "
 "la paperera?"
 
-#: src/FilePanel.cpp:2831 src/SearchPanel.cpp:3147
+#: src/FilePanel.cpp:2849 src/SearchPanel.cpp:3193
 msgid "Move to trash file operation cancelled!"
 msgstr "S'ha cancel·lat l'operació de llençar-ho a la paperera."
 
-#: src/FilePanel.cpp:2972
+#: src/FilePanel.cpp:2990
 #, c-format
 msgid "Restore file %s to its original location %s ?"
 msgstr "Voleu restaurar el fitxer %s a la seva ubicació original %s ?"
 
-#: src/FilePanel.cpp:2978
+#: src/FilePanel.cpp:2996
 #, c-format
 msgid "Restore %s selected items to their original locations?"
 msgstr ""
 "Voleu restaurar els elements seleccionats %s a la seva ubicació original?"
 
-#: src/FilePanel.cpp:3026 src/FilePanel.cpp:3995 src/FilePanel.cpp:5524
+#: src/FilePanel.cpp:3044 src/FilePanel.cpp:4027 src/FilePanel.cpp:5564
 #, c-format
 msgid "Can't create folder %s: %s"
 msgstr "No s'ha pogut crear la carpeta %s: %s"
 
-#: src/FilePanel.cpp:3142 src/SearchPanel.cpp:3204
+#: src/FilePanel.cpp:3160 src/SearchPanel.cpp:3250
 #, c-format
 msgid "Definitively delete file %s ?"
 msgstr "Voleu suprimir definitivament el fitxer %s?"
 
-#: src/FilePanel.cpp:3147 src/SearchPanel.cpp:3209
+#: src/FilePanel.cpp:3165 src/SearchPanel.cpp:3255
 #, c-format
 msgid "Definitively delete %s selected items?"
 msgstr ""
 "Esteu segur que voleu suprimir definitivament els elements seleccionats %s?"
 
-#: src/FilePanel.cpp:3160 src/XFileExplorer.cpp:5711 src/XFileExplorer.cpp:5717
+#: src/FilePanel.cpp:3178 src/XFileExplorer.cpp:5739 src/XFileExplorer.cpp:5745
 msgid "Delete Files"
 msgstr "Suprimeix fitxers"
 
-#: src/FilePanel.cpp:3268 src/SearchPanel.cpp:3310
+#: src/FilePanel.cpp:3286 src/SearchPanel.cpp:3356
 #, c-format
 msgid "File %s is write-protected, delete it anyway?"
 msgstr ""
 "El fitxer %s està protegit contra escriptura, el voleu suprimiu de totes "
 "maneres?"
 
-#: src/FilePanel.cpp:3351 src/SearchPanel.cpp:3386
+#: src/FilePanel.cpp:3369 src/SearchPanel.cpp:3432
 msgid "Delete file operation cancelled!"
 msgstr "S'ha cancel·lat la supressió de fitxers."
 
-#: src/FilePanel.cpp:3766 src/Preferences.cpp:1686 src/SearchPanel.cpp:1726
+#: src/FilePanel.cpp:3798 src/Preferences.cpp:1686 src/SearchPanel.cpp:1772
 msgid "Compare"
 msgstr "Compara"
 
-#: src/FilePanel.cpp:3766 src/SearchPanel.cpp:1726
+#: src/FilePanel.cpp:3798 src/SearchPanel.cpp:1772
 msgid "With:"
 msgstr "Amb:"
 
-#: src/FilePanel.cpp:3826
+#: src/FilePanel.cpp:3858
 #, fuzzy, c-format
 #| msgid ""
 #| "Program %s not found. Please define a file comparator program in the "
@@ -1971,48 +1974,48 @@ msgstr ""
 "No s'ha trobat el programa %s. Definiu un comparador de fitxers en el diàleg "
 "de preferències."
 
-#: src/FilePanel.cpp:4048
+#: src/FilePanel.cpp:4080
 msgid "Create new file:"
 msgstr "Crea un fitxer nou:"
 
-#: src/FilePanel.cpp:4086
+#: src/FilePanel.cpp:4118
 #, c-format
 msgid "Can't create file %s: %s"
 msgstr "No s'ha pogut crear el fitxer %s: %s"
 
-#: src/FilePanel.cpp:4091
+#: src/FilePanel.cpp:4123
 #, c-format
 msgid "Can't create file %s"
 msgstr "No s'ha pogut crear el fitxer %s"
 
-#: src/FilePanel.cpp:4107
+#: src/FilePanel.cpp:4139
 #, c-format
 msgid "Can't set permissions in %s: %s"
 msgstr "No es poden definir els permisos a %s: %s"
 
-#: src/FilePanel.cpp:4112
+#: src/FilePanel.cpp:4144
 #, c-format
 msgid "Can't set permissions in %s"
 msgstr "No es poden definir els permisos a %s"
 
-#: src/FilePanel.cpp:4160
+#: src/FilePanel.cpp:4192
 msgid "Create new symbolic link:"
 msgstr "Crea un enllaç simbòlic:"
 
-#: src/FilePanel.cpp:4160
+#: src/FilePanel.cpp:4192
 msgid "New Symlink"
 msgstr "Nou enllaç simbòlic"
 
-#: src/FilePanel.cpp:4185
+#: src/FilePanel.cpp:4217
 msgid "Select the symlink refered file or folder"
 msgstr "Seleccioneu el fitxer o carpeta a referenciar per l'enllaç simbòlic"
 
-#: src/FilePanel.cpp:4195
+#: src/FilePanel.cpp:4227
 #, c-format
 msgid "Symlink source %s does not exist"
 msgstr "L'origen de l'enllaç simbòlic %s no existeix"
 
-#: src/FilePanel.cpp:4447 src/SearchPanel.cpp:1328
+#: src/FilePanel.cpp:4487 src/SearchPanel.cpp:1360
 #, c-format
 msgid ""
 "The following files have no association and were ignored:\n"
@@ -2023,248 +2026,248 @@ msgstr ""
 "\n"
 "%s"
 
-#: src/FilePanel.cpp:4473 src/SearchPanel.cpp:986 src/XFileArchive.cpp:1048
+#: src/FilePanel.cpp:4513 src/SearchPanel.cpp:1010 src/XFileArchive.cpp:1048
 msgid "Open selected file(s) with:"
 msgstr "Obre els fitxers seleccionats amb:"
 
-#: src/FilePanel.cpp:4473 src/SearchPanel.cpp:986 src/XFileArchive.cpp:1048
+#: src/FilePanel.cpp:4513 src/SearchPanel.cpp:1010 src/XFileArchive.cpp:1048
 msgid "Open With"
 msgstr "Obre amb"
 
-#: src/FilePanel.cpp:4474 src/SearchPanel.cpp:987
+#: src/FilePanel.cpp:4514 src/SearchPanel.cpp:1011
 msgid "A&ssociate"
 msgstr "A&ssocia"
 
-#: src/FilePanel.cpp:4809
+#: src/FilePanel.cpp:4849
 msgid "New& File..."
 msgstr "Fitxer nou..."
 
-#: src/FilePanel.cpp:4811 src/FilePanel.cpp:4856 src/XFileExplorer.cpp:1336
+#: src/FilePanel.cpp:4851 src/FilePanel.cpp:4896 src/XFileExplorer.cpp:1336
 msgid "New S&ymlink..."
 msgstr "Enllaç s&imbòlic nou..."
 
-#: src/FilePanel.cpp:4813 src/FilePanel.cpp:4858
+#: src/FilePanel.cpp:4853 src/FilePanel.cpp:4898
 msgid "Fi&lter..."
 msgstr "Fi&ltre..."
 
-#: src/FilePanel.cpp:4835 src/FilePanel.cpp:4880 src/SearchPanel.cpp:2435
-#: src/SearchPanel.cpp:2464
+#: src/FilePanel.cpp:4875 src/FilePanel.cpp:4920 src/SearchPanel.cpp:2481
+#: src/SearchPanel.cpp:2510
 msgid "Per&missions"
 msgstr "Per&misos"
 
-#: src/FilePanel.cpp:4837 src/FilePanel.cpp:4882
+#: src/FilePanel.cpp:4877 src/FilePanel.cpp:4922
 msgid "&Deletion Date"
 msgstr "Data de supressió:"
 
-#: src/FilePanel.cpp:4854
+#: src/FilePanel.cpp:4894
 msgid "Ne&w File..."
 msgstr "Fitxer no&u..."
 
-#: src/FilePanel.cpp:4894 src/XFileExplorer.cpp:1659
+#: src/FilePanel.cpp:4934 src/XFileExplorer.cpp:1661
 msgid "&Mount"
 msgstr "&Munta"
 
-#: src/FilePanel.cpp:4895 src/XFileExplorer.cpp:1217
+#: src/FilePanel.cpp:4935 src/XFileExplorer.cpp:1217
 msgid "Unmount"
 msgstr "Desmuntar"
 
-#: src/FilePanel.cpp:4903 src/XFileArchive.cpp:1859
+#: src/FilePanel.cpp:4943 src/XFileArchive.cpp:1859
 msgid "Open &With..."
 msgstr "Obre &amb..."
 
-#: src/FilePanel.cpp:4904 src/SearchPanel.cpp:2478 src/XFileExplorer.cpp:1356
+#: src/FilePanel.cpp:4944 src/SearchPanel.cpp:2524 src/XFileExplorer.cpp:1356
 #: src/XFileArchive.cpp:1860
 msgid "&Open"
 msgstr "&Obre"
 
-#: src/FilePanel.cpp:4916 src/FilePanel.cpp:4920
+#: src/FilePanel.cpp:4956 src/FilePanel.cpp:4960
 msgid "Extr&act to Folder "
 msgstr "Extr&eu a la carpeta "
 
-#: src/FilePanel.cpp:4929 src/FilePanel.cpp:4945 src/SearchPanel.cpp:2497
+#: src/FilePanel.cpp:4969 src/FilePanel.cpp:4985 src/SearchPanel.cpp:2543
 msgid "&Extract Here"
 msgstr "&Extreu aquí"
 
-#: src/FilePanel.cpp:4931 src/FilePanel.cpp:4947 src/SearchPanel.cpp:2491
-#: src/SearchPanel.cpp:2505
+#: src/FilePanel.cpp:4971 src/FilePanel.cpp:4987 src/SearchPanel.cpp:2537
+#: src/SearchPanel.cpp:2551
 msgid "E&xtract to..."
 msgstr "E&xtreu a..."
 
-#: src/FilePanel.cpp:4937
+#: src/FilePanel.cpp:4977
 msgid "&Extract here"
 msgstr "&Extreu aquí"
 
-#: src/FilePanel.cpp:4953 src/FilePanel.cpp:4961 src/SearchPanel.cpp:2511
-#: src/SearchPanel.cpp:2517 src/WriteWindow.cpp:619 src/XFileExplorer.cpp:1508
+#: src/FilePanel.cpp:4993 src/FilePanel.cpp:5001 src/SearchPanel.cpp:2557
+#: src/SearchPanel.cpp:2563 src/WriteWindow.cpp:619 src/XFileExplorer.cpp:1508
 #: src/XFileImage.cpp:343
 msgid "&View"
 msgstr "&Vista"
 
-#: src/FilePanel.cpp:4954
+#: src/FilePanel.cpp:4994
 msgid "Install / Up&grade"
 msgstr "&Instal·la/Actualitza"
 
-#: src/FilePanel.cpp:4955
+#: src/FilePanel.cpp:4995
 msgid "Un&install"
 msgstr "&Desinstal·la"
 
-#: src/FilePanel.cpp:4972 src/SearchPanel.cpp:2521
+#: src/FilePanel.cpp:5012 src/SearchPanel.cpp:2567
 msgid "Com&pare..."
 msgstr "Com&para..."
 
-#: src/FilePanel.cpp:4976 src/SearchPanel.cpp:2525
+#: src/FilePanel.cpp:5016 src/SearchPanel.cpp:2571
 msgid "Com&pare"
 msgstr "Com&para"
 
-#: src/FilePanel.cpp:4983
+#: src/FilePanel.cpp:5023
 msgid "Packages &Query "
 msgstr "Consulta de pa&quets "
 
-#: src/FilePanel.cpp:4991 src/SearchPanel.cpp:2544
+#: src/FilePanel.cpp:5031 src/SearchPanel.cpp:2590
 msgid "Scripts"
 msgstr "Scripts"
 
-#: src/FilePanel.cpp:4994 src/SearchPanel.cpp:2547 src/XFileExplorer.cpp:1593
-#: src/XFileExplorer.cpp:1648
+#: src/FilePanel.cpp:5034 src/SearchPanel.cpp:2593 src/XFileExplorer.cpp:1595
+#: src/XFileExplorer.cpp:1650
 msgid "&Go to Script Folder"
 msgstr "&Ves a la carpeta de l'script"
 
-#: src/FilePanel.cpp:5006 src/SearchPanel.cpp:255 src/SearchPanel.cpp:2568
-#: src/XFileExplorer.cpp:1404 src/XFileExplorer.cpp:6186
+#: src/FilePanel.cpp:5046 src/SearchPanel.cpp:257 src/SearchPanel.cpp:2614
+#: src/XFileExplorer.cpp:1404 src/XFileExplorer.cpp:6214
 msgid "Cop&y Names"
 msgstr "Cop&ia els noms"
 
-#: src/FilePanel.cpp:5010 src/SearchPanel.cpp:2555
+#: src/FilePanel.cpp:5050 src/SearchPanel.cpp:2601
 msgid "Copy &to..."
 msgstr "Copia &a..."
 
-#: src/FilePanel.cpp:5013 src/SearchPanel.cpp:2558
+#: src/FilePanel.cpp:5053 src/SearchPanel.cpp:2604
 msgid "M&ove to Trash"
 msgstr "&Llença a la paperera"
 
-#: src/FilePanel.cpp:5014
+#: src/FilePanel.cpp:5054
 msgid "Restore &From Trash"
 msgstr "Restaura &de la paperera"
 
-#: src/FilePanel.cpp:5017 src/SearchPanel.cpp:2561
+#: src/FilePanel.cpp:5057 src/SearchPanel.cpp:2607
 msgid "Compare &Sizes"
 msgstr "Compara les mide&s"
 
-#: src/FilePanel.cpp:5018 src/SearchPanel.cpp:2570
+#: src/FilePanel.cpp:5058 src/SearchPanel.cpp:2616
 msgid "P&roperties"
 msgstr "P&ropietats"
 
-#: src/FilePanel.cpp:5319
+#: src/FilePanel.cpp:5359
 msgid "Create archive"
 msgstr "Crea un arxiu"
 
-#: src/FilePanel.cpp:5460 src/FilePanel.cpp:5607 src/FilePanel.cpp:5717
-#: src/SearchPanel.cpp:2897 src/XFileArchive.cpp:543 src/XFileArchive.cpp:595
+#: src/FilePanel.cpp:5500 src/FilePanel.cpp:5647 src/FilePanel.cpp:5757
+#: src/SearchPanel.cpp:2943 src/XFileArchive.cpp:543 src/XFileArchive.cpp:595
 #: src/XFileArchive.cpp:725 src/XFileArchive.cpp:798
 msgid "Extract Archive"
 msgstr "Extreu arxiu"
 
-#: src/FilePanel.cpp:5771
+#: src/FilePanel.cpp:5811
 msgid "Package Install / Upgrade"
 msgstr "Instal·la/actualitza el paquet"
 
-#: src/FilePanel.cpp:5820
+#: src/FilePanel.cpp:5860
 msgid "Package Uninstall"
 msgstr "Desinstal·la el paquet"
 
-#: src/FilePanel.cpp:6080 src/SearchPanel.cpp:4463
+#: src/FilePanel.cpp:6120 src/SearchPanel.cpp:4587
 #, c-format
 msgid "Can't create script folder %s: %s"
 msgstr "No s'ha pogut crear la carpeta de l'script %s: %s"
 
-#: src/FilePanel.cpp:6085 src/SearchPanel.cpp:4468
+#: src/FilePanel.cpp:6125 src/SearchPanel.cpp:4592
 #, c-format
 msgid "Can't create script folder %s"
 msgstr "No s'ha pogut crear la carpeta de l'script %s"
 
-#: src/FilePanel.cpp:6313 src/SearchPanel.cpp:4815 src/XFilePackage.cpp:1031
+#: src/FilePanel.cpp:6353 src/SearchPanel.cpp:4958 src/XFilePackage.cpp:1031
 msgid "No compatible package manager (rpm or dpkg) found!"
 msgstr "No s'ha trobat cap gestor de paquets compatible (rpm o dpkg)."
 
-#: src/FilePanel.cpp:6378 src/SearchPanel.cpp:4880
+#: src/FilePanel.cpp:6418 src/SearchPanel.cpp:5023
 #, c-format
 msgid "File %s does not belong to any package."
 msgstr "El fitxer %s no pertany a cap paquet."
 
-#: src/FilePanel.cpp:6379 src/FilePanel.cpp:6384 src/SearchPanel.cpp:519
-#: src/SearchPanel.cpp:713 src/SearchPanel.cpp:1835 src/SearchPanel.cpp:4199
-#: src/SearchPanel.cpp:4881 src/SearchPanel.cpp:4886
+#: src/FilePanel.cpp:6419 src/FilePanel.cpp:6424 src/SearchPanel.cpp:525
+#: src/SearchPanel.cpp:728 src/SearchPanel.cpp:1881 src/SearchPanel.cpp:4245
+#: src/SearchPanel.cpp:5024 src/SearchPanel.cpp:5029
 msgid "Information"
 msgstr "Informació"
 
-#: src/FilePanel.cpp:6383 src/SearchPanel.cpp:4885
+#: src/FilePanel.cpp:6423 src/SearchPanel.cpp:5028
 #, c-format
 msgid "File %s belongs to the package: %s"
 msgstr "El fitxer %s pertany al paquet: %s"
 
-#: src/FilePanel.cpp:6481 src/SearchPanel.cpp:2942
+#: src/FilePanel.cpp:6521 src/SearchPanel.cpp:2988
 msgid "Sizes of Selected Items"
 msgstr "Mida dels elements seleccionats"
 
-#: src/FilePanel.cpp:6515 src/SearchPanel.cpp:4503
+#: src/FilePanel.cpp:6555 src/SearchPanel.cpp:4627
 msgid "0 bytes"
 msgstr "0 Octets"
 
-#: src/FilePanel.cpp:6560 src/SearchPanel.cpp:4535
+#: src/FilePanel.cpp:6600 src/SearchPanel.cpp:4659
 #, c-format
 msgid "%s in %s selected items (%s folder, %s file)"
 msgstr "%s en %s elements seleccionats (%s carpeta, %s fitxer)"
 
-#: src/FilePanel.cpp:6565 src/SearchPanel.cpp:4540
+#: src/FilePanel.cpp:6605 src/SearchPanel.cpp:4664
 #, c-format
 msgid "%s in %s selected items (%s folder, %s files)"
 msgstr "%s en %s elements seleccionats (%s carpeta, %s fitxers)"
 
-#: src/FilePanel.cpp:6570 src/SearchPanel.cpp:4545
+#: src/FilePanel.cpp:6610 src/SearchPanel.cpp:4669
 #, c-format
 msgid "%s in %s selected items (%s folders, %s file)"
 msgstr "%s en %s elements seleccionats (%s carpetes, %s fitxer)"
 
-#: src/FilePanel.cpp:6575 src/SearchPanel.cpp:4550
+#: src/FilePanel.cpp:6615 src/SearchPanel.cpp:4674
 #, c-format
 msgid "%s in %s selected items (%s folders, %s files)"
 msgstr "%s en %s elements seleccionats (%s carpetes, %s fitxers)"
 
-#: src/FilePanel.cpp:6587
+#: src/FilePanel.cpp:6627
 msgid "1 item (1 folder)"
 msgstr "1 element (1 carpeta)"
 
-#: src/FilePanel.cpp:6611 src/FilePanel.cpp:6634
+#: src/FilePanel.cpp:6651 src/FilePanel.cpp:6674
 #, fuzzy, c-format
 #| msgid "%s items (%s folders, %s files)"
 msgid "%s items (%s folders, %s files, %s)"
 msgstr "%s elements ( %s carpetes, %s fitxers)"
 
-#: src/FilePanel.cpp:6616
+#: src/FilePanel.cpp:6656
 #, fuzzy, c-format
 #| msgid "%s items (%s folder, %s files)"
 msgid "%s items (%s folder, %s file, %s)"
 msgstr "%s elements (%s carpeta, %s fitxers)"
 
-#: src/FilePanel.cpp:6622
+#: src/FilePanel.cpp:6662
 #, fuzzy, c-format
 #| msgid "%s items (%s folder, %s files)"
 msgid "%s items (%s folder, %s files, %s)"
 msgstr "%s elements (%s carpeta, %s fitxers)"
 
-#: src/FilePanel.cpp:6628
+#: src/FilePanel.cpp:6668
 #, fuzzy, c-format
 #| msgid "%s items (%s folders, %s files)"
 msgid "%s items (%s folders, %s file, %s)"
 msgstr "%s elements ( %s carpetes, %s fitxers)"
 
-#: src/FilePanel.cpp:6693
+#: src/FilePanel.cpp:6733
 #, fuzzy, c-format
 #| msgid " - Filter: %s"
 msgid "Filter: %s (files and folders)"
 msgstr " - Filtre: %s"
 
-#: src/FilePanel.cpp:6697
+#: src/FilePanel.cpp:6737
 #, fuzzy, c-format
 #| msgid "Filter files"
 msgid "Filter: %s (files)"
@@ -2464,8 +2467,8 @@ msgid "Size"
 msgstr "Mida"
 
 #: src/IconList.cpp:4613 src/Preferences.cpp:80 src/Preferences.cpp:733
-#: src/Properties.cpp:321 src/RenameDialog.cpp:142 src/RenameDialog.cpp:246
-#: src/RenameDialog.cpp:255
+#: src/Properties.cpp:321 src/RenameDialog.cpp:142 src/RenameDialog.cpp:248
+#: src/RenameDialog.cpp:257
 msgid "Name"
 msgstr "Nom"
 
@@ -2475,7 +2478,7 @@ msgstr "Nom"
 msgid "Folder Name"
 msgstr "Carpeta: "
 
-#: src/IconList.cpp:4621 src/XFileExplorer.cpp:1552 src/XFileExplorer.cpp:1583
+#: src/IconList.cpp:4621 src/XFileExplorer.cpp:1554 src/XFileExplorer.cpp:1585
 msgid "Original Path"
 msgstr "Camí original"
 
@@ -2491,7 +2494,7 @@ msgstr "Extensió"
 msgid "Modified Date"
 msgstr "Modified date"
 
-#: src/IconList.cpp:4641 src/XFileExplorer.cpp:1551 src/XFileExplorer.cpp:1582
+#: src/IconList.cpp:4641 src/XFileExplorer.cpp:1553 src/XFileExplorer.cpp:1584
 msgid "Deletion Date"
 msgstr "Data de supressió:"
 
@@ -2650,7 +2653,7 @@ msgstr ""
 "L'assignació de tecles %s ja s'utilitza a la secció Xfw.\n"
 "Hauríeu d'esborrar la l'assignació existent abans d'assignar-la de nou."
 
-#: src/HistInputDialog.cpp:160 src/Properties.cpp:1998
+#: src/HistInputDialog.cpp:160 src/Properties.cpp:2005
 msgid "Select an Executable File"
 msgstr "Seleccioneu un fitxer executable"
 
@@ -2683,7 +2686,7 @@ msgstr "&Desa"
 msgid "Yes for &All"
 msgstr "Si a tot"
 
-#: src/MessageBox.cpp:241 src/XFileExplorer.cpp:5501
+#: src/MessageBox.cpp:241 src/XFileExplorer.cpp:5529
 msgid ""
 "Command pkexec not found!\n"
 "\n"
@@ -2699,7 +2702,7 @@ msgstr "Introduïu la contrasenya d'usuari:"
 msgid "Enter root password:"
 msgstr "Introduïu la contrasenya de root:"
 
-#: src/MessageBox.cpp:304 src/XFileExplorer.cpp:5598
+#: src/MessageBox.cpp:304 src/XFileExplorer.cpp:5626
 msgid "An error has occurred!"
 msgstr "S'ha produït un error."
 
@@ -2765,21 +2768,21 @@ msgstr "Ves a la paperera"
 msgid "File system"
 msgstr "Sistema de fitxers"
 
-#: src/Places.cpp:822
+#: src/Places.cpp:818
 msgid "Bookmark name must not contain the character ';'"
 msgstr ""
 
-#: src/Places.cpp:828
+#: src/Places.cpp:824
 msgid "Bookmark icon path name must not contain the character ';'"
 msgstr ""
 
-#: src/Places.cpp:840 src/Places.cpp:891
+#: src/Places.cpp:836 src/Places.cpp:887
 #, fuzzy, c-format
 #| msgid "File or folder %s already exists"
 msgid "Bookmark %s already exists"
 msgstr "El fitxer o carpeta %s ja existeix"
 
-#: src/Places.cpp:897
+#: src/Places.cpp:893
 #, fuzzy, c-format
 #| msgid "Destination %s already exists"
 msgid "Bookmark location %s already exists"
@@ -2837,7 +2840,7 @@ msgstr ""
 msgid "Custom theme, right click to rename or remove"
 msgstr ""
 
-#: src/Preferences.cpp:343 src/Properties.cpp:220 src/Properties.cpp:1004
+#: src/Preferences.cpp:343 src/Properties.cpp:220 src/Properties.cpp:1011
 msgid "&General"
 msgstr "&General"
 
@@ -3562,7 +3565,7 @@ msgstr "Crea una finestra nova"
 msgid "Create new root window"
 msgstr "Crea una finestra arrel nova"
 
-#: src/Preferences.cpp:1601 src/XFileExplorer.cpp:5363
+#: src/Preferences.cpp:1601 src/XFileExplorer.cpp:5391
 msgid "Execute command"
 msgstr "Executa l'ordre"
 
@@ -3640,7 +3643,7 @@ msgstr "Canvia els panells"
 msgid "Go to trash can"
 msgstr "Ves a la paperera"
 
-#: src/Preferences.cpp:1674 src/XFileExplorer.cpp:5700
+#: src/Preferences.cpp:1674 src/XFileExplorer.cpp:5728
 msgid "Empty trash can"
 msgstr "Buida la paperera"
 
@@ -3834,8 +3837,8 @@ msgstr "Només el propietari"
 msgid "Files only"
 msgstr "Només els fitxers"
 
-#: src/Properties.cpp:178 src/Properties.cpp:712 src/Properties.cpp:972
-#: src/Properties.cpp:1006
+#: src/Properties.cpp:178 src/Properties.cpp:719 src/Properties.cpp:979
+#: src/Properties.cpp:1013
 msgid "Properties"
 msgstr "Propietats"
 
@@ -3893,206 +3896,206 @@ msgstr "Icona petita:"
 msgid "Filesystem (%s)"
 msgstr "Sistema de fitxers (%s)"
 
-#: src/Properties.cpp:575
+#: src/Properties.cpp:582
 msgid "Broken link"
 msgstr "Enllaç trencat"
 
-#: src/Properties.cpp:698
+#: src/Properties.cpp:705
 msgid "Mount type:"
 msgstr "Tipus de muntatge:"
 
-#: src/Properties.cpp:700
+#: src/Properties.cpp:707
 msgid "Used:"
 msgstr "Usat:"
 
-#: src/Properties.cpp:702
+#: src/Properties.cpp:709
 msgid "Free:"
 msgstr "Lliure:"
 
-#: src/Properties.cpp:704
+#: src/Properties.cpp:711
 msgid "File system:"
 msgstr "Sistema de fitxers:"
 
-#: src/Properties.cpp:717 src/Properties.cpp:1015
+#: src/Properties.cpp:724 src/Properties.cpp:1022
 msgid "Total size:"
 msgstr "Mida total:"
 
-#: src/Properties.cpp:727
+#: src/Properties.cpp:734
 msgid "Link to:"
 msgstr "Enllaç a:"
 
-#: src/Properties.cpp:732
+#: src/Properties.cpp:739
 msgid "Broken link to:"
 msgstr "Enllaç trencat a:"
 
-#: src/Properties.cpp:741
+#: src/Properties.cpp:748
 msgid "Original location:"
 msgstr "Ubicació original:"
 
-#: src/Properties.cpp:745
+#: src/Properties.cpp:752
 msgid "File Time"
 msgstr "Data fitxer"
 
-#: src/Properties.cpp:748
+#: src/Properties.cpp:755
 msgid "Last Modified:"
 msgstr "Última modificació:"
 
-#: src/Properties.cpp:750
+#: src/Properties.cpp:757
 msgid "Last Changed:"
 msgstr "Últim canvi:"
 
-#: src/Properties.cpp:752
+#: src/Properties.cpp:759
 msgid "Last Accessed:"
 msgstr "Últim accés:"
 
-#: src/Properties.cpp:756
+#: src/Properties.cpp:763
 msgid "Startup Notification"
 msgstr "Notificació d'inici"
 
-#: src/Properties.cpp:758
+#: src/Properties.cpp:765
 msgid "Disable startup notification for this executable"
 msgstr "Desactiva la notificació d'inici per a aquest executable"
 
-#: src/Properties.cpp:786
+#: src/Properties.cpp:793
 msgid "Deletion Date:"
 msgstr "Data de supressió:"
 
-#: src/Properties.cpp:849 src/Properties.cpp:2145 src/Properties.cpp:2214
-#: src/XFileExplorer.cpp:5686
+#: src/Properties.cpp:856 src/Properties.cpp:2152 src/Properties.cpp:2221
+#: src/XFileExplorer.cpp:5714
 #, c-format
 msgid "%s (%lu bytes)"
 msgstr "%s (%lu octets)"
 
-#: src/Properties.cpp:851 src/Properties.cpp:2147 src/Properties.cpp:2216
-#: src/XFileExplorer.cpp:5688
+#: src/Properties.cpp:858 src/Properties.cpp:2154 src/Properties.cpp:2223
+#: src/XFileExplorer.cpp:5716
 #, c-format
 msgid "%s (%llu bytes)"
 msgstr "%s (%llu octets)"
 
-#: src/Properties.cpp:853
+#: src/Properties.cpp:860
 msgid "Size:"
 msgstr "Mida:"
 
-#: src/Properties.cpp:1009
+#: src/Properties.cpp:1016
 msgid "Selection:"
 msgstr "Selecció:"
 
-#: src/Properties.cpp:1134 src/Properties.cpp:1141 src/Properties.cpp:1156
+#: src/Properties.cpp:1141 src/Properties.cpp:1148 src/Properties.cpp:1163
 msgid "Multiple types"
 msgstr "Diversos tipus"
 
-#: src/Properties.cpp:1160
+#: src/Properties.cpp:1167
 #, c-format
 msgid "%d items"
 msgstr "%d elements"
 
-#: src/Properties.cpp:1165
+#: src/Properties.cpp:1172
 #, c-format
 msgid "%d file, %d folder"
 msgstr "%d fitxer, %d carpeta"
 
-#: src/Properties.cpp:1169
+#: src/Properties.cpp:1176
 #, c-format
 msgid "%d file, %d folders"
 msgstr "%d fitxer, %d carpetes"
 
-#: src/Properties.cpp:1173
+#: src/Properties.cpp:1180
 #, c-format
 msgid "%d files, %d folder"
 msgstr "%d fitxers, %d carpeta"
 
-#: src/Properties.cpp:1177
+#: src/Properties.cpp:1184
 #, c-format
 msgid "%d files, %d folders"
 msgstr "%d fitxers, %d carpetes"
 
-#: src/Properties.cpp:1303
+#: src/Properties.cpp:1310
 msgid "Change properties of the selected folder?"
 msgstr "Voleu canviar les propietats de la carpeta seleccionada?"
 
-#: src/Properties.cpp:1307
+#: src/Properties.cpp:1314
 msgid "Change properties of the selected file?"
 msgstr "Voleu canviar les propietats del fitxer seleccionat?"
 
-#: src/Properties.cpp:1310 src/Properties.cpp:1685
+#: src/Properties.cpp:1317 src/Properties.cpp:1692
 msgid "Confirm Change Properties"
 msgstr "Confirmeu el canvi de propietats"
 
-#: src/Properties.cpp:1452
+#: src/Properties.cpp:1459
 msgid "Invalid file name, operation cancelled"
 msgstr "El nom del fitxer no és vàlid, s'ha cancel·lat l'operació"
 
-#: src/Properties.cpp:1516 src/Properties.cpp:1711
+#: src/Properties.cpp:1523 src/Properties.cpp:1718
 msgid "File owner"
 msgstr "Propietari del fitxer"
 
-#: src/Properties.cpp:1554 src/Properties.cpp:1760
+#: src/Properties.cpp:1561 src/Properties.cpp:1767
 msgid "Change owner cancelled!"
 msgstr "S'ha cancel·lat el canvi de propietari."
 
-#: src/Properties.cpp:1567 src/Properties.cpp:1772
+#: src/Properties.cpp:1574 src/Properties.cpp:1779
 #, c-format
 msgid "Chown in %s failed: %s"
 msgstr "Ha fallat el chown a %s: %s"
 
-#: src/Properties.cpp:1571 src/Properties.cpp:1776
+#: src/Properties.cpp:1578 src/Properties.cpp:1783
 #, c-format
 msgid "Chown in %s failed"
 msgstr "Ha fallat el chown a %s"
 
-#: src/Properties.cpp:1585 src/Properties.cpp:1792
+#: src/Properties.cpp:1592 src/Properties.cpp:1799
 msgid ""
 "Setting special permissions could be unsafe! Is that you really want to do?"
 msgstr ""
 "Establir permisos especials podria ser perillós. Esteu segur que voleu fer-"
 "ho?"
 
-#: src/Properties.cpp:1597 src/Properties.cpp:1649 src/Properties.cpp:1858
+#: src/Properties.cpp:1604 src/Properties.cpp:1656 src/Properties.cpp:1865
 #, c-format
 msgid "Chmod in %s failed: %s"
 msgstr "Ha fallat el chmod a %s: %s"
 
-#: src/Properties.cpp:1601 src/Properties.cpp:1798
+#: src/Properties.cpp:1608 src/Properties.cpp:1805
 msgid "File permissions"
 msgstr "Permissos del fitxer"
 
-#: src/Properties.cpp:1636
+#: src/Properties.cpp:1643
 msgid "Change file permissions cancelled!"
 msgstr "S'ha cancel·lat el canvi de permisos."
 
-#: src/Properties.cpp:1653 src/Properties.cpp:1863
+#: src/Properties.cpp:1660 src/Properties.cpp:1870
 #, c-format
 msgid "Chmod in %s failed"
 msgstr "Ha fallat el chmod a %s"
 
-#: src/Properties.cpp:1685
+#: src/Properties.cpp:1692
 msgid "Apply permissions to the selected items?"
 msgstr "Voleu aplicar els permisos als fitxers seleccionats?"
 
-#: src/Properties.cpp:1846
+#: src/Properties.cpp:1853
 msgid "Change file(s) permissions cancelled!"
 msgstr "No s'ha pogut canviar els permisos del(s) fitxer(s)."
 
-#: src/Properties.cpp:2053
+#: src/Properties.cpp:2060
 msgid "Select an icon file"
 msgstr "Seleccioneu un fitxer d'icona"
 
-#: src/Properties.cpp:2153 src/Properties.cpp:2222
+#: src/Properties.cpp:2160 src/Properties.cpp:2229
 #, c-format
 msgid "%u file, %u subfolder"
 msgstr "%u fitxer, %u subcarpeta"
 
-#: src/Properties.cpp:2158 src/Properties.cpp:2227
+#: src/Properties.cpp:2165 src/Properties.cpp:2234
 #, c-format
 msgid "%u file, %u subfolders"
 msgstr "%u fitxer, %u subcarpetes"
 
-#: src/Properties.cpp:2163 src/Properties.cpp:2232
+#: src/Properties.cpp:2170 src/Properties.cpp:2239
 #, c-format
 msgid "%u files, %u subfolder"
 msgstr "%u fitxers, %u subcarpeta"
 
-#: src/Properties.cpp:2168 src/Properties.cpp:2237 src/XFileExplorer.cpp:5690
+#: src/Properties.cpp:2175 src/Properties.cpp:2244 src/XFileExplorer.cpp:5718
 #, c-format
 msgid "%u files, %u subfolders"
 msgstr "%u fitxers, %u subcarpetes"
@@ -4159,8 +4162,8 @@ msgstr "Nom: "
 msgid "Extension only"
 msgstr "Extensió"
 
-#: src/RenameDialog.cpp:160 src/RenameDialog.cpp:175 src/RenameDialog.cpp:187
-#: src/RenameDialog.cpp:205
+#: src/RenameDialog.cpp:160 src/RenameDialog.cpp:177 src/RenameDialog.cpp:189
+#: src/RenameDialog.cpp:207
 msgid "Options"
 msgstr "Opcions"
 
@@ -4168,117 +4171,117 @@ msgstr "Opcions"
 msgid "Search for:"
 msgstr "Cerca per:"
 
-#: src/RenameDialog.cpp:168
+#: src/RenameDialog.cpp:170
 #, fuzzy
 #| msgid "I&gnore case"
 msgid "Ignore case"
 msgstr "I&gnora les majúscules i minúscules"
 
-#: src/RenameDialog.cpp:169 src/foxhacks.cpp:721
+#: src/RenameDialog.cpp:171 src/foxhacks.cpp:721
 msgid "Replace with:"
 msgstr "Substitueix per:"
 
-#: src/RenameDialog.cpp:179
+#: src/RenameDialog.cpp:181
 msgid "Lowercase"
 msgstr "Minúscu&les"
 
-#: src/RenameDialog.cpp:181
+#: src/RenameDialog.cpp:183
 msgid "Uppercase"
 msgstr "Majúscul&es"
 
-#: src/RenameDialog.cpp:182
+#: src/RenameDialog.cpp:184
 msgid "Title case"
 msgstr ""
 
-#: src/RenameDialog.cpp:184
+#: src/RenameDialog.cpp:186
 msgid "First character uppercase"
 msgstr ""
 
-#: src/RenameDialog.cpp:191
+#: src/RenameDialog.cpp:193
 #, fuzzy
 #| msgid "File move"
 msgid "Remove:"
 msgstr "Mou el fitxer"
 
-#: src/RenameDialog.cpp:195
+#: src/RenameDialog.cpp:197
 #, fuzzy
 #| msgid "Character Set:"
 msgid "character(s)"
 msgstr "Joc de caràcters:"
 
-#: src/RenameDialog.cpp:197 src/RenameDialog.cpp:221
+#: src/RenameDialog.cpp:199 src/RenameDialog.cpp:223
 msgid "From position:"
 msgstr ""
 
-#: src/RenameDialog.cpp:202 src/RenameDialog.cpp:225
+#: src/RenameDialog.cpp:204 src/RenameDialog.cpp:227
 #, fuzzy
 #| msgid "Starting mode"
 msgid "Starting from the end"
 msgstr "Mode d'inici"
 
-#: src/RenameDialog.cpp:208
+#: src/RenameDialog.cpp:210
 msgid "Insert"
 msgstr ""
 
-#: src/RenameDialog.cpp:210
+#: src/RenameDialog.cpp:212
 #, fuzzy
 #| msgid "&Overstrike"
 msgid "Overwrite"
 msgstr "&Superposició"
 
-#: src/RenameDialog.cpp:213
+#: src/RenameDialog.cpp:215
 #, c-format
 msgid "(Use %n, %0n, %00n, %000n, %0000n or %00000n to number)"
 msgstr ""
 
-#: src/RenameDialog.cpp:217 src/WriteWindow.cpp:240
+#: src/RenameDialog.cpp:219 src/WriteWindow.cpp:240
 msgid "Text:"
 msgstr "Text:"
 
-#: src/RenameDialog.cpp:248 src/RenameDialog.cpp:256
+#: src/RenameDialog.cpp:250 src/RenameDialog.cpp:258
 #, fuzzy
 #| msgid "Name"
 msgid "New Name"
 msgstr "Nom"
 
-#: src/RenameDialog.cpp:1905
+#: src/RenameDialog.cpp:1909
 msgid "Cop&y name"
 msgstr "Cop&ia el nom"
 
-#: src/SearchPanel.cpp:217
+#: src/SearchPanel.cpp:219
 msgid "Refresh Panel"
 msgstr "Refresca el plafó"
 
-#: src/SearchPanel.cpp:233 src/XFileExplorer.cpp:1131
+#: src/SearchPanel.cpp:235 src/XFileExplorer.cpp:1131
 msgid "Copy Selected Files to Clipboard"
 msgstr "Copia els fitxers seleccionats al porta-retalls"
 
-#: src/SearchPanel.cpp:240 src/XFileExplorer.cpp:1147
+#: src/SearchPanel.cpp:242 src/XFileExplorer.cpp:1147
 msgid "Cut Selected Files to Clipboard"
 msgstr "Retalla els fitxers seleccionats al porta-retalls"
 
-#: src/SearchPanel.cpp:247 src/XFileExplorer.cpp:1164
+#: src/SearchPanel.cpp:249 src/XFileExplorer.cpp:1164
 msgid "Show Properties of Selected Files"
 msgstr "Mostra les propietats dels fitxers seleccionats"
 
-#: src/SearchPanel.cpp:270 src/XFileExplorer.cpp:1171
+#: src/SearchPanel.cpp:272 src/XFileExplorer.cpp:1171
 msgid "Move Selected Files to Trash Can"
 msgstr "Mou els fitxers seleccionats a la paperera"
 
-#: src/SearchPanel.cpp:277 src/XFileExplorer.cpp:1181
+#: src/SearchPanel.cpp:279 src/XFileExplorer.cpp:1181
 msgid "Delete Selected Files"
 msgstr "Suprimeix els fitxers seleccionats"
 
-#: src/SearchPanel.cpp:520 src/SearchPanel.cpp:714 src/SearchPanel.cpp:1836
+#: src/SearchPanel.cpp:526 src/SearchPanel.cpp:729 src/SearchPanel.cpp:1882
 #, c-format
 msgid "Current folder has been set to '%s'"
 msgstr "La carpeta actual s'ha definit a '%s'"
 
-#: src/SearchPanel.cpp:923
+#: src/SearchPanel.cpp:947
 msgid "Command Log"
 msgstr "Fitxer de registre d'ordres"
 
-#: src/SearchPanel.cpp:1775
+#: src/SearchPanel.cpp:1821
 #, c-format
 msgid ""
 "Program %s not found. Please define a file comparator program in the "
@@ -4287,80 +4290,80 @@ msgstr ""
 "No s'ha trobat el programa %s. Definiu un comparador de fitxers en el diàleg "
 "de preferències."
 
-#: src/SearchPanel.cpp:2438 src/XFileExplorer.cpp:1554
-#: src/XFileExplorer.cpp:1585
+#: src/SearchPanel.cpp:2484 src/XFileExplorer.cpp:1556
+#: src/XFileExplorer.cpp:1587
 msgid "I&gnore Case"
 msgstr "&Ignora les majúscules"
 
-#: src/SearchPanel.cpp:2477
+#: src/SearchPanel.cpp:2523
 msgid "Open &with..."
 msgstr "Obre &amb..."
 
-#: src/SearchPanel.cpp:2536
+#: src/SearchPanel.cpp:2582
 msgid "&Packages Query "
 msgstr "Consulta de &paquets "
 
-#: src/SearchPanel.cpp:2550
+#: src/SearchPanel.cpp:2596
 msgid "&Go to Parent Folder"
 msgstr "Ves a la carpeta &pare"
 
-#: src/SearchPanel.cpp:3753
+#: src/SearchPanel.cpp:3799
 #, c-format
 msgid "Copy %s items"
 msgstr "Copia els elements %s"
 
-#: src/SearchPanel.cpp:3769
+#: src/SearchPanel.cpp:3815
 #, c-format
 msgid "Move %s items"
 msgstr "Mou els elements %s"
 
-#: src/SearchPanel.cpp:3785
+#: src/SearchPanel.cpp:3831
 #, c-format
 msgid "Symlink %s items"
 msgstr "Crea enllaços simbòlics per %s elements"
 
-#: src/SearchPanel.cpp:3830
+#: src/SearchPanel.cpp:3876
 msgid ""
 "Character '/' is not allowed in file or folder names, operation cancelled"
 msgstr ""
 "El caràcter '/' no es permet als noms de fitxer o de carpeta, s'ha "
 "cancel·lat l'operació"
 
-#: src/SearchPanel.cpp:3906
+#: src/SearchPanel.cpp:3952
 msgid "You must enter an absolute path!"
 msgstr "Heu d'introduir un camí absolut."
 
-#: src/SearchPanel.cpp:4200
+#: src/SearchPanel.cpp:4246
 msgid ""
 "Multiple renaming of folders is not supported in Search Panel\n"
 "\n"
 "=> Folders will be deselected"
 msgstr ""
 
-#: src/SearchPanel.cpp:4489
+#: src/SearchPanel.cpp:4613
 msgid "0 item"
 msgstr "0 elements"
 
-#: src/SearchPanel.cpp:4562
+#: src/SearchPanel.cpp:4686
 msgid "1 item"
 msgstr "1 element"
 
-#: src/SearchPanel.cpp:4576 src/SearchPanel.cpp:4595
+#: src/SearchPanel.cpp:4700 src/SearchPanel.cpp:4719
 #, c-format
 msgid "%s items (%s folders, %s files)"
 msgstr "%s elements ( %s carpetes, %s fitxers)"
 
-#: src/SearchPanel.cpp:4580
+#: src/SearchPanel.cpp:4704
 #, c-format
 msgid "%s items (%s folder, %s file)"
 msgstr "%s elements ( %s carpeta, %s fitxer)"
 
-#: src/SearchPanel.cpp:4585
+#: src/SearchPanel.cpp:4709
 #, c-format
 msgid "%s items (%s folder, %s files)"
 msgstr "%s elements (%s carpeta, %s fitxers)"
 
-#: src/SearchPanel.cpp:4590
+#: src/SearchPanel.cpp:4714
 #, c-format
 msgid "%s items (%s folders, %s file)"
 msgstr "%s elements (%s carpetes, %s fitxer)"
@@ -4675,9 +4678,9 @@ msgstr "&Preferències"
 msgid "&Window"
 msgstr "&Finestra"
 
-#: src/WriteWindow.cpp:635 src/XFileExplorer.cpp:1697
-#: src/XFileExplorer.cpp:1704 src/XFileExplorer.cpp:6061
-#: src/XFileExplorer.cpp:6072 src/XFileArchive.cpp:229 src/XFileImage.cpp:351
+#: src/WriteWindow.cpp:635 src/XFileExplorer.cpp:1699
+#: src/XFileExplorer.cpp:1706 src/XFileExplorer.cpp:6089
+#: src/XFileExplorer.cpp:6100 src/XFileArchive.cpp:229 src/XFileImage.cpp:351
 #: src/XFilePackage.cpp:212
 msgid "&Help"
 msgstr "A&juda"
@@ -5364,224 +5367,224 @@ msgstr "Afegeix un punt d'interès"
 msgid "&Remove All Bookmarks"
 msgstr "&Esborra els marcadors"
 
-#: src/XFileExplorer.cpp:1526
+#: src/XFileExplorer.cpp:1528
 msgid "&Bookmarks"
 msgstr "Ad&reces d'interès"
 
-#: src/XFileExplorer.cpp:1530
+#: src/XFileExplorer.cpp:1532
 msgid "&Filter..."
 msgstr "&Filtre..."
 
-#: src/XFileExplorer.cpp:1532 src/XFileExplorer.cpp:1563 src/XFileImage.cpp:979
+#: src/XFileExplorer.cpp:1534 src/XFileExplorer.cpp:1565 src/XFileImage.cpp:979
 msgid "&Thumbnails"
 msgstr "Minia&tures"
 
-#: src/XFileExplorer.cpp:1534 src/XFileExplorer.cpp:1565 src/XFileImage.cpp:987
+#: src/XFileExplorer.cpp:1536 src/XFileExplorer.cpp:1567 src/XFileImage.cpp:987
 msgid "&Big Icons"
 msgstr "Icones grans"
 
-#: src/XFileExplorer.cpp:1544 src/XFileExplorer.cpp:1575
+#: src/XFileExplorer.cpp:1546 src/XFileExplorer.cpp:1577
 msgid "T&ype"
 msgstr "T&ipus"
 
-#: src/XFileExplorer.cpp:1546 src/XFileExplorer.cpp:1577
+#: src/XFileExplorer.cpp:1548 src/XFileExplorer.cpp:1579
 msgid "D&ate"
 msgstr "D&ata"
 
-#: src/XFileExplorer.cpp:1547 src/XFileExplorer.cpp:1578
+#: src/XFileExplorer.cpp:1549 src/XFileExplorer.cpp:1580
 msgid "Us&er"
 msgstr "U&suari"
 
-#: src/XFileExplorer.cpp:1548 src/XFileExplorer.cpp:1579
+#: src/XFileExplorer.cpp:1550 src/XFileExplorer.cpp:1581
 msgid "Gr&oup"
 msgstr "Gr&up"
 
-#: src/XFileExplorer.cpp:1555
+#: src/XFileExplorer.cpp:1557
 msgid "Fol&ders First"
 msgstr "Carp&etes primer"
 
-#: src/XFileExplorer.cpp:1557 src/XFileExplorer.cpp:5152
-#: src/XFileExplorer.cpp:5211
+#: src/XFileExplorer.cpp:1559 src/XFileExplorer.cpp:5180
+#: src/XFileExplorer.cpp:5239
 msgid "&Left Panel"
 msgstr "&Panell esquerre"
 
-#: src/XFileExplorer.cpp:1561
+#: src/XFileExplorer.cpp:1563
 msgid "&Filter"
 msgstr "&Filtre"
 
-#: src/XFileExplorer.cpp:1586
+#: src/XFileExplorer.cpp:1588
 msgid "&Folders First"
 msgstr "Carp&etes primer"
 
-#: src/XFileExplorer.cpp:1588 src/XFileExplorer.cpp:5151
-#: src/XFileExplorer.cpp:5210
+#: src/XFileExplorer.cpp:1590 src/XFileExplorer.cpp:5179
+#: src/XFileExplorer.cpp:5238
 msgid "&Right Panel"
 msgstr "Panell d&ret"
 
-#: src/XFileExplorer.cpp:1595
+#: src/XFileExplorer.cpp:1597
 msgid "&Scripts"
 msgstr "&Scripts"
 
-#: src/XFileExplorer.cpp:1600
+#: src/XFileExplorer.cpp:1602
 #, fuzzy
 #| msgid "Name"
 msgid "&New Tab"
 msgstr "Nom"
 
-#: src/XFileExplorer.cpp:1605
+#: src/XFileExplorer.cpp:1607
 #, fuzzy
 #| msgid "&Clear bookmarks"
 msgid "Remove &All Tabs"
 msgstr "&Esborra els marcadors"
 
-#: src/XFileExplorer.cpp:1615
+#: src/XFileExplorer.cpp:1617
 msgid "New &Root Window"
 msgstr "Finestra &arrel nova"
 
-#: src/XFileExplorer.cpp:1623
+#: src/XFileExplorer.cpp:1625
 msgid "E&xecute Command..."
 msgstr "E&xecuta l'ordre..."
 
-#: src/XFileExplorer.cpp:1629
+#: src/XFileExplorer.cpp:1631
 msgid "&Terminal"
 msgstr "&Terminal"
 
-#: src/XFileExplorer.cpp:1635
+#: src/XFileExplorer.cpp:1637
 msgid "&Synchronize Panels"
 msgstr "&Sincronitza els panells"
 
-#: src/XFileExplorer.cpp:1642
+#: src/XFileExplorer.cpp:1644
 msgid "Sw&itch Panels"
 msgstr "&Intercanvia els panells"
 
-#: src/XFileExplorer.cpp:1650
+#: src/XFileExplorer.cpp:1652
 msgid "Search &Files..."
 msgstr "Cerca fitxer&s..."
 
-#: src/XFileExplorer.cpp:1669
+#: src/XFileExplorer.cpp:1671
 #, fuzzy
 #| msgid "Mount file system (Linux only)"
 msgid "&Connect to Server..."
 msgstr "Munta el sistema de fitxers (només Linux)"
 
-#: src/XFileExplorer.cpp:1673
+#: src/XFileExplorer.cpp:1675
 msgid "&Tools"
 msgstr "&Eines"
 
-#: src/XFileExplorer.cpp:1678
+#: src/XFileExplorer.cpp:1680
 msgid "&Go to Trash"
 msgstr "Ves a la paperera"
 
-#: src/XFileExplorer.cpp:1684
+#: src/XFileExplorer.cpp:1686
 msgid "&Trash Size"
 msgstr "Mida de la &paperera"
 
-#: src/XFileExplorer.cpp:1686
+#: src/XFileExplorer.cpp:1688
 #, fuzzy
 #| msgid "&Empty trash can"
 msgid "&Empty Trash"
 msgstr "Buida la pap&erera"
 
-#: src/XFileExplorer.cpp:1692 src/XFileExplorer.cpp:6058
+#: src/XFileExplorer.cpp:1694 src/XFileExplorer.cpp:6086
 msgid "T&rash"
 msgstr "Paperera"
 
-#: src/XFileExplorer.cpp:1703
+#: src/XFileExplorer.cpp:1705
 msgid "&About X File Explorer"
 msgstr "&Quant al X File Explorer"
 
-#: src/XFileExplorer.cpp:3455
+#: src/XFileExplorer.cpp:3457
 msgid "Running Xfe as root!"
 msgstr "S'està executant Xfe com a root."
 
-#: src/XFileExplorer.cpp:3499
+#: src/XFileExplorer.cpp:3501
 #, c-format
 msgid "Can't create Xfe config folder %s: %s"
 msgstr "No s'ha pogut crear la carpeta de configuració del Xfe %s: %s"
 
-#: src/XFileExplorer.cpp:3504
+#: src/XFileExplorer.cpp:3506
 #, c-format
 msgid "Can't create Xfe config folder %s"
 msgstr "No s'ha pogut crear la carpeta de configuració del Xfe %s"
 
-#: src/XFileExplorer.cpp:3526
+#: src/XFileExplorer.cpp:3528
 msgid "No global xferc file found! Please select a configuration file..."
 msgstr ""
 "No s'ha troba el fitxer global xferc. Seleccioneu un fitxer de "
 "configuració..."
 
-#: src/XFileExplorer.cpp:3530
+#: src/XFileExplorer.cpp:3532
 msgid "XFE configuration file"
 msgstr "Fitxer de configuració del XFE"
 
-#: src/XFileExplorer.cpp:3543
+#: src/XFileExplorer.cpp:3545
 msgid "Xfe cannot run without a global xferc configuration file"
 msgstr "Xfe no es pot executar sense un fitxer global xferc"
 
-#: src/XFileExplorer.cpp:3566 src/XFileExplorer.cpp:5732
+#: src/XFileExplorer.cpp:3568 src/XFileExplorer.cpp:5760
 #, c-format
 msgid "Can't create trash can 'files' folder %s: %s"
 msgstr "No s'ha pogut crear la carpeta \"fitxers\" per la paperera %s: %s"
 
-#: src/XFileExplorer.cpp:3571 src/XFileExplorer.cpp:5737
+#: src/XFileExplorer.cpp:3573 src/XFileExplorer.cpp:5765
 #, c-format
 msgid "Can't create trash can 'files' folder %s"
 msgstr "No s'ha pogut crear la carpeta \"fitxers\" per la paperera %s"
 
-#: src/XFileExplorer.cpp:3590 src/XFileExplorer.cpp:5753
+#: src/XFileExplorer.cpp:3592 src/XFileExplorer.cpp:5781
 #, c-format
 msgid "Can't create trash can 'info' folder %s: %s"
 msgstr "No s'ha pogut crear la carpeta \"info\" per la paperera %s: %s"
 
-#: src/XFileExplorer.cpp:3595 src/XFileExplorer.cpp:5758
+#: src/XFileExplorer.cpp:3597 src/XFileExplorer.cpp:5786
 #, c-format
 msgid "Can't create trash can 'info' folder %s"
 msgstr "No s'ha pogut crear la carpeta \"info\" per la paperera %s"
 
-#: src/XFileExplorer.cpp:3692
+#: src/XFileExplorer.cpp:3702
 msgid ""
 "Unable to find udisksctl command on your system.\n"
 "Package udisks2 is probably not installed, Xfe automounter is disabled."
 msgstr ""
 
-#: src/XFileExplorer.cpp:3714 src/XFileExplorer.cpp:3726
+#: src/XFileExplorer.cpp:3724 src/XFileExplorer.cpp:3736
 #: src/startupnotification.cpp:185 src/startupnotification.cpp:243
 #, c-format
 msgid "Error: Can't execute command %s"
 msgstr "Error: No s'ha pogut executar l'ordre %s"
 
-#: src/XFileExplorer.cpp:4364
+#: src/XFileExplorer.cpp:4374
 #, fuzzy
 #| msgid "Confirm Clear Bookmarks"
 msgid "Confirm Remove Bookmarks"
 msgstr "Confirma l'esborrat dels marcadors"
 
-#: src/XFileExplorer.cpp:4365
+#: src/XFileExplorer.cpp:4375
 #, fuzzy
 #| msgid "Do you really want to clear all your bookmarks?"
 msgid "Do you really want to remove all bookmarks?"
 msgstr "Segur que voleu esborrar tots els marcadors?"
 
-#: src/XFileExplorer.cpp:4694
+#: src/XFileExplorer.cpp:4722
 msgid "Help"
 msgstr "Ajuda"
 
-#: src/XFileExplorer.cpp:4723
+#: src/XFileExplorer.cpp:4751
 #, c-format
 msgid "X File Explorer Version %s"
 msgstr "Quant al X File Explorer versió %s"
 
-#: src/XFileExplorer.cpp:4726
+#: src/XFileExplorer.cpp:4754
 msgid ""
 "X Win Commander by Maxim Baranov\n"
 "\n"
 msgstr "X Win Commander per Maxim Baranov\n"
 
-#: src/XFileExplorer.cpp:4727
+#: src/XFileExplorer.cpp:4755
 msgid "FOX Toolkit by Jeroen van der Zijp\n"
 msgstr ""
 
-#: src/XFileExplorer.cpp:4732
+#: src/XFileExplorer.cpp:4760
 msgid ""
 "\n"
 "Translators\n"
@@ -5615,49 +5618,49 @@ msgid ""
 "Turkish: erkaN\n"
 msgstr ""
 
-#: src/XFileExplorer.cpp:4764
+#: src/XFileExplorer.cpp:4792
 msgid "About X File Explorer"
 msgstr "Quant al X File Explorer"
 
-#: src/XFileExplorer.cpp:5119 src/XFileExplorer.cpp:5173
+#: src/XFileExplorer.cpp:5147 src/XFileExplorer.cpp:5201
 msgid "&Panel"
 msgstr "Vista de &panell"
 
-#: src/XFileExplorer.cpp:5363
+#: src/XFileExplorer.cpp:5391
 msgid "Execute the command:"
 msgstr "Executa l'ordre:"
 
-#: src/XFileExplorer.cpp:5364
+#: src/XFileExplorer.cpp:5392
 msgid "Console mode"
 msgstr "Mode de consola"
 
-#: src/XFileExplorer.cpp:5540
+#: src/XFileExplorer.cpp:5568
 msgid "Enter the user password:"
 msgstr "Introduïu la contrasenya d'usuari:"
 
-#: src/XFileExplorer.cpp:5547
+#: src/XFileExplorer.cpp:5575
 msgid "Enter the root password:"
 msgstr "Introduïu la contrasenya de root:"
 
-#: src/XFileExplorer.cpp:5615
+#: src/XFileExplorer.cpp:5643
 #, fuzzy
 #| msgid "Mount file system (Linux only)"
 msgid "Connect to Server"
 msgstr "Munta el sistema de fitxers (només Linux)"
 
-#: src/XFileExplorer.cpp:5630
+#: src/XFileExplorer.cpp:5658
 msgid "Search Files and Folders"
 msgstr "Cerca fitxers i carpetes"
 
-#: src/XFileExplorer.cpp:5696
+#: src/XFileExplorer.cpp:5724
 msgid "Do you really want to empty the trash can?"
 msgstr "Esteu segur que voleu buidar la paperera?"
 
-#: src/XFileExplorer.cpp:5696
+#: src/XFileExplorer.cpp:5724
 msgid " in "
 msgstr " en "
 
-#: src/XFileExplorer.cpp:5698
+#: src/XFileExplorer.cpp:5726
 msgid ""
 "\n"
 "\n"
@@ -5667,7 +5670,7 @@ msgstr ""
 "\n"
 "Es perdran tots els articles."
 
-#: src/XFileExplorer.cpp:5803
+#: src/XFileExplorer.cpp:5831
 #, c-format
 msgid ""
 "Trash size: %s (%s files, %s subfolders)\n"
@@ -5678,26 +5681,26 @@ msgstr ""
 "\n"
 "Data de modificació: %s"
 
-#: src/XFileExplorer.cpp:5805
+#: src/XFileExplorer.cpp:5833
 msgid "Trash size"
 msgstr "Mida de la paperera"
 
-#: src/XFileExplorer.cpp:5813
+#: src/XFileExplorer.cpp:5841
 #, c-format
 msgid "Trash can 'files' folder %s is not readable!"
 msgstr "La carpeta \"fitxers\" de la paperera %s no és llegible."
 
-#: src/XFileExplorer.cpp:6410 src/XFileExplorer.cpp:6484
+#: src/XFileExplorer.cpp:6438 src/XFileExplorer.cpp:6512
 #, c-format
 msgid "Command not found: %s"
 msgstr "No s'ha trobat l'ordre: %s"
 
-#: src/XFileExplorer.cpp:6490
+#: src/XFileExplorer.cpp:6518
 #, c-format
 msgid "Invalid file association: %s"
 msgstr "L'associació del fitxer no és vàlida: %s"
 
-#: src/XFileExplorer.cpp:6497
+#: src/XFileExplorer.cpp:6525
 #, c-format
 msgid "File association not found: %s"
 msgstr "No s'ha trobat l'associació del fitxer: %s"

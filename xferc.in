@@ -1,6 +1,6 @@
 #
 # Xfe default settings
-# Version : 06/02/2025
+# Version : 30/11/2025
 #
 # These settings are overridden in ~/.config/xfe/xferc
 #
@@ -337,6 +337,7 @@ wav = "<audioplayer>,<audioplayer>,audacity;Wave Audio;wave_32x32.png;wave_16x16
 mp3 = "<audioplayer>,<audioplayer>,audacity;MPEG Audio;mp3_32x32.png;mp3_16x16.png;;"
 m4a = "<audioplayer>,<audioplayer>,audacity;MPEG Audio;mp3_32x32.png;mp3_16x16.png;;"
 mpeg3 = "<audioplayer>,<audioplayer>,audacity;MPEG Audio;mp3_32x32.png;mp3_16x16.png;;"
+wma = "<audioplayer>,<audioplayer>,audacity;WMA Audio;sound_32x32.png;sound_16x16.png;;"
 ogg = "<audioplayer>,<audioplayer>,audacity;Ogg Vorbis Audio;mp3_32x32.png;mp3_16x16.png;;"
 xm = "<audioplayer>,<audioplayer>,;Audio module;wave_32x32.png;wave_16x16.png;;"
 mod = "<audioplayer>,<audioplayer>,;Audio module;wave_32x32.png;wave_16x16.png;;"

@@ -1,0 +1,5 @@
+# Automatically added by dh_installmenu/13.14.1ubuntu5
+if [ "$1" = "configure" ] && [ -x "`command -v update-menus`" ] && [ -x "$DPKG_ROOT`command -v update-menus`" ]; then
+	update-menus
+fi
+# End automatically added section

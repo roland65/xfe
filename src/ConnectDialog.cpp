@@ -159,6 +159,28 @@ void ConnectDialog::create()
 {
     // Create dialog box
     DialogBox::create();
+
+    // Set focus to the first empty field
+    if (server->getText() == "")
+    {
+        server->CursorEnd();
+    }
+    else if (share->getText() == "")
+    {
+        share->CursorEnd();        
+    }
+    else if (domain->getText() == "")
+    {
+        domain->CursorEnd();
+    }
+    else if (user->getText() == "")
+    {
+        user->CursorEnd();
+    }
+    else
+    {
+        passwd->setFocus();
+    }
 }
 
 

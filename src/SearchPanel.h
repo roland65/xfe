@@ -28,6 +28,7 @@ protected:
     BrowseInputDialog* operationdialogmultiple = NULL;
     BrowseInputDialog* comparedialog = NULL;
     FXString searchdir;
+    FXString startlocation;
     FXbool ctrlflag = false;                            // Flag to select the right click control menu
     FXbool shiftf10 = false;                            // Flag indicating that Shift-F10 was pressed
     FXPacker* statusbar = NULL;
@@ -80,6 +81,7 @@ public:
         ID_SELECT_INVERSE,
         ID_EXTRACT,
         ID_ADD_TO_ARCH,
+        ID_RUN_SCRIPT,
         ID_DIR_USAGE,
         ID_KEY_RETURN,
 #if defined(linux)
@@ -137,6 +139,7 @@ public:
     long onCmdExtract(FXObject*, FXSelector, void*);
     long onCmdFileTrash(FXObject*, FXSelector, void*);
     long onCmdFileDelete(FXObject*, FXSelector, void*);
+    long onCmdRunScript(FXObject*, FXSelector, void*);
     long onCmdGoScriptDir(FXObject*, FXSelector, void*);
     long onCmdDirUsage(FXObject*, FXSelector, void*);
     long onUpdStatus(FXObject*, FXSelector, void*);
@@ -145,6 +148,7 @@ public:
     long onUpdMenu(FXObject*, FXSelector, void*);
     long onUpdFileDelete(FXObject*, FXSelector, void*);
     long onUpdFileTrash(FXObject*, FXSelector, void*);
+    long onUpdRunScript(FXObject*, FXSelector, void*);
     long onUpdDirUsage(FXObject*, FXSelector, void*);
 
 #if defined(linux)

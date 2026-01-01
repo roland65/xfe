@@ -1277,6 +1277,8 @@ long FileList::onCmdSortByName(FXObject*, FXSelector, void*)
 // Update sender
 long FileList::onUpdSortByName(FXObject* sender, FXSelector, void*)
 {
+    name_index = getHeaderIndex(ID_COL_NAME);
+
     sender->handle(this,
                    (sortfunc == ascending || sortfunc == descending || sortfunc == ascendingCase ||
                     sortfunc == descendingCase || sortfunc == ascendingMix || sortfunc == descendingMix ||
@@ -1324,6 +1326,8 @@ long FileList::onCmdSortByDirName(FXObject*, FXSelector, void*)
 // Update sender
 long FileList::onUpdSortByDirName(FXObject* sender, FXSelector, void*)
 {
+    dirname_index = getHeaderIndex(ID_COL_DIRNAME);
+
     sender->handle(this, (sortfunc == ascendingDir || sortfunc == descendingDir || sortfunc == ascendingDirCase ||
                           sortfunc == descendingDirCase || sortfunc == ascendingDirMix ||
                           sortfunc == descendingDirMix || sortfunc == ascendingDirCaseMix ||
@@ -1357,6 +1361,8 @@ long FileList::onCmdSortByType(FXObject*, FXSelector, void*)
 // Update sender
 long FileList::onUpdSortByType(FXObject* sender, FXSelector, void*)
 {
+    type_index = getHeaderIndex(ID_COL_TYPE);
+
     sender->handle(this, (sortfunc == ascendingType || sortfunc == descendingType || sortfunc == ascendingTypeMix ||
                           sortfunc == descendingTypeMix) ?
                           FXSEL(SEL_COMMAND, ID_CHECK) : FXSEL(SEL_COMMAND, ID_UNCHECK), NULL);
@@ -1400,6 +1406,8 @@ long FileList::onCmdSortBySize(FXObject*, FXSelector, void*)
 // Update sender
 long FileList::onUpdSortBySize(FXObject* sender, FXSelector, void*)
 {
+    size_index = getHeaderIndex(ID_COL_SIZE);
+
     sender->handle(this, (sortfunc == ascendingSize || sortfunc == descendingSize || sortfunc == ascendingSizeMix ||
                           sortfunc == descendingSizeMix) ?
                           FXSEL(SEL_COMMAND, ID_CHECK) : FXSEL(SEL_COMMAND, ID_UNCHECK), NULL);
@@ -1443,6 +1451,8 @@ long FileList::onCmdSortByExt(FXObject*, FXSelector, void*)
 // Update sender
 long FileList::onUpdSortByExt(FXObject* sender, FXSelector, void*)
 {
+    ext_index = getHeaderIndex(ID_COL_EXT);
+
     sender->handle(this, (sortfunc == ascendingExt || sortfunc == descendingExt || sortfunc == ascendingExtMix ||
                           sortfunc == descendingExtMix) ?
                           FXSEL(SEL_COMMAND, ID_CHECK) : FXSEL(SEL_COMMAND, ID_UNCHECK), NULL);
@@ -1500,6 +1510,8 @@ long FileList::onCmdSortByOrigpath(FXObject*, FXSelector, void*)
 // Update sender
 long FileList::onUpdSortByOrigpath(FXObject* sender, FXSelector, void*)
 {
+    origpath_index = getHeaderIndex(ID_COL_ORIGPATH);
+
     sender->handle(this, (sortfunc == ascendingOrigpath || sortfunc == descendingOrigpath ||
                    sortfunc == ascendingOrigpathCase || sortfunc == descendingOrigpathCase ||
                    sortfunc == ascendingOrigpathMix || sortfunc == descendingOrigpathMix ||
@@ -1543,6 +1555,8 @@ long FileList::onCmdSortByDeldate(FXObject*, FXSelector, void*)
 // Update sender
 long FileList::onUpdSortByDeldate(FXObject* sender, FXSelector, void*)
 {
+    deldate_index = getHeaderIndex(ID_COL_DELDATE);
+
     sender->handle(this, (sortfunc == ascendingDeldate || sortfunc == descendingDeldate ||
                    sortfunc == ascendingDeldateMix || sortfunc == descendingDeldateMix) ?
                    FXSEL(SEL_COMMAND, ID_CHECK) : FXSEL(SEL_COMMAND, ID_UNCHECK), NULL);
@@ -1583,6 +1597,8 @@ long FileList::onCmdSortByDate(FXObject*, FXSelector, void*)
 // Update sender
 long FileList::onUpdSortByDate(FXObject* sender, FXSelector, void*)
 {
+    date_index = getHeaderIndex(ID_COL_DATE);
+
     sender->handle(this, (sortfunc == ascendingDate || sortfunc == descendingDate ||
                    sortfunc == ascendingDateMix || sortfunc == descendingDateMix) ?
                    FXSEL(SEL_COMMAND, ID_CHECK) : FXSEL(SEL_COMMAND, ID_UNCHECK), NULL);
@@ -1626,6 +1642,8 @@ long FileList::onCmdSortByUser(FXObject*, FXSelector, void*)
 // Update sender
 long FileList::onUpdSortByUser(FXObject* sender, FXSelector, void*)
 {
+    user_index = getHeaderIndex(ID_COL_USER);
+
     sender->handle(this, (sortfunc == ascendingUser || sortfunc == descendingUser ||
                    sortfunc == ascendingUserMix || sortfunc == descendingUserMix) ?
                    FXSEL(SEL_COMMAND, ID_CHECK) : FXSEL(SEL_COMMAND, ID_UNCHECK), NULL);
@@ -1669,6 +1687,8 @@ long FileList::onCmdSortByGroup(FXObject*, FXSelector, void*)
 // Update sender
 long FileList::onUpdSortByGroup(FXObject* sender, FXSelector, void*)
 {
+    group_index = getHeaderIndex(ID_COL_GROUP);
+
     sender->handle(this, (sortfunc == ascendingGroup || sortfunc == descendingGroup ||
                    sortfunc == ascendingGroupMix || sortfunc == descendingGroupMix) ?
                    FXSEL(SEL_COMMAND, ID_CHECK) : FXSEL(SEL_COMMAND, ID_UNCHECK), NULL);
@@ -1712,6 +1732,8 @@ long FileList::onCmdSortByPerms(FXObject*, FXSelector, void*)
 // Update sender
 long FileList::onUpdSortByPerms(FXObject* sender, FXSelector, void*)
 {
+    perms_index = getHeaderIndex(ID_COL_PERMS);
+
     sender->handle(this, (sortfunc == ascendingPerms || sortfunc == descendingPerms ||
                    sortfunc == ascendingPermsMix || sortfunc == descendingPermsMix) ?
                    FXSEL(SEL_COMMAND, ID_CHECK) : FXSEL(SEL_COMMAND, ID_UNCHECK), NULL);
@@ -1768,6 +1790,8 @@ long FileList::onCmdSortByLink(FXObject*, FXSelector, void*)
 // Update sender
 long FileList::onUpdSortByLink(FXObject* sender, FXSelector, void*)
 {
+    link_index = getHeaderIndex(ID_COL_LINK);
+
     sender->handle(this, (sortfunc == ascendingLink || sortfunc == descendingLink ||
                    sortfunc == ascendingLinkCase || sortfunc == descendingLinkCase ||
                    sortfunc == ascendingLinkMix || sortfunc == descendingLinkMix ||
@@ -5851,9 +5875,9 @@ fnd:
                         }
                     }
 
-                    // Don't display the file size for directories
+                    // Don't display the file size for directories and links
                     FXString hsize;
-                    if (S_ISDIR(linfo.st_mode))
+                    if (S_ISDIR(linfo.st_mode) || S_ISLNK(linfo.st_mode))
                     {
                         hsize = "";
                     }

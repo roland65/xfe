@@ -165,6 +165,8 @@ RenameDialog::RenameDialog(FXWindow* win, FXString title, FXString src, FXuint n
     searchfld = new FXTextField(matrix4, 30, this, ID_SEARCH_TEXT,
                                 TEXTFIELD_NORMAL | LAYOUT_FILL_COLUMN | LAYOUT_FILL_ROW | LAYOUT_FILL_X |
                                 LAYOUT_CENTER_Y);
+    searchfld->setFocus();
+                                
     ignorecasechk = new FXCheckButton(matrix4, _("Ignore case"), this, ID_IGNORE_CASE);
     new FXLabel(matrix4, _("Replace with:"), NULL, JUSTIFY_LEFT);
     replacefld = new FXTextField(matrix4, 30, this, ID_REPLACE_TEXT,
@@ -1412,6 +1414,7 @@ long RenameDialog::onCmdMode(FXObject* sender, FXSelector sel, void* ptr)
         removegroup->hide();
 
         updateListReplace();
+        searchfld->setFocus();
 
         break;
 
@@ -1436,6 +1439,7 @@ long RenameDialog::onCmdMode(FXObject* sender, FXSelector sel, void* ptr)
         removegroup->hide();
 
         updateListInsert();
+        insertfld->setFocus();
 
         break;
 
