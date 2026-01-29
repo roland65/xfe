@@ -5536,9 +5536,9 @@ long XFileExplorer::onCmdSu(FXObject*, FXSelector, void*)
         cmd += " " + currdir;
 
 #ifdef STARTUP_NOTIFICATION
-        status = runcmd(cmd, "pkexec", currdir, startlocation, false, "");
+        status = runcmd(cmd, "pkexec xfe", currdir, startlocation, false, "");
 #else
-        status = runcmd(cmd, currdir, startlocation);
+        status = runcmd(cmd, "pkexec xfe", currdir, startlocation);
 #endif
     }
     // Use sudo or su
