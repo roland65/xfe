@@ -404,11 +404,11 @@ long XFilePackage::onCmdInstall(FXObject*, FXSelector, void*)
     FXString ext = FXPath::extension(filename);
     if (comparecase(ext, "rpm") == 0)
     {
-        cmd = "rpm -Uvh " + filename;
+        cmd = "pkexec cpm i " + filename + " -y";
     }
     else if (comparecase(ext, "deb") == 0)
     {
-        cmd = "dpkg -i " + filename;
+        cmd = "pkexec cpm i " + filename + " -y";
     }
     else
     {
@@ -451,14 +451,14 @@ long XFilePackage::onCmdUninstall(FXObject*, FXSelector, void*)
         // Get package name
         package = FXPath::name(filename);
         package = package.section('-', 0);
-        cmd = "rpm -e " + package;
+        cmd = "pkexec cpm r " + package + " -y";
     }
     else if (comparecase(ext, "deb") == 0)
     {
         // Get package name
         package = FXPath::name(filename);
         package = package.section('_', 0);
-        cmd = "dpkg -r " + package;
+        cmd = "pkexec cpm r " + package + " -y";
     }
     else
     {
