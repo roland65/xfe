@@ -271,8 +271,8 @@ FXDEFMAP(XFileImage) XFileImageMap[] =
     FXMAPFUNC(SEL_UPDATE, XFileImage::ID_MIRROR_VER, XFileImage::onUpdImage),
     FXMAPFUNC(SEL_UPDATE, XFileImage::ID_VIEW_PREV, XFileImage::onUpdImage),
     FXMAPFUNC(SEL_UPDATE, XFileImage::ID_VIEW_NEXT, XFileImage::onUpdImage),
-    FXMAPFUNC(SEL_UPDATE, XFileImage::ID_ZOOM_IN, XFileImage::onUpdImage),
-    FXMAPFUNC(SEL_UPDATE, XFileImage::ID_ZOOM_OUT, XFileImage::onUpdImage),
+    FXMAPFUNC(SEL_UPDATE, XFileImage::ID_ZOOM_IN, XFileImage::onUpdZoomIn),
+    FXMAPFUNC(SEL_UPDATE, XFileImage::ID_ZOOM_OUT, XFileImage::onUpdZoomOut),
     FXMAPFUNC(SEL_UPDATE, XFileImage::ID_ZOOM_100, XFileImage::onUpdImage),
     FXMAPFUNC(SEL_UPDATE, XFileImage::ID_ZOOM_WIN, XFileImage::onUpdImage),
     FXMAPFUNC(SEL_UPDATE, XFileImage::ID_SHOW_BIG_ICONS, XFileImage::onUpdFileView),
@@ -370,8 +370,7 @@ XFileImage::XFileImage(FXApp* a, FXbool smoothscroll, FXColor listbackcolor,
                                   LAYOUT_SIDE_TOP | LAYOUT_FILL_X | LAYOUT_FILL_Y | SPLITTER_TRACKING |
                                   SPLITTER_VERTICAL | SPLITTER_REVERSED);
         imageview = new FXImageView(splitter, NULL, NULL, 0, LAYOUT_FILL_X | LAYOUT_FILL_Y | FRAME_NONE);
-        filebox = new FXVerticalFrame(splitter, LAYOUT_FILL_X | LAYOUT_FILL_Y | FRAME_NONE, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                                      0);
+        filebox = new FXVerticalFrame(splitter, LAYOUT_FILL_X | LAYOUT_FILL_Y | FRAME_NONE, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
     }
 
     // Stack panels horizontally or vertically
@@ -390,8 +389,7 @@ XFileImage::XFileImage(FXApp* a, FXbool smoothscroll, FXColor listbackcolor,
                                                        0, 5, 5, 5, 5, 0, 0);
 
     // Container for the path linker
-    FXHorizontalFrame* pathframe = new FXHorizontalFrame(filebox, LAYOUT_FILL_X | FRAME_NONE, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                                                         0);
+    FXHorizontalFrame* pathframe = new FXHorizontalFrame(filebox, LAYOUT_FILL_X | FRAME_NONE, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 
     // File list
     FXuint options;
@@ -529,7 +527,7 @@ XFileImage::XFileImage(FXApp* a, FXbool smoothscroll, FXColor listbackcolor,
     new FXFrame(buttons, LAYOUT_FIX_WIDTH, 0, 0, 4, 1);
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "go_back", "Ctrl-Backspace");
-    btn = new FXButton(buttons, TAB + _("Go to Previous Folder") + PARS(key), minidirbackicon, this, ID_DIR_BACK,
+    btn = new FXButton(buttons, TAB + _("Go to Previous FprevImageer") + PARS(key), minidirbackicon, this, ID_DIR_BACK,
                        BUTTON_TOOLBAR | FRAME_GROOVE | LAYOUT_CENTER_Y | LAYOUT_LEFT);
     hotkey = xf_parseaccel(key);
     btn->addHotKey(hotkey);
@@ -537,7 +535,7 @@ XFileImage::XFileImage(FXApp* a, FXbool smoothscroll, FXColor listbackcolor,
                                     LAYOUT_FILL_Y | FRAME_GROOVE | ARROW_DOWN | ARROW_TOOLBAR);
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "go_forward", "Shift-Backspace");
-    btn = new FXButton(buttons, TAB + _("Go to Next Folder") + PARS(key), minidirforwardicon, this, ID_DIR_FORWARD,
+    btn = new FXButton(buttons, TAB + _("Go to Next FprevImageer") + PARS(key), minidirforwardicon, this, ID_DIR_FORWARD,
                        BUTTON_TOOLBAR | FRAME_GROOVE | LAYOUT_CENTER_Y | LAYOUT_LEFT);
     hotkey = xf_parseaccel(key);
     btn->addHotKey(hotkey);
@@ -545,7 +543,7 @@ XFileImage::XFileImage(FXApp* a, FXbool smoothscroll, FXColor listbackcolor,
                                        LAYOUT_FILL_Y | FRAME_GROOVE | ARROW_DOWN | ARROW_TOOLBAR);
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "go_up", "Backspace");
-    btn = new FXButton(buttons, TAB + _("Go to Parent Folder") + PARS(key), minidirupicon, this, ID_DIR_UP,
+    btn = new FXButton(buttons, TAB + _("Go to Parent FprevImageer") + PARS(key), minidirupicon, this, ID_DIR_UP,
                        BUTTON_TOOLBAR | FRAME_GROOVE | LAYOUT_CENTER_Y | LAYOUT_LEFT);
     hotkey = xf_parseaccel(key);
     btn->addHotKey(hotkey);
@@ -554,13 +552,13 @@ XFileImage::XFileImage(FXApp* a, FXbool smoothscroll, FXColor listbackcolor,
     hframeSeparator(buttons);
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "go_home", "Ctrl-H");
-    new FXButton(buttons, TAB + _("Go to Home Folder") + PARS(key), minihomeicon, this, ID_GO_HOME,
+    new FXButton(buttons, TAB + _("Go to Home FprevImageer") + PARS(key), minihomeicon, this, ID_GO_HOME,
                  BUTTON_TOOLBAR | FRAME_GROOVE | LAYOUT_CENTER_Y | LAYOUT_LEFT);
     hotkey = xf_parseaccel(key);
     btn->addHotKey(hotkey);
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "go_work", "Shift-F2");
-    new FXButton(buttons, TAB + _("Go to Working Folder") + PARS(key), miniworkicon, this, ID_GO_WORK,
+    new FXButton(buttons, TAB + _("Go to Working FprevImageer") + PARS(key), miniworkicon, this, ID_GO_WORK,
                  BUTTON_TOOLBAR | FRAME_GROOVE | LAYOUT_CENTER_Y | LAYOUT_LEFT);
     hotkey = xf_parseaccel(key);
     btn->addHotKey(hotkey);
@@ -828,16 +826,16 @@ XFileImage::XFileImage(FXApp* a, FXbool smoothscroll, FXColor listbackcolor,
 
     // Note : Ctrl+ and Ctrl- cannot be changed from the registry!
 
-    // Toolbar button: Zoom in
-    btn = new FXButton(toolbar, TAB + _("Zoom in") + PARS("Ctrl+") + TAB + _("Zoom in image.") + PARS("Ctrl+"),
-                       minizoominicon, this, ID_ZOOM_IN, ICON_ABOVE_TEXT | BUTTON_TOOLBAR | FRAME_GROOVE);
-    hotkey = (CONTROLMASK << 16) | KEY_KP_Add;
-    btn->addHotKey(hotkey);
-
     // Toolbar button: Zoom out
     btn = new FXButton(toolbar, TAB + _("Zoom out") + PARS("Ctrl-") + TAB + _("Zoom out image.") + PARS("Ctrl-"),
                        minizoomouticon, this, ID_ZOOM_OUT, ICON_ABOVE_TEXT | BUTTON_TOOLBAR | FRAME_GROOVE);
     hotkey = (CONTROLMASK << 16) | KEY_KP_Subtract;
+    btn->addHotKey(hotkey);
+
+    // Toolbar button: Zoom in
+    btn = new FXButton(toolbar, TAB + _("Zoom in") + PARS("Ctrl+") + TAB + _("Zoom in image.") + PARS("Ctrl+"),
+                       minizoominicon, this, ID_ZOOM_IN, ICON_ABOVE_TEXT | BUTTON_TOOLBAR | FRAME_GROOVE);
+    hotkey = (CONTROLMASK << 16) | KEY_KP_Add;
     btn->addHotKey(hotkey);
 
     // Toolbar button: Zoom 100%
@@ -970,7 +968,7 @@ XFileImage::XFileImage(FXApp* a, FXbool smoothscroll, FXColor listbackcolor,
 
     // View Menu entries
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "hidden_files", "Ctrl-F6");
-    text = _("&Hidden Files") + TABS(key) + _("Show hidden files and folders.") + PARS(key);
+    text = _("&Hidden Files") + TABS(key) + _("Show hidden files and fprevImageers.") + PARS(key);
     mc = new FXMenuCheck(viewmenu, text, this, ID_TOGGLE_HIDDEN);
     hotkey = xf_parseaccel(key);
     getAccelTable()->addAccel(hotkey, mc, FXSEL(SEL_COMMAND, FXMenuCommand::ID_ACCEL));
@@ -984,19 +982,19 @@ XFileImage::XFileImage(FXApp* a, FXbool smoothscroll, FXColor listbackcolor,
     new FXMenuSeparator(viewmenu);
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "big_icons", "F10");
-    text = _("&Big Icons") + TABS(key) + _("Display folders with big icons.") + PARS(key);
+    text = _("&Big Icons") + TABS(key) + _("Display fprevImageers with big icons.") + PARS(key);
     mc = new FXMenuRadio(viewmenu, text, this, ID_SHOW_BIG_ICONS);
     hotkey = xf_parseaccel(key);
     getAccelTable()->addAccel(hotkey, mc, FXSEL(SEL_COMMAND, FXMenuCommand::ID_ACCEL));
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "small_icons", "F11");
-    text = _("&Small Icons") + TABS(key) + _("Display folders with small icons.") + PARS(key);
+    text = _("&Small Icons") + TABS(key) + _("Display fprevImageers with small icons.") + PARS(key);
     mc = new FXMenuRadio(viewmenu, text, this, ID_SHOW_MINI_ICONS);
     hotkey = xf_parseaccel(key);
     getAccelTable()->addAccel(hotkey, mc, FXSEL(SEL_COMMAND, FXMenuCommand::ID_ACCEL));
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "detailed_file_list", "F12");
-    text = _("&Detailed File List") + TABS(key) + _("Display detailed folder listing.") + PARS(key);
+    text = _("&Detailed File List") + TABS(key) + _("Display detailed fprevImageer listing.") + PARS(key);
     mc = new FXMenuRadio(viewmenu, text, this, ID_SHOW_DETAILS);
     hotkey = xf_parseaccel(key);
     getAccelTable()->addAccel(hotkey, mc, FXSEL(SEL_COMMAND, FXMenuCommand::ID_ACCEL));
@@ -1043,7 +1041,6 @@ XFileImage::XFileImage(FXApp* a, FXbool smoothscroll, FXColor listbackcolor,
 
     // Images
     img = NULL;
-    tmpimg = NULL;
 
     // Dialogs
     printdialog = NULL;
@@ -1091,7 +1088,6 @@ XFileImage::~XFileImage()
     delete pathtext;
     delete filelist;
     delete img;
-    delete tmpimg;
     delete printdialog;
     delete btnbackhist;
     delete btnforwardhist;
@@ -1132,7 +1128,7 @@ long XFileImage::onCmdPopupMenu(FXObject* sender, FXSelector sel, void* ptr)
     new FXMenuRadio(&menu, _("&Link"), filelist, FileList::ID_COL_LINK);
     new FXMenuSeparator(&menu);
     new FXMenuCheck(&menu, _("Ignore C&ase"), filelist, FileList::ID_SORT_CASE);
-    new FXMenuCheck(&menu, _("Fold&ers First"), filelist, FileList::ID_DIRS_FIRST);
+    new FXMenuCheck(&menu, _("FprevImage&ers First"), filelist, FileList::ID_DIRS_FIRST);
     new FXMenuCheck(&menu, _("Re&verse Order"), filelist, FileList::ID_SORT_REVERSE);
 
     menu.create();
@@ -1381,7 +1377,7 @@ long XFileImage::onCmdDirBackHist(FXObject* sender, FXSelector sel, void* ptr)
             pathlink->setPath(filelist->getDirectory());
             pathtext->setText(filelist->getDirectory());
         }
-        delete[]dirs;
+        delete[] dirs;
     }
 
     return 1;
@@ -1475,7 +1471,7 @@ long XFileImage::onCmdDirForwardHist(FXObject* sender, FXSelector sel, void* ptr
             pathlink->setPath(filelist->getDirectory());
             pathtext->setText(filelist->getDirectory());
         }
-        delete[]dirs;
+        delete[] dirs;
     }
 
     return 1;
@@ -1628,47 +1624,37 @@ FXbool XFileImage::loadimage(const FXString& file)
         fclose(fp);
     }
 
-    // Free old image if any, before loading a new one
-    if (img)
+    // Free actual image if any, before loading a new one
+    FXImage* img_ptr = img; // Save image pointer
+    if (img != NULL)
     {
         delete img;
         img = NULL;
-    }
-    if (tmpimg)
-    {
-        delete tmpimg;
-        tmpimg = NULL;
     }
 
     if (comparecase(ext, "gif") == 0)
     {
         img = new FXGIFImage(getApp(), NULL, IMAGE_KEEP | IMAGE_SHMI | IMAGE_SHMP);
-        tmpimg = new FXGIFImage(getApp(), NULL, IMAGE_KEEP | IMAGE_SHMI | IMAGE_SHMP);
     }
     else if (comparecase(ext, "bmp") == 0)
     {
         img = new FXBMPImage(getApp(), NULL, IMAGE_KEEP | IMAGE_SHMI | IMAGE_SHMP);
-        tmpimg = new FXBMPImage(getApp(), NULL, IMAGE_KEEP | IMAGE_SHMI | IMAGE_SHMP);
     }
     else if (comparecase(ext, "xpm") == 0)
     {
         img = new FXXPMImage(getApp(), NULL, IMAGE_KEEP | IMAGE_SHMI | IMAGE_SHMP);
-        tmpimg = new FXXPMImage(getApp(), NULL, IMAGE_KEEP | IMAGE_SHMI | IMAGE_SHMP);
     }
     else if (comparecase(ext, "pcx") == 0)
     {
         img = new FXPCXImage(getApp(), NULL, IMAGE_KEEP | IMAGE_SHMI | IMAGE_SHMP);
-        tmpimg = new FXPCXImage(getApp(), NULL, IMAGE_KEEP | IMAGE_SHMI | IMAGE_SHMP);
     }
     else if ((comparecase(ext, "ico") == 0) || (comparecase(ext, "cur") == 0))
     {
         img = new FXICOImage(getApp(), NULL, IMAGE_KEEP | IMAGE_SHMI | IMAGE_SHMP);
-        tmpimg = new FXICOImage(getApp(), NULL, IMAGE_KEEP | IMAGE_SHMI | IMAGE_SHMP);
     }
     else if (comparecase(ext, "tga") == 0)
     {
         img = new FXTGAImage(getApp(), NULL, IMAGE_KEEP | IMAGE_SHMI | IMAGE_SHMP);
-        tmpimg = new FXTGAImage(getApp(), NULL, IMAGE_KEEP | IMAGE_SHMI | IMAGE_SHMP);
     }
     else if (comparecase(ext, "rgb") == 0)
     {
@@ -1677,42 +1663,30 @@ FXbool XFileImage::loadimage(const FXString& file)
     else if (comparecase(ext, "xbm") == 0)
     {
         img = new FXXBMImage(getApp(), NULL, NULL, IMAGE_KEEP | IMAGE_SHMI | IMAGE_SHMP);
-        tmpimg = new FXXBMImage(getApp(), NULL, NULL, IMAGE_KEEP | IMAGE_SHMI | IMAGE_SHMP);
     }
     else if (comparecase(ext, "ppm") == 0)
     {
         img = new FXPPMImage(getApp(), NULL, IMAGE_KEEP | IMAGE_SHMI | IMAGE_SHMP);
-        tmpimg = new FXPPMImage(getApp(), NULL, IMAGE_KEEP | IMAGE_SHMI | IMAGE_SHMP);
     }
     else if (comparecase(ext, "png") == 0)
     {
         img = new FXPNGImage(getApp(), NULL, IMAGE_KEEP | IMAGE_SHMI | IMAGE_SHMP);
-        tmpimg = new FXPNGImage(getApp(), NULL, IMAGE_KEEP | IMAGE_SHMI | IMAGE_SHMP);
     }
     else if ((comparecase(ext, "jpg") == 0) || (comparecase(ext, "jpeg") == 0))
     {
         img = new FXJPGImage(getApp(), NULL, IMAGE_KEEP | IMAGE_SHMI | IMAGE_SHMP);
-        tmpimg = new FXJPGImage(getApp(), NULL, IMAGE_KEEP | IMAGE_SHMI | IMAGE_SHMP);
     }
     else if ((comparecase(ext, "tif") == 0) || (comparecase(ext, "tiff") == 0))
     {
         img = new FXTIFImage(getApp(), NULL, IMAGE_KEEP | IMAGE_SHMI | IMAGE_SHMP);
-        tmpimg = new FXTIFImage(getApp(), NULL, IMAGE_KEEP | IMAGE_SHMI | IMAGE_SHMP);
     }
     else
     {
         img = NULL;
-        tmpimg = NULL;
     }
 
     // Perhaps failed
     if (img == NULL)
-    {
-        MessageBox::error(this, BOX_OK, _("Error Loading Image"), _("Unsupported type: %s"), ext.text());
-        return false;
-    }
-
-    if (tmpimg == NULL)
     {
         MessageBox::error(this, BOX_OK, _("Error Loading Image"), _("Unsupported type: %s"), ext.text());
         return false;
@@ -1736,16 +1710,28 @@ FXbool XFileImage::loadimage(const FXString& file)
             return false;
         }
 
-        if (!FXMEMDUP(&tmpdata, img->getData(), FXColor, img->getWidth() * img->getHeight()))
+        FXColor* data = NULL;
+        
+        if (!FXMEMDUP(&data, img->getData(), FXColor, img->getWidth() * img->getHeight()))
         {
             throw FXMemoryException(_("Unable to load image"));
         }
-        tmpimg->setData(tmpdata, IMAGE_OWNED, img->getWidth(), img->getHeight());
+        FXImage* image = new FXImage(getApp(), NULL, IMAGE_KEEP | IMAGE_SHMI | IMAGE_SHMP);
+        image->setData(data, IMAGE_OWNED, img->getWidth(), img->getHeight());
 
         img->create();
-        tmpimg->create();
+        image->create();
+        
+        FXImage* prevImage = NULL;       
+        prevImage = imageview->getImage();
+        imageview->setImage(image);
 
-        imageview->setImage(tmpimg);
+        // Free previous image        
+        if (prevImage != NULL && prevImage != img_ptr)
+        {
+            delete prevImage;
+            prevImage = NULL;
+        }
 
         // Initial zoom and image format
         indZoom = ZOOM_100;
@@ -1823,6 +1809,7 @@ long XFileImage::onCmdToggleFitWin(FXObject*, FXSelector, void*)
 {
     fitwin = !fitwin;
     filelist->setFocus();
+
     return 1;
 }
 
@@ -1838,6 +1825,7 @@ long XFileImage::onUpdToggleFitWin(FXObject* sender, FXSelector, void*)
     {
         sender->handle(this, FXSEL(SEL_COMMAND, ID_UNCHECK), NULL);
     }
+
     return 1;
 }
 
@@ -1893,6 +1881,7 @@ long XFileImage::onUpdToggleFilterImages(FXObject* sender, FXSelector, void*)
             sender->handle(this, FXSEL(SEL_COMMAND, ID_UNCHECK), NULL);
         }
     }
+
     return 1;
 }
 
@@ -2066,7 +2055,7 @@ long XFileImage::onCmdShowDetails(FXObject*, FXSelector, void*)
 }
 
 
-// Update filelist
+// Update file list
 long XFileImage::onUpdFileView(FXObject* sender, FXSelector sel, void* ptr)
 {
     // Keep the filebox width / height relative to the window width / height
@@ -2162,6 +2151,7 @@ long XFileImage::onSigHarvest(FXObject*, FXSelector, void*)
     while (waitpid(-1, NULL, WNOHANG) > 0)
     {
     }
+
     return 1;
 }
 
@@ -2190,6 +2180,7 @@ long XFileImage::onUpdTitle(FXObject* sender, FXSelector, void*)
                  FXStringVal(zoomval * 100) + "%" ")";
     }
     sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_SETSTRINGVALUE), (void*)&title);
+
     return 1;
 }
 
@@ -2200,6 +2191,7 @@ long XFileImage::onCmdRecentFile(FXObject*, FXSelector, void* ptr)
     filename = (char*)ptr;
     filelist->setCurrentFile(filename);
     loadimage(filename);
+
     return 1;
 }
 
@@ -2233,6 +2225,7 @@ long XFileImage::onCmdItemDoubleClicked(FXObject*, FXSelector, void* ptr)
             filelist->setCurrentItem(index);
         }
     }
+
     return 1;
 }
 
@@ -2279,6 +2272,7 @@ long XFileImage::onCmdItemClicked(FXObject* sender, FXSelector sel, void* ptr)
             }
         }
     }
+
     return 1;
 }
 
@@ -2317,6 +2311,7 @@ long XFileImage::onCmdRotate(FXObject*, FXSelector sel, void*)
     imageview->setImage(image);
     filelist->setFocus();
     getApp()->endWaitCursor();
+
     return 1;
 }
 
@@ -2332,6 +2327,39 @@ long XFileImage::onUpdImage(FXObject* sender, FXSelector, void*)
     {
         sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_DISABLE), NULL);
     }
+
+    return 1;
+}
+
+
+// Update zoom in button
+long XFileImage::onUpdZoomIn(FXObject* sender, FXSelector, void*)
+{
+    if (imageview->getImage() && (!zoomMax && indZoom < NB_ZOOM - 1))
+    {
+        sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_ENABLE), NULL);
+    }
+    else
+    {
+        sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_DISABLE), NULL);
+    }
+
+    return 1;
+}
+
+
+// Update zoom out button
+long XFileImage::onUpdZoomOut(FXObject* sender, FXSelector, void*)
+{
+    if (imageview->getImage() && (!zoomMin && indZoom > 0))
+    {
+        sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_ENABLE), NULL);
+    }
+    else
+    {
+        sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_DISABLE), NULL);
+    }
+
     return 1;
 }
 
@@ -2370,6 +2398,7 @@ long XFileImage::onCmdMirror(FXObject*, FXSelector sel, void*)
     imageview->setImage(image);
     filelist->setFocus();
     getApp()->endWaitCursor();
+
     return 1;
 }
 
@@ -2380,20 +2409,25 @@ long XFileImage::onCmdZoomIn(FXObject*, FXSelector, void*)
     getApp()->beginWaitCursor();
 
     // Copy the original image into the actual one
-    if (!FXMEMDUP(&tmpdata, img->getData(), FXColor, img->getWidth() * img->getHeight()))
+    FXColor* data = NULL;   
+    if (!FXMEMDUP(&data, img->getData(), FXColor, img->getWidth() * img->getHeight()))
     {
         throw FXMemoryException(_("Unable to load image"));
     }
-    tmpimg->setData(tmpdata, IMAGE_OWNED, img->getWidth(), img->getHeight());
+    FXImage* image = new FXImage(getApp(), NULL, IMAGE_KEEP | IMAGE_SHMI | IMAGE_SHMP);
+    image->setData(data, IMAGE_OWNED, img->getWidth(), img->getHeight());
 
     // Resize the actual image according to the new zoom factor
     indZoom += 1;
+    zoomMax = false;
+    zoomMin = false;
     if (indZoom > NB_ZOOM - 1)
     {
         indZoom = NB_ZOOM - 1;
+        zoomMax = true;
     }
-    int sx = (int)(tmpimg->getWidth() * zoomtab[indZoom]);
-    int sy = (int)(tmpimg->getHeight() * zoomtab[indZoom]);
+    int sx = (int)(image->getWidth() * zoomtab[indZoom]);
+    int sy = (int)(image->getHeight() * zoomtab[indZoom]);
 
     // Scale only if the actual image size is different
     if (indZoom == ZOOM_100)
@@ -2405,18 +2439,33 @@ long XFileImage::onCmdZoomIn(FXObject*, FXSelector, void*)
         // Maximum zoom allowed
         if ((sx > MAX_IMGSIZE) || (sy > MAX_IMGSIZE))
         {
+            zoomMax = true;
             indZoom -= 1;
             if (indZoom < 0)
             {
                 indZoom = 0;
+                zoomMin = true;
             }
-            sx = (int)(tmpimg->getWidth() * zoomtab[indZoom]);
-            sy = (int)(tmpimg->getHeight() * zoomtab[indZoom]);
+            sx = (int)(image->getWidth() * zoomtab[indZoom]);
+            sy = (int)(image->getHeight() * zoomtab[indZoom]);
         }
 
         // Scale image according to the new zoom factor
-        tmpimg->scale(sx, sy, 1);
-        imageview->setImage(tmpimg);
+        image->scale(sx, sy, 1);
+        image->create();
+
+        FXImage* prevImage = NULL;
+        prevImage = imageview->getImage();
+        
+        imageview->setImage(image);
+        
+        // Free previous image
+        if (prevImage != NULL && prevImage != img)
+        {
+            delete prevImage;
+            prevImage = NULL;
+        }
+
     }
 
     // Set zoom value for window title
@@ -2424,6 +2473,7 @@ long XFileImage::onCmdZoomIn(FXObject*, FXSelector, void*)
 
     filelist->setFocus();
     getApp()->endWaitCursor();
+
     return 1;
 }
 
@@ -2434,20 +2484,26 @@ long XFileImage::onCmdZoomOut(FXObject*, FXSelector, void*)
     getApp()->beginWaitCursor();
 
     // Copy the original image into the actual one
-    if (!FXMEMDUP(&tmpdata, img->getData(), FXColor, img->getWidth() * img->getHeight()))
+    FXColor* data = NULL;
+    if (!FXMEMDUP(&data, img->getData(), FXColor, img->getWidth() * img->getHeight()))
     {
         throw FXMemoryException(_("Unable to load image"));
     }
-    tmpimg->setData(tmpdata, IMAGE_OWNED, img->getWidth(), img->getHeight());
+
+    FXImage* image = new FXImage(getApp(), NULL, IMAGE_KEEP | IMAGE_SHMI | IMAGE_SHMP);
+    image->setData(data, IMAGE_OWNED, img->getWidth(), img->getHeight());
 
     // Resize the image according to the new zoom factor
     indZoom -= 1;
+    zoomMin = false;
+    zoomMax = false;
     if (indZoom < 0)
     {
         indZoom = 0;
+        zoomMin = true;
     }
-    int sx = (int)(tmpimg->getWidth() * zoomtab[indZoom]);
-    int sy = (int)(tmpimg->getHeight() * zoomtab[indZoom]);
+    int sx = (int)(image->getWidth() * zoomtab[indZoom]);
+    int sy = (int)(image->getHeight() * zoomtab[indZoom]);
 
     // Scale only if the actual image size is different
     if (indZoom == ZOOM_100)
@@ -2457,8 +2513,20 @@ long XFileImage::onCmdZoomOut(FXObject*, FXSelector, void*)
     else
     {
         // Scale image according to the new zoom factor
-        tmpimg->scale(sx, sy, 1);
-        imageview->setImage(tmpimg);
+        image->scale(sx, sy, 1);
+        image->create();
+       
+        FXImage* prevImage = NULL;
+        prevImage = imageview->getImage();
+       
+        imageview->setImage(image);
+        
+        // Free previous image
+        if (prevImage != NULL && prevImage != img)
+        {
+            delete prevImage;
+            prevImage = NULL;
+        }
     }
 
     // Set zoom value for window title
@@ -2466,6 +2534,7 @@ long XFileImage::onCmdZoomOut(FXObject*, FXSelector, void*)
 
     filelist->setFocus();
     getApp()->endWaitCursor();
+
     return 1;
 }
 
@@ -2475,10 +2544,13 @@ long XFileImage::onCmdZoom100(FXObject*, FXSelector, void*)
 {
     getApp()->beginWaitCursor();
     indZoom = ZOOM_100;
+    zoomMax = false;
+    zoomMin = false;
     zoomval = zoomtab[indZoom];
     imageview->setImage(img);
     filelist->setFocus();
     getApp()->endWaitCursor();
+
     return 1;
 }
 
@@ -2495,6 +2567,8 @@ long XFileImage::onCmdZoomWin(FXObject*, FXSelector, void*)
     int h = img->getHeight();
 
     // Compute zoom factor
+    zoomMax = false;
+    zoomMin = false;
     double fitwin;
     if (double(w) / double(h) > double(winw) / double(winh))
     {
@@ -2523,27 +2597,43 @@ long XFileImage::onCmdZoomWin(FXObject*, FXSelector, void*)
     {
         indZoom = NB_ZOOM - 1;
     }
-
+   
     // Copy the original image into the actual one
-    if (!FXMEMDUP(&tmpdata, img->getData(), FXColor, img->getWidth() * img->getHeight()))
+    FXColor* data = NULL;
+    if (!FXMEMDUP(&data, img->getData(), FXColor, img->getWidth() * img->getHeight()))
     {
         throw FXMemoryException(_("Unable to load image"));
     }
-    tmpimg->setData(tmpdata, IMAGE_OWNED, img->getWidth(), img->getHeight());
+    
+    FXImage* image = new FXImage(getApp(), NULL, IMAGE_KEEP | IMAGE_SHMI | IMAGE_SHMP);
+    image->setData(data, IMAGE_OWNED, img->getWidth(), img->getHeight());
 
     // Resize the image according to the new zoom factor
     int sx = (int)(w * fitwin);
     int sy = (int)(h * fitwin);
 
     // Scale image according to the new zoom factor
-    tmpimg->scale(sx, sy, 1);
-    imageview->setImage(tmpimg);
+    image->scale(sx, sy, 1);
+    image->create();
+
+    FXImage* prevImage = NULL;    
+    prevImage = imageview->getImage();
+    
+    imageview->setImage(image);
+    
+    // Free previous image
+    if (prevImage != NULL && prevImage != img)
+    {
+        delete prevImage;
+        prevImage = NULL;
+    }
 
     // Set zoom value for window title
     zoomval = fitwin;
 
     filelist->setFocus();
     getApp()->endWaitCursor();
+
     return 1;
 }
 
@@ -2561,6 +2651,7 @@ long XFileImage::onCmdRestart(FXObject*, FXSelector, void*)
     {
         exit(EXIT_SUCCESS);
     }
+
     return 1;
 }
 

@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Xfe 1.42.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-10 10:38+0100\n"
-"PO-Revision-Date: 2025-02-24 18:09+0100\n"
+"POT-Creation-Date: 2026-02-08 12:08+0100\n"
+"PO-Revision-Date: 2025-10-18 17:32+0200\n"
 "Last-Translator: Joachim Wiedorn <joodevel@joonet.de>\n"
 "Language-Team: français <>\n"
 "Language: de\n"
@@ -18,31 +18,31 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Language: de_DE\n"
-"X-Generator: Poedit 3.2.2\n"
+"X-Generator: Poedit 3.6\n"
 
 #: src/ArchInputDialog.cpp:32
 msgid "Add To Archive"
-msgstr "Komprimieren"
+msgstr "Zum Archiv hinzufügen"
 
 #: src/ArchInputDialog.cpp:39 src/BookmarkDialog.cpp:42
 #: src/BrowseInputDialog.cpp:44 src/ColorSelector.cpp:1017
 #: src/ConnectDialog.cpp:146 src/FontDialog.cpp:47 src/InputDialog.cpp:33
 #: src/KeyBindings.cpp:81 src/KeyBindingsDialog.cpp:31
 #: src/HistInputDialog.cpp:60 src/Preferences.cpp:329 src/Properties.cpp:207
-#: src/Properties.cpp:999 src/RenameDialog.cpp:234 src/WriteWindow.cpp:192
+#: src/Properties.cpp:1001 src/RenameDialog.cpp:234 src/WriteWindow.cpp:192
 msgid "&Accept"
 msgstr "Ü&bernehmen"
 
 #: src/ArchInputDialog.cpp:42 src/BookmarkDialog.cpp:45
 #: src/BrowseInputDialog.cpp:47 src/ColorSelector.cpp:1020
 #: src/CommandWindow.cpp:61 src/CommandWindow.cpp:95 src/ConnectDialog.cpp:151
-#: src/ExecuteBox.cpp:43 src/File.cpp:157 src/FileDialog.cpp:250
+#: src/ExecuteBox.cpp:43 src/File.cpp:162 src/FileDialog.cpp:250
 #: src/FontDialog.cpp:49 src/InputDialog.cpp:36 src/KeyBindings.cpp:86
 #: src/KeyBindingsDialog.cpp:34 src/HistInputDialog.cpp:63
 #: src/MessageBox.cpp:113 src/MessageBox.cpp:135 src/MessageBox.cpp:149
 #: src/MessageBox.cpp:159 src/MessageBox.cpp:172 src/OverwriteBox.cpp:55
 #: src/OverwriteBox.cpp:74 src/OverwriteBox.cpp:136 src/OverwriteBox.cpp:155
-#: src/Preferences.cpp:336 src/Properties.cpp:213 src/Properties.cpp:1004
+#: src/Preferences.cpp:336 src/Properties.cpp:213 src/Properties.cpp:1006
 #: src/RenameDialog.cpp:239 src/WriteWindow.cpp:197 src/foxhacks.cpp:691
 #: src/foxhacks.cpp:784
 msgid "&Cancel"
@@ -53,12 +53,12 @@ msgid "New archive name:"
 msgstr "Neuer Paket-Name:"
 
 #: src/ArchInputDialog.cpp:61 src/BrowseInputDialog.cpp:80
-#: src/HistInputDialog.cpp:93 src/Properties.cpp:340
+#: src/HistInputDialog.cpp:92 src/Properties.cpp:340
 msgid "=> Warning: file name is not UTF-8 encoded!"
 msgstr "=> Achtung: Dateiname ist nicht UTF-8 kodiert!"
 
 #: src/ArchInputDialog.cpp:64 src/BrowseInputDialog.cpp:76
-#: src/HistInputDialog.cpp:89
+#: src/HistInputDialog.cpp:88
 msgid "\tSelect Destination..."
 msgstr "\tZiel auswählen..."
 
@@ -115,14 +115,14 @@ msgid "zst\tArchive format zst"
 msgstr "zst\tArchivformat zst"
 
 #: src/ArchInputDialog.cpp:139 src/BrowseInputDialog.cpp:133
-#: src/FilePanel.cpp:5402 src/HistInputDialog.cpp:152 src/SearchPanel.cpp:2843
+#: src/FilePanel.cpp:5403 src/HistInputDialog.cpp:151 src/SearchPanel.cpp:2843
 #: src/XFileArchive.cpp:525 src/XFileArchive.cpp:1228
 msgid "Select a Destination Folder"
 msgstr "Zielordner auswählen"
 
 #: src/ArchInputDialog.cpp:143 src/BookmarkDialog.cpp:167
-#: src/BrowseInputDialog.cpp:149 src/FilePanel.cpp:5405
-#: src/HistInputDialog.cpp:172 src/Preferences.cpp:1315 src/Properties.cpp:2008
+#: src/BrowseInputDialog.cpp:149 src/FilePanel.cpp:5406
+#: src/HistInputDialog.cpp:171 src/Preferences.cpp:1315 src/Properties.cpp:2010
 #: src/SearchPanel.cpp:2846 src/SearchWindow.cpp:1328 src/WriteWindow.cpp:1661
 #: src/XFileArchive.cpp:387 src/XFileArchive.cpp:528 src/XFileArchive.cpp:1231
 #: src/XFileImage.cpp:181 src/XFilePackage.cpp:351
@@ -133,15 +133,15 @@ msgstr "Alle Dateien"
 msgid "\tSelect Icon..."
 msgstr "\tSymbol auswählen..."
 
-#: src/BookmarkDialog.cpp:164 src/Properties.cpp:2056
+#: src/BookmarkDialog.cpp:164 src/Properties.cpp:2058
 msgid "PNG Images"
 msgstr "PNG Bilder"
 
-#: src/BookmarkDialog.cpp:165 src/Properties.cpp:2057
+#: src/BookmarkDialog.cpp:165 src/Properties.cpp:2059
 msgid "GIF Images"
 msgstr "GIF Bilder"
 
-#: src/BookmarkDialog.cpp:166 src/Properties.cpp:2058
+#: src/BookmarkDialog.cpp:166 src/Properties.cpp:2060
 msgid "BMP Images"
 msgstr "BMP Bilder"
 
@@ -149,11 +149,11 @@ msgstr "BMP Bilder"
 msgid "Select an Icon File"
 msgstr "Symbol-Datei auswählen"
 
-#: src/BrowseInputDialog.cpp:137 src/HistInputDialog.cpp:156
+#: src/BrowseInputDialog.cpp:137 src/HistInputDialog.cpp:155
 msgid "Select a File"
 msgstr "Datei auswählen"
 
-#: src/BrowseInputDialog.cpp:141 src/HistInputDialog.cpp:164
+#: src/BrowseInputDialog.cpp:141 src/HistInputDialog.cpp:163
 msgid "Select a File or a Destination Folder"
 msgstr "Datei oder Zielordner auswählen"
 
@@ -175,7 +175,7 @@ msgstr "\tRot, Grün, Blau"
 
 #: src/ColorSelector.cpp:1116
 msgid "&Red:"
-msgstr "&Rot;"
+msgstr "&Rot:"
 
 #: src/ColorSelector.cpp:1125
 msgid "&Green:"
@@ -223,40 +223,36 @@ msgstr "Gelb:"
 
 #: src/ColorSelector.cpp:1264
 msgid "\tBy Name"
-msgstr "Nach Name"
+msgstr "\tNach Name"
 
 #: src/ComboBox.cpp:81
-#, fuzzy
-#| msgid "&Clear bookmarks"
 msgid "Clear\tReset history list"
-msgstr "Lesezeichen &löschen"
+msgstr "Löschen\tHistorie löschen"
 
-#: src/ComboBox.cpp:906 src/DirPanel.cpp:1524 src/FilePanel.cpp:5037
+#: src/ComboBox.cpp:906 src/DirPanel.cpp:1524 src/FilePanel.cpp:5038
 #: src/SearchPanel.cpp:2597 src/WriteWindow.cpp:879 src/WriteWindow.cpp:920
 #: src/XFileExplorer.cpp:1429
 msgid "&Copy"
 msgstr "&Kopieren"
 
-#: src/ComboBox.cpp:907 src/DirPanel.cpp:1525 src/FilePanel.cpp:5038
+#: src/ComboBox.cpp:907 src/DirPanel.cpp:1525 src/FilePanel.cpp:5039
 #: src/SearchPanel.cpp:2598 src/XFileExplorer.cpp:1435
 msgid "C&ut"
 msgstr "Aus&schneiden"
 
-#: src/ComboBox.cpp:908 src/DirPanel.cpp:1526 src/FilePanel.cpp:4855
-#: src/FilePanel.cpp:4900 src/FilePanel.cpp:5039 src/WriteWindow.cpp:891
+#: src/ComboBox.cpp:908 src/DirPanel.cpp:1526 src/FilePanel.cpp:4856
+#: src/FilePanel.cpp:4901 src/FilePanel.cpp:5040 src/WriteWindow.cpp:891
 #: src/WriteWindow.cpp:922 src/XFileExplorer.cpp:1441
 msgid "&Paste"
 msgstr "&Einfügen"
 
 #: src/ComboBox.cpp:913
-#, fuzzy
-#| msgid "Places and tree"
 msgid "Paste and &Open"
-msgstr "Orte und Baum"
+msgstr "Einfügen und Öff&nen"
 
 #: src/ComboBox.cpp:915
 msgid "C&lear"
-msgstr ""
+msgstr "&Leeren"
 
 #: src/CommandWindow.cpp:59 src/CommandWindow.cpp:93
 msgid "Cl&ose"
@@ -270,9 +266,9 @@ msgstr ""
 "Bitte warten...\n"
 "\n"
 
-#: src/CommandWindow.cpp:196 src/FilePanel.cpp:6072 src/SearchPanel.cpp:4539
+#: src/CommandWindow.cpp:196 src/FilePanel.cpp:6073 src/SearchPanel.cpp:4539
 #: src/SearchWindow.cpp:970 src/XFileArchive.cpp:1612
-#: src/startupnotification.cpp:165 src/xfeutils.cpp:1843
+#: src/startupnotification.cpp:162 src/xfeutils.cpp:1843
 #, c-format
 msgid "Error: Fork failed: %s\n"
 msgstr "Fehler: Aufteilung misslang: %s\n"
@@ -302,14 +298,14 @@ msgstr "Fehler: Aufteilung misslang: %s\n"
 #: src/DirPanel.cpp:3912 src/DirPanel.cpp:3948 src/DirPanel.cpp:3971
 #: src/DirPanel.cpp:4025 src/DirPanel.cpp:4029 src/DirPanel.cpp:4051
 #: src/DirPanel.cpp:4056 src/DirPanel.cpp:4099 src/DirPanel.cpp:4103
-#: src/DirPanel.cpp:4125 src/DirPanel.cpp:4130 src/File.cpp:335
-#: src/File.cpp:1157 src/File.cpp:1165 src/File.cpp:1174 src/File.cpp:1198
-#: src/File.cpp:1455 src/File.cpp:1462 src/File.cpp:1472 src/File.cpp:1532
-#: src/File.cpp:1557 src/File.cpp:1577 src/File.cpp:1585 src/File.cpp:1594
-#: src/File.cpp:1613 src/File.cpp:1755 src/File.cpp:1792 src/File.cpp:1800
-#: src/File.cpp:1819 src/File.cpp:1892 src/File.cpp:1896 src/File.cpp:2307
-#: src/File.cpp:2311 src/File.cpp:2331 src/File.cpp:2336 src/File.cpp:2480
-#: src/File.cpp:2488 src/File.cpp:2495 src/File.cpp:2537 src/FileDialog.cpp:436
+#: src/DirPanel.cpp:4125 src/DirPanel.cpp:4130 src/File.cpp:348
+#: src/File.cpp:1143 src/File.cpp:1151 src/File.cpp:1160 src/File.cpp:1184
+#: src/File.cpp:1441 src/File.cpp:1448 src/File.cpp:1458 src/File.cpp:1518
+#: src/File.cpp:1543 src/File.cpp:1563 src/File.cpp:1571 src/File.cpp:1580
+#: src/File.cpp:1599 src/File.cpp:1741 src/File.cpp:1778 src/File.cpp:1786
+#: src/File.cpp:1805 src/File.cpp:1878 src/File.cpp:1882 src/File.cpp:2293
+#: src/File.cpp:2297 src/File.cpp:2317 src/File.cpp:2322 src/File.cpp:2466
+#: src/File.cpp:2474 src/File.cpp:2481 src/File.cpp:2523 src/FileDialog.cpp:436
 #: src/FileDialog.cpp:501 src/FileDialog.cpp:1144 src/FileDialog.cpp:1149
 #: src/FileDialog.cpp:1205 src/FileDialog.cpp:1215 src/FileDialog.cpp:1220
 #: src/FileDialog.cpp:1234 src/FileDialog.cpp:1239 src/FileList.cpp:886
@@ -322,31 +318,31 @@ msgstr "Fehler: Aufteilung misslang: %s\n"
 #: src/FilePanel.cpp:2537 src/FilePanel.cpp:2565 src/FilePanel.cpp:2633
 #: src/FilePanel.cpp:2640 src/FilePanel.cpp:2813 src/FilePanel.cpp:2840
 #: src/FilePanel.cpp:3014 src/FilePanel.cpp:3044 src/FilePanel.cpp:3049
-#: src/FilePanel.cpp:3065 src/FilePanel.cpp:3120 src/FilePanel.cpp:3857
-#: src/FilePanel.cpp:3907 src/FilePanel.cpp:3912 src/FilePanel.cpp:3950
-#: src/FilePanel.cpp:3955 src/FilePanel.cpp:4010 src/FilePanel.cpp:4027
-#: src/FilePanel.cpp:4032 src/FilePanel.cpp:4108 src/FilePanel.cpp:4118
-#: src/FilePanel.cpp:4123 src/FilePanel.cpp:4139 src/FilePanel.cpp:4144
-#: src/FilePanel.cpp:4212 src/FilePanel.cpp:4227 src/FilePanel.cpp:5165
-#: src/FilePanel.cpp:5170 src/FilePanel.cpp:5182 src/FilePanel.cpp:5192
-#: src/FilePanel.cpp:5197 src/FilePanel.cpp:5221 src/FilePanel.cpp:5226
-#: src/FilePanel.cpp:5370 src/FilePanel.cpp:5375 src/FilePanel.cpp:5511
-#: src/FilePanel.cpp:5564 src/FilePanel.cpp:5569 src/FilePanel.cpp:5768
-#: src/FilePanel.cpp:6057 src/FilePanel.cpp:6062 src/FilePanel.cpp:6088
-#: src/FilePanel.cpp:6093 src/FilePanel.cpp:6120 src/FilePanel.cpp:6125
-#: src/FilePanel.cpp:6199 src/FilePanel.cpp:6203 src/FilePanel.cpp:6225
-#: src/FilePanel.cpp:6230 src/FilePanel.cpp:6353 src/FilePanel.cpp:6367
-#: src/FilePanel.cpp:6384 src/FilePanel.cpp:6481 src/FilePanel.cpp:6486
-#: src/FilePanel.cpp:6534 src/FilePanel.cpp:6539 src/KeyBindings.cpp:977
+#: src/FilePanel.cpp:3065 src/FilePanel.cpp:3120 src/FilePanel.cpp:3858
+#: src/FilePanel.cpp:3908 src/FilePanel.cpp:3913 src/FilePanel.cpp:3951
+#: src/FilePanel.cpp:3956 src/FilePanel.cpp:4011 src/FilePanel.cpp:4028
+#: src/FilePanel.cpp:4033 src/FilePanel.cpp:4109 src/FilePanel.cpp:4119
+#: src/FilePanel.cpp:4124 src/FilePanel.cpp:4140 src/FilePanel.cpp:4145
+#: src/FilePanel.cpp:4213 src/FilePanel.cpp:4228 src/FilePanel.cpp:5166
+#: src/FilePanel.cpp:5171 src/FilePanel.cpp:5183 src/FilePanel.cpp:5193
+#: src/FilePanel.cpp:5198 src/FilePanel.cpp:5222 src/FilePanel.cpp:5227
+#: src/FilePanel.cpp:5371 src/FilePanel.cpp:5376 src/FilePanel.cpp:5512
+#: src/FilePanel.cpp:5565 src/FilePanel.cpp:5570 src/FilePanel.cpp:5769
+#: src/FilePanel.cpp:6058 src/FilePanel.cpp:6063 src/FilePanel.cpp:6089
+#: src/FilePanel.cpp:6094 src/FilePanel.cpp:6121 src/FilePanel.cpp:6126
+#: src/FilePanel.cpp:6200 src/FilePanel.cpp:6204 src/FilePanel.cpp:6226
+#: src/FilePanel.cpp:6231 src/FilePanel.cpp:6354 src/FilePanel.cpp:6368
+#: src/FilePanel.cpp:6385 src/FilePanel.cpp:6482 src/FilePanel.cpp:6487
+#: src/FilePanel.cpp:6535 src/FilePanel.cpp:6540 src/KeyBindings.cpp:977
 #: src/KeyBindings.cpp:997 src/KeyBindings.cpp:1017 src/KeyBindings.cpp:1037
 #: src/KeyBindings.cpp:1129 src/KeyBindings.cpp:1149 src/KeyBindings.cpp:1241
 #: src/KeyBindings.cpp:1261 src/KeyBindings.cpp:1353 src/KeyBindings.cpp:1373
 #: src/MessageBox.cpp:240 src/MessageBox.cpp:304 src/Places.cpp:818
 #: src/Places.cpp:824 src/Places.cpp:836 src/Places.cpp:887 src/Places.cpp:893
-#: src/Properties.cpp:1487 src/Properties.cpp:1495 src/Properties.cpp:1500
-#: src/Properties.cpp:1574 src/Properties.cpp:1578 src/Properties.cpp:1604
-#: src/Properties.cpp:1656 src/Properties.cpp:1660 src/Properties.cpp:1779
-#: src/Properties.cpp:1783 src/Properties.cpp:1865 src/Properties.cpp:1870
+#: src/Properties.cpp:1489 src/Properties.cpp:1497 src/Properties.cpp:1502
+#: src/Properties.cpp:1576 src/Properties.cpp:1580 src/Properties.cpp:1606
+#: src/Properties.cpp:1658 src/Properties.cpp:1662 src/Properties.cpp:1781
+#: src/Properties.cpp:1785 src/Properties.cpp:1867 src/Properties.cpp:1872
 #: src/SearchPanel.cpp:508 src/SearchPanel.cpp:711 src/SearchPanel.cpp:933
 #: src/SearchPanel.cpp:938 src/SearchPanel.cpp:1820 src/SearchPanel.cpp:1865
 #: src/SearchPanel.cpp:2704 src/SearchPanel.cpp:2709 src/SearchPanel.cpp:2954
@@ -373,14 +369,14 @@ msgstr "Fehler: Aufteilung misslang: %s\n"
 #: src/XFileExplorer.cpp:4705 src/XFileExplorer.cpp:5376
 #: src/XFileExplorer.cpp:5381 src/XFileExplorer.cpp:5429
 #: src/XFileExplorer.cpp:5481 src/XFileExplorer.cpp:5486
-#: src/XFileExplorer.cpp:5528 src/XFileExplorer.cpp:5554
-#: src/XFileExplorer.cpp:5559 src/XFileExplorer.cpp:5612
-#: src/XFileExplorer.cpp:5617 src/XFileExplorer.cpp:5626
-#: src/XFileExplorer.cpp:5760 src/XFileExplorer.cpp:5765
-#: src/XFileExplorer.cpp:5781 src/XFileExplorer.cpp:5786
-#: src/XFileExplorer.cpp:5841 src/XFileExplorer.cpp:6438
-#: src/XFileExplorer.cpp:6512 src/XFileExplorer.cpp:6518
-#: src/XFileExplorer.cpp:6525 src/XFileArchive.cpp:457 src/XFileArchive.cpp:520
+#: src/XFileExplorer.cpp:5528 src/XFileExplorer.cpp:5555
+#: src/XFileExplorer.cpp:5560 src/XFileExplorer.cpp:5613
+#: src/XFileExplorer.cpp:5618 src/XFileExplorer.cpp:5627
+#: src/XFileExplorer.cpp:5761 src/XFileExplorer.cpp:5766
+#: src/XFileExplorer.cpp:5782 src/XFileExplorer.cpp:5787
+#: src/XFileExplorer.cpp:5842 src/XFileExplorer.cpp:6439
+#: src/XFileExplorer.cpp:6513 src/XFileExplorer.cpp:6519
+#: src/XFileExplorer.cpp:6526 src/XFileArchive.cpp:457 src/XFileArchive.cpp:520
 #: src/XFileArchive.cpp:605 src/XFileArchive.cpp:628 src/XFileArchive.cpp:719
 #: src/XFileArchive.cpp:808 src/XFileArchive.cpp:872 src/XFileArchive.cpp:882
 #: src/XFileArchive.cpp:901 src/XFileArchive.cpp:1012 src/XFileArchive.cpp:1022
@@ -395,8 +391,8 @@ msgstr "Fehler: Aufteilung misslang: %s\n"
 #: src/XFileArchive.cpp:1510 src/XFileArchive.cpp:1522
 #: src/XFileArchive.cpp:1534 src/XFileArchive.cpp:1546
 #: src/XFileArchive.cpp:1558 src/XFileArchive.cpp:1569
-#: src/XFileArchive.cpp:1631 src/XFileArchive.cpp:1635 src/XFileImage.cpp:1623
-#: src/XFileImage.cpp:1954 src/XFileImage.cpp:2221 src/XFileImage.cpp:2266
+#: src/XFileArchive.cpp:1631 src/XFileArchive.cpp:1635 src/XFileImage.cpp:1619
+#: src/XFileImage.cpp:1943 src/XFileImage.cpp:2213 src/XFileImage.cpp:2259
 #: src/XFilePackage.cpp:396 src/XFilePackage.cpp:415 src/XFilePackage.cpp:442
 #: src/XFilePackage.cpp:465 src/XFilePackage.cpp:590 src/XFilePackage.cpp:655
 #: src/XFilePackage.cpp:687 src/XFilePackage.cpp:711 src/XFilePackage.cpp:1031
@@ -433,25 +429,21 @@ msgid "Server Details"
 msgstr ""
 
 #: src/ConnectDialog.cpp:61
-#, fuzzy
-#| msgid "Archiver:"
 msgid "Server:"
-msgstr "Archivierer:"
+msgstr ""
 
 #: src/ConnectDialog.cpp:72
 msgid "PORT:"
 msgstr ""
 
-#: src/ConnectDialog.cpp:81 src/Properties.cpp:722 src/Properties.cpp:1020
+#: src/ConnectDialog.cpp:81 src/Properties.cpp:722 src/Properties.cpp:1022
 msgid "Type:"
 msgstr "Typ:"
 
 #: src/ConnectDialog.cpp:85 src/ConnectDialog.cpp:210 src/ConnectDialog.cpp:544
 #: src/ConnectDialog.cpp:582
-#, fuzzy
-#| msgid "&Window"
 msgid "Windows share"
-msgstr "&Fenster"
+msgstr "Windows Freigabe"
 
 #: src/ConnectDialog.cpp:86 src/ConnectDialog.cpp:216 src/ConnectDialog.cpp:557
 #: src/ConnectDialog.cpp:595
@@ -460,33 +452,27 @@ msgstr ""
 
 #: src/ConnectDialog.cpp:92
 msgid "Share:"
-msgstr ""
+msgstr "Freigabe:"
 
 #: src/ConnectDialog.cpp:103
 msgid "User Details"
-msgstr ""
+msgstr "Benutzer Details"
 
 #: src/ConnectDialog.cpp:110
-#, fuzzy
-#| msgid "&Bookmarks"
 msgid "Domain name:"
-msgstr "&Lesezeichen"
+msgstr "Domainname:"
 
 #: src/ConnectDialog.cpp:121
-#, fuzzy
-#| msgid "Folder name"
 msgid "User name:"
-msgstr "Ordnername"
+msgstr "Benutzername:"
 
 #: src/ConnectDialog.cpp:132
 msgid "Password:"
-msgstr ""
+msgstr "Passwort:"
 
 #: src/ConnectDialog.cpp:139
-#, fuzzy
-#| msgid "Enter the user password:"
 msgid "Save password"
-msgstr "Bitte User Passwort eingeben:"
+msgstr "Passwort speichern"
 
 #: src/ConnectDialog.cpp:244 src/ConnectDialog.cpp:374
 msgid ""
@@ -496,10 +482,16 @@ msgid ""
 "Please install the package that provides secret-tool (libsecret-tools on "
 "Debian based systems, libsecret on RedHat based systems)..."
 msgstr ""
+"Passwort kann nicht ermittelt werden, weil das Programm secret-tool nicht "
+"auf Ihrem System gefunden wurde.\n"
+"\n"
+"Bitte installieren Sie das Paket, das secret-tool bereitstellt (libsecret-"
+"tools auf Debian-basierten Systemen, libsecret auf RedHat-basierten "
+"Systemen)..."
 
 #: src/ConnectDialog.cpp:277 src/ConnectDialog.cpp:402
 msgid "Connection failed, please check your parameters..."
-msgstr ""
+msgstr "Verbindung fehlgeschlagen, bitte überprüfen Sie die Parameter..."
 
 #: src/ConnectDialog.cpp:297 src/ConnectDialog.cpp:433
 msgid ""
@@ -507,6 +499,9 @@ msgid ""
 "\n"
 "Please install gio and gvfs to be able to connect to a server..."
 msgstr ""
+"gio Befehl konnte nicht in Ihrem System gefunden werden.\n"
+"\n"
+"Bitte installieren Sie gio und gvfs, um mit einen Server zu verbinden..."
 
 #: src/ConnectDialog.cpp:341 src/ConnectDialog.cpp:485 src/DirList.cpp:774
 #: src/DirList.cpp:778 src/DirList.cpp:905 src/DirList.cpp:952
@@ -523,14 +518,14 @@ msgstr ""
 #: src/FilePanel.cpp:2196 src/FilePanel.cpp:2243 src/FilePanel.cpp:2282
 #: src/FilePanel.cpp:2299 src/FilePanel.cpp:2353 src/FilePanel.cpp:2488
 #: src/FilePanel.cpp:2546 src/FilePanel.cpp:2574 src/FilePanel.cpp:2849
-#: src/FilePanel.cpp:3081 src/FilePanel.cpp:3369 src/FilePanel.cpp:3992
-#: src/FilePanel.cpp:3999 src/FilePanel.cpp:4089 src/FilePanel.cpp:4096
-#: src/FilePanel.cpp:4202 src/FilePanel.cpp:4488 src/FilePanel.cpp:4533
-#: src/FilePanel.cpp:5281 src/Preferences.cpp:1144 src/Preferences.cpp:1163
-#: src/Preferences.cpp:1203 src/Preferences.cpp:1222 src/Properties.cpp:1459
-#: src/Properties.cpp:1472 src/Properties.cpp:1477 src/Properties.cpp:1561
-#: src/Properties.cpp:1591 src/Properties.cpp:1643 src/Properties.cpp:1767
-#: src/Properties.cpp:1798 src/Properties.cpp:1853 src/SearchPanel.cpp:1030
+#: src/FilePanel.cpp:3081 src/FilePanel.cpp:3369 src/FilePanel.cpp:3993
+#: src/FilePanel.cpp:4000 src/FilePanel.cpp:4090 src/FilePanel.cpp:4097
+#: src/FilePanel.cpp:4203 src/FilePanel.cpp:4489 src/FilePanel.cpp:4534
+#: src/FilePanel.cpp:5282 src/Preferences.cpp:1144 src/Preferences.cpp:1163
+#: src/Preferences.cpp:1203 src/Preferences.cpp:1222 src/Properties.cpp:1461
+#: src/Properties.cpp:1474 src/Properties.cpp:1479 src/Properties.cpp:1563
+#: src/Properties.cpp:1593 src/Properties.cpp:1645 src/Properties.cpp:1769
+#: src/Properties.cpp:1800 src/Properties.cpp:1855 src/SearchPanel.cpp:1030
 #: src/SearchPanel.cpp:1361 src/SearchPanel.cpp:2744 src/SearchPanel.cpp:3193
 #: src/SearchPanel.cpp:3432 src/SearchPanel.cpp:3945 src/SearchPanel.cpp:3952
 #: src/SearchPanel.cpp:4048 src/SearchPanel.cpp:4086 src/SearchPanel.cpp:4117
@@ -550,6 +545,12 @@ msgid ""
 "Please install the package that provides secret-tool (libsecret-tools on "
 "Debian based systems, libsecret on RedHat based systems)..."
 msgstr ""
+"Passwort kann nicht gespeichert werden, weil das Programm secret-tool nicht "
+"auf Ihrem System gefunden wurde.\n"
+"\n"
+"Bitte installieren Sie das Paket, das secret-tool bereitstellt (libsecret-"
+"tools auf Debian-basierten Systemen, libsecret auf RedHat-basierten "
+"Systemen)..."
 
 #: src/DirList.cpp:688 src/FileList.cpp:674
 msgid "Copy Here"
@@ -580,7 +581,7 @@ msgstr "Dateien verschieben"
 
 #: src/DirList.cpp:742 src/FileList.cpp:728
 msgid "Symlink Files"
-msgstr "Verknüpfung"
+msgstr "Dateien verknüpfen"
 
 #: src/DirList.cpp:774 src/DirList.cpp:952 src/DirPanel.cpp:2929
 #: src/DirPanel.cpp:2968 src/DirPanel.cpp:3087 src/DirPanel.cpp:3209
@@ -625,7 +626,7 @@ msgstr "%s Dateien/Ordner verschieben von: %s"
 
 #: src/DirList.cpp:831 src/DirPanel.cpp:2765 src/DirPanel.cpp:3053
 #: src/DirPanel.cpp:3110 src/FileList.cpp:819 src/FilePanel.cpp:1906
-#: src/FilePanel.cpp:2249 src/FilePanel.cpp:2305 src/FilePanel.cpp:4232
+#: src/FilePanel.cpp:2249 src/FilePanel.cpp:2305 src/FilePanel.cpp:4233
 #: src/SearchPanel.cpp:3821 src/SearchPanel.cpp:4168 src/SearchPanel.cpp:4224
 msgid "Symlink"
 msgstr "Verknüpfung"
@@ -656,7 +657,7 @@ msgstr "Eingehängter Datenträger %s reagiert nicht..."
 #: src/DirList.cpp:1985 src/FileList.cpp:4911 src/FileList.cpp:4917
 #: src/FileList.cpp:5021 src/FileList.cpp:5717 src/FileList.cpp:5723
 #: src/FileList.cpp:5845 src/Properties.cpp:471 src/Properties.cpp:593
-#: src/Properties.cpp:1158 src/RenameDialog.cpp:249 src/SearchPanel.cpp:2068
+#: src/Properties.cpp:1160 src/RenameDialog.cpp:249 src/SearchPanel.cpp:2068
 #: src/SearchPanel.cpp:2074 src/SearchWindow.cpp:218
 msgid "Folder"
 msgstr "Ordner"
@@ -752,17 +753,17 @@ msgstr "Aktives Anzeigefeld"
 #: src/DirPanel.cpp:1651 src/DirPanel.cpp:1759 src/FileDialog.cpp:436
 #: src/FileDialog.cpp:501 src/FilePanel.cpp:1313 src/FilePanel.cpp:1516
 #: src/SearchPanel.cpp:508 src/SearchPanel.cpp:711 src/SearchPanel.cpp:1865
-#: src/XFileExplorer.cpp:4490 src/XFileImage.cpp:2221 src/XFileImage.cpp:2266
+#: src/XFileExplorer.cpp:4490 src/XFileImage.cpp:2213 src/XFileImage.cpp:2259
 #, c-format
 msgid " Permission to: %s denied."
 msgstr " Zugriff auf %s verweigert."
 
 #: src/DirPanel.cpp:817 src/DirPanel.cpp:944 src/DirPanel.cpp:1071
-#: src/DirPanel.cpp:3805 src/FilePanel.cpp:5182 src/WriteWindow.cpp:2017
+#: src/DirPanel.cpp:3805 src/FilePanel.cpp:5183 src/WriteWindow.cpp:2017
 #: src/XFileExplorer.cpp:4622 src/XFileExplorer.cpp:4689
 #: src/XFileExplorer.cpp:5429 src/XFileArchive.cpp:901
 #: src/XFileArchive.cpp:1041 src/XFileArchive.cpp:1191
-#: src/XFileArchive.cpp:1263 src/XFileImage.cpp:1954
+#: src/XFileArchive.cpp:1263 src/XFileImage.cpp:1943
 #, c-format
 msgid "Can't execute command %s"
 msgstr "Kann Befehl %s nicht ausführen"
@@ -770,7 +771,7 @@ msgstr "Kann Befehl %s nicht ausführen"
 #: src/DirPanel.cpp:836 src/DirPanel.cpp:963 src/DirPanel.cpp:1223
 #: src/DirPanel.cpp:1566 src/DirPanel.cpp:1646 src/DirPanel.cpp:2853
 #: src/DirPanel.cpp:2881 src/FilePanel.cpp:2047 src/FilePanel.cpp:2068
-#: src/Properties.cpp:1495 src/SearchPanel.cpp:3977 src/SearchPanel.cpp:4005
+#: src/Properties.cpp:1497 src/SearchPanel.cpp:3977 src/SearchPanel.cpp:4005
 #: src/XFileExplorer.cpp:4485
 #, c-format
 msgid "Folder %s doesn't exist"
@@ -780,17 +781,17 @@ msgstr "Ordner %s existiert nicht"
 msgid "Modify Bookmark"
 msgstr "Lesezeichen bearbeiten"
 
-#: src/DirPanel.cpp:1104 src/DirPanel.cpp:1181 src/FilePanel.cpp:4275
+#: src/DirPanel.cpp:1104 src/DirPanel.cpp:1181 src/FilePanel.cpp:4276
 #: src/XFileExplorer.cpp:4339
 msgid "Name:"
 msgstr "Name:"
 
-#: src/DirPanel.cpp:1105 src/DirPanel.cpp:1182 src/FilePanel.cpp:4276
+#: src/DirPanel.cpp:1105 src/DirPanel.cpp:1182 src/FilePanel.cpp:4277
 #: src/XFileExplorer.cpp:4340
 msgid "Icon:"
 msgstr "Symbol:"
 
-#: src/DirPanel.cpp:1118 src/DirPanel.cpp:1187 src/FilePanel.cpp:4281
+#: src/DirPanel.cpp:1118 src/DirPanel.cpp:1187 src/FilePanel.cpp:4282
 #: src/Properties.cpp:713 src/Properties.cpp:728 src/XFileExplorer.cpp:4345
 msgid "Location:"
 msgstr "Adresse:"
@@ -804,7 +805,7 @@ msgstr "Lesezeichen '%s' &entfernen?"
 msgid "Confirm Remove"
 msgstr "Entfernen bestätigen"
 
-#: src/DirPanel.cpp:1181 src/FilePanel.cpp:4275 src/XFileExplorer.cpp:4339
+#: src/DirPanel.cpp:1181 src/FilePanel.cpp:4276 src/XFileExplorer.cpp:4339
 msgid "Add Bookmark"
 msgstr "Lesezeichen setzen"
 
@@ -813,7 +814,7 @@ msgid "New &Folder..."
 msgstr "Neuer &Ordner..."
 
 #: src/DirPanel.cpp:1483 src/DirPanel.cpp:1498 src/DirPanel.cpp:1809
-#: src/FilePanel.cpp:4852 src/FilePanel.cpp:4897
+#: src/FilePanel.cpp:4853 src/FilePanel.cpp:4898
 msgid "&Add Bookmark..."
 msgstr "Lesezeichen &setzen..."
 
@@ -822,8 +823,8 @@ msgid "&Hidden Folders"
 msgstr "Ve&rsteckte Ordner"
 
 #: src/DirPanel.cpp:1487 src/DirPanel.cpp:1502 src/FileDialog.cpp:1924
-#: src/FilePanel.cpp:4879 src/FilePanel.cpp:4924 src/SearchPanel.cpp:2513
-#: src/XFileImage.cpp:1134
+#: src/FilePanel.cpp:4880 src/FilePanel.cpp:4925 src/SearchPanel.cpp:2513
+#: src/XFileImage.cpp:1130
 msgid "Ignore C&ase"
 msgstr "I&gnoriere Groß-/Kleinschreibung"
 
@@ -839,7 +840,7 @@ msgstr "&Baum aufklappen"
 msgid "Collap&se Tree"
 msgstr "Baum &zuklappen"
 
-#: src/DirPanel.cpp:1507 src/FilePanel.cpp:4927 src/SearchPanel.cpp:2516
+#: src/DirPanel.cpp:1507 src/FilePanel.cpp:4928 src/SearchPanel.cpp:2516
 msgid "Pane&l"
 msgstr "&Anzeigefeld"
 
@@ -851,16 +852,16 @@ msgstr "Laufwerk &verbinden"
 msgid "Unmoun&t"
 msgstr "Laufwerk &trennen"
 
-#: src/DirPanel.cpp:1522 src/FilePanel.cpp:5018 src/SearchPanel.cpp:2577
+#: src/DirPanel.cpp:1522 src/FilePanel.cpp:5019 src/SearchPanel.cpp:2577
 msgid "&Add to Archive..."
-msgstr "Ein komprimiertes Paket &herstellen..."
+msgstr "Zum Archiv &hinzufügen..."
 
-#: src/DirPanel.cpp:1527 src/FilePanel.cpp:5042 src/SearchPanel.cpp:2610
-#: src/XFileExplorer.cpp:6209 src/XFileExplorer.cpp:6232
+#: src/DirPanel.cpp:1527 src/FilePanel.cpp:5043 src/SearchPanel.cpp:2610
+#: src/XFileExplorer.cpp:6210 src/XFileExplorer.cpp:6233
 msgid "Cop&y Name"
 msgstr "Name &kopieren"
 
-#: src/DirPanel.cpp:1529 src/FilePanel.cpp:5049 src/Preferences.cpp:1112
+#: src/DirPanel.cpp:1529 src/FilePanel.cpp:5050 src/Preferences.cpp:1112
 #: src/SearchPanel.cpp:2600 src/XFileExplorer.cpp:1362
 msgid "Re&name..."
 msgstr "&Umbenennen..."
@@ -869,12 +870,12 @@ msgstr "&Umbenennen..."
 msgid "Cop&y to..."
 msgstr "Kopieren &nach..."
 
-#: src/DirPanel.cpp:1531 src/FilePanel.cpp:5051 src/SearchPanel.cpp:2602
+#: src/DirPanel.cpp:1531 src/FilePanel.cpp:5052 src/SearchPanel.cpp:2602
 #: src/XFileExplorer.cpp:1374
 msgid "&Move to..."
 msgstr "&Verschieben nach..."
 
-#: src/DirPanel.cpp:1532 src/FilePanel.cpp:5052 src/SearchPanel.cpp:2603
+#: src/DirPanel.cpp:1532 src/FilePanel.cpp:5053 src/SearchPanel.cpp:2603
 msgid "Symlin&k to..."
 msgstr "Ve&rknüpfung mit..."
 
@@ -886,7 +887,7 @@ msgstr "In den &Papierkorb verschieben"
 msgid "R&estore From Trash"
 msgstr "Aus dem Papierkorb &zurückholen"
 
-#: src/DirPanel.cpp:1535 src/FilePanel.cpp:5055 src/SearchPanel.cpp:2605
+#: src/DirPanel.cpp:1535 src/FilePanel.cpp:5056 src/SearchPanel.cpp:2605
 #: src/XFileExplorer.cpp:1398
 msgid "&Delete"
 msgstr "&Löschen"
@@ -897,10 +898,8 @@ msgstr "&Eigenschaften"
 
 #: src/DirPanel.cpp:1614 src/DirPanel.cpp:1694 src/DirPanel.cpp:1813
 #: src/TabButtons.cpp:437
-#, fuzzy
-#| msgid "New Name"
 msgid "New &Tab"
-msgstr "Neuer Name"
+msgstr "Neuer &Reiter"
 
 #: src/DirPanel.cpp:1615 src/DirPanel.cpp:1695 src/DirPanel.cpp:1814
 #: src/XFileExplorer.cpp:1611
@@ -918,7 +917,7 @@ msgstr "La&ufwerk trennen"
 
 #: src/DirPanel.cpp:1748 src/DirPanel.cpp:1816 src/Preferences.cpp:1113
 msgid "&Remove"
-msgstr "$Entfernen"
+msgstr "&Entfernen"
 
 #: src/DirPanel.cpp:1815
 msgid "&Modify..."
@@ -934,41 +933,41 @@ msgstr "A&bwärts bewegen"
 
 #: src/DirPanel.cpp:1986 src/DirPanel.cpp:2091 src/DirPanel.cpp:3789
 #: src/DirPanel.cpp:3815 src/DirPanel.cpp:4025 src/DirPanel.cpp:4051
-#: src/DirPanel.cpp:4099 src/DirPanel.cpp:4125 src/File.cpp:2307
-#: src/File.cpp:2331 src/FilePanel.cpp:1145 src/FilePanel.cpp:1170
-#: src/FilePanel.cpp:3907 src/FilePanel.cpp:3950 src/FilePanel.cpp:5165
-#: src/FilePanel.cpp:5192 src/FilePanel.cpp:5221 src/FilePanel.cpp:5370
-#: src/FilePanel.cpp:6057 src/FilePanel.cpp:6088 src/FilePanel.cpp:6199
-#: src/FilePanel.cpp:6225 src/FilePanel.cpp:6481 src/FilePanel.cpp:6534
+#: src/DirPanel.cpp:4099 src/DirPanel.cpp:4125 src/File.cpp:2293
+#: src/File.cpp:2317 src/FilePanel.cpp:1145 src/FilePanel.cpp:1170
+#: src/FilePanel.cpp:3908 src/FilePanel.cpp:3951 src/FilePanel.cpp:5166
+#: src/FilePanel.cpp:5193 src/FilePanel.cpp:5222 src/FilePanel.cpp:5371
+#: src/FilePanel.cpp:6058 src/FilePanel.cpp:6089 src/FilePanel.cpp:6200
+#: src/FilePanel.cpp:6226 src/FilePanel.cpp:6482 src/FilePanel.cpp:6535
 #: src/SearchPanel.cpp:933 src/SearchPanel.cpp:2704 src/SearchPanel.cpp:4524
 #: src/SearchPanel.cpp:4555 src/XFileExplorer.cpp:4672
 #: src/XFileExplorer.cpp:4700 src/XFileExplorer.cpp:5376
-#: src/XFileExplorer.cpp:5481 src/XFileExplorer.cpp:5554
-#: src/XFileExplorer.cpp:5612
+#: src/XFileExplorer.cpp:5481 src/XFileExplorer.cpp:5555
+#: src/XFileExplorer.cpp:5613
 #, c-format
 msgid "Can't enter folder %s: %s"
 msgstr "Kann Ordner %s nicht öffnen: %s"
 
 #: src/DirPanel.cpp:1991 src/DirPanel.cpp:2096 src/DirPanel.cpp:3793
 #: src/DirPanel.cpp:3820 src/DirPanel.cpp:4029 src/DirPanel.cpp:4056
-#: src/DirPanel.cpp:4103 src/DirPanel.cpp:4130 src/File.cpp:2311
-#: src/File.cpp:2336 src/FilePanel.cpp:1150 src/FilePanel.cpp:1175
-#: src/FilePanel.cpp:3912 src/FilePanel.cpp:3955 src/FilePanel.cpp:5170
-#: src/FilePanel.cpp:5197 src/FilePanel.cpp:5226 src/FilePanel.cpp:5375
-#: src/FilePanel.cpp:6062 src/FilePanel.cpp:6093 src/FilePanel.cpp:6203
-#: src/FilePanel.cpp:6230 src/FilePanel.cpp:6486 src/FilePanel.cpp:6539
+#: src/DirPanel.cpp:4103 src/DirPanel.cpp:4130 src/File.cpp:2297
+#: src/File.cpp:2322 src/FilePanel.cpp:1150 src/FilePanel.cpp:1175
+#: src/FilePanel.cpp:3913 src/FilePanel.cpp:3956 src/FilePanel.cpp:5171
+#: src/FilePanel.cpp:5198 src/FilePanel.cpp:5227 src/FilePanel.cpp:5376
+#: src/FilePanel.cpp:6063 src/FilePanel.cpp:6094 src/FilePanel.cpp:6204
+#: src/FilePanel.cpp:6231 src/FilePanel.cpp:6487 src/FilePanel.cpp:6540
 #: src/SearchPanel.cpp:938 src/SearchPanel.cpp:2709 src/SearchPanel.cpp:4529
 #: src/SearchPanel.cpp:4560 src/XFileExplorer.cpp:4677
 #: src/XFileExplorer.cpp:4705 src/XFileExplorer.cpp:5381
-#: src/XFileExplorer.cpp:5486 src/XFileExplorer.cpp:5559
-#: src/XFileExplorer.cpp:5617
+#: src/XFileExplorer.cpp:5486 src/XFileExplorer.cpp:5560
+#: src/XFileExplorer.cpp:5618
 #, c-format
 msgid "Can't enter folder %s"
 msgstr "Kann Ordner %s nicht öffnen"
 
 #: src/DirPanel.cpp:2009 src/FileDialog.cpp:1184 src/FilePanel.cpp:2029
-#: src/FilePanel.cpp:4089 src/FilePanel.cpp:4202 src/FilePanel.cpp:4533
-#: src/FilePanel.cpp:5281 src/SearchPanel.cpp:1030 src/SearchPanel.cpp:2744
+#: src/FilePanel.cpp:4090 src/FilePanel.cpp:4203 src/FilePanel.cpp:4534
+#: src/FilePanel.cpp:5282 src/SearchPanel.cpp:1030 src/SearchPanel.cpp:2744
 #: src/SearchPanel.cpp:3945 src/XFileArchive.cpp:1068
 msgid "File name is empty, operation cancelled"
 msgstr "Dateiname ist leer, Ausführung wurde abgebrochen"
@@ -1022,7 +1021,7 @@ msgid "Symlink %s items from: %s"
 msgstr "%s Einträge verknüpfen von: %s"
 
 #: src/DirPanel.cpp:2802 src/DirPanel.cpp:3730 src/FileDialog.cpp:1123
-#: src/FilePanel.cpp:4000 src/Properties.cpp:1473
+#: src/FilePanel.cpp:4001 src/Properties.cpp:1475
 msgid "The / character is not allowed in folder names, operation cancelled"
 msgstr ""
 "Das \"/\" Zeichen ist nicht in Ordnernamen erlaubt, Ausführung wurde "
@@ -1031,8 +1030,8 @@ msgstr ""
 #: src/DirPanel.cpp:2846 src/DirPanel.cpp:2867 src/DirPanel.cpp:2874
 #: src/DirPanel.cpp:3322 src/DirPanel.cpp:3438 src/FilePanel.cpp:2054
 #: src/FilePanel.cpp:2082 src/FilePanel.cpp:2089 src/FilePanel.cpp:2633
-#: src/FilePanel.cpp:3120 src/FilePanel.cpp:5511 src/FilePanel.cpp:5768
-#: src/Properties.cpp:1487 src/Properties.cpp:1500 src/SearchPanel.cpp:2954
+#: src/FilePanel.cpp:3120 src/FilePanel.cpp:5512 src/FilePanel.cpp:5769
+#: src/Properties.cpp:1489 src/Properties.cpp:1502 src/SearchPanel.cpp:2954
 #: src/SearchPanel.cpp:3970 src/SearchPanel.cpp:3991 src/SearchPanel.cpp:3998
 #: src/XFileArchive.cpp:605 src/XFileArchive.cpp:808 src/XFileArchive.cpp:1199
 #: src/XFileArchive.cpp:1271
@@ -1047,7 +1046,7 @@ msgid "%s is not a folder"
 msgstr "%s ist kein Ordner"
 
 #: src/DirPanel.cpp:2974 src/FilePanel.cpp:2170 src/FilePanel.cpp:2326
-#: src/Properties.cpp:1508 src/SearchPanel.cpp:4091 src/SearchPanel.cpp:4273
+#: src/Properties.cpp:1510 src/SearchPanel.cpp:4091 src/SearchPanel.cpp:4273
 msgid "Rename Files"
 msgstr "Dateien umbenennen"
 
@@ -1096,7 +1095,6 @@ msgstr "Löschen des Ordners - abgebrochen!"
 msgid "Move folder %s to trash can?"
 msgstr "Ordner %s in den Papierkorb verschieben?"
 
-# JOO: ist das richtig ?
 #: src/DirPanel.cpp:3448 src/DirPanel.cpp:3466 src/FilePanel.cpp:2689
 #: src/FilePanel.cpp:2749 src/FilePanel.cpp:2763 src/SearchPanel.cpp:3046
 #: src/SearchPanel.cpp:3100 src/SearchPanel.cpp:3114
@@ -1105,7 +1103,7 @@ msgstr "Papierkorb-Leeren bestätigen"
 
 #: src/DirPanel.cpp:3456 src/FilePanel.cpp:2701 src/SearchPanel.cpp:3057
 msgid "Move to Trash"
-msgstr "Verschieben in den Papierkorb"
+msgstr "In den Papierkorb verschieben"
 
 #: src/DirPanel.cpp:3465
 #, c-format
@@ -1126,7 +1124,7 @@ msgstr "Verschieben in den Papierkorb - abgebrochen!"
 
 #: src/DirPanel.cpp:3552 src/FilePanel.cpp:2905
 msgid "Restore From Trash"
-msgstr "Wiederherstellen aus dem Papierkorb"
+msgstr "Aus dem Papierkorb wiederherstellen"
 
 #: src/DirPanel.cpp:3598 src/FilePanel.cpp:2985
 #, c-format
@@ -1155,7 +1153,7 @@ msgid "Can't create folder %s : %s"
 msgstr "Kann Ordner %s nicht erstellen: %s"
 
 #: src/DirPanel.cpp:3650 src/DirPanel.cpp:3762 src/FilePanel.cpp:3049
-#: src/FilePanel.cpp:4032 src/FilePanel.cpp:5569 src/XFileArchive.cpp:882
+#: src/FilePanel.cpp:4033 src/FilePanel.cpp:5570 src/XFileArchive.cpp:882
 #: src/XFileArchive.cpp:1022
 #, c-format
 msgid "Can't create folder %s"
@@ -1170,56 +1168,56 @@ msgstr ""
 msgid "Restore from trash file operation cancelled!"
 msgstr "Abbruch der Wiederherstellung aus dem Papierkorb!"
 
-#: src/DirPanel.cpp:3715 src/FilePanel.cpp:3983
+#: src/DirPanel.cpp:3715 src/FilePanel.cpp:3984
 msgid "Create new folder:"
 msgstr "Neuen Ordner erstellen:"
 
 #: src/DirPanel.cpp:3715 src/FileDialog.cpp:297 src/FileDialog.cpp:1107
-#: src/FilePanel.cpp:3983
+#: src/FilePanel.cpp:3984
 msgid "New Folder"
 msgstr "Neuer Ordner"
 
-#: src/DirPanel.cpp:3722 src/FileDialog.cpp:1114 src/FilePanel.cpp:3992
+#: src/DirPanel.cpp:3722 src/FileDialog.cpp:1114 src/FilePanel.cpp:3993
 msgid "Folder name is empty, operation cancelled"
 msgstr "Ordnername ist leer, Ausführung wurde abgebrochen"
 
-#: src/DirPanel.cpp:3740 src/FileDialog.cpp:1205 src/FilePanel.cpp:4010
-#: src/FilePanel.cpp:4108 src/FilePanel.cpp:4212
+#: src/DirPanel.cpp:3740 src/FileDialog.cpp:1205 src/FilePanel.cpp:4011
+#: src/FilePanel.cpp:4109 src/FilePanel.cpp:4213
 #, c-format
 msgid "File or folder %s already exists"
 msgstr "Datei oder Ordner %s existiert bereits"
 
 #: src/DirPanel.cpp:3897 src/DirPanel.cpp:3948
 msgid "Can't find server name"
-msgstr ""
+msgstr "Kann den Server-Namen nicht finden"
 
 #: src/DirPanel.cpp:3912
 msgid "Can't find share name"
-msgstr ""
+msgstr "Kann den Freigabe-Namen nicht finden"
 
 #: src/DirPanel.cpp:3971
-#, fuzzy
-#| msgid "\tFilter by user name"
 msgid "Can't find user name"
-msgstr "\tFiltern nach Benutzername"
+msgstr "Kann den Benutzernamen nicht finden"
 
-#: src/DirPanel.cpp:4005 src/DirPanel.cpp:4079 src/File.cpp:277
-#: src/FilePanel.cpp:6180
+#: src/DirPanel.cpp:4005 src/DirPanel.cpp:4079 src/File.cpp:282
+#: src/FilePanel.cpp:6181
 msgid "Mount file system..."
 msgstr "Laufwerk einhängen..."
 
-#: src/DirPanel.cpp:4006 src/DirPanel.cpp:4080 src/FilePanel.cpp:6181
+#: src/DirPanel.cpp:4006 src/DirPanel.cpp:4080 src/FilePanel.cpp:6182
 msgid "Volume busy, please wait while mounting folder:"
 msgstr ""
+"Volume ist beschäftigt, bitte warten während der Ordner eingehängt wird:"
 
-#: src/DirPanel.cpp:4012 src/DirPanel.cpp:4086 src/File.cpp:288
-#: src/FilePanel.cpp:6187
+#: src/DirPanel.cpp:4012 src/DirPanel.cpp:4086 src/File.cpp:293
+#: src/FilePanel.cpp:6188
 msgid "Unmount file system..."
 msgstr "Laufwerk trennen..."
 
-#: src/DirPanel.cpp:4013 src/DirPanel.cpp:4087 src/FilePanel.cpp:6188
+#: src/DirPanel.cpp:4013 src/DirPanel.cpp:4087 src/FilePanel.cpp:6189
 msgid "Volume busy, please wait while unmounting folder:"
 msgstr ""
+"Volume ist beschäftigt, bitte warten während der Ordner ausgehängt wird:"
 
 #: src/ExecuteBox.cpp:47
 msgid "E&xecute"
@@ -1229,66 +1227,66 @@ msgstr "Aus&führen"
 msgid "Execute in Console &Mode"
 msgstr "Im Konsolen&modus ausführen"
 
-#: src/ExecuteBox.cpp:51 src/FilePanel.cpp:5002 src/SearchPanel.cpp:2564
+#: src/ExecuteBox.cpp:51 src/FilePanel.cpp:5003 src/SearchPanel.cpp:2564
 #: src/WriteWindow.cpp:615 src/XFileExplorer.cpp:1470
 msgid "&Edit"
 msgstr "&Bearbeiten"
 
-#: src/File.cpp:121 src/xfeutils.cpp:859 src/xfeutils.cpp:945
+#: src/File.cpp:125 src/xfeutils.cpp:859 src/xfeutils.cpp:945
 #, c-format
 msgid "Error: Can't close folder %s\n"
 msgstr "Fehler: Kann den Ordner %s nicht schließen\n"
 
-#: src/File.cpp:210 src/File.cpp:228
+#: src/File.cpp:215 src/File.cpp:233
 msgid "Source:"
 msgstr "Quelle :"
 
-#: src/File.cpp:211 src/File.cpp:229
+#: src/File.cpp:216 src/File.cpp:234
 msgid "Target:"
 msgstr "Ziel :"
 
-#: src/File.cpp:217
+#: src/File.cpp:222
 msgid "Copied data:"
 msgstr "Kopierte Daten:"
 
-#: src/File.cpp:219 src/File.cpp:237
+#: src/File.cpp:224 src/File.cpp:242
 msgid "Remaining time:"
 msgstr "Verbleibende Zeit:"
 
-#: src/File.cpp:235
+#: src/File.cpp:240
 msgid "Moved data:"
 msgstr "Verschobene Daten:"
 
-#: src/File.cpp:246 src/File.cpp:1392
+#: src/File.cpp:251 src/File.cpp:1378
 msgid "Delete:"
 msgstr "Löschen :"
 
-#: src/File.cpp:247
+#: src/File.cpp:252
 msgid "From:"
 msgstr "Von :"
 
-#: src/File.cpp:257 src/File.cpp:1945 src/File.cpp:1973 src/File.cpp:2037
+#: src/File.cpp:262 src/File.cpp:1931 src/File.cpp:1959 src/File.cpp:2023
 msgid "Changing permissions..."
 msgstr "Ändere Berechtigungen..."
 
-#: src/File.cpp:258 src/File.cpp:266 src/File.cpp:1947 src/File.cpp:2039
-#: src/File.cpp:2142 src/File.cpp:2231
+#: src/File.cpp:263 src/File.cpp:271 src/File.cpp:1933 src/File.cpp:2025
+#: src/File.cpp:2128 src/File.cpp:2217
 msgid "File: "
 msgstr "Datei : "
 
-#: src/File.cpp:265 src/File.cpp:2140 src/File.cpp:2171 src/File.cpp:2229
+#: src/File.cpp:270 src/File.cpp:2126 src/File.cpp:2157 src/File.cpp:2215
 msgid "Changing owner..."
 msgstr "Ändere Besitzer..."
 
-#: src/File.cpp:278
+#: src/File.cpp:283
 msgid "Mounting folder:"
 msgstr "Ordner einhängen:"
 
-#: src/File.cpp:289
+#: src/File.cpp:294
 msgid "Unmounting folder:"
 msgstr "Ordner trennen:"
 
-#: src/File.cpp:437
+#: src/File.cpp:452
 #, c-format
 msgid ""
 "Folder %s already exists.\n"
@@ -1299,7 +1297,7 @@ msgstr ""
 "Überschreiben?\n"
 "=> Achtung, Dateien im Verzeichnis könnten überschrieben werden!"
 
-#: src/File.cpp:442 src/File.cpp:2353
+#: src/File.cpp:457 src/File.cpp:2339
 #, c-format
 msgid ""
 "File %s already exists.\n"
@@ -1308,176 +1306,176 @@ msgstr ""
 "Datei %s existiert bereits.\n"
 "Überschreiben?"
 
-#: src/File.cpp:515 src/File.cpp:520 src/File.cpp:527 src/File.cpp:531
-#: src/File.cpp:2354
+#: src/File.cpp:530 src/File.cpp:535 src/File.cpp:542 src/File.cpp:546
+#: src/File.cpp:2340
 msgid "Confirm Overwrite"
 msgstr "Überschreiben bestätigen"
 
-#: src/File.cpp:635 src/File.cpp:779 src/File.cpp:1208 src/File.cpp:1627
+#: src/File.cpp:633 src/File.cpp:759 src/File.cpp:1194 src/File.cpp:1613
 msgid "Source: "
 msgstr "Quelle : "
 
-#: src/File.cpp:640 src/File.cpp:784 src/File.cpp:1213 src/File.cpp:1632
+#: src/File.cpp:638 src/File.cpp:764 src/File.cpp:1199 src/File.cpp:1618
 msgid "Target: "
 msgstr "Ziel : "
 
-#: src/File.cpp:663 src/File.cpp:705 src/File.cpp:808 src/File.cpp:905
+#: src/File.cpp:662 src/File.cpp:710 src/File.cpp:789 src/File.cpp:889
 #, c-format
 msgid "Can't copy file %s: %s"
 msgstr "Kann Datei %s nicht kopieren: %s"
 
-#: src/File.cpp:709 src/File.cpp:812 src/File.cpp:909
+#: src/File.cpp:714 src/File.cpp:793 src/File.cpp:893
 #, c-format
 msgid "Can't copy file %s"
 msgstr "Kann Datei %s nicht kopieren"
 
-#: src/File.cpp:859
+#: src/File.cpp:842
 #, c-format
 msgid "Can't preserve date when copying file %s : %s"
 msgstr "Kann Datum der Datei %s beim Kopieren nicht erhalten: %s"
 
-#: src/File.cpp:864
+#: src/File.cpp:847
 #, c-format
 msgid "Can't preserve date when copying file %s"
 msgstr "Kann Datum der Datei %s beim Kopieren nicht erhalten"
 
-#: src/File.cpp:1006
+#: src/File.cpp:992
 #, c-format
 msgid "Can't copy folder %s : Permission denied"
 msgstr "Kann Ordner %s nicht kopieren: Zugriff verweigert"
 
-#: src/File.cpp:1010
+#: src/File.cpp:996
 #, c-format
 msgid "Can't copy file %s : Permission denied"
 msgstr "Kann Datei %s nicht kopieren: Zugriff verweigert"
 
-#: src/File.cpp:1047
+#: src/File.cpp:1033
 #, c-format
 msgid "Can't preserve date when copying folder %s: %s"
 msgstr "Kann Datum beim Kopieren von Ordner %s nicht erhalten: %s"
 
-#: src/File.cpp:1051
+#: src/File.cpp:1037
 #, c-format
 msgid "Can't preserve date when copying folder %s"
 msgstr "Kann Datum der Ordner %s beim Kopieren nicht erhalten"
 
-#: src/File.cpp:1157 src/File.cpp:1455 src/File.cpp:1577 src/File.cpp:1792
+#: src/File.cpp:1143 src/File.cpp:1441 src/File.cpp:1563 src/File.cpp:1778
 #, c-format
 msgid "Source %s doesn't exist"
 msgstr "Quelle %s existiert nicht"
 
-#: src/File.cpp:1165 src/File.cpp:1198 src/File.cpp:1462 src/File.cpp:1585
-#: src/File.cpp:1613 src/File.cpp:1800 src/File.cpp:1819
+#: src/File.cpp:1151 src/File.cpp:1184 src/File.cpp:1448 src/File.cpp:1571
+#: src/File.cpp:1599 src/File.cpp:1786 src/File.cpp:1805
 #, c-format
 msgid "Destination %s is identical to source"
 msgstr "Ziel %s ist identisch zur Quelle"
 
-#: src/File.cpp:1174 src/File.cpp:1594
+#: src/File.cpp:1160 src/File.cpp:1580
 #, c-format
 msgid "Target %s is a sub-folder of source"
 msgstr "Ziel %s ist ein Unterordner der Quelle"
 
-#: src/File.cpp:1306
+#: src/File.cpp:1292
 msgid "Delete folder: "
 msgstr "Ordner löschen: "
 
-#: src/File.cpp:1312 src/File.cpp:1398
+#: src/File.cpp:1298 src/File.cpp:1384
 msgid "From: "
 msgstr "Von : "
 
-#: src/File.cpp:1354
+#: src/File.cpp:1340
 #, c-format
 msgid "Can't delete folder %s: %s"
 msgstr "Kann Ordner %s nicht löschen: %s"
 
-#: src/File.cpp:1358
+#: src/File.cpp:1344
 #, c-format
 msgid "Can't delete folder %s"
 msgstr "Kann Ordner %s nicht löschen"
 
-#: src/File.cpp:1419
+#: src/File.cpp:1405
 #, c-format
 msgid "Can't delete file %s: %s"
 msgstr "Kann Datei %s nicht löschen: %s"
 
-#: src/File.cpp:1423
+#: src/File.cpp:1409
 #, c-format
 msgid "Can't delete file %s"
 msgstr "Kann Datei %s nicht löschen"
 
-#: src/File.cpp:1472
+#: src/File.cpp:1458
 #, c-format
 msgid "Destination %s already exists"
 msgstr "Ziel %s existiert bereits"
 
-#: src/File.cpp:1532 src/File.cpp:1557 src/File.cpp:1755
+#: src/File.cpp:1518 src/File.cpp:1543 src/File.cpp:1741
 #, c-format
 msgid "Can't rename to target %s: %s"
 msgstr "Kann nicht nach Ziel %s umbenennen: %s"
 
-#: src/File.cpp:1892
+#: src/File.cpp:1878
 #, c-format
 msgid "Can't symlink %s: %s"
 msgstr "Kann Verknüpfung %s nicht erstellen: %s"
 
-#: src/File.cpp:1896
+#: src/File.cpp:1882
 #, c-format
 msgid "Can't symlink %s"
 msgstr "Kann Verknüpfung %s nicht erstellen"
 
-#: src/File.cpp:1975 src/File.cpp:2173
+#: src/File.cpp:1961 src/File.cpp:2159
 msgid "Folder: "
 msgstr "Ordner: "
 
-#: src/File.cpp:2318
+#: src/File.cpp:2304
 msgid "Extract archive"
 msgstr "Archiv entpacken"
 
-#: src/File.cpp:2364
+#: src/File.cpp:2350
 msgid "Add to Archive "
 msgstr "Zum Archiv hinzufügen "
 
-#: src/File.cpp:2382 src/File.cpp:2629
+#: src/File.cpp:2368 src/File.cpp:2615
 msgid "Computing the size of files to copy: "
 msgstr "Berechnung der Größe der zu kopierenden Dateien: "
 
-#: src/File.cpp:2386 src/File.cpp:2633
+#: src/File.cpp:2372 src/File.cpp:2619
 msgid "Computing the size of files to move: "
 msgstr "Berechnung der Größe der zu verschiebenden Dateien: "
 
-#: src/File.cpp:2480 src/FilePanel.cpp:6367 src/SearchPanel.cpp:4972
+#: src/File.cpp:2466 src/FilePanel.cpp:6368 src/SearchPanel.cpp:4972
 #, c-format
 msgid "Failed command: %s"
 msgstr "Fehlgeschlagener Befehl: %s"
 
-#: src/File.cpp:2546 src/File.cpp:2550
+#: src/File.cpp:2532 src/File.cpp:2536
 msgid "Success"
 msgstr "Erfolg"
 
-#: src/File.cpp:2546
+#: src/File.cpp:2532
 #, c-format
 msgid "Folder %s was successfully mounted."
 msgstr "Ordner %s wurde erfolgreich eingehängt."
 
-#: src/File.cpp:2550
+#: src/File.cpp:2536
 #, c-format
 msgid "Folder %s was successfully unmounted."
 msgstr "Ordner %s wurde erfolgreich getrennt."
 
-#: src/File.cpp:2561 src/XFilePackage.cpp:420
+#: src/File.cpp:2547 src/XFilePackage.cpp:420
 msgid "Install / Upgrade Package"
 msgstr "Paket installieren/aktualisieren"
 
-#: src/File.cpp:2566 src/XFilePackage.cpp:424
+#: src/File.cpp:2552 src/XFilePackage.cpp:424
 #, c-format
 msgid "Installing package: %s \n"
 msgstr "Paket installieren: %s \n"
 
-#: src/File.cpp:2579 src/XFilePackage.cpp:470
+#: src/File.cpp:2565 src/XFilePackage.cpp:470
 msgid "Uninstall Package"
 msgstr "Paket deinstallieren"
 
-#: src/File.cpp:2584 src/XFilePackage.cpp:474
+#: src/File.cpp:2570 src/XFilePackage.cpp:474
 #, c-format
 msgid "Uninstalling package: %s \n"
 msgstr "Paket deinstallieren: %s \n"
@@ -1499,39 +1497,38 @@ msgstr "Date&filter:"
 msgid "Read Only"
 msgstr "Schreibgeschützt"
 
-#: src/FileDialog.cpp:262 src/XFileExplorer.cpp:1081 src/XFileImage.cpp:532
+#: src/FileDialog.cpp:262 src/XFileExplorer.cpp:1081
 msgid "Go to Previous Folder"
 msgstr "Zum vorherigen Ordner wechseln"
 
-#: src/FileDialog.cpp:271 src/XFileExplorer.cpp:1090 src/XFileImage.cpp:540
+#: src/FileDialog.cpp:271 src/XFileExplorer.cpp:1090
 msgid "Go to Next Folder"
 msgstr "Zum nächsten Ordner wechseln"
 
 #: src/FileDialog.cpp:279 src/SearchPanel.cpp:227 src/XFileExplorer.cpp:1099
-#: src/XFileImage.cpp:548
 msgid "Go to Parent Folder"
 msgstr "Zum übergeordneten Ordner wechseln"
 
-#: src/FileDialog.cpp:285 src/XFileExplorer.cpp:1107 src/XFileImage.cpp:557
+#: src/FileDialog.cpp:285 src/XFileExplorer.cpp:1107
 msgid "Go to Home Folder"
 msgstr "Zum Heimatordner wechseln"
 
-#: src/FileDialog.cpp:291 src/XFileImage.cpp:563
+#: src/FileDialog.cpp:291
 msgid "Go to Working Folder"
 msgstr "Zum Arbeitsordner wechseln"
 
 #: src/FileDialog.cpp:303 src/SearchPanel.cpp:293 src/XFileExplorer.cpp:1286
-#: src/XFileImage.cpp:573
+#: src/XFileImage.cpp:571
 msgid "Big Icon List"
 msgstr "Liste großer Symbole"
 
 #: src/FileDialog.cpp:310 src/SearchPanel.cpp:300 src/XFileExplorer.cpp:1293
-#: src/XFileImage.cpp:579
+#: src/XFileImage.cpp:577
 msgid "Small Icon List"
 msgstr "Liste kleiner Symbole"
 
 #: src/FileDialog.cpp:317 src/SearchPanel.cpp:307 src/XFileExplorer.cpp:1300
-#: src/XFileImage.cpp:585
+#: src/XFileImage.cpp:583
 msgid "Detailed File List"
 msgstr "Detaillierte Dateiliste"
 
@@ -1539,12 +1536,12 @@ msgstr "Detaillierte Dateiliste"
 msgid "Show hidden files"
 msgstr "Versteckte Dateien anzeigen"
 
-#: src/FileDialog.cpp:325 src/FilePanel.cpp:290 src/XFileImage.cpp:791
+#: src/FileDialog.cpp:325 src/FilePanel.cpp:290 src/XFileImage.cpp:789
 msgid "Hide Hidden Files"
 msgstr "Versteckte Dateien nicht anzeigen"
 
 #: src/FileDialog.cpp:332 src/FilePanel.cpp:295 src/SearchPanel.cpp:320
-#: src/XFileImage.cpp:796
+#: src/XFileImage.cpp:794
 msgid "Show Thumbnails"
 msgstr "Thumbnails anzeigen"
 
@@ -1553,7 +1550,7 @@ msgid "Hide thumbnails"
 msgstr "Thumbnails verstecken"
 
 #: src/FileDialog.cpp:339 src/FileDialog.cpp:1321 src/FilePanel.cpp:301
-#: src/FilePanel.cpp:4695
+#: src/FilePanel.cpp:4696
 msgid "Filter"
 msgstr "Filter"
 
@@ -1569,21 +1566,21 @@ msgstr "Neuen Ordner erstellen..."
 msgid "Create new file..."
 msgstr "Neue Datei erstellen..."
 
-#: src/FileDialog.cpp:1176 src/FilePanel.cpp:4080
+#: src/FileDialog.cpp:1176 src/FilePanel.cpp:4081
 msgid "New File"
 msgstr "Neue Datei"
 
-#: src/FileDialog.cpp:1193 src/FilePanel.cpp:4097 src/Properties.cpp:1478
+#: src/FileDialog.cpp:1193 src/FilePanel.cpp:4098 src/Properties.cpp:1480
 msgid "The / character is not allowed in file names, operation cancelled"
 msgstr ""
 "Das \"/\" Zeichen ist nicht in Dateinamen erlaubt, Ausführung wurde "
 "abgebrochen"
 
-#: src/FileDialog.cpp:1321 src/FilePanel.cpp:4695
+#: src/FileDialog.cpp:1321 src/FilePanel.cpp:4696
 msgid "Show:"
 msgstr "Anzeigen:"
 
-#: src/FileDialog.cpp:1322 src/FilePanel.cpp:4696
+#: src/FileDialog.cpp:1322 src/FilePanel.cpp:4697
 msgid "Also apply to folders"
 msgstr "Gilt auch für Ordner"
 
@@ -1601,11 +1598,11 @@ msgstr " - Filter: %s"
 msgid "Folder Name:"
 msgstr "Ordnername:"
 
-#: src/FileDialog.cpp:1898 src/XFileImage.cpp:1110
+#: src/FileDialog.cpp:1898 src/XFileImage.cpp:1106
 msgid "Go Ho&me"
 msgstr "Gehe zum &Heimatordner"
 
-#: src/FileDialog.cpp:1899 src/XFileImage.cpp:1111
+#: src/FileDialog.cpp:1899 src/XFileImage.cpp:1107
 msgid "Go &Work"
 msgstr "Zum Ar&beitsordner"
 
@@ -1613,114 +1610,114 @@ msgstr "Zum Ar&beitsordner"
 msgid "New &File..."
 msgstr "Neue &Datei..."
 
-#: src/FileDialog.cpp:1901 src/FilePanel.cpp:4850 src/FilePanel.cpp:4895
+#: src/FileDialog.cpp:1901 src/FilePanel.cpp:4851 src/FilePanel.cpp:4896
 msgid "New F&older..."
 msgstr "Neuer &Ordner..."
 
-#: src/FileDialog.cpp:1903 src/FilePanel.cpp:4857 src/FilePanel.cpp:4902
-#: src/XFileExplorer.cpp:1533 src/XFileExplorer.cpp:1564 src/XFileImage.cpp:973
-#: src/XFileImage.cpp:1113
+#: src/FileDialog.cpp:1903 src/FilePanel.cpp:4858 src/FilePanel.cpp:4903
+#: src/XFileExplorer.cpp:1533 src/XFileExplorer.cpp:1564 src/XFileImage.cpp:971
+#: src/XFileImage.cpp:1109
 msgid "&Hidden Files"
 msgstr "Ver&steckte Dateien"
 
-#: src/FileDialog.cpp:1904 src/FilePanel.cpp:4858 src/FilePanel.cpp:4903
-#: src/SearchPanel.cpp:2464 src/SearchPanel.cpp:2493 src/XFileImage.cpp:1114
+#: src/FileDialog.cpp:1904 src/FilePanel.cpp:4859 src/FilePanel.cpp:4904
+#: src/SearchPanel.cpp:2464 src/SearchPanel.cpp:2493 src/XFileImage.cpp:1110
 msgid "Thum&bnails"
 msgstr "Vorsc&haubilder"
 
-#: src/FileDialog.cpp:1906 src/FilePanel.cpp:4860 src/FilePanel.cpp:4905
-#: src/SearchPanel.cpp:2466 src/SearchPanel.cpp:2495 src/XFileImage.cpp:1116
+#: src/FileDialog.cpp:1906 src/FilePanel.cpp:4861 src/FilePanel.cpp:4906
+#: src/SearchPanel.cpp:2466 src/SearchPanel.cpp:2495 src/XFileImage.cpp:1112
 msgid "B&ig Icons"
 msgstr "&Große Symbole"
 
-#: src/FileDialog.cpp:1907 src/FilePanel.cpp:4861 src/FilePanel.cpp:4906
+#: src/FileDialog.cpp:1907 src/FilePanel.cpp:4862 src/FilePanel.cpp:4907
 #: src/SearchPanel.cpp:2467 src/SearchPanel.cpp:2496 src/XFileExplorer.cpp:1537
-#: src/XFileExplorer.cpp:1568 src/XFileImage.cpp:993 src/XFileImage.cpp:1117
+#: src/XFileExplorer.cpp:1568 src/XFileImage.cpp:991 src/XFileImage.cpp:1113
 msgid "&Small Icons"
 msgstr "&Kleine Symbole"
 
-#: src/FileDialog.cpp:1908 src/FilePanel.cpp:4862 src/FilePanel.cpp:4907
+#: src/FileDialog.cpp:1908 src/FilePanel.cpp:4863 src/FilePanel.cpp:4908
 #: src/SearchPanel.cpp:2468 src/SearchPanel.cpp:2497 src/XFileExplorer.cpp:1538
-#: src/XFileExplorer.cpp:1569 src/XFileImage.cpp:999 src/XFileImage.cpp:1118
+#: src/XFileExplorer.cpp:1569 src/XFileImage.cpp:997 src/XFileImage.cpp:1114
 msgid "&Detailed File List"
 msgstr "&Detaillierte Dateiliste"
 
-#: src/FileDialog.cpp:1910 src/FilePanel.cpp:4864 src/FilePanel.cpp:4909
+#: src/FileDialog.cpp:1910 src/FilePanel.cpp:4865 src/FilePanel.cpp:4910
 #: src/SearchPanel.cpp:2470 src/SearchPanel.cpp:2499 src/XFileExplorer.cpp:1540
-#: src/XFileExplorer.cpp:1571 src/XFileImage.cpp:1015 src/XFileImage.cpp:1120
+#: src/XFileExplorer.cpp:1571 src/XFileImage.cpp:1013 src/XFileImage.cpp:1116
 msgid "Autos&ize"
 msgstr "Automat&ische Größe"
 
-#: src/FileDialog.cpp:1911 src/FilePanel.cpp:4865 src/FilePanel.cpp:4910
+#: src/FileDialog.cpp:1911 src/FilePanel.cpp:4866 src/FilePanel.cpp:4911
 #: src/SearchPanel.cpp:2471 src/SearchPanel.cpp:2500 src/XFileExplorer.cpp:1541
-#: src/XFileExplorer.cpp:1572 src/XFileImage.cpp:1016 src/XFileImage.cpp:1121
+#: src/XFileExplorer.cpp:1572 src/XFileImage.cpp:1014 src/XFileImage.cpp:1117
 msgid "&Rows"
 msgstr "&Zeilen"
 
-#: src/FileDialog.cpp:1912 src/FilePanel.cpp:4866 src/FilePanel.cpp:4911
+#: src/FileDialog.cpp:1912 src/FilePanel.cpp:4867 src/FilePanel.cpp:4912
 #: src/SearchPanel.cpp:2472 src/SearchPanel.cpp:2501 src/XFileExplorer.cpp:1542
-#: src/XFileExplorer.cpp:1573 src/XFileImage.cpp:1017 src/XFileImage.cpp:1122
+#: src/XFileExplorer.cpp:1573 src/XFileImage.cpp:1015 src/XFileImage.cpp:1118
 msgid "&Columns"
 msgstr "S&palten"
 
-#: src/FileDialog.cpp:1914 src/FilePanel.cpp:4868 src/FilePanel.cpp:4913
+#: src/FileDialog.cpp:1914 src/FilePanel.cpp:4869 src/FilePanel.cpp:4914
 #: src/SearchPanel.cpp:2474 src/SearchPanel.cpp:2503 src/XFileExplorer.cpp:1544
-#: src/XFileExplorer.cpp:1575 src/XFileImage.cpp:1124
+#: src/XFileExplorer.cpp:1575 src/XFileImage.cpp:1120
 msgid "&Name"
 msgstr "&Name"
 
-#: src/FileDialog.cpp:1915 src/FilePanel.cpp:4869 src/FilePanel.cpp:4914
+#: src/FileDialog.cpp:1915 src/FilePanel.cpp:4870 src/FilePanel.cpp:4915
 #: src/SearchPanel.cpp:2475 src/SearchPanel.cpp:2504 src/XFileExplorer.cpp:1545
-#: src/XFileExplorer.cpp:1576 src/XFileImage.cpp:1125
+#: src/XFileExplorer.cpp:1576 src/XFileImage.cpp:1121
 msgid "Si&ze"
 msgstr "G&röße"
 
-#: src/FileDialog.cpp:1916 src/FilePanel.cpp:4870 src/FilePanel.cpp:4915
-#: src/SearchPanel.cpp:2476 src/SearchPanel.cpp:2505 src/XFileImage.cpp:1126
+#: src/FileDialog.cpp:1916 src/FilePanel.cpp:4871 src/FilePanel.cpp:4916
+#: src/SearchPanel.cpp:2476 src/SearchPanel.cpp:2505 src/XFileImage.cpp:1122
 msgid "&Type"
 msgstr "&Typ"
 
-#: src/FileDialog.cpp:1917 src/FilePanel.cpp:4871 src/FilePanel.cpp:4916
+#: src/FileDialog.cpp:1917 src/FilePanel.cpp:4872 src/FilePanel.cpp:4917
 #: src/SearchPanel.cpp:2477 src/SearchPanel.cpp:2506 src/XFileExplorer.cpp:1547
-#: src/XFileExplorer.cpp:1578 src/XFileImage.cpp:1127
+#: src/XFileExplorer.cpp:1578 src/XFileImage.cpp:1123
 msgid "E&xtension"
 msgstr "&Endung"
 
-#: src/FileDialog.cpp:1918 src/FilePanel.cpp:4872 src/FilePanel.cpp:4917
-#: src/SearchPanel.cpp:2478 src/SearchPanel.cpp:2507 src/XFileImage.cpp:1128
+#: src/FileDialog.cpp:1918 src/FilePanel.cpp:4873 src/FilePanel.cpp:4918
+#: src/SearchPanel.cpp:2478 src/SearchPanel.cpp:2507 src/XFileImage.cpp:1124
 msgid "&Date"
 msgstr "&Datum"
 
-#: src/FileDialog.cpp:1919 src/FilePanel.cpp:4873 src/FilePanel.cpp:4918
-#: src/SearchPanel.cpp:2479 src/SearchPanel.cpp:2508 src/XFileImage.cpp:1129
+#: src/FileDialog.cpp:1919 src/FilePanel.cpp:4874 src/FilePanel.cpp:4919
+#: src/SearchPanel.cpp:2479 src/SearchPanel.cpp:2508 src/XFileImage.cpp:1125
 msgid "&User"
 msgstr "&Benutzer"
 
-#: src/FileDialog.cpp:1920 src/FilePanel.cpp:4874 src/FilePanel.cpp:4919
-#: src/SearchPanel.cpp:2480 src/SearchPanel.cpp:2509 src/XFileImage.cpp:1130
+#: src/FileDialog.cpp:1920 src/FilePanel.cpp:4875 src/FilePanel.cpp:4920
+#: src/SearchPanel.cpp:2480 src/SearchPanel.cpp:2509 src/XFileImage.cpp:1126
 msgid "&Group"
 msgstr "Gru&ppe"
 
-#: src/FileDialog.cpp:1921 src/Properties.cpp:226 src/Properties.cpp:1028
+#: src/FileDialog.cpp:1921 src/Properties.cpp:226 src/Properties.cpp:1030
 #: src/XFileExplorer.cpp:1551 src/XFileExplorer.cpp:1582
-#: src/XFileImage.cpp:1131
+#: src/XFileImage.cpp:1127
 msgid "&Permissions"
 msgstr "Bere&chtigungen"
 
-#: src/FileDialog.cpp:1922 src/FilePanel.cpp:4876 src/FilePanel.cpp:4921
+#: src/FileDialog.cpp:1922 src/FilePanel.cpp:4877 src/FilePanel.cpp:4922
 #: src/SearchPanel.cpp:2482 src/SearchPanel.cpp:2511 src/XFileExplorer.cpp:1552
-#: src/XFileExplorer.cpp:1583 src/XFileImage.cpp:1132
+#: src/XFileExplorer.cpp:1583 src/XFileImage.cpp:1128
 msgid "&Link"
 msgstr "&Verknüpfung"
 
-#: src/FileDialog.cpp:1925 src/FilePanel.cpp:4880 src/FilePanel.cpp:4925
-#: src/SearchPanel.cpp:2485 src/SearchPanel.cpp:2514 src/XFileImage.cpp:1135
+#: src/FileDialog.cpp:1925 src/FilePanel.cpp:4881 src/FilePanel.cpp:4926
+#: src/SearchPanel.cpp:2485 src/SearchPanel.cpp:2514
 msgid "Fold&ers First"
 msgstr "Ordn&er zuerst"
 
-#: src/FileDialog.cpp:1926 src/FilePanel.cpp:4881 src/FilePanel.cpp:4926
+#: src/FileDialog.cpp:1926 src/FilePanel.cpp:4882 src/FilePanel.cpp:4927
 #: src/SearchPanel.cpp:2486 src/SearchPanel.cpp:2515 src/XFileExplorer.cpp:1558
-#: src/XFileExplorer.cpp:1589 src/XFileImage.cpp:1136
+#: src/XFileExplorer.cpp:1589 src/XFileImage.cpp:1132
 msgid "Re&verse Order"
 msgstr "Sortierung &umkehren"
 
@@ -1757,7 +1754,7 @@ msgstr "Ausführbar"
 
 #: src/FileList.cpp:4958 src/FileList.cpp:5045 src/FileList.cpp:5764
 #: src/FileList.cpp:5869 src/Properties.cpp:525 src/Properties.cpp:570
-#: src/Properties.cpp:646 src/Properties.cpp:1130 src/Properties.cpp:1146
+#: src/Properties.cpp:646 src/Properties.cpp:1132 src/Properties.cpp:1148
 #: src/SearchPanel.cpp:2117
 msgid "Document"
 msgstr "Dokument"
@@ -1773,19 +1770,19 @@ msgid "Link to "
 msgstr "Verknüpfung zu "
 
 #: src/FileList.cpp:5139 src/FileList.cpp:5963 src/IconList.cpp:316
-#: src/IconList.cpp:331 src/IconList.cpp:671 src/XFileImage.cpp:1741
-#: src/XFileImage.cpp:2385 src/XFileImage.cpp:2439 src/XFileImage.cpp:2530
+#: src/IconList.cpp:331 src/IconList.cpp:671 src/XFileImage.cpp:1717
+#: src/XFileImage.cpp:2415 src/XFileImage.cpp:2490 src/XFileImage.cpp:2605
 #: src/foxhacks.cpp:3886 src/foxhacks.cpp:3911
 msgid "Unable to load image"
 msgstr "Konnte Bilddatei nicht laden"
 
-#: src/FilePanel.cpp:290 src/XFileImage.cpp:791
+#: src/FilePanel.cpp:290 src/XFileImage.cpp:789
 msgid "Show Hidden Files"
 msgstr "Versteckte Dateien anzeigen"
 
-#: src/FilePanel.cpp:295 src/SearchPanel.cpp:321 src/XFileImage.cpp:796
+#: src/FilePanel.cpp:295 src/SearchPanel.cpp:321 src/XFileImage.cpp:794
 msgid "Hide Thumbnails"
-msgstr "Thumbnails verstecken"
+msgstr "Vorschaubilder verstecken"
 
 #: src/FilePanel.cpp:311 src/SearchPanel.cpp:329
 msgid "Status"
@@ -1862,7 +1859,7 @@ msgstr "Datei %s an urspünglicher Adresse %s wiederherstellen?"
 msgid "Restore %s selected items to their original locations?"
 msgstr "%s markierte Einträge an ursprünglicher Adresse wiederherstellen?"
 
-#: src/FilePanel.cpp:3044 src/FilePanel.cpp:4027 src/FilePanel.cpp:5564
+#: src/FilePanel.cpp:3044 src/FilePanel.cpp:4028 src/FilePanel.cpp:5565
 #, c-format
 msgid "Can't create folder %s: %s"
 msgstr "Kann den Ordner %s nicht erstellen: %s"
@@ -1877,7 +1874,7 @@ msgstr "Datei %s endgültig löschen?"
 msgid "Definitively delete %s selected items?"
 msgstr "%s markierte Einträge endgültig löschen?"
 
-#: src/FilePanel.cpp:3178 src/XFileExplorer.cpp:5739 src/XFileExplorer.cpp:5745
+#: src/FilePanel.cpp:3178 src/XFileExplorer.cpp:5740 src/XFileExplorer.cpp:5746
 msgid "Delete Files"
 msgstr "Dateien löschen"
 
@@ -1898,11 +1895,8 @@ msgstr "Vergleichen"
 msgid "With:"
 msgstr "Mit:"
 
-#: src/FilePanel.cpp:3858
-#, fuzzy, c-format
-#| msgid ""
-#| "Program %s not found. Please define a file comparator program in the "
-#| "Preferences dialog!"
+#: src/FilePanel.cpp:3859
+#, c-format
 msgid ""
 "Program %s not found. Please define a file / folder comparator program in "
 "the Preferences dialog!"
@@ -1910,48 +1904,48 @@ msgstr ""
 "Programm %s nicht gefunden. Bitte legen Sie ein Programm für den "
 "Dateivergleich im Einstellungsdialog fest!"
 
-#: src/FilePanel.cpp:4080
+#: src/FilePanel.cpp:4081
 msgid "Create new file:"
 msgstr "Neue Datei anlegen:"
 
-#: src/FilePanel.cpp:4118
+#: src/FilePanel.cpp:4119
 #, c-format
 msgid "Can't create file %s: %s"
 msgstr "Kann Datei %s nicht erstellen: %s"
 
-#: src/FilePanel.cpp:4123
+#: src/FilePanel.cpp:4124
 #, c-format
 msgid "Can't create file %s"
 msgstr "Kann Datei %s nicht erstellen"
 
-#: src/FilePanel.cpp:4139
+#: src/FilePanel.cpp:4140
 #, c-format
 msgid "Can't set permissions in %s: %s"
 msgstr "Kann keine Berechtigungen in %s setzen: %s"
 
-#: src/FilePanel.cpp:4144
+#: src/FilePanel.cpp:4145
 #, c-format
 msgid "Can't set permissions in %s"
 msgstr "Kann keine Berechtigungen in %s setzen"
 
-#: src/FilePanel.cpp:4192
+#: src/FilePanel.cpp:4193
 msgid "Create new symbolic link:"
 msgstr "Neue Verknüpfung anlegen :"
 
-#: src/FilePanel.cpp:4192
+#: src/FilePanel.cpp:4193
 msgid "New Symlink"
 msgstr "Neue Verknüpfung"
 
-#: src/FilePanel.cpp:4217
+#: src/FilePanel.cpp:4218
 msgid "Select the symlink refered file or folder"
 msgstr "Mit dem Symlink verbundene Datei / Ordner auswählen"
 
-#: src/FilePanel.cpp:4227
+#: src/FilePanel.cpp:4228
 #, c-format
 msgid "Symlink source %s does not exist"
 msgstr "Die Verknüpfung Quelle %s existiert nicht"
 
-#: src/FilePanel.cpp:4487 src/SearchPanel.cpp:1360
+#: src/FilePanel.cpp:4488 src/SearchPanel.cpp:1360
 #, c-format
 msgid ""
 "The following files have no association and were ignored:\n"
@@ -1962,243 +1956,243 @@ msgstr ""
 "\n"
 "%s"
 
-#: src/FilePanel.cpp:4513 src/SearchPanel.cpp:1010 src/XFileArchive.cpp:1048
+#: src/FilePanel.cpp:4514 src/SearchPanel.cpp:1010 src/XFileArchive.cpp:1048
 msgid "Open selected file(s) with:"
 msgstr "Öffne die markierte(n) Datei(en) mit :"
 
-#: src/FilePanel.cpp:4513 src/SearchPanel.cpp:1010 src/XFileArchive.cpp:1048
+#: src/FilePanel.cpp:4514 src/SearchPanel.cpp:1010 src/XFileArchive.cpp:1048
 msgid "Open With"
 msgstr "Öffnen mit"
 
-#: src/FilePanel.cpp:4514 src/SearchPanel.cpp:1011
+#: src/FilePanel.cpp:4515 src/SearchPanel.cpp:1011
 msgid "A&ssociate"
 msgstr "&Zuordnen"
 
-#: src/FilePanel.cpp:4849
+#: src/FilePanel.cpp:4850
 msgid "New& File..."
 msgstr "Neue &Datei..."
 
-#: src/FilePanel.cpp:4851 src/FilePanel.cpp:4896 src/XFileExplorer.cpp:1336
+#: src/FilePanel.cpp:4852 src/FilePanel.cpp:4897 src/XFileExplorer.cpp:1336
 msgid "New S&ymlink..."
 msgstr "Neue &Verknüpfung..."
 
-#: src/FilePanel.cpp:4853 src/FilePanel.cpp:4898
+#: src/FilePanel.cpp:4854 src/FilePanel.cpp:4899
 msgid "Fi&lter..."
 msgstr "&Filter..."
 
-#: src/FilePanel.cpp:4875 src/FilePanel.cpp:4920 src/SearchPanel.cpp:2481
+#: src/FilePanel.cpp:4876 src/FilePanel.cpp:4921 src/SearchPanel.cpp:2481
 #: src/SearchPanel.cpp:2510
 msgid "Per&missions"
 msgstr "Bere&chtigungen"
 
-#: src/FilePanel.cpp:4877 src/FilePanel.cpp:4922
+#: src/FilePanel.cpp:4878 src/FilePanel.cpp:4923
 msgid "&Deletion Date"
-msgstr "Löschdatum:"
+msgstr "&Löschdatum"
 
-#: src/FilePanel.cpp:4894
+#: src/FilePanel.cpp:4895
 msgid "Ne&w File..."
 msgstr "Neue &Datei..."
 
-#: src/FilePanel.cpp:4934 src/XFileExplorer.cpp:1661
+#: src/FilePanel.cpp:4935 src/XFileExplorer.cpp:1661
 msgid "&Mount"
 msgstr "Laufwerk &einhängen"
 
-#: src/FilePanel.cpp:4935 src/XFileExplorer.cpp:1217
+#: src/FilePanel.cpp:4936 src/XFileExplorer.cpp:1217
 msgid "Unmount"
 msgstr "Laufwerk trennen"
 
-#: src/FilePanel.cpp:4943 src/XFileArchive.cpp:1859
+#: src/FilePanel.cpp:4944 src/XFileArchive.cpp:1859
 msgid "Open &With..."
 msgstr "Öffnen &mit..."
 
-#: src/FilePanel.cpp:4944 src/SearchPanel.cpp:2524 src/XFileExplorer.cpp:1356
+#: src/FilePanel.cpp:4945 src/SearchPanel.cpp:2524 src/XFileExplorer.cpp:1356
 #: src/XFileArchive.cpp:1860
 msgid "&Open"
 msgstr "Ö&ffnen"
 
-#: src/FilePanel.cpp:4956 src/FilePanel.cpp:4960
+#: src/FilePanel.cpp:4957 src/FilePanel.cpp:4961
 msgid "Extr&act to Folder "
 msgstr "Entp&acken in den Ordner "
 
-#: src/FilePanel.cpp:4969 src/FilePanel.cpp:4985 src/SearchPanel.cpp:2543
+#: src/FilePanel.cpp:4970 src/FilePanel.cpp:4986 src/SearchPanel.cpp:2543
 msgid "&Extract Here"
 msgstr "&Hier entpacken"
 
-#: src/FilePanel.cpp:4971 src/FilePanel.cpp:4987 src/SearchPanel.cpp:2537
+#: src/FilePanel.cpp:4972 src/FilePanel.cpp:4988 src/SearchPanel.cpp:2537
 #: src/SearchPanel.cpp:2551
 msgid "E&xtract to..."
 msgstr "Ent&packen nach..."
 
-#: src/FilePanel.cpp:4977
+#: src/FilePanel.cpp:4978
 msgid "&Extract here"
 msgstr "&Hier entpacken"
 
-#: src/FilePanel.cpp:4993 src/FilePanel.cpp:5001 src/SearchPanel.cpp:2557
+#: src/FilePanel.cpp:4994 src/FilePanel.cpp:5002 src/SearchPanel.cpp:2557
 #: src/SearchPanel.cpp:2563 src/WriteWindow.cpp:619 src/XFileExplorer.cpp:1508
 #: src/XFileImage.cpp:343
 msgid "&View"
 msgstr "Be&trachten"
 
-#: src/FilePanel.cpp:4994
+#: src/FilePanel.cpp:4995
 msgid "Install / Up&grade"
 msgstr "&Installieren/Aktualisieren"
 
-#: src/FilePanel.cpp:4995
+#: src/FilePanel.cpp:4996
 msgid "Un&install"
 msgstr "&Deinstallieren"
 
-#: src/FilePanel.cpp:5012 src/SearchPanel.cpp:2567
+#: src/FilePanel.cpp:5013 src/SearchPanel.cpp:2567
 msgid "Com&pare..."
 msgstr "Ver&gleichen..."
 
-#: src/FilePanel.cpp:5016 src/SearchPanel.cpp:2571
+#: src/FilePanel.cpp:5017 src/SearchPanel.cpp:2571
 msgid "Com&pare"
 msgstr "Ver&gleichen"
 
-#: src/FilePanel.cpp:5023
+#: src/FilePanel.cpp:5024
 msgid "Packages &Query "
 msgstr "&Paketabfrage "
 
-#: src/FilePanel.cpp:5031 src/SearchPanel.cpp:2590
+#: src/FilePanel.cpp:5032 src/SearchPanel.cpp:2590
 msgid "Scripts"
 msgstr "Skript-Programme"
 
-#: src/FilePanel.cpp:5034 src/SearchPanel.cpp:2593 src/XFileExplorer.cpp:1595
+#: src/FilePanel.cpp:5035 src/SearchPanel.cpp:2593 src/XFileExplorer.cpp:1595
 #: src/XFileExplorer.cpp:1650
 msgid "&Go to Script Folder"
-msgstr "Zum Skript-Ordner wechseln"
+msgstr "Zum Skri&pt-Ordner wechseln"
 
-#: src/FilePanel.cpp:5046 src/SearchPanel.cpp:257 src/SearchPanel.cpp:2614
-#: src/XFileExplorer.cpp:1404 src/XFileExplorer.cpp:6214
+#: src/FilePanel.cpp:5047 src/SearchPanel.cpp:257 src/SearchPanel.cpp:2614
+#: src/XFileExplorer.cpp:1404 src/XFileExplorer.cpp:6215
 msgid "Cop&y Names"
 msgstr "Namen &kopieren"
 
-#: src/FilePanel.cpp:5050 src/SearchPanel.cpp:2601
+#: src/FilePanel.cpp:5051 src/SearchPanel.cpp:2601
 msgid "Copy &to..."
 msgstr "Kopieren &nach..."
 
-#: src/FilePanel.cpp:5053 src/SearchPanel.cpp:2604
+#: src/FilePanel.cpp:5054 src/SearchPanel.cpp:2604
 msgid "M&ove to Trash"
 msgstr "Verschieben &in den Papierkorb"
 
-#: src/FilePanel.cpp:5054
+#: src/FilePanel.cpp:5055
 msgid "Restore &From Trash"
 msgstr "Wiederherstellen &aus dem Papierkorb"
 
-#: src/FilePanel.cpp:5057 src/SearchPanel.cpp:2607
+#: src/FilePanel.cpp:5058 src/SearchPanel.cpp:2607
 msgid "Compare &Sizes"
-msgstr "Größe &vergleichen"
+msgstr "Größen &vergleichen"
 
-#: src/FilePanel.cpp:5058 src/SearchPanel.cpp:2616
+#: src/FilePanel.cpp:5059 src/SearchPanel.cpp:2616
 msgid "P&roperties"
 msgstr "&Eigenschaften"
 
-#: src/FilePanel.cpp:5359
+#: src/FilePanel.cpp:5360
 msgid "Create archive"
 msgstr "Archiv erstellen"
 
-#: src/FilePanel.cpp:5500 src/FilePanel.cpp:5647 src/FilePanel.cpp:5757
+#: src/FilePanel.cpp:5501 src/FilePanel.cpp:5648 src/FilePanel.cpp:5758
 #: src/SearchPanel.cpp:2943 src/XFileArchive.cpp:543 src/XFileArchive.cpp:595
 #: src/XFileArchive.cpp:725 src/XFileArchive.cpp:798
 msgid "Extract Archive"
 msgstr "Archiv entpacken"
 
-#: src/FilePanel.cpp:5811
+#: src/FilePanel.cpp:5812
 msgid "Package Install / Upgrade"
 msgstr "Paket installieren/aktualisieren"
 
-#: src/FilePanel.cpp:5860
+#: src/FilePanel.cpp:5861
 msgid "Package Uninstall"
 msgstr "Paket deinstallieren"
 
-#: src/FilePanel.cpp:6120 src/SearchPanel.cpp:4587
+#: src/FilePanel.cpp:6121 src/SearchPanel.cpp:4587
 #, c-format
 msgid "Can't create script folder %s: %s"
 msgstr "Kann Skript-Ordner %s nicht erstellen: %s"
 
-#: src/FilePanel.cpp:6125 src/SearchPanel.cpp:4592
+#: src/FilePanel.cpp:6126 src/SearchPanel.cpp:4592
 #, c-format
 msgid "Can't create script folder %s"
 msgstr "Kann Skript-Ordner %s nicht erstellen"
 
-#: src/FilePanel.cpp:6353 src/SearchPanel.cpp:4958 src/XFilePackage.cpp:1031
+#: src/FilePanel.cpp:6354 src/SearchPanel.cpp:4958 src/XFilePackage.cpp:1031
 msgid "No compatible package manager (rpm or dpkg) found!"
 msgstr "RedHat Paket Verwalter (RPM) nicht gefunden!"
 
-#: src/FilePanel.cpp:6418 src/SearchPanel.cpp:5023
+#: src/FilePanel.cpp:6419 src/SearchPanel.cpp:5023
 #, c-format
 msgid "File %s does not belong to any package."
 msgstr "Datei %s gehört zu keinem Paket."
 
-#: src/FilePanel.cpp:6419 src/FilePanel.cpp:6424 src/SearchPanel.cpp:525
+#: src/FilePanel.cpp:6420 src/FilePanel.cpp:6425 src/SearchPanel.cpp:525
 #: src/SearchPanel.cpp:728 src/SearchPanel.cpp:1881 src/SearchPanel.cpp:4245
 #: src/SearchPanel.cpp:5024 src/SearchPanel.cpp:5029
 msgid "Information"
 msgstr "Information"
 
-#: src/FilePanel.cpp:6423 src/SearchPanel.cpp:5028
+#: src/FilePanel.cpp:6424 src/SearchPanel.cpp:5028
 #, c-format
 msgid "File %s belongs to the package: %s"
 msgstr "Datei %s gehört zum Paket: %s"
 
-#: src/FilePanel.cpp:6521 src/SearchPanel.cpp:2988
+#: src/FilePanel.cpp:6522 src/SearchPanel.cpp:2988
 msgid "Sizes of Selected Items"
 msgstr "Größe der ausgewählten Objekte"
 
-#: src/FilePanel.cpp:6555 src/SearchPanel.cpp:4627
+#: src/FilePanel.cpp:6556 src/SearchPanel.cpp:4627
 msgid "0 bytes"
 msgstr "0 Byte"
 
-#: src/FilePanel.cpp:6600 src/SearchPanel.cpp:4659
+#: src/FilePanel.cpp:6601 src/SearchPanel.cpp:4659
 #, c-format
 msgid "%s in %s selected items (%s folder, %s file)"
 msgstr "%s in %s markierten Einträgen (%s Ordner, %s Datei)"
 
-#: src/FilePanel.cpp:6605 src/SearchPanel.cpp:4664
+#: src/FilePanel.cpp:6606 src/SearchPanel.cpp:4664
 #, c-format
 msgid "%s in %s selected items (%s folder, %s files)"
 msgstr "%s in %s markierten Einträgen (%s Ordner, %s Dateien)"
 
-#: src/FilePanel.cpp:6610 src/SearchPanel.cpp:4669
+#: src/FilePanel.cpp:6611 src/SearchPanel.cpp:4669
 #, c-format
 msgid "%s in %s selected items (%s folders, %s file)"
 msgstr "%s in %s markierten Einträgen (%s Ordner, %s Datei)"
 
-#: src/FilePanel.cpp:6615 src/SearchPanel.cpp:4674
+#: src/FilePanel.cpp:6616 src/SearchPanel.cpp:4674
 #, c-format
 msgid "%s in %s selected items (%s folders, %s files)"
 msgstr "%s in %s markierten Einträgen (%s Ordner, %s Dateien)"
 
-#: src/FilePanel.cpp:6627
+#: src/FilePanel.cpp:6628
 msgid "1 item (1 folder)"
 msgstr "1 Eintrag (1 Ordner)"
 
-#: src/FilePanel.cpp:6651 src/FilePanel.cpp:6674
+#: src/FilePanel.cpp:6652 src/FilePanel.cpp:6675
 #, c-format
 msgid "%s items (%s folders, %s files, %s)"
 msgstr "%s Einträge (%s Ordner, %s Dateien, %s)"
 
-#: src/FilePanel.cpp:6656
+#: src/FilePanel.cpp:6657
 #, c-format
 msgid "%s items (%s folder, %s file, %s)"
 msgstr "%s Einträge (%s Ordner, %s Datei, %s)"
 
-#: src/FilePanel.cpp:6662
+#: src/FilePanel.cpp:6663
 #, c-format
 msgid "%s items (%s folder, %s files, %s)"
 msgstr "%s Einträge (%s Ordner, %s Dateien, %s)"
 
-#: src/FilePanel.cpp:6668
+#: src/FilePanel.cpp:6669
 #, c-format
 msgid "%s items (%s folders, %s file, %s)"
 msgstr "%s Einträge (%s Ordner, %s Datei, %s)"
 
-#: src/FilePanel.cpp:6733
+#: src/FilePanel.cpp:6734
 #, c-format
 msgid "Filter: %s (files and folders)"
 msgstr "Filter: %s (Dateien und Ordner)"
 
-#: src/FilePanel.cpp:6737
+#: src/FilePanel.cpp:6738
 #, c-format
 msgid "Filter: %s (files)"
 msgstr "Filter: %s (Dateien)"
@@ -2404,7 +2398,7 @@ msgstr "Name"
 
 #: src/IconList.cpp:4617
 msgid "Folder Name"
-msgstr "Ordnername:"
+msgstr "Ordnername"
 
 #: src/IconList.cpp:4621 src/XFileExplorer.cpp:1554 src/XFileExplorer.cpp:1585
 msgid "Original Path"
@@ -2424,7 +2418,7 @@ msgstr "Änderungsdatum"
 
 #: src/IconList.cpp:4641 src/XFileExplorer.cpp:1553 src/XFileExplorer.cpp:1584
 msgid "Deletion Date"
-msgstr "Löschdatum:"
+msgstr "Löschdatum"
 
 #: src/IconList.cpp:4645 src/Preferences.cpp:100 src/Preferences.cpp:738
 #: src/Properties.cpp:57 src/Properties.cpp:80
@@ -2513,7 +2507,7 @@ msgid "Key Binding"
 msgstr "Tastenbelegung"
 
 #: src/KeyBindings.cpp:304 src/Preferences.cpp:1913 src/Preferences.cpp:2690
-#: src/XFileImage.cpp:1787
+#: src/XFileImage.cpp:1773
 msgid "Restart"
 msgstr "Neustart"
 
@@ -2584,7 +2578,7 @@ msgstr ""
 "Sie sollten die vorhandene Tastenkombination löschen, bevor Sie diese erneut "
 "festlegen."
 
-#: src/HistInputDialog.cpp:160 src/Properties.cpp:2005
+#: src/HistInputDialog.cpp:159 src/Properties.cpp:2007
 msgid "Select an Executable File"
 msgstr "Eine ausführbare Datei auswählen"
 
@@ -2604,7 +2598,7 @@ msgstr "&Ja"
 
 #: src/MessageBox.cpp:152 src/MessageBox.cpp:162 src/SearchWindow.cpp:275
 #: src/WriteWindow.cpp:856 src/XFileExplorer.cpp:1418 src/XFileArchive.cpp:260
-#: src/XFileArchive.cpp:293 src/XFileImage.cpp:909 src/XFilePackage.cpp:243
+#: src/XFileArchive.cpp:293 src/XFileImage.cpp:907 src/XFilePackage.cpp:243
 #: src/XFilePackage.cpp:273
 msgid "&Quit"
 msgstr "&Beenden"
@@ -2637,7 +2631,7 @@ msgstr "Bitte User Passwort eingeben:"
 msgid "Enter root password:"
 msgstr "Bitte \"root\" Passwort eingeben:"
 
-#: src/MessageBox.cpp:304 src/XFileExplorer.cpp:5626
+#: src/MessageBox.cpp:304 src/XFileExplorer.cpp:5627
 msgid "An error has occurred!"
 msgstr "Ein Fehler ist aufgetreten!"
 
@@ -2726,7 +2720,7 @@ msgstr "Aktuelles Schema"
 
 #: src/Preferences.cpp:210
 msgid "Applied theme, right click to save"
-msgstr ""
+msgstr "Verwendetes Thema, mit Rechtsklick speichern"
 
 #: src/Preferences.cpp:229
 msgid "The default theme"
@@ -2762,15 +2756,15 @@ msgstr "Ein Thema mit XFCE Farben"
 
 #: src/Preferences.cpp:292
 msgid "Custom theme, right click to rename or remove"
-msgstr ""
+msgstr "Selbstdefiniertes Thema, Rechtsklick zum Umbenennen oder Entfernen"
 
-#: src/Preferences.cpp:343 src/Properties.cpp:220 src/Properties.cpp:1011
+#: src/Preferences.cpp:343 src/Properties.cpp:220 src/Properties.cpp:1013
 msgid "&General"
 msgstr "&Allgemein"
 
 #: src/Preferences.cpp:346
 msgid "Starting"
-msgstr "Start"
+msgstr "Starten"
 
 #: src/Preferences.cpp:348
 msgid "Start in home folder"
@@ -2785,10 +2779,8 @@ msgid "Start in last visited folder"
 msgstr "Im zuletzt besuchten Ordner starten"
 
 #: src/Preferences.cpp:356
-#, fuzzy
-#| msgid "&General toolbar"
 msgid "General Options"
-msgstr "All&gemeine Werkzeugleiste"
+msgstr "Allgemeine Optionen"
 
 #: src/Preferences.cpp:357
 msgid "Use trash can for file deletion (safe delete)"
@@ -2936,53 +2928,47 @@ msgstr "Warnen, falls als \"root\" angemeldet"
 
 #: src/Preferences.cpp:538
 msgid "&Settings"
-msgstr ""
+msgstr "Ein&stellungen"
 
 #: src/Preferences.cpp:545
 msgid "Tabs"
-msgstr ""
+msgstr "Reiter"
 
 #: src/Preferences.cpp:550
-#, fuzzy
-#| msgid "Start in home folder"
 msgid "Open new tab in home folder"
-msgstr "Im Heimatordner starten"
+msgstr "Neuen Reiter im Heimatordner starten"
 
 #: src/Preferences.cpp:551
 msgid "Always show tab bar"
-msgstr ""
+msgstr "Reiter Werkzeuge immer anzeigen"
 
 #: src/Preferences.cpp:552
-#, fuzzy
-#| msgid "Start in current folder"
 msgid "Open new tab in current folder"
-msgstr "Im aktuellen Ordner starten"
+msgstr "Neuen Reiter im aktuellen Ordner starten"
 
 #: src/Preferences.cpp:553
 msgid "Restore tabs on startup"
-msgstr ""
+msgstr "Reiter beim Start wiederherstellen"
 
 #: src/Preferences.cpp:554
-#, fuzzy
-#| msgid "Start in current folder"
 msgid "Open new tab in root folder"
-msgstr "Im aktuellen Ordner starten"
+msgstr "Neuen Reiter im Wurzel-Ordner starten"
 
 #: src/Preferences.cpp:556
 msgid "Scrolling"
-msgstr "Scroll"
+msgstr "Bildlauf"
 
 #: src/Preferences.cpp:559
 msgid "Smooth scrolling in file lists and text windows"
-msgstr "Sanftes Rollen in Dateilisten und Textfenstern"
+msgstr "Sanfter Bildlauf in Dateilisten und Textfenstern"
 
 #: src/Preferences.cpp:563
 msgid "Mouse scrolling speed:"
-msgstr "Roll-Geschwindigkeit:"
+msgstr "Maus-Bildlauf-Geschwindigkeit:"
 
 #: src/Preferences.cpp:567
 msgid "Scrollbar width:"
-msgstr "Fortschrittsbalken Breite:"
+msgstr "Bildlaufleiste Breite:"
 
 #: src/Preferences.cpp:572
 msgid "Thumbnails"
@@ -2997,22 +2983,22 @@ msgid "Big thumbnails size:"
 msgstr "Großformat der Vorschaubilder:"
 
 #: src/Preferences.cpp:595
-#, fuzzy
-#| msgid "Unmount"
 msgid "Automount"
-msgstr "Laufwerk trennen"
+msgstr ""
 
 #: src/Preferences.cpp:598
 msgid "(Only enable automounting if your system does not have this feature)"
 msgstr ""
+"(Aktivieren Sie Automounting nur, wenn Ihr System nicht über diese Funktion "
+"verfügt)"
 
 #: src/Preferences.cpp:600
 msgid "Enable automounting"
-msgstr ""
+msgstr "Automount einschalten"
 
 #: src/Preferences.cpp:604
 msgid "Open new Xfe window when mounting"
-msgstr ""
+msgstr "Eingehängtes Medium in neuem Xfe Fenster öffnen"
 
 #: src/Preferences.cpp:609
 msgid "Root Mode"
@@ -3094,10 +3080,8 @@ msgid "Text editor:"
 msgstr "Texteditor:"
 
 #: src/Preferences.cpp:865
-#, fuzzy
-#| msgid "File comparator:"
 msgid "File / folder comparator:"
-msgstr "Dateivergleich:"
+msgstr "Datei / Ordner Vergleicher:"
 
 #: src/Preferences.cpp:873
 msgid "Image editor:"
@@ -3153,6 +3137,9 @@ msgid ""
 "click \n"
 "on a custom theme to rename or remove it.)"
 msgstr ""
+"(Rechtsklick auf das aktuelle Theme zum Speichern als selbstdefiniertes "
+"Thema.\n"
+"Rechtsklick auf ein selbstdefiniertes Thema zum Umbenennen oder Entfernen.)"
 
 #: src/Preferences.cpp:968
 msgid "Custom Colors"
@@ -3208,7 +3195,7 @@ msgstr "Achtungsmeldung-Farbe"
 
 #: src/Preferences.cpp:989
 msgid "Scrollbar color"
-msgstr "Farbe Fortschrittsbalken"
+msgstr "Bildlaufleiste Farbe"
 
 #: src/Preferences.cpp:993
 msgid "Screen Resolution"
@@ -3251,10 +3238,8 @@ msgid "&Key Bindings"
 msgstr "Tasten&belegung"
 
 #: src/Preferences.cpp:1042
-#, fuzzy
-#| msgid "Modify key bindings..."
 msgid "&Modify key bindings..."
-msgstr "Tastenbelegung ändern..."
+msgstr "Tasten&belegung ändern..."
 
 #: src/Preferences.cpp:1044
 msgid "&Restore default key bindings..."
@@ -3265,34 +3250,24 @@ msgid "&Save As..."
 msgstr "Speichern &als..."
 
 #: src/Preferences.cpp:1135 src/Preferences.cpp:1194
-#, fuzzy
-#| msgid "Enter the user password:"
 msgid "Enter theme name:"
-msgstr "Bitte User Passwort eingeben:"
+msgstr "Bitte Themenname eingeben:"
 
 #: src/Preferences.cpp:1135
-#, fuzzy
-#| msgid "Current Theme"
 msgid "Save current theme"
-msgstr "Aktuelles Schema"
+msgstr "Aktuelles Thema speichern"
 
 #: src/Preferences.cpp:1144 src/Preferences.cpp:1203
-#, fuzzy
-#| msgid "File name is empty, operation cancelled"
 msgid "Theme name is empty, operation cancelled"
-msgstr "Dateiname ist leer, Ausführung wurde abgebrochen"
+msgstr "Themenname ist leer, Ausführung wurde abgebrochen"
 
 #: src/Preferences.cpp:1163 src/Preferences.cpp:1222
-#, fuzzy
-#| msgid "File name is empty, operation cancelled"
 msgid "Theme name already exists, operation cancelled"
-msgstr "Dateiname ist leer, Ausführung wurde abgebrochen"
+msgstr "Themennahme bereits vorhanden, Ausführung wurde abgebrochen"
 
 #: src/Preferences.cpp:1194
-#, fuzzy
-#| msgid "Rename "
 msgid "Rename theme"
-msgstr "Umbenennen "
+msgstr "Thema umbenennen"
 
 #: src/Preferences.cpp:1282
 msgid "Select an icon theme folder or an icon file"
@@ -3388,7 +3363,7 @@ msgstr "Versteckte Ordner anzeigen oder verstecken"
 
 #: src/Preferences.cpp:1515
 msgid "Toggle display thumbnails"
-msgstr "Vorschaubilder anzeigen oder verstecken"
+msgstr "Vorschaubilder anzeigen / verstecken"
 
 #: src/Preferences.cpp:1519
 msgid "Go to working folder"
@@ -3471,8 +3446,6 @@ msgid "Launch terminal"
 msgstr "Terminal starten"
 
 #: src/Preferences.cpp:1610
-#, fuzzy
-#| msgid "Mount file system (Linux only)"
 msgid "Connect to server (Linux only)"
 msgstr "Laufwerk einhängen (nur unter Linux)"
 
@@ -3536,7 +3509,7 @@ msgstr "Felder vertauschen"
 msgid "Go to trash can"
 msgstr "Zum Papierkorb wechseln"
 
-#: src/Preferences.cpp:1674 src/XFileExplorer.cpp:5728
+#: src/Preferences.cpp:1674 src/XFileExplorer.cpp:5729
 msgid "Empty trash can"
 msgstr "Papierkorb leeren"
 
@@ -3557,10 +3530,8 @@ msgid "Filter files"
 msgstr "Dateien filtern"
 
 #: src/Preferences.cpp:1698
-#, fuzzy
-#| msgid "New Name"
 msgid "New tab"
-msgstr "Neuer Name"
+msgstr "Neuer Reiter"
 
 #: src/Preferences.cpp:1708
 msgid "View previous image"
@@ -3728,8 +3699,8 @@ msgstr "Nur Besitzer"
 msgid "Files only"
 msgstr "Nur Dateien"
 
-#: src/Properties.cpp:178 src/Properties.cpp:719 src/Properties.cpp:979
-#: src/Properties.cpp:1013
+#: src/Properties.cpp:178 src/Properties.cpp:719 src/Properties.cpp:981
+#: src/Properties.cpp:1015
 msgid "Properties"
 msgstr "Eigenschaften"
 
@@ -3807,7 +3778,7 @@ msgstr "Frei:"
 msgid "File system:"
 msgstr "Dateisystem:"
 
-#: src/Properties.cpp:724 src/Properties.cpp:1022
+#: src/Properties.cpp:724 src/Properties.cpp:1024
 msgid "Total size:"
 msgstr "Gesamtgröße:"
 
@@ -3851,14 +3822,14 @@ msgstr "Programmstart-Anzeige für diese Datei deaktivieren"
 msgid "Deletion Date:"
 msgstr "Löschdatum:"
 
-#: src/Properties.cpp:856 src/Properties.cpp:2152 src/Properties.cpp:2221
-#: src/XFileExplorer.cpp:5714
+#: src/Properties.cpp:856 src/Properties.cpp:2154 src/Properties.cpp:2223
+#: src/XFileExplorer.cpp:5715
 #, c-format
 msgid "%s (%lu bytes)"
 msgstr "%s (%lu Bytes)"
 
-#: src/Properties.cpp:858 src/Properties.cpp:2154 src/Properties.cpp:2223
-#: src/XFileExplorer.cpp:5716
+#: src/Properties.cpp:858 src/Properties.cpp:2156 src/Properties.cpp:2225
+#: src/XFileExplorer.cpp:5717
 #, c-format
 msgid "%s (%llu bytes)"
 msgstr "%s (%llu Bytes)"
@@ -3867,126 +3838,126 @@ msgstr "%s (%llu Bytes)"
 msgid "Size:"
 msgstr "Größe:"
 
-#: src/Properties.cpp:1016
+#: src/Properties.cpp:1018
 msgid "Selection:"
 msgstr "Auswahl:"
 
-#: src/Properties.cpp:1141 src/Properties.cpp:1148 src/Properties.cpp:1163
+#: src/Properties.cpp:1143 src/Properties.cpp:1150 src/Properties.cpp:1165
 msgid "Multiple types"
 msgstr "Mehrfache Typen"
 
-#: src/Properties.cpp:1167
+#: src/Properties.cpp:1169
 #, c-format
 msgid "%d items"
 msgstr "%d Einträge"
 
-#: src/Properties.cpp:1172
+#: src/Properties.cpp:1174
 #, c-format
 msgid "%d file, %d folder"
 msgstr "%d Datei, %d Ordner"
 
-#: src/Properties.cpp:1176
+#: src/Properties.cpp:1178
 #, c-format
 msgid "%d file, %d folders"
 msgstr "%d Datei, %d Ordner"
 
-#: src/Properties.cpp:1180
+#: src/Properties.cpp:1182
 #, c-format
 msgid "%d files, %d folder"
 msgstr "%d Dateien, %d Ordner"
 
-#: src/Properties.cpp:1184
+#: src/Properties.cpp:1186
 #, c-format
 msgid "%d files, %d folders"
 msgstr "%d Dateien, %d Ordner"
 
-#: src/Properties.cpp:1310
+#: src/Properties.cpp:1312
 msgid "Change properties of the selected folder?"
 msgstr "Eigenschaften des ausgewählten Ordners ändern?"
 
-#: src/Properties.cpp:1314
+#: src/Properties.cpp:1316
 msgid "Change properties of the selected file?"
 msgstr "Eigenschaften der ausgewählten Datei ändern?"
 
-#: src/Properties.cpp:1317 src/Properties.cpp:1692
+#: src/Properties.cpp:1319 src/Properties.cpp:1694
 msgid "Confirm Change Properties"
 msgstr "Änderung der Eigenschaften bestätigen"
 
-#: src/Properties.cpp:1459
+#: src/Properties.cpp:1461
 msgid "Invalid file name, operation cancelled"
 msgstr "Ungültiger Dateiname, Ausführung wurde abgebrochen"
 
-#: src/Properties.cpp:1523 src/Properties.cpp:1718
+#: src/Properties.cpp:1525 src/Properties.cpp:1720
 msgid "File owner"
 msgstr "Datei Eigentümer"
 
-#: src/Properties.cpp:1561 src/Properties.cpp:1767
+#: src/Properties.cpp:1563 src/Properties.cpp:1769
 msgid "Change owner cancelled!"
 msgstr "Ändern des Eigentümers abgebrochen!"
 
-#: src/Properties.cpp:1574 src/Properties.cpp:1779
+#: src/Properties.cpp:1576 src/Properties.cpp:1781
 #, c-format
 msgid "Chown in %s failed: %s"
 msgstr "Chown in %s fehlgeschlagen: %s"
 
-#: src/Properties.cpp:1578 src/Properties.cpp:1783
+#: src/Properties.cpp:1580 src/Properties.cpp:1785
 #, c-format
 msgid "Chown in %s failed"
 msgstr "Chown in %s fehlgeschlagen"
 
-#: src/Properties.cpp:1592 src/Properties.cpp:1799
+#: src/Properties.cpp:1594 src/Properties.cpp:1801
 msgid ""
 "Setting special permissions could be unsafe! Is that you really want to do?"
 msgstr ""
 "Spezielle Zugriffsberechtigungen können unsicher sein! Ist dies wirklich Ihr "
 "Wunsch?"
 
-#: src/Properties.cpp:1604 src/Properties.cpp:1656 src/Properties.cpp:1865
+#: src/Properties.cpp:1606 src/Properties.cpp:1658 src/Properties.cpp:1867
 #, c-format
 msgid "Chmod in %s failed: %s"
 msgstr "Chmod in %s fehlgeschlagen: %s"
 
-#: src/Properties.cpp:1608 src/Properties.cpp:1805
+#: src/Properties.cpp:1610 src/Properties.cpp:1807
 msgid "File permissions"
 msgstr "Datei Berechtigungen"
 
-#: src/Properties.cpp:1643
+#: src/Properties.cpp:1645
 msgid "Change file permissions cancelled!"
 msgstr "Ändern der Berechtigungen abgebrochen!"
 
-#: src/Properties.cpp:1660 src/Properties.cpp:1870
+#: src/Properties.cpp:1662 src/Properties.cpp:1872
 #, c-format
 msgid "Chmod in %s failed"
 msgstr "Chmod in %s fehlgeschlagen"
 
-#: src/Properties.cpp:1692
+#: src/Properties.cpp:1694
 msgid "Apply permissions to the selected items?"
 msgstr "Berechtigungen den ausgewählten Objekte zuweisen?"
 
-#: src/Properties.cpp:1853
+#: src/Properties.cpp:1855
 msgid "Change file(s) permissions cancelled!"
 msgstr "Ändern der Dateiberechtigungen abgebrochen!"
 
-#: src/Properties.cpp:2060
+#: src/Properties.cpp:2062
 msgid "Select an icon file"
 msgstr "Symbol-Datei auswählen"
 
-#: src/Properties.cpp:2160 src/Properties.cpp:2229
+#: src/Properties.cpp:2162 src/Properties.cpp:2231
 #, c-format
 msgid "%u file, %u subfolder"
 msgstr "%u Datei, %u Unterordner"
 
-#: src/Properties.cpp:2165 src/Properties.cpp:2234
+#: src/Properties.cpp:2167 src/Properties.cpp:2236
 #, c-format
 msgid "%u file, %u subfolders"
 msgstr "%u Datei, %u Unterordner"
 
-#: src/Properties.cpp:2170 src/Properties.cpp:2239
+#: src/Properties.cpp:2172 src/Properties.cpp:2241
 #, c-format
 msgid "%u files, %u subfolder"
 msgstr "%u Dateien, %u Unterordner"
 
-#: src/Properties.cpp:2175 src/Properties.cpp:2244 src/XFileExplorer.cpp:5718
+#: src/Properties.cpp:2177 src/Properties.cpp:2246 src/XFileExplorer.cpp:5719
 #, c-format
 msgid "%u files, %u subfolders"
 msgstr "%u Datei(en), %u Unterordner"
@@ -4424,40 +4395,28 @@ msgid "Select path"
 msgstr "Pfad auswählen"
 
 #: src/TabButtons.cpp:71
-#, fuzzy
-#| msgid "New Name"
 msgid "\tNew Tab"
-msgstr "Neuer Name"
+msgstr "\tNeuer Reiter"
 
 #: src/TabButtons.cpp:316
-#, fuzzy
-#| msgid "Confirm Remove"
 msgid "Confirm Remove Tabs"
-msgstr "Entfernen bestätigen"
+msgstr "Entfernen der Reiter bestätigen"
 
 #: src/TabButtons.cpp:317
-#, fuzzy
-#| msgid "Do you really want to remove all your bookmarks?"
 msgid "Do you really want to remove all tabs?"
-msgstr "Wollen Sie wirklich alle Lesezeichen löschen?"
+msgstr "Wollen Sie wirklich alle Reiter löschen?"
 
 #: src/TabButtons.cpp:441
-#, fuzzy
-#| msgid "Move &up"
 msgid "Move &Left"
-msgstr "&Aufwärts bewegen"
+msgstr "&Links herum drehen"
 
 #: src/TabButtons.cpp:442
-#, fuzzy
-#| msgid "Rotate &right"
 msgid "Move &Right"
 msgstr "&Rechts herum drehen"
 
 #: src/TabButtons.cpp:446
-#, fuzzy
-#| msgid "&Close"
 msgid "&Close Tab"
-msgstr "&Schließen"
+msgstr "Reiter &schließen"
 
 #: src/TextWindow.cpp:30 src/TextWindow.cpp:59 src/WriteWindow.cpp:829
 msgid "&Close"
@@ -4546,8 +4505,8 @@ msgid "&Window"
 msgstr "&Fenster"
 
 #: src/WriteWindow.cpp:635 src/XFileExplorer.cpp:1699
-#: src/XFileExplorer.cpp:1706 src/XFileExplorer.cpp:6089
-#: src/XFileExplorer.cpp:6100 src/XFileArchive.cpp:229 src/XFileImage.cpp:351
+#: src/XFileExplorer.cpp:1706 src/XFileExplorer.cpp:6090
+#: src/XFileExplorer.cpp:6101 src/XFileArchive.cpp:229 src/XFileImage.cpp:351
 #: src/XFilePackage.cpp:212
 msgid "&Help"
 msgstr "&Hilfe"
@@ -4572,7 +4531,7 @@ msgstr "Neu"
 msgid "Create new document."
 msgstr "Neues Dokument anlegen."
 
-#: src/WriteWindow.cpp:693 src/XFileImage.cpp:805
+#: src/WriteWindow.cpp:693 src/XFileImage.cpp:803
 msgid "Open"
 msgstr "Öffnen"
 
@@ -4596,8 +4555,8 @@ msgstr "Schließen"
 msgid "Close document file."
 msgstr "Dokument-Datei schließen."
 
-#: src/WriteWindow.cpp:711 src/WriteWindow.cpp:1996 src/XFileImage.cpp:810
-#: src/XFileImage.cpp:1932
+#: src/WriteWindow.cpp:711 src/WriteWindow.cpp:1996 src/XFileImage.cpp:808
+#: src/XFileImage.cpp:1921
 msgid "Print"
 msgstr "Drucken"
 
@@ -4713,7 +4672,7 @@ msgstr "Zeilennummer verstecken."
 msgid "&New"
 msgstr "&Neu"
 
-#: src/WriteWindow.cpp:814 src/XFileArchive.cpp:239 src/XFileImage.cpp:882
+#: src/WriteWindow.cpp:814 src/XFileArchive.cpp:239 src/XFileImage.cpp:880
 #: src/XFilePackage.cpp:222
 msgid "&Open..."
 msgstr "Ö&ffnen..."
@@ -4734,11 +4693,11 @@ msgstr "Dokument als eine andere Datei speichern."
 msgid "Close document."
 msgstr "Dokument schließen."
 
-#: src/WriteWindow.cpp:836 src/XFileImage.cpp:888
+#: src/WriteWindow.cpp:836 src/XFileImage.cpp:886
 msgid "&Print..."
 msgstr "&Drucken..."
 
-#: src/WriteWindow.cpp:850 src/XFileArchive.cpp:254 src/XFileImage.cpp:902
+#: src/WriteWindow.cpp:850 src/XFileArchive.cpp:254 src/XFileImage.cpp:900
 #: src/XFilePackage.cpp:237
 msgid "&Clear Recent Files"
 msgstr "Dateiliste l&eeren"
@@ -4791,12 +4750,12 @@ msgstr "Gehe zur &Zeile..."
 msgid "Select &All"
 msgstr "Alles aus&wählen"
 
-#: src/WriteWindow.cpp:926 src/XFileArchive.cpp:268 src/XFileImage.cpp:1021
+#: src/WriteWindow.cpp:926 src/XFileArchive.cpp:268 src/XFileImage.cpp:1019
 #: src/XFilePackage.cpp:251
 msgid "&Toolbar"
 msgstr "&Werkzeugleiste"
 
-#: src/WriteWindow.cpp:926 src/XFileImage.cpp:1021
+#: src/WriteWindow.cpp:926 src/XFileImage.cpp:1019
 msgid "Display toolbar."
 msgstr "Felder-Werkzeugleiste anzeigen."
 
@@ -4826,11 +4785,11 @@ msgstr "Text suchen und ersetzen."
 
 #: src/WriteWindow.cpp:944
 msgid "Search Sel. &Backward"
-msgstr "Den Text &rückwärts suchen"
+msgstr "Auswahl &rückwärts suchen"
 
 #: src/WriteWindow.cpp:950
 msgid "Search Sel. &Forward"
-msgstr "Den Text &vorwärts suchen"
+msgstr "Auswahl &vorwärts suchen"
 
 #: src/WriteWindow.cpp:958
 msgid "&Word Wrap"
@@ -4881,7 +4840,7 @@ msgid "About X File Write."
 msgstr "Über X File Write."
 
 #: src/WriteWindow.cpp:1177 src/WriteWindow.cpp:1284 src/XFileArchive.cpp:2046
-#: src/XFileImage.cpp:1623 src/XFilePackage.cpp:711
+#: src/XFileImage.cpp:1619 src/XFilePackage.cpp:711
 #, c-format
 msgid "Unable to open file: %s"
 msgstr "Konnte Datei nicht öffnen: %s"
@@ -5013,7 +4972,7 @@ msgstr " (geändert)"
 msgid " (read only)"
 msgstr " (Nur-Lese-Modus)"
 
-#: src/WriteWindow.cpp:1995 src/XFileImage.cpp:1932
+#: src/WriteWindow.cpp:1995 src/XFileImage.cpp:1921
 msgid ""
 "Print command: \n"
 "(ex: lpr -P <printer>)"
@@ -5056,7 +5015,7 @@ msgstr "&Wechsel zu Zeile Nr.:"
 
 #: src/XFileExplorer.cpp:1111
 msgid "Refresh Panels"
-msgstr "Felder Aktualisieren"
+msgstr "Felder aktualisieren"
 
 #: src/XFileExplorer.cpp:1117
 msgid "Create New File"
@@ -5092,7 +5051,7 @@ msgstr "Terminal starten"
 
 #: src/XFileExplorer.cpp:1202
 msgid "Search Files and Folders..."
-msgstr "Dateien und Verzeichnisse suchen..."
+msgstr "Dateien und Ordner suchen..."
 
 #: src/XFileExplorer.cpp:1211
 msgid "Mount"
@@ -5100,7 +5059,7 @@ msgstr "Laufwerk einhängen"
 
 #: src/XFileExplorer.cpp:1224
 msgid "Connect to Server..."
-msgstr ""
+msgstr "Mit Server verbinden..."
 
 #: src/XFileExplorer.cpp:1234
 msgid "Show One File Panel"
@@ -5118,11 +5077,11 @@ msgstr "Zwei Felder zeigen"
 msgid "Show Folder Panel and Two File Panels"
 msgstr "Baum und zwei Felder zeigen"
 
-#: src/XFileExplorer.cpp:1268 src/XFileImage.cpp:595
+#: src/XFileExplorer.cpp:1268 src/XFileImage.cpp:593
 msgid "Vertical Panels"
 msgstr "Vertikale Felder"
 
-#: src/XFileExplorer.cpp:1276 src/XFileImage.cpp:603
+#: src/XFileExplorer.cpp:1276 src/XFileImage.cpp:601
 msgid "Horizontal Panels"
 msgstr "Waagrechte Felder"
 
@@ -5202,11 +5161,11 @@ msgstr "&Zwei Felder"
 msgid "Fold&ers and Two Panels"
 msgstr "Ba&um und zwei Felder"
 
-#: src/XFileExplorer.cpp:1500 src/XFileImage.cpp:1006
+#: src/XFileExplorer.cpp:1500 src/XFileImage.cpp:1004
 msgid "&Vertical Panels"
 msgstr "&Vertikale Felder"
 
-#: src/XFileExplorer.cpp:1504 src/XFileImage.cpp:1010
+#: src/XFileExplorer.cpp:1504 src/XFileImage.cpp:1008
 msgid "&Horizontal Panels"
 msgstr "&Waagrechte Felder"
 
@@ -5226,11 +5185,11 @@ msgstr "&Lesezeichen"
 msgid "&Filter..."
 msgstr "&Filter..."
 
-#: src/XFileExplorer.cpp:1534 src/XFileExplorer.cpp:1565 src/XFileImage.cpp:979
+#: src/XFileExplorer.cpp:1534 src/XFileExplorer.cpp:1565 src/XFileImage.cpp:977
 msgid "&Thumbnails"
 msgstr "V&orschaubilder"
 
-#: src/XFileExplorer.cpp:1536 src/XFileExplorer.cpp:1567 src/XFileImage.cpp:987
+#: src/XFileExplorer.cpp:1536 src/XFileExplorer.cpp:1567 src/XFileImage.cpp:985
 msgid "&Big Icons"
 msgstr "&Große Symbole"
 
@@ -5277,16 +5236,12 @@ msgid "&Scripts"
 msgstr "&Skripten"
 
 #: src/XFileExplorer.cpp:1602
-#, fuzzy
-#| msgid "&New"
 msgid "&New Tab"
-msgstr "&Neu"
+msgstr "&Neuer Reiter"
 
 #: src/XFileExplorer.cpp:1607
-#, fuzzy
-#| msgid "&Remove all bookmarks"
 msgid "Remove &All Tabs"
-msgstr "Alle Lesezeichen &löschen"
+msgstr "&Alle Reiter löschen"
 
 #: src/XFileExplorer.cpp:1617
 msgid "New &Root Window"
@@ -5314,7 +5269,7 @@ msgstr "Dateien &suchen..."
 
 #: src/XFileExplorer.cpp:1671
 msgid "&Connect to Server..."
-msgstr ""
+msgstr "Mit Server &verbinden..."
 
 #: src/XFileExplorer.cpp:1675
 msgid "&Tools"
@@ -5332,7 +5287,7 @@ msgstr "Papierkorb &Größe"
 msgid "&Empty Trash"
 msgstr "Papierkorb &leeren"
 
-#: src/XFileExplorer.cpp:1694 src/XFileExplorer.cpp:6086
+#: src/XFileExplorer.cpp:1694 src/XFileExplorer.cpp:6087
 msgid "T&rash"
 msgstr "Pa&pierkorb"
 
@@ -5367,22 +5322,22 @@ msgstr "XFE Konfigurationsdatei"
 msgid "Xfe cannot run without a global xferc configuration file"
 msgstr "Xfe kann nicht ohne globale xferc Konfigurationsdatei laufen"
 
-#: src/XFileExplorer.cpp:3568 src/XFileExplorer.cpp:5760
+#: src/XFileExplorer.cpp:3568 src/XFileExplorer.cpp:5761
 #, c-format
 msgid "Can't create trash can 'files' folder %s: %s"
 msgstr "'files' Papierkorb-Ordner %s kann nicht erstellt werden: %s"
 
-#: src/XFileExplorer.cpp:3573 src/XFileExplorer.cpp:5765
+#: src/XFileExplorer.cpp:3573 src/XFileExplorer.cpp:5766
 #, c-format
 msgid "Can't create trash can 'files' folder %s"
 msgstr "'files' Papierkorb-Ordner %s kann nicht erstellt werden"
 
-#: src/XFileExplorer.cpp:3592 src/XFileExplorer.cpp:5781
+#: src/XFileExplorer.cpp:3592 src/XFileExplorer.cpp:5782
 #, c-format
 msgid "Can't create trash can 'info' folder %s: %s"
 msgstr "'info' Papierkorb-Ordner %s kann nicht erstellt werden: %s"
 
-#: src/XFileExplorer.cpp:3597 src/XFileExplorer.cpp:5786
+#: src/XFileExplorer.cpp:3597 src/XFileExplorer.cpp:5787
 #, c-format
 msgid "Can't create trash can 'info' folder %s"
 msgstr "'info' Papierkorb-Ordner %s kann nicht erstellt werden"
@@ -5392,9 +5347,12 @@ msgid ""
 "Unable to find udisksctl command on your system.\n"
 "Package udisks2 is probably not installed, Xfe automounter is disabled."
 msgstr ""
+"Der Befehl udisksctl kann auf Ihrem System nicht gefunden werden.\n"
+"Paket udisks2 ist wahrscheinlich nicht installiert, Xfe Automounter ist "
+"deaktiviert."
 
 #: src/XFileExplorer.cpp:3724 src/XFileExplorer.cpp:3736
-#: src/startupnotification.cpp:185 src/startupnotification.cpp:243
+#: src/startupnotification.cpp:183 src/startupnotification.cpp:239
 #, c-format
 msgid "Error: Can't execute command %s"
 msgstr "Fehler: Kann den Befehl %s nicht ausführen"
@@ -5420,7 +5378,9 @@ msgstr "X File Explorer Version %s"
 msgid ""
 "X Win Commander by Maxim Baranov\n"
 "\n"
-msgstr "X WinCommander von Maxim Baranov\n"
+msgstr ""
+"X Win Commander von Maxim Baranov\n"
+"\n"
 
 #: src/XFileExplorer.cpp:4755
 msgid "FOX Toolkit by Jeroen van der Zijp\n"
@@ -5506,31 +5466,31 @@ msgstr "Befehl ausführen:"
 msgid "Console mode"
 msgstr "Konsole-Modus"
 
-#: src/XFileExplorer.cpp:5568
+#: src/XFileExplorer.cpp:5569
 msgid "Enter the user password:"
 msgstr "Bitte User Passwort eingeben:"
 
-#: src/XFileExplorer.cpp:5575
+#: src/XFileExplorer.cpp:5576
 msgid "Enter the root password:"
 msgstr "Bitte \"root\" Passwort eingeben:"
 
-#: src/XFileExplorer.cpp:5643
+#: src/XFileExplorer.cpp:5644
 msgid "Connect to Server"
-msgstr ""
+msgstr "Mit dem Server verbinden"
 
-#: src/XFileExplorer.cpp:5658
+#: src/XFileExplorer.cpp:5659
 msgid "Search Files and Folders"
 msgstr "Dateien und Verzeichnisse suchen"
 
-#: src/XFileExplorer.cpp:5724
+#: src/XFileExplorer.cpp:5725
 msgid "Do you really want to empty the trash can?"
 msgstr "Wollen Sie den Papierkorb wirklich leeren?"
 
-#: src/XFileExplorer.cpp:5724
+#: src/XFileExplorer.cpp:5725
 msgid " in "
 msgstr " in "
 
-#: src/XFileExplorer.cpp:5726
+#: src/XFileExplorer.cpp:5727
 msgid ""
 "\n"
 "\n"
@@ -5540,7 +5500,7 @@ msgstr ""
 "\n"
 "Alle Einträge gehen endgültig verloren!"
 
-#: src/XFileExplorer.cpp:5831
+#: src/XFileExplorer.cpp:5832
 #, c-format
 msgid ""
 "Trash size: %s (%s files, %s subfolders)\n"
@@ -5551,26 +5511,26 @@ msgstr ""
 "\n"
 "Änderungsdatum: %s"
 
-#: src/XFileExplorer.cpp:5833
+#: src/XFileExplorer.cpp:5834
 msgid "Trash size"
 msgstr "Papierkorb Größe"
 
-#: src/XFileExplorer.cpp:5841
+#: src/XFileExplorer.cpp:5842
 #, c-format
 msgid "Trash can 'files' folder %s is not readable!"
 msgstr "'files' Papierkorb-Ordner %s ist nicht lesbar!"
 
-#: src/XFileExplorer.cpp:6438 src/XFileExplorer.cpp:6512
+#: src/XFileExplorer.cpp:6439 src/XFileExplorer.cpp:6513
 #, c-format
 msgid "Command not found: %s"
 msgstr "Befehl nicht gefunden: %s"
 
-#: src/XFileExplorer.cpp:6518
+#: src/XFileExplorer.cpp:6519
 #, c-format
 msgid "Invalid file association: %s"
 msgstr "Ungültige Dateiverbindung: %s"
 
-#: src/XFileExplorer.cpp:6525
+#: src/XFileExplorer.cpp:6526
 #, c-format
 msgid "File association not found: %s"
 msgstr "Dateiverbindung nicht gefunden: %s"
@@ -5579,7 +5539,7 @@ msgstr "Dateiverbindung nicht gefunden: %s"
 msgid "Open Archive File"
 msgstr "Archivdatei öffnen"
 
-#: src/XFileArchive.cpp:254 src/XFileImage.cpp:902 src/XFilePackage.cpp:237
+#: src/XFileArchive.cpp:254 src/XFileImage.cpp:900 src/XFilePackage.cpp:237
 msgid "Clear recent file menu."
 msgstr "Dateiliste leeren."
 
@@ -5626,7 +5586,7 @@ msgstr "zip Archive"
 
 #: src/XFileArchive.cpp:392
 msgid "jar Archives"
-msgstr "jar archives"
+msgstr "jar Archive"
 
 #: src/XFileArchive.cpp:393
 msgid "iso Images"
@@ -5802,46 +5762,50 @@ msgstr ""
 "\n"
 
 #: src/XFileArchive.cpp:2339 src/XFileArchive.cpp:2347
-#: src/XFileArchive.cpp:2355 src/XFileImage.cpp:3252 src/XFileImage.cpp:3260
-#: src/XFileImage.cpp:3268 src/XFilePackage.cpp:983 src/XFilePackage.cpp:991
+#: src/XFileArchive.cpp:2355 src/XFileImage.cpp:3343 src/XFileImage.cpp:3351
+#: src/XFileImage.cpp:3359 src/XFilePackage.cpp:983 src/XFilePackage.cpp:991
 #: src/XFilePackage.cpp:999 src/XFileWrite.cpp:352 src/XFileWrite.cpp:360
 #: src/XFileWrite.cpp:368 src/main.cpp:563 src/main.cpp:571 src/main.cpp:579
 msgid "Error loading icons"
 msgstr "Fehler beim Laden der Symbole"
 
-#: src/XFileArchive.cpp:2340 src/XFileImage.cpp:3253 src/XFilePackage.cpp:984
+#: src/XFileArchive.cpp:2340 src/XFileImage.cpp:3344 src/XFilePackage.cpp:984
 #: src/XFileWrite.cpp:353 src/main.cpp:564
-#, fuzzy
-#| msgid ""
-#| "Icon path doesn't exist, icon theme was set back to default. Please check "
-#| "your icon path!"
 msgid ""
 "Icon path doesn't exist, default icon path was selected.\n"
 "\n"
 "From Xfe, please check your icon path in Edit / Preferences / Appearance..."
 msgstr ""
 "Symbol-Pfad existiert nicht, auf voreingestelltes Symbol-Thema "
-"zurückgesetzt. Bitte Symbol-Pfad überprüfen!"
+"zurückgesetzt.\n"
+"\n"
+"Von Xfe: bitte Symbol-Pfad überprüfen! in Bearbeiten / Einstellungen / "
+"Aussehen..."
 
-#: src/XFileArchive.cpp:2348 src/XFileImage.cpp:3261 src/XFilePackage.cpp:992
+#: src/XFileArchive.cpp:2348 src/XFileImage.cpp:3352 src/XFilePackage.cpp:992
 #: src/XFileWrite.cpp:361 src/main.cpp:572
 msgid ""
 "Unable to load some icons, default icon theme was selected.\n"
 "\n"
 "From Xfe, please check your icon theme in Edit / Preferences / Appearance..."
 msgstr ""
+"Einige Icons können nicht geladen werden, das voreingestellte Symbol-Thema "
+"wurde gewählt.\n"
+"\n"
+"Überprüfen Sie bitte Ihr Symbol-Thema in Xfe unter Bearbeiten / "
+"Einstellungen / Aussehen..."
 
-#: src/XFileArchive.cpp:2356 src/XFileImage.cpp:3269 src/XFilePackage.cpp:1000
+#: src/XFileArchive.cpp:2356 src/XFileImage.cpp:3360 src/XFilePackage.cpp:1000
 #: src/XFileWrite.cpp:369 src/main.cpp:580
-#, fuzzy
-#| msgid "Unable to load some icons. Please check your icon theme!"
 msgid ""
 "Unable to load default icons, no icons can be shown.\n"
 "\n"
 "Please check your Xfe installation..."
 msgstr ""
-"Einige Symbole konnten nicht geladen werden. Bitte das Symbol-Thema "
-"überprüfen!"
+"Voreingestellte Symbole konnten nicht geladen werden, \n"
+"es können keine Symbole angezeigt werden.\n"
+"\n"
+"Bitte überprüfen Sie Ihre Xfe Installation..."
 
 #: src/XFileImage.cpp:182
 msgid "GIF Image"
@@ -5895,227 +5859,271 @@ msgstr "TIFF Bild"
 msgid "&Image"
 msgstr "&Bild"
 
-#: src/XFileImage.cpp:805 src/XFileImage.cpp:882
+#: src/XFileImage.cpp:530
+#, fuzzy
+#| msgid "Go to Previous Folder"
+msgid "Go to Previous FprevImageer"
+msgstr "Zum vorherigen Ordner wechseln"
+
+#: src/XFileImage.cpp:538
+#, fuzzy
+#| msgid "Go to Next Folder"
+msgid "Go to Next FprevImageer"
+msgstr "Zum nächsten Ordner wechseln"
+
+#: src/XFileImage.cpp:546
+#, fuzzy
+#| msgid "Go to Parent Folder"
+msgid "Go to Parent FprevImageer"
+msgstr "Zum übergeordneten Ordner wechseln"
+
+#: src/XFileImage.cpp:555
+#, fuzzy
+#| msgid "Go to Home Folder"
+msgid "Go to Home FprevImageer"
+msgstr "Zum Heimatordner wechseln"
+
+#: src/XFileImage.cpp:561
+#, fuzzy
+#| msgid "Go to Working Folder"
+msgid "Go to Working FprevImageer"
+msgstr "Zum Arbeitsordner wechseln"
+
+#: src/XFileImage.cpp:803 src/XFileImage.cpp:880
 msgid "Open image file."
 msgstr "Bilddatei öffnen."
 
-#: src/XFileImage.cpp:810 src/XFileImage.cpp:888
+#: src/XFileImage.cpp:808 src/XFileImage.cpp:886
 msgid "Print image file."
 msgstr "Bilddatei drucken."
 
-#: src/XFileImage.cpp:818
+#: src/XFileImage.cpp:816
 msgid "Previous"
 msgstr "Voransicht"
 
-#: src/XFileImage.cpp:818 src/XFileImage.cpp:917
+#: src/XFileImage.cpp:816 src/XFileImage.cpp:915
 msgid "View previous image."
 msgstr "Vorheriges Bild anzeigen."
 
-#: src/XFileImage.cpp:823
+#: src/XFileImage.cpp:821
 msgid "Next"
 msgstr "Nächstes"
 
-#: src/XFileImage.cpp:823 src/XFileImage.cpp:923
+#: src/XFileImage.cpp:821 src/XFileImage.cpp:921
 msgid "View next image."
 msgstr "Nächstes Bild ansehen."
 
-#: src/XFileImage.cpp:832
-msgid "Zoom in"
-msgstr "Vergrößern"
-
-#: src/XFileImage.cpp:832 src/XFileImage.cpp:930
-msgid "Zoom in image."
-msgstr "Das Bild vergrößern."
-
-#: src/XFileImage.cpp:838
+#: src/XFileImage.cpp:830
 msgid "Zoom out"
 msgstr "Verkleinern"
 
-#: src/XFileImage.cpp:838 src/XFileImage.cpp:932
+#: src/XFileImage.cpp:830 src/XFileImage.cpp:930
 msgid "Zoom out image."
 msgstr "Das Bild verkleinern."
 
-#: src/XFileImage.cpp:845
+#: src/XFileImage.cpp:836
+msgid "Zoom in"
+msgstr "Vergrößern"
+
+#: src/XFileImage.cpp:836 src/XFileImage.cpp:928
+msgid "Zoom in image."
+msgstr "Das Bild vergrößern."
+
+#: src/XFileImage.cpp:843
 msgid "Zoom 100%"
 msgstr "Zoom 100%"
 
-#: src/XFileImage.cpp:845 src/XFileImage.cpp:936
+#: src/XFileImage.cpp:843 src/XFileImage.cpp:934
 msgid "Zoom image to 100%."
 msgstr "Bild in Originalgröße darstellen."
 
-#: src/XFileImage.cpp:850
+#: src/XFileImage.cpp:848
 msgid "Zoom to Fit"
 msgstr "In das Fenster einpassen"
 
-#: src/XFileImage.cpp:850 src/XFileImage.cpp:942
+#: src/XFileImage.cpp:848 src/XFileImage.cpp:940
 msgid "Zoom to fit window."
 msgstr "Fensterfüllend vergrößern."
 
-#: src/XFileImage.cpp:858
+#: src/XFileImage.cpp:856
 msgid "Rotate Left"
 msgstr "Nach links drehen"
 
-#: src/XFileImage.cpp:858
+#: src/XFileImage.cpp:856
 msgid "Rotate left image."
 msgstr "Bild nach links drehen."
 
-#: src/XFileImage.cpp:863
+#: src/XFileImage.cpp:861
 msgid "Rotate Right"
 msgstr "Nach rechts drehen"
 
-#: src/XFileImage.cpp:863
+#: src/XFileImage.cpp:861
 msgid "Rotate right image."
 msgstr "Bild nach rechts drehen."
 
-#: src/XFileImage.cpp:869
+#: src/XFileImage.cpp:867
 msgid "Mirror Horizontally"
 msgstr "Horizonal spiegeln"
 
-#: src/XFileImage.cpp:869
+#: src/XFileImage.cpp:867
 msgid "Mirror image horizontally."
 msgstr "Bild horizonal spiegeln."
 
-#: src/XFileImage.cpp:874
+#: src/XFileImage.cpp:872
 msgid "Mirror Vertically"
 msgstr "Vertikal spiegeln"
 
-#: src/XFileImage.cpp:874
+#: src/XFileImage.cpp:872
 msgid "Mirror image vertically."
 msgstr "Bild vertikal spiegeln."
 
-#: src/XFileImage.cpp:909
+#: src/XFileImage.cpp:907
 msgid "Quit Xfi."
 msgstr "Xfi beenden."
 
-#: src/XFileImage.cpp:917
+#: src/XFileImage.cpp:915
 msgid "&Previous"
 msgstr "&Vorheriges"
 
-#: src/XFileImage.cpp:923
+#: src/XFileImage.cpp:921
 msgid "&Next"
 msgstr "&Nächstes"
 
-#: src/XFileImage.cpp:930
+#: src/XFileImage.cpp:928
 msgid "Zoom &in"
 msgstr "Ver&größern"
 
-#: src/XFileImage.cpp:932
+#: src/XFileImage.cpp:930
 msgid "Zoom &out"
 msgstr "Ver&kleinern"
 
-#: src/XFileImage.cpp:936
+#: src/XFileImage.cpp:934
 msgid "Zoo&m 100%"
 msgstr "&Originalgröße"
 
-#: src/XFileImage.cpp:942
+#: src/XFileImage.cpp:940
 msgid "Zoom to Fit &Window"
-msgstr "&Einpassen"
+msgstr "Fenster &einpassen"
 
-#: src/XFileImage.cpp:948
+#: src/XFileImage.cpp:946
 msgid "Rotate &Right"
 msgstr "&Rechts herum drehen"
 
-#: src/XFileImage.cpp:948
+#: src/XFileImage.cpp:946
 msgid "Rotate right."
 msgstr "Rechts herum drehen."
 
-#: src/XFileImage.cpp:954
+#: src/XFileImage.cpp:952
 msgid "Rotate &Left"
 msgstr "&Links herum drehen"
 
-#: src/XFileImage.cpp:954
+#: src/XFileImage.cpp:952
 msgid "Rotate left."
 msgstr "Links herum drehen."
 
-#: src/XFileImage.cpp:960
+#: src/XFileImage.cpp:958
 msgid "Mirror &Horizontally"
 msgstr "&Horizontal spiegeln"
 
-#: src/XFileImage.cpp:960
+#: src/XFileImage.cpp:958
 msgid "Mirror horizontally."
 msgstr "Horizontal spiegeln."
 
-#: src/XFileImage.cpp:966
+#: src/XFileImage.cpp:964
 msgid "Mirror &Vertically"
 msgstr "&Vertikal spiegeln"
 
-#: src/XFileImage.cpp:966
+#: src/XFileImage.cpp:964
 msgid "Mirror vertically."
 msgstr "Vertikal spiegeln."
 
-#: src/XFileImage.cpp:973
-msgid "Show hidden files and folders."
+#: src/XFileImage.cpp:971
+#, fuzzy
+#| msgid "Show hidden files and folders."
+msgid "Show hidden files and fprevImageers."
 msgstr "Versteckte Dateien und Verzeichnisse anzeigen."
 
-#: src/XFileImage.cpp:979
+#: src/XFileImage.cpp:977
 msgid "Show image thumbnails."
 msgstr "Vorschaubilder anzeigen."
 
-#: src/XFileImage.cpp:987
-msgid "Display folders with big icons."
+#: src/XFileImage.cpp:985
+#, fuzzy
+#| msgid "Display folders with big icons."
+msgid "Display fprevImageers with big icons."
 msgstr "Ordner mit großen Symbolen anzeigen."
 
-#: src/XFileImage.cpp:993
-msgid "Display folders with small icons."
+#: src/XFileImage.cpp:991
+#, fuzzy
+#| msgid "Display folders with small icons."
+msgid "Display fprevImageers with small icons."
 msgstr "Ordner mit kleinen Symbolen anzeigen."
 
-#: src/XFileImage.cpp:999
-msgid "Display detailed folder listing."
+#: src/XFileImage.cpp:997
+#, fuzzy
+#| msgid "Display detailed folder listing."
+msgid "Display detailed fprevImageer listing."
 msgstr "Detaillierte Ordnerliste anzeigen."
 
-#: src/XFileImage.cpp:1015
+#: src/XFileImage.cpp:1013
 msgid "Autosize icon names."
 msgstr "Automatische Größenanpassung der Symbolnamen."
 
-#: src/XFileImage.cpp:1016
+#: src/XFileImage.cpp:1014
 msgid "View icons row-wise."
 msgstr "Zeileweise Ansicht mit Symbolen."
 
-#: src/XFileImage.cpp:1017
+#: src/XFileImage.cpp:1015
 msgid "View icons column-wise."
 msgstr "Spaltenweise Ansicht mit Symbolen."
 
-#: src/XFileImage.cpp:1022
+#: src/XFileImage.cpp:1020
 msgid "&File List"
 msgstr "&Dateiliste"
 
-#: src/XFileImage.cpp:1022
+#: src/XFileImage.cpp:1020
 msgid "Display file list."
 msgstr "Dateiliste anzeigen."
 
-#: src/XFileImage.cpp:1023
+#: src/XFileImage.cpp:1021
 msgid "File List &Before"
 msgstr "Dateiliste &davor"
 
-#: src/XFileImage.cpp:1023
+#: src/XFileImage.cpp:1021
 msgid "Display file list before image window."
 msgstr "Dateiliste vor dem Bilder-Fenster anzeigen."
 
-#: src/XFileImage.cpp:1025
+#: src/XFileImage.cpp:1023
 msgid "&Filter Images"
 msgstr "Bilder &filtern"
 
-#: src/XFileImage.cpp:1025
+#: src/XFileImage.cpp:1023
 msgid "List only image files."
 msgstr "Nur Bilddateien anzeigen."
 
-#: src/XFileImage.cpp:1026
+#: src/XFileImage.cpp:1024
 msgid "Fit &Window When Opening"
 msgstr "&Fensterfüllend öffnen"
 
-#: src/XFileImage.cpp:1026
+#: src/XFileImage.cpp:1024
 msgid "Zoom to fit window when opening an image."
 msgstr "Fenster beim Öffnen eines Bildes anpassen."
 
-#: src/XFileImage.cpp:1031
+#: src/XFileImage.cpp:1029
 msgid "&About X File Image"
 msgstr "&Über X File Image"
 
-#: src/XFileImage.cpp:1031
+#: src/XFileImage.cpp:1029
 msgid "About X File Image."
 msgstr "Über X File Image."
 
-#: src/XFileImage.cpp:1601
+#: src/XFileImage.cpp:1131
+#, fuzzy
+#| msgid "Fold&ers First"
+msgid "FprevImage&ers First"
+msgstr "Ordn&er zuerst"
+
+#: src/XFileImage.cpp:1597
 #, c-format
 msgid ""
 "X File Image Version %s is a simple image viewer.\n"
@@ -6124,24 +6132,24 @@ msgstr ""
 "X File Image Version %s ist ein einfacher Bildbetrachter.\n"
 "\n"
 
-#: src/XFileImage.cpp:1603
+#: src/XFileImage.cpp:1599
 msgid "About X File Image"
 msgstr "Über X File Image"
 
-#: src/XFileImage.cpp:1711 src/XFileImage.cpp:1717 src/XFileImage.cpp:1733
+#: src/XFileImage.cpp:1691 src/XFileImage.cpp:1707
 msgid "Error Loading Image"
 msgstr "Fehler beim Laden des Bildes"
 
-#: src/XFileImage.cpp:1711 src/XFileImage.cpp:1717
+#: src/XFileImage.cpp:1691
 #, c-format
 msgid "Unsupported type: %s"
 msgstr "Nicht unterstützter Typ: %s"
 
-#: src/XFileImage.cpp:1734
+#: src/XFileImage.cpp:1708
 msgid "Unable to load image, the file may be corrupted"
 msgstr "Konnte das Bild nicht laden, vielleicht ist die Datei beschädigt"
 
-#: src/XFileImage.cpp:1788
+#: src/XFileImage.cpp:1774
 msgid ""
 "Change will be taken into account after restart.\n"
 "Restart X File Image now?"
@@ -6149,11 +6157,11 @@ msgstr ""
 "Änderungen werden beim Neustart übernommen.\n"
 "Wollen Sie X File Image (xfi) jetzt neu starten?"
 
-#: src/XFileImage.cpp:1903
+#: src/XFileImage.cpp:1892
 msgid "Open Image"
 msgstr "Bild öffnen"
 
-#: src/XFileImage.cpp:3074
+#: src/XFileImage.cpp:3165
 msgid ""
 "\n"
 "Usage: xfi [options] [image] \n"
@@ -6332,24 +6340,20 @@ msgid "Docking"
 msgstr ""
 
 #: src/foxhacks.cpp:4072
-#, fuzzy
-#| msgid "To:"
 msgid "Top"
-msgstr "Nach:"
+msgstr "Oben"
 
 #: src/foxhacks.cpp:4073
 msgid "Bottom"
-msgstr ""
+msgstr "Unten"
 
 #: src/foxhacks.cpp:4074
 msgid "Left"
-msgstr ""
+msgstr "Links"
 
 #: src/foxhacks.cpp:4075
-#, fuzzy
-#| msgid "&Weight:"
 msgid "Right"
-msgstr "&Gewicht:"
+msgstr "Rechts"
 
 #: src/foxhacks.cpp:4076
 msgid "Float"
@@ -6580,7 +6584,7 @@ msgid ""
 " \n"
 "  Dragging a file or group or files (by moving the mouse while maintaining "
 "the left button pressed)\n"
-"  to a folder or a file panel optionally opens a dialog that allows one to "
+"  to a folder or a file panel optionally opens a dialog that allows you to "
 "select the file operation: copy,\n"
 "  move, link or cancel.\n"
 " \n"
@@ -6591,8 +6595,8 @@ msgid ""
 " \n"
 "  Xfe implements a trash system that is fully compliant with the freedesktop."
 "org standards.\n"
-"  This allows the user to move files to the trash can and to restore files "
-"from within Xfe or your favorite desktop.\n"
+"  This allows you to move files to the trash can and to restore files from "
+"within Xfe or your favorite desktop.\n"
 "  Note that the trash files location is: ~/.local/share/Trash/files\n"
 " \n"
 " \n"
@@ -6621,8 +6625,8 @@ msgid ""
 "into the local configuration file\n"
 "  ~/.config/xfe/xferc which does not exists yet. If the system-wide "
 "configuration file is not found\n"
-"  (in case of an unusal install place), a dialog asks the user to select the "
-"right place. It is thus easier to\n"
+"  (in case of an unusual install place), a dialog asks the user to select "
+"the right place. It is thus easier to\n"
 "  customize Xfe (this is particularly true for the file associations) by "
 "hand editing because all the local options\n"
 "  are located in the same file.\n"
@@ -6662,8 +6666,8 @@ msgid ""
 " \n"
 "  Starting with version 2.0, the folder panel features two tabs: one is the "
 "classic Tree view and the other\n"
-"  is a Places view. This Places view allows to view desktop folders (home, "
-"downloads, documents, music, ...), of\n"
+"  is a Places view. This Places view allows you to view desktop folders "
+"(home, downloads, documents, music, ...), of\n"
 "  drive mounts, network shares and user's bookmarks.\n"
 " \n"
 "  Network shares mounted from the desktop using gvfs (GNOME or XFCE) appear "
@@ -6764,8 +6768,8 @@ msgid ""
 " \n"
 "  Xfe can perform a bulk rename operation on selected files and folders from "
 "the file panels. The rename dialog allows\n"
-"  to replace a text pattern or insert / overwrite / remove text at a given "
-"position. It is also possible to number\n"
+"  you to replace a text pattern or insert / overwrite / remove text at a "
+"given position. It is also possible to number\n"
 "  files.\n"
 " \n"
 "  Bulk rename can also be used from the search panel results. However, in "
@@ -6792,7 +6796,7 @@ msgid ""
 "   =-=-=-=-=-=-=\n"
 " \n"
 "  Starting with version 2.1, Xfe has an integrated automounter program that "
-"allows to mount removable disks or media\n"
+"allows you to mount removable disks or media\n"
 "  when they are inserted. The automounter also supports MTP devices (ex: "
 "Android phones or tablets).\n"
 " \n"
@@ -6942,7 +6946,7 @@ msgid ""
 "  and  to all people that have provided useful patches, translations, tests "
 "and advices.\n"
 " \n"
-"  [Last revision: 11/05/2025]\n"
+"  [Last revision: 05/01/2026]\n"
 " \n"
 " "
 msgstr ""
@@ -6996,26 +7000,26 @@ msgid "Warning: Unknown panel mode, revert to last saved panel mode\n"
 msgstr ""
 "Warnung: Unbekannter Feld-Modus, verwende letzten gespeicherten Feld-Modus\n"
 
-#: src/startupnotification.cpp:82 src/startupnotification.cpp:134
-#: src/startupnotification.cpp:200 src/startupnotification.cpp:228
-#: src/startupnotification.cpp:257
+#: src/startupnotification.cpp:80 src/startupnotification.cpp:132
+#: src/startupnotification.cpp:198 src/startupnotification.cpp:224
+#: src/startupnotification.cpp:253
 #, c-format
 msgid "Error: Can't enter folder %s: %s"
 msgstr "Fehler: Kann den Ordner %s nicht öffnen: %s"
 
-#: src/startupnotification.cpp:86 src/startupnotification.cpp:138
-#: src/startupnotification.cpp:204 src/startupnotification.cpp:232
-#: src/startupnotification.cpp:261
+#: src/startupnotification.cpp:84 src/startupnotification.cpp:136
+#: src/startupnotification.cpp:202 src/startupnotification.cpp:228
+#: src/startupnotification.cpp:257
 #, c-format
 msgid "Error: Can't enter folder %s"
 msgstr "Fehler: Kann den Ordner %s nicht öffnen"
 
-#: src/startupnotification.cpp:127
+#: src/startupnotification.cpp:125
 #, c-format
 msgid "Error: Can't open display\n"
 msgstr "Fehler: Kann das Display nicht öffnen\n"
 
-#: src/startupnotification.cpp:146
+#: src/startupnotification.cpp:144
 #, c-format
 msgid "Start of %s"
 msgstr "Start von %s"
@@ -7033,9 +7037,9 @@ msgid "bytes"
 msgstr "Byte"
 
 #: src/xfeutils.cpp:1182
-#, fuzzy, c-format
+#, c-format
 msgid "Error: %s\n"
-msgstr "Fehler"
+msgstr "Fehler: %s\n"
 
 #: src/xfeutils.cpp:1547
 #, c-format
@@ -7074,6 +7078,12 @@ msgstr "Dateimanager"
 msgid "A lightweight file manager for X Window"
 msgstr "Ein leichter Dateimanager für X Window"
 
+#: xfe.desktop.in:6
+#, fuzzy
+#| msgid "File Manager"
+msgid "file manager"
+msgstr "Dateimanager"
+
 #: xfi.desktop.in:3
 msgid "Xfi"
 msgstr "Xfi"
@@ -7085,6 +7095,10 @@ msgstr "Bildbetrachter"
 #: xfi.desktop.in:5
 msgid "A simple image viewer for Xfe"
 msgstr "Ein einfacher Bildbetrachter für Xfe"
+
+#: xfi.desktop.in:6
+msgid "image viewer;image manager"
+msgstr ""
 
 #: xfp.desktop.in:3
 msgid "Xfp"
@@ -7098,6 +7112,10 @@ msgstr "Paketmanager"
 msgid "A simple package manager for Xfe"
 msgstr "Ein einfacher Paketmanager für Xfe"
 
+#: xfp.desktop.in:6
+msgid "package viewer;package manager"
+msgstr ""
+
 #: xfw.desktop.in:3
 msgid "Xfw"
 msgstr "Xfw"
@@ -7109,6 +7127,10 @@ msgstr "Texteditor"
 #: xfw.desktop.in:5
 msgid "A simple text editor for Xfe"
 msgstr "Ein einfacher Texteditor für Xfe"
+
+#: xfw.desktop.in:6
+msgid "editor;viewer;text"
+msgstr ""
 
 #: org.xfe.root.policy.in.in:11
 msgid "Run Xfe as root"

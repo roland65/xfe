@@ -61,7 +61,6 @@ class PreferencesBox : public DialogBox
     FXDECLARE(PreferencesBox)
 private:
     ComboBox* colorsBox = NULL;
-    ComboBox* themesBox = NULL;
     FXList* themesList = NULL;
     FXTextField* iconpath = NULL;
     FXTextField* txtviewer = NULL;
@@ -130,7 +129,6 @@ private:
     FXCheckButton* overwrite = NULL;
     FXCheckButton* exec = NULL;
     FXCheckButton* ask = NULL;
-    FXCheckButton* bg = NULL;
     FXCheckButton* folder_warning = NULL;
     FXCheckButton* preserve_date_warning = NULL;
     FXCheckButton* root_warning = NULL;

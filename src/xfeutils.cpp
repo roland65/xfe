@@ -1555,7 +1555,7 @@ err:
 }
 
 
-// Check if the file or the link refered file is readable AND executable
+// Check if the file or the link referred file is readable AND executable
 // Function used to test if we can enter a directory
 // Uses the access() system function
 FXbool xf_isreadexecutable(const FXString& file)
@@ -1644,7 +1644,7 @@ FXbool xf_islink(const FXString& file)
 }
 
 
-// Get file info (file or link refered file)
+// Get file info (file or link referred file)
 FXbool xf_info(const FXString& file, struct stat& inf)
 {
     return !file.empty() && (xf_stat(file.text(), &inf) == 0);

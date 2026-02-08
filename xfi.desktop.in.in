@@ -2,6 +2,7 @@
 Name=Xfi
 GenericName=Image Viewer
 Comment=A simple image viewer for Xfe
+Keywords=image viewer;image manager
 Exec=xfi %f
 Terminal=false
 Type=Application

@@ -966,10 +966,12 @@ PropertiesBox::PropertiesBox(FXWindow* win, FXString file, FXString path, FXbool
         input->setEditable(false);
         permstab->hide();
         fassoctab->hide();
+#ifdef STARTUP_NOTIFICATION
         if (sngroup != NULL)
         {
             sngroup->hide();
         }
+#endif
     }
 }
 

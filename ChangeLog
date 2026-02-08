@@ -1,4 +1,23 @@
-Version 2.1.2
+Version 2.1.4 (released 08/02/2026)
+- set initial browsing directory to current directory when comparing files 
+- fix Xfe root mode not working with pkexec authentication in XFCE, MATE and LXDE desktops
+- fix a typo in xfw.desktop.in.in
+- change startup notification time to 1s when --disable-sn is used
+- fix broken compilation with --disable-sn
+- copy speed is now computed as a moving average of 20 values obtained every second
+- fix Xfe iconic or maximized starting mode  
+
+Version 2.1.3 (released 17/01/2026)
+- put zoom out button before zoom in button in Xfi
+- grey out zoom in and out buttons in Xfi when the maximum or minimum zoom factor is attained 
+- fix Xfi crash and rewrite code related to image memory allocation (bug #313)
+- update german translation (Joachim Wiedorn <joodebian@joonet.de>)
+- fix mispellings in code comments
+- add Keywords entry to desktop files
+- update xferc file types
+- remove unused variables in Preferences.h
+
+Version 2.1.2 (released 01/01/2026)
 - fix broken script execution in Search Panel
 - fix return key not working in Search Panel
 - fix double clicking on a symbolic link doesn't open the target file (bug #312)

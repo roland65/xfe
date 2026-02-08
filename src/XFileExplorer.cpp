@@ -3600,16 +3600,6 @@ void XFileExplorer::create()
         }
     }
 
-    // Possibly start iconic or maximized
-    if (starticonic)
-    {
-        minimize();
-    }
-    if (startmaximized)
-    {
-        maximize();
-    }
-
 #ifdef STARTUP_NOTIFICATION
     startup_completed();
 #endif
@@ -3681,6 +3671,16 @@ void XFileExplorer::create()
     if (!winshow)
     {
         stop = true;
+    }
+
+    // Possibly start iconic or maximized
+    if (starticonic)
+    {
+        minimize();
+    }
+    if (startmaximized)
+    {
+        maximize();
     }
 
 #if defined(linux) && defined(XFE_AUTOMOUNTER)
@@ -5541,6 +5541,7 @@ long XFileExplorer::onCmdSu(FXObject*, FXSelector, void*)
         status = runcmd(cmd, currdir, startlocation);
 #endif
     }
+    
     // Use sudo or su
     else
     {

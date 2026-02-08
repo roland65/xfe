@@ -2,6 +2,7 @@
 Name=Xfa
 GenericName=Archive viewer
 Comment=A simple archive viewer and extractor for Xfe
+Keywords=archive viewer;archive extractor
 Exec=xfa %F
 Terminal=false
 Type=Application

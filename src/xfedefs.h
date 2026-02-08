@@ -206,11 +206,20 @@ enum
 #define BUFFER_COPY_SIZE    1048576
 #endif
 
+// Maximum number of copy speeds to average
+#ifndef NMAX_COPY_SPEED
+#define NMAX_COPY_SPEED   20
+#endif
+
 // Time interval to check for MTP devices (ms)
+#ifndef MTP_CHECK_INTERVAL
 #define MTP_CHECK_INTERVAL    1000
+#endif
 
 // Maximum length of an MTP name string
+#ifndef MAX_MTP_NAME_SIZE
 #define MAX_MTP_NAME_SIZE     1024
+#endif
 
 // If startup notification is used, this is the timeout value (seconds)
 #ifdef STARTUP_NOTIFICATION
@@ -221,8 +230,8 @@ enum
 
 #endif
 
-// If startup notification is not used, we use an ugly simulation of a startup time (seconds)
-#define SIMULATED_STARTUP_TIME    3
+// If startup notification is not used, we use a simulation of a startup time (seconds)
+#define SIMULATED_STARTUP_TIME    1
 
 // Default timeout for mount points that are not responding in Linux
 #if defined(linux)

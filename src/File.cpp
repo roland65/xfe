@@ -39,6 +39,10 @@
 // Source size refresh delay  (ms)
 #define SOURCESIZE_REFRESH_DELAY    500
 
+// Copy speed compute delay  (ms)
+#define COPYSPEED_DELAY    1000
+
+
 // Global variables
 extern FXMainWindow* mainWindow;
 
@@ -133,6 +137,7 @@ FXDEFMAP(File) FileMap[] =
     FXMAPFUNC(SEL_COMMAND, File::ID_CANCEL_BUTTON, File::onCmdCancel),
     FXMAPFUNC(SEL_TIMEOUT, File::ID_PROGRESSBAR, File::onTimeout),
     FXMAPFUNC(SEL_TIMEOUT, File::ID_SOURCESIZE, File::onSourceSizeRefresh),
+    FXMAPFUNC(SEL_TIMEOUT, File::ID_COPYSPEED, File::onCopySpeed),
 };
 
 
@@ -321,7 +326,15 @@ DialogBox(owner, title, DECOR_TITLE | DECOR_BORDER | DECOR_STRETCHABLE)
 
     // Total read data
     totaldataread = 0;
-
+    prevTotaldataread = 0;
+    
+    // Vector of copy speeds
+    for (FXuint i = 0; i < NMAX_COPY_SPEED; i++)
+    {
+        vecCopyspeed[i] = 0.0;
+    }
+    numcopyspeed = 0;
+    
     // Owner window
     ownerwin = owner;
 
@@ -353,6 +366,8 @@ File::~File()
         getApp()->removeTimeout(this, File::ID_SOURCESIZE);
     }
     getApp()->removeTimeout(this, File::ID_PROGRESSBAR);
+    getApp()->removeTimeout(this, File::ID_COPYSPEED);
+
     delete progressbar;
     delete mbox;
 }
@@ -549,8 +564,7 @@ FXuint File::getOverwriteAnswer(FXString srcpath, FXString tgtpath, FXbool resta
 // Return -1 to prevent displaying an error message in the calling function
 // Return -2 when an error has occurred during the copy
 int File::copyfile(const FXString& source, const FXString& target, const FXString& hsourcesize,
-                   const FXulong sourcesize,
-                   const FXulong tstart, const FXbool preserve_date)
+                   const FXulong sourcesize, const FXulong tstart, const FXbool preserve_date)
 {
     FXString destfile;
     FXuchar buffer[BUFFER_COPY_SIZE];
@@ -559,8 +573,12 @@ int File::copyfile(const FXString& source, const FXString& target, const FXStrin
     FXlong nread, nwritten;
     int src, dst;
     int ok = false;
-
+    
     FXbool warn = getApp()->reg().readUnsignedEntry("OPTIONS", "preserve_date_warn", true);
+
+    // Needed by onCopySpeed()
+    copyspeedSourcesize = sourcesize;
+    copyspeedHsourcesize = hsourcesize;
 
     if ((src = ::open(source.text(), O_RDONLY)) >= 0)
     {
@@ -580,7 +598,7 @@ int File::copyfile(const FXString& source, const FXString& target, const FXStrin
             if (destfile.contains("mtp:host="))
             {
                 // Force timeout checking for progress dialog
-                checkTimeout();
+                checkProgressBarTimeout();
 
                 // Update read data size
                 if (xf_lstat(source.text(), &info) == 0)
@@ -588,8 +606,11 @@ int File::copyfile(const FXString& source, const FXString& target, const FXStrin
                     totaldataread += (FXulong)info.st_size;
                 }
 
-                // Force timeout checking for progress dialog
-                checkTimeout();
+                // Start copy speed timeout if not already done
+                if (!getApp()->hasTimeout(this, File::ID_COPYSPEED))
+                {
+                    getApp()->addTimeout(this, File::ID_COPYSPEED, COPYSPEED_DELAY);
+                }
 
                 if (progressbar)
                 {
@@ -597,32 +618,9 @@ int File::copyfile(const FXString& source, const FXString& target, const FXStrin
                     int pct = (sourcesize == 0 ? 0 : (100.0 * totaldataread) / sourcesize);
                     progressbar->setProgress(pct);
 
-                    char size[64];
-
-                    // Copy speed
-                    double copyspeed = totaldataread / (double)(xf_getcurrenttime() - tstart);
-                    snprintf(size, sizeof(size), "%f", copyspeed);
-                    FXString hspeed = xf_humansize(size);
-
-                    // Remaining time in seconds
-                    FXuint remtime = (FXuint)((sourcesize - totaldataread) / copyspeed);
-                    FXString hremtime = xf_secondstotimestring(remtime);
-
-                    // Total data copied
-                    FXString hsize;
-
-
-#if __WORDSIZE == 64
-                    snprintf(size, sizeof(size), "%ld", totaldataread);
-#else
-                    snprintf(size, sizeof(size), "%lld", totaldataread);
-#endif
-                    hsize = xf_humansize(size);
-                    snprintf(size, sizeof(size), "%s %s / %s (%s/s)", datatext.text(), hsize.text(),
-                             hsourcesize.text(), hspeed.text());
-                    datalabel->setText(size);
-                    snprintf(size, sizeof(size), "%s %s", timetext.text(), hremtime.text());
-                    timelabel->setText(size);
+                    // Allow timeout checking
+                    getApp()->forceRefresh();
+                    getApp()->flush();
                 }
 
                 // Give cancel button an opportunity to be clicked
@@ -648,6 +646,7 @@ int File::copyfile(const FXString& source, const FXString& target, const FXStrin
                 if (cancelled)
                 {
                     ::close(src);
+
                     return false;
                 }
 
@@ -684,6 +683,12 @@ int File::copyfile(const FXString& source, const FXString& target, const FXStrin
             // File is on a regular file system
             else
             {
+                // Start copy speed timeout if not already done
+                if (!getApp()->hasTimeout(this, File::ID_COPYSPEED))
+                {
+                    getApp()->addTimeout(this, File::ID_COPYSPEED, COPYSPEED_DELAY);
+                }
+
                 // Copy file block by block
                 if ((dst = ::open(destfile.text(), O_WRONLY | O_CREAT | O_TRUNC, info.st_mode)) >= 0)
                 {
@@ -717,6 +722,7 @@ int File::copyfile(const FXString& source, const FXString& target, const FXStrin
                                 ::close(dst);
                                 ::close(src);
                                 cancelled = true;
+
                                 return false;
                             }
                             else
@@ -729,8 +735,9 @@ int File::copyfile(const FXString& source, const FXString& target, const FXStrin
                             break;
                         }
 
-                        // Force timeout checking for progress dialog
-                        checkTimeout();
+                        // Allow timeout checking
+                        getApp()->forceRefresh();
+                        getApp()->flush();
 
                         // Set percentage value for progress dialog
                         totaldataread += nread;
@@ -740,33 +747,6 @@ int File::copyfile(const FXString& source, const FXString& target, const FXStrin
                             // Percentage
                             int pct = (sourcesize == 0 ? 0 : (100.0 * totaldataread) / sourcesize);
                             progressbar->setProgress(pct);
-
-                            char size[64];
-
-                            // Copy speed
-                            double copyspeed = totaldataread / (double)(xf_getcurrenttime() - tstart);
-                            snprintf(size, sizeof(size), "%f", copyspeed);
-                            FXString hspeed = xf_humansize(size);
-
-                            // Remaining time in seconds
-                            FXuint remtime = (FXuint)((sourcesize - totaldataread) / copyspeed);
-                            FXString hremtime = xf_secondstotimestring(remtime);
-
-                            // Total data copied
-                            FXString hsize;
-
-
-#if __WORDSIZE == 64
-                            snprintf(size, sizeof(size), "%ld", totaldataread);
-#else
-                            snprintf(size, sizeof(size), "%lld", totaldataread);
-#endif
-                            hsize = xf_humansize(size);
-                            snprintf(size, sizeof(size), "%s %s / %s (%s/s)", datatext.text(), hsize.text(),
-                                     hsourcesize.text(), hspeed.text());
-                            datalabel->setText(size);
-                            snprintf(size, sizeof(size), "%s %s", timetext.text(), hremtime.text());
-                            timelabel->setText(size);
                         }
 
                         // Give cancel button an opportunity to be clicked
@@ -793,6 +773,7 @@ int File::copyfile(const FXString& source, const FXString& target, const FXStrin
                         {
                             ::close(dst);
                             ::close(src);
+
                             return false;
                         }
                         errno = 0;
@@ -820,6 +801,7 @@ int File::copyfile(const FXString& source, const FXString& target, const FXStrin
                                 ::close(dst);
                                 ::close(src);
                                 cancelled = true;
+                                
                                 return false;
                             }
                             else
@@ -827,9 +809,10 @@ int File::copyfile(const FXString& source, const FXString& target, const FXStrin
                                 error = true; // An error has occurred
                             }
                         }
+
                     }
 
-                    // An error has occurred during the copy
+                    // An error has occurred
                     if (error)
                     {
                         ok = -2;
@@ -871,6 +854,7 @@ int File::copyfile(const FXString& source, const FXString& target, const FXStrin
                             {
                                 ::close(src);
                                 cancelled = true;
+                                
                                 return false;
                             }
                         }
@@ -915,11 +899,13 @@ int File::copyfile(const FXString& source, const FXString& target, const FXStrin
         if (answer == BOX_CLICKED_CANCEL)
         {
             cancelled = true;
+
             return false;
         }
         ok = -1;        // Prevent displaying an error message
                         // in the calling function
     }
+
     return ok;
 }
 
@@ -1294,7 +1280,7 @@ int File::remove(const FXString& file)
                 ISDIR = true;
 
                 // Force timeout checking for progress dialog
-                checkTimeout();
+                checkProgressBarTimeout();
 
                 // Give cancel button an opportunity to be clicked
                 if (cancelButton)
@@ -1380,7 +1366,7 @@ int File::remove(const FXString& file)
             if (!ISDIR)
             {
                 // Force timeout checking for progress dialog
-                checkTimeout();
+                checkProgressBarTimeout();
 
                 // Give cancel button an opportunity to be clicked
                 if (cancelButton)
@@ -1615,7 +1601,7 @@ int File::fmove(const FXString& source, const FXString& target, const FXString& 
     }
 
     // Force timeout checking for progress dialog
-    checkTimeout();
+    checkProgressBarTimeout();
 
     // Give cancel button an opportunity to be clicked
     if (cancelButton)
@@ -1933,7 +1919,7 @@ int File::chmod(char* path, char* file, mode_t mode, FXbool rec, const FXbool di
         }
 
         // Force timeout checking for progress dialog
-        checkTimeout();
+        checkProgressBarTimeout();
 
         // Give cancel button an opportunity to be clicked
         if (cancelButton)
@@ -1961,7 +1947,7 @@ int File::chmod(char* path, char* file, mode_t mode, FXbool rec, const FXbool di
         if ((rec == false) && !fileonly)
         {
             // Force timeout checking for progress dialog
-            checkTimeout();
+            checkProgressBarTimeout();
 
             // Give cancel button an opportunity to be clicked
             if (cancelButton)
@@ -2025,7 +2011,7 @@ int File::rchmod(char* path, char* file, mode_t mode, const FXbool dironly, cons
         }
 
         // Force timeout checking for progress dialog
-        checkTimeout();
+        checkProgressBarTimeout();
 
         // Give cancel button an opportunity to be clicked
         if (cancelButton)
@@ -2128,7 +2114,7 @@ int File::chown(char* path, char* file, uid_t uid, gid_t gid, const FXbool rec,
         }
 
         // Force timeout checking for progress dialog
-        checkTimeout();
+        checkProgressBarTimeout();
 
         // Give cancel button an opportunity to be clicked
         if (cancelButton)
@@ -2159,7 +2145,7 @@ int File::chown(char* path, char* file, uid_t uid, gid_t gid, const FXbool rec,
         if ((rec == false) && !fileonly)
         {
             // Force timeout checking for progress dialog
-            checkTimeout();
+            checkProgressBarTimeout();
 
             // Give cancel button an opportunity to be clicked
             if (cancelButton)
@@ -2217,7 +2203,7 @@ int File::rchown(char* path, char* file, uid_t uid, gid_t gid, const FXbool diro
         }
 
         // Force timeout checking for progress dialog
-        checkTimeout();
+        checkProgressBarTimeout();
 
         // Give cancel button an opportunity to be clicked
         if (cancelButton)
@@ -2398,7 +2384,7 @@ FXString File::sourcesize(const FXString src, FXulong* totalsize, const FXbool u
     for (int i = 0; ; i++)
     {
         // Force timeout checking for progress dialog
-        checkTimeout();
+        checkProgressBarTimeout();
 
         FXString src_i;
 
@@ -2515,7 +2501,7 @@ int File::mount(const FXString dir, const FXString msg, const FXString cmd)
             }
             else
             {
-                checkTimeout();
+                checkProgressBarTimeout();
                 getApp()->repaint();
                 sleep(SHOW_PROGRESSBAR_DELAY / 1000);  // Avoid busy-waiting
             }
@@ -2642,6 +2628,59 @@ long File::onSourceSizeRefresh(FXObject*, FXSelector, void*)
 
     // Restart timeout
     getApp()->addTimeout(this, File::ID_SOURCESIZE, SOURCESIZE_REFRESH_DELAY);
+
+    return 1;
+}
+
+
+// Refresh copy speed
+long File::onCopySpeed(FXObject*, FXSelector, void*)
+{
+    // Copy speed
+    char size[64];
+    double copyspeed = (totaldataread - prevTotaldataread) / (double)(COPYSPEED_DELAY / 1000.0);
+       
+    // Compute moving average of copy speeds
+    if (numcopyspeed < NMAX_COPY_SPEED)
+    {
+        numcopyspeed++;
+    }
+    double avgcopyspeed = 0;
+    for (FXuint i = numcopyspeed - 1; i > 0; i--)
+    {
+        vecCopyspeed[i] = vecCopyspeed[i - 1];
+        avgcopyspeed += vecCopyspeed[i];
+    }
+    vecCopyspeed[0] = copyspeed;
+    avgcopyspeed += vecCopyspeed[0];
+    avgcopyspeed /= (double)numcopyspeed;
+   
+    // Copy speed
+    snprintf(size, sizeof(size), "%f", avgcopyspeed);
+    FXString hspeed = xf_humansize(size);
+
+    // Remaining time in seconds
+    FXuint remtime = (FXuint)((copyspeedSourcesize - totaldataread) / avgcopyspeed);
+    FXString hremtime = xf_secondstotimestring(remtime);
+
+    // Total data copied
+    FXString hsize;
+
+#if __WORDSIZE == 64
+    snprintf(size, sizeof(size), "%ld", totaldataread);
+#else
+    snprintf(size, sizeof(size), "%lld", totaldataread);
+#endif
+    hsize = xf_humansize(size);
+    snprintf(size, sizeof(size), "%s %s / %s (%s/s)", datatext.text(), hsize.text(),
+             copyspeedHsourcesize.text(), hspeed.text());
+    datalabel->setText(size);
+    snprintf(size, sizeof(size), "%s %s", timetext.text(), hremtime.text());
+    timelabel->setText(size);
+
+    // Restart timeout   
+    prevTotaldataread = totaldataread;
+    getApp()->addTimeout(this, File::ID_COPYSPEED, COPYSPEED_DELAY);
 
     return 1;
 }

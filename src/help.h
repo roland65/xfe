@@ -202,7 +202,7 @@
   =-=-=-=-=-=-=-=-=-=-=-=-=\n \
 \n \
  Dragging a file or group or files (by moving the mouse while maintaining the left button pressed)\n \
- to a folder or a file panel optionally opens a dialog that allows one to select the file operation: copy,\n \
+ to a folder or a file panel optionally opens a dialog that allows you to select the file operation: copy,\n \
  move, link or cancel.\n \
 \n \
 \n \
@@ -211,7 +211,7 @@
   =-=-=-=-=-=-=\n \
 \n \
  Xfe implements a trash system that is fully compliant with the freedesktop.org standards.\n \
- This allows the user to move files to the trash can and to restore files from within Xfe or your favorite desktop.\n \
+ This allows you to move files to the trash can and to restore files from within Xfe or your favorite desktop.\n \
  Note that the trash files location is: ~/.local/share/Trash/files\n \
 \n \
 \n \
@@ -233,7 +233,7 @@
  \n \
  At the very first Xfe run, the system-wide configuration file is copied into the local configuration file\n \
  ~/.config/xfe/xferc which does not exists yet. If the system-wide configuration file is not found\n \
- (in case of an unusal install place), a dialog asks the user to select the right place. It is thus easier to\n \
+ (in case of an unusual install place), a dialog asks the user to select the right place. It is thus easier to\n \
  customize Xfe (this is particularly true for the file associations) by hand editing because all the local options\n \
  are located in the same file.\n \
 \n \
@@ -264,7 +264,7 @@
   =-=-=-=\n \
 \n \
  Starting with version 2.0, the folder panel features two tabs: one is the classic Tree view and the other\n \
- is a Places view. This Places view allows to view desktop folders (home, downloads, documents, music, ...), of\n \
+ is a Places view. This Places view allows you to view desktop folders (home, downloads, documents, music, ...), of\n \
  drive mounts, network shares and user's bookmarks.\n \
 \n \
  Network shares mounted from the desktop using gvfs (GNOME or XFCE) appear in the Places view and can be unmounted\n \
@@ -344,7 +344,7 @@
   =-=-=-=-=-=-=-=-=\n \
 \n \
  Xfe can perform a bulk rename operation on selected files and folders from the file panels. The rename dialog allows\n \
- to replace a text pattern or insert / overwrite / remove text at a given position. It is also possible to number\n \
+ you to replace a text pattern or insert / overwrite / remove text at a given position. It is also possible to number\n \
  files.\n \
 \n \
  Bulk rename can also be used from the search panel results. However, in that case it is not possible to rename\n \
@@ -366,7 +366,7 @@
   Automounting\n \
   =-=-=-=-=-=-=\n \
 \n \
- Starting with version 2.1, Xfe has an integrated automounter program that allows to mount removable disks or media\n \
+ Starting with version 2.1, Xfe has an integrated automounter program that allows you to mount removable disks or media\n \
  when they are inserted. The automounter also supports MTP devices (ex: Android phones or tablets).\n \
 \n \
  The automounter is optional and should only be used if your system does not already provides that feature. By\n \
@@ -473,7 +473,7 @@
  Many thanks to Maxim Baranov for his excellent X Win Commander, to Jeroen van der Zijp for the FOX toolkit\n \
  and  to all people that have provided useful patches, translations, tests and advices.\n \
 \n \
- [Last revision: 11/05/2025]\n \
+ [Last revision: 05/01/2026]\n \
 \n \
 ");
 

@@ -32,9 +32,9 @@ protected:
     FXMenuPane* prefsmenu = NULL;                     // Preferences menu
     FXTextField* filter = NULL;                       // Filter for tree list
     FXImage* img = NULL;                              // Image loaded
-    FXImage* tmpimg = NULL;                           // Temporary image
-    FXColor* tmpdata = NULL;                          // Temporary image data
     int indZoom = 0;                                  // Zoom index
+    FXbool zoomMax = false;                           // Maximum zoom
+    FXbool zoomMin = false;                           // Minimum zoom
     double zoomval = 0;                               // Actual zoom factor
     FXbool fitwin = false;                            // Fit window when opening an image
     FXbool filterimgs = false;                        // List only image files in file list
@@ -77,7 +77,9 @@ public:
     long onCmdRotate(FXObject*, FXSelector, void*);
     long onCmdMirror(FXObject*, FXSelector, void*);
     long onCmdZoomIn(FXObject*, FXSelector, void*);
+    long onUpdZoomIn(FXObject*, FXSelector, void*);
     long onCmdZoomOut(FXObject*, FXSelector, void*);
+    long onUpdZoomOut(FXObject*, FXSelector, void*);
     long onCmdZoom100(FXObject*, FXSelector, void*);
     long onCmdZoomWin(FXObject*, FXSelector, void*);
     long onUpdImage(FXObject*, FXSelector, void*);

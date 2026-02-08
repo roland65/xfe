@@ -70,10 +70,8 @@ Time gettimestamp(Display* display)
 int runcmd(FXString cmd, FXString cmdname, FXString dir, FXString startdir, FXbool usesn = true,
            FXString snexcepts = "")
 {
-    int ret;
-
     // Change to current directory
-    ret = chdir(dir.text());
+    int ret = chdir(dir.text());
     if (ret < 0)
     {
         int errcode = errno;
@@ -125,7 +123,7 @@ int runcmd(FXString cmd, FXString cmdname, FXString dir, FXString startdir, FXbo
         if (xdisplay == NULL)
         {
             fprintf(stderr, _("Error: Can't open display\n"));
-            ret = chdir(startdir.text());
+            int ret = chdir(startdir.text());
             if (ret < 0)
             {
                 int errcode = errno;
@@ -157,7 +155,6 @@ int runcmd(FXString cmd, FXString cmdname, FXString dir, FXString startdir, FXbo
 
         // Run command in background
         cmd += " &";
-
         static pid_t child_pid = 0;
         switch ((child_pid = fork()))
         {
@@ -177,17 +174,18 @@ int runcmd(FXString cmd, FXString cmdname, FXString dir, FXString startdir, FXbo
     // Run command without startup notification
     else
     {
-        // Run command in background
-        cmd += " &";
-        ret = system(cmd.text());
+        // Run command in background through a shell (to avoid problems with pkexec)
+        FXString shcmd = "sh -c '" + cmd + "' &";
+
+        int ret = system(shcmd.text());
         if (ret < 0)
         {
-            fprintf(stderr, _("Error: Can't execute command %s"), cmd.text());
+            fprintf(stderr, _("Error: Can't execute command %s"), shcmd.text());
             return -1;
         }
 
-        // Just display the wait cursor during a second
-        sleep(1);
+        // Display the wait cursor
+        sleep(SIMULATED_STARTUP_TIME);
     }
 
     // Go back to startup directory
@@ -216,10 +214,8 @@ int runcmd(FXString cmd, FXString cmdname, FXString dir, FXString startdir, FXbo
 // Run a command and simulate a startup time
 int runcmd(FXString cmd, FXString dir, FXString startdir)
 {
-    int ret;
-
     // Change to current directory
-    ret = chdir(dir.text());
+    int ret = chdir(dir.text());
     if (ret < 0)
     {
         int errcode = errno;
@@ -235,16 +231,16 @@ int runcmd(FXString cmd, FXString dir, FXString startdir)
         return -1;
     }
 
-    // Run the command in background
-    cmd += " &";
-    ret = system(cmd.text());
+    // Run command in background through a shell (to avoid problems with pkexec)
+    FXString shcmd = "sh -c '" + cmd + "' &";
+    ret = system(shcmd.text());
     if (ret < 0)
     {
-        fprintf(stderr, _("Error: Can't execute command %s"), cmd.text());
+        fprintf(stderr, _("Error: Can't execute command %s"), shcmd.text());
         return -1;
     }
 
-    // Very ugly simulation of a startup time!!!
+    // Display the wait cursor
     sleep(SIMULATED_STARTUP_TIME);
 
     // Go back to startup directory
@@ -266,6 +262,5 @@ int runcmd(FXString cmd, FXString dir, FXString startdir)
 
     return 0;
 }
-
 
 #endif

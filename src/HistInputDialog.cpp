@@ -63,8 +63,7 @@ HistInputDialog::HistInputDialog(FXWindow* w, FXString inp, FXString message, FX
     cancel = new FXButton(buttons, _("&Cancel"), NULL, this, ID_CANCEL, FRAME_GROOVE | LAYOUT_RIGHT, 0, 0, 0, 0, 20, 20);
 
     // Optional check box
-    checkbutton = new FXHorizontalFrame(this, JUSTIFY_RIGHT | LAYOUT_SIDE_BOTTOM | LAYOUT_FILL_X, 0, 0, 0, 0, 10, 10, 0,
-                                        0);
+    checkbutton = new FXHorizontalFrame(this, JUSTIFY_RIGHT | LAYOUT_SIDE_BOTTOM | LAYOUT_FILL_X, 0, 0, 0, 0, 10, 10, 0, 0);
 
     if (option)
     {
@@ -94,7 +93,7 @@ HistInputDialog::HistInputDialog(FXWindow* w, FXString inp, FXString message, FX
                     LAYOUT_CENTER_Y | LAYOUT_FILL_ROW);
     }
 
-    // Initial directory for browsing
+    // Default initial directory for browsing
     initialdir = homedir;
 }
 

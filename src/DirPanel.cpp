@@ -2580,7 +2580,7 @@ long DirPanel::onCmdPaste(FXObject*, FXSelector sel, void*)
 }
 
 
-// Set the flag that allows to stop the file list refresh
+// Set the flag that allows one to stop the file list refresh
 long DirPanel::onCmdStopListRefreshTimer(FXObject*, FXSelector, void*)
 {
     stopListRefresh = true;

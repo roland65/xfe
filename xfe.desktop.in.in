@@ -2,6 +2,7 @@
 Name=Xfe
 GenericName=File Manager
 Comment=A lightweight file manager for X Window
+Keywords=file manager
 Exec=xfe
 Terminal=false
 Type=Application

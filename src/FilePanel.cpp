@@ -1691,7 +1691,7 @@ long FilePanel::onCmdGoTrash(FXObject* sender, FXSelector sel, void* ptr)
 }
 
 
-// Set the flag that allows to stop the file list refresh
+// Set the flag that allows one to stop the file list refresh
 long FilePanel::onCmdStopListRefreshTimer(FXObject*, FXSelector, void*)
 {
     stopListRefresh = true;
@@ -3795,13 +3795,14 @@ long FilePanel::onCmdCompare(FXObject*, FXSelector sel, void*)
         // Open a dialog to select the other item to be compared
         if (comparedialog == NULL)
         {
-            comparedialog = new BrowseInputDialog(this, "", "", _("Compare"), _("With:"), bigcompareicon,
-                                                  BROWSE_INPUT_FILE);
+            comparedialog = new BrowseInputDialog(this, "", "", _("Compare"), _("With:"),
+                                                  bigcompareicon, BROWSE_INPUT_FILE);
         }
         comparedialog->setIcon(bigcompareicon);
         comparedialog->setMessage(pathname);
         comparedialog->setText("");
-
+        comparedialog->setDirectory(current->list->getDirectory());
+        
         // Select browse input type
         if (xf_isdirectory(pathname))
         {
@@ -4698,7 +4699,7 @@ long FilePanel::onCmdItemFilter(FXObject* sender, FXSelector sel, void*)
 
     filterdialog->clearItems();
     filterdialog->CursorEnd();
-
+    
     for (int i = 0; i < FilterNum; i++)
     {
         filterdialog->appendItem(FilterHistory[i]);

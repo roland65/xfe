@@ -1067,7 +1067,7 @@ void FXTextField::setFocus()
 }
 
 
-// This hack allows to ignore caps lock when using Ctrl-A, Ctrl-C, Ctrl-V and Ctrl-X shortcuts
+// This hack allows one to ignore caps lock when using Ctrl-A, Ctrl-C, Ctrl-V and Ctrl-X shortcuts
 
 // Pressed a key
 long FXTextField::onKeyPress(FXObject*, FXSelector, void* ptr)
@@ -2932,7 +2932,7 @@ bool FXApp::dispatchEvent(FXRawEvent& ev)
 // Hack of FXScrollArea
 //
 
-// This hack allows to scroll in horizontal mode when we are in row and small/big icons mode of a FileList
+// This hack allows one to scroll in horizontal mode when we are in row and small/big icons mode of a FileList
 
 // Mouse wheel used for vertical scrolling
 long FXScrollArea::onVMouseWheel(FXObject* sender, FXSelector sel, void* ptr)
@@ -3333,7 +3333,7 @@ void FXTopWindow::place(FXuint placement)
 // Hack of FXAccelTable
 //
 
-// This hack allows to ignore caps lock when using keyboard shortcuts
+// This hack allows one to ignore caps lock when using keyboard shortcuts
 
 #define EMPTYSLOT     0xfffffffe        // Previously used, now empty slot
 #define UNUSEDSLOT    0xffffffff        // Unsused slot marker

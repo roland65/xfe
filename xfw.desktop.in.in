@@ -2,6 +2,7 @@
 Name=Xfw
 GenericName=Text Editor
 Comment=A simple text editor for Xfe
+Keywords=editor;viewer;text
 Exec=xfw %F
 Terminal=false
 Type=Application

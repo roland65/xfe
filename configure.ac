@@ -3,7 +3,7 @@
 #
 
 # Initialize
-AC_INIT([xfe],[2.1.2])
+AC_INIT([xfe],[2.1.4])
 AC_CONFIG_SRCDIR([src/XFileExplorer.cpp])
 AM_INIT_AUTOMAKE([subdir-objects -Wall])
 AC_CONFIG_HEADERS([config.h])

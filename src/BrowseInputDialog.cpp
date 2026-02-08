@@ -59,7 +59,7 @@ BrowseInputDialog::BrowseInputDialog(FXWindow* win, FXString inp, FXString messa
     FXVerticalFrame* contents = new FXVerticalFrame(this, LAYOUT_SIDE_TOP | FRAME_NONE | LAYOUT_FILL_X | LAYOUT_FILL_Y);
 
     // Icon and text label
-    // Note : we display the message in a TextLabel. This allows to copy/paste the file name to the input text field
+    // Note : we display the message in a TextLabel. This allows one to copy/paste the file name to the input text field
     FXMatrix* matrix1 = new FXMatrix(contents, 2, MATRIX_BY_COLUMNS | LAYOUT_SIDE_TOP | LAYOUT_FILL_X | LAYOUT_FILL_Y);
     iconlabel = new FXLabel(matrix1, "", ic, LAYOUT_LEFT | LAYOUT_CENTER_Y | LAYOUT_FILL_ROW);
     msg = new TextLabel(matrix1, 30, 0, 0, LAYOUT_LEFT | LAYOUT_CENTER_Y | LAYOUT_FILL_ROW | FRAME_NONE);
@@ -81,7 +81,7 @@ BrowseInputDialog::BrowseInputDialog(FXWindow* win, FXString inp, FXString messa
                     LAYOUT_CENTER_Y | LAYOUT_FILL_ROW);
     }
 
-    // Initial directory for browsing
+    // Default initial directory for browsing
     initialdir = homedir;
 }
 

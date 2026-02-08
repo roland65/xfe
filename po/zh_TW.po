@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: xfe 1.32.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-10 10:38+0100\n"
+"POT-Creation-Date: 2026-02-08 12:08+0100\n"
 "PO-Revision-Date: 2010-01-17 16:36+0800\n"
 "Last-Translator: Wei-Lun Chao <chaoweilun@gmail.com>\n"
 "Language-Team: Chinese (traditional) <zh-l10n@linux.org.tw>\n"
@@ -27,20 +27,20 @@ msgstr "加入保存檔"
 #: src/ConnectDialog.cpp:146 src/FontDialog.cpp:47 src/InputDialog.cpp:33
 #: src/KeyBindings.cpp:81 src/KeyBindingsDialog.cpp:31
 #: src/HistInputDialog.cpp:60 src/Preferences.cpp:329 src/Properties.cpp:207
-#: src/Properties.cpp:999 src/RenameDialog.cpp:234 src/WriteWindow.cpp:192
+#: src/Properties.cpp:1001 src/RenameDialog.cpp:234 src/WriteWindow.cpp:192
 msgid "&Accept"
 msgstr "接受(&A)"
 
 #: src/ArchInputDialog.cpp:42 src/BookmarkDialog.cpp:45
 #: src/BrowseInputDialog.cpp:47 src/ColorSelector.cpp:1020
 #: src/CommandWindow.cpp:61 src/CommandWindow.cpp:95 src/ConnectDialog.cpp:151
-#: src/ExecuteBox.cpp:43 src/File.cpp:157 src/FileDialog.cpp:250
+#: src/ExecuteBox.cpp:43 src/File.cpp:162 src/FileDialog.cpp:250
 #: src/FontDialog.cpp:49 src/InputDialog.cpp:36 src/KeyBindings.cpp:86
 #: src/KeyBindingsDialog.cpp:34 src/HistInputDialog.cpp:63
 #: src/MessageBox.cpp:113 src/MessageBox.cpp:135 src/MessageBox.cpp:149
 #: src/MessageBox.cpp:159 src/MessageBox.cpp:172 src/OverwriteBox.cpp:55
 #: src/OverwriteBox.cpp:74 src/OverwriteBox.cpp:136 src/OverwriteBox.cpp:155
-#: src/Preferences.cpp:336 src/Properties.cpp:213 src/Properties.cpp:1004
+#: src/Preferences.cpp:336 src/Properties.cpp:213 src/Properties.cpp:1006
 #: src/RenameDialog.cpp:239 src/WriteWindow.cpp:197 src/foxhacks.cpp:691
 #: src/foxhacks.cpp:784
 msgid "&Cancel"
@@ -51,12 +51,12 @@ msgid "New archive name:"
 msgstr "新存檔名稱："
 
 #: src/ArchInputDialog.cpp:61 src/BrowseInputDialog.cpp:80
-#: src/HistInputDialog.cpp:93 src/Properties.cpp:340
+#: src/HistInputDialog.cpp:92 src/Properties.cpp:340
 msgid "=> Warning: file name is not UTF-8 encoded!"
 msgstr "=> 警告：檔案名稱不是 UTF-8 編碼！"
 
 #: src/ArchInputDialog.cpp:64 src/BrowseInputDialog.cpp:76
-#: src/HistInputDialog.cpp:89
+#: src/HistInputDialog.cpp:88
 msgid "\tSelect Destination..."
 msgstr "\t選取目的地…"
 
@@ -133,14 +133,14 @@ msgid "zst\tArchive format zst"
 msgstr "7z\t存檔格式是 7z"
 
 #: src/ArchInputDialog.cpp:139 src/BrowseInputDialog.cpp:133
-#: src/FilePanel.cpp:5402 src/HistInputDialog.cpp:152 src/SearchPanel.cpp:2843
+#: src/FilePanel.cpp:5403 src/HistInputDialog.cpp:151 src/SearchPanel.cpp:2843
 #: src/XFileArchive.cpp:525 src/XFileArchive.cpp:1228
 msgid "Select a Destination Folder"
 msgstr "選取目的地資料夾"
 
 #: src/ArchInputDialog.cpp:143 src/BookmarkDialog.cpp:167
-#: src/BrowseInputDialog.cpp:149 src/FilePanel.cpp:5405
-#: src/HistInputDialog.cpp:172 src/Preferences.cpp:1315 src/Properties.cpp:2008
+#: src/BrowseInputDialog.cpp:149 src/FilePanel.cpp:5406
+#: src/HistInputDialog.cpp:171 src/Preferences.cpp:1315 src/Properties.cpp:2010
 #: src/SearchPanel.cpp:2846 src/SearchWindow.cpp:1328 src/WriteWindow.cpp:1661
 #: src/XFileArchive.cpp:387 src/XFileArchive.cpp:528 src/XFileArchive.cpp:1231
 #: src/XFileImage.cpp:181 src/XFilePackage.cpp:351
@@ -151,15 +151,15 @@ msgstr "所有檔案"
 msgid "\tSelect Icon..."
 msgstr "\t選取…"
 
-#: src/BookmarkDialog.cpp:164 src/Properties.cpp:2056
+#: src/BookmarkDialog.cpp:164 src/Properties.cpp:2058
 msgid "PNG Images"
 msgstr "PNG 圖像"
 
-#: src/BookmarkDialog.cpp:165 src/Properties.cpp:2057
+#: src/BookmarkDialog.cpp:165 src/Properties.cpp:2059
 msgid "GIF Images"
 msgstr "GIF 圖像"
 
-#: src/BookmarkDialog.cpp:166 src/Properties.cpp:2058
+#: src/BookmarkDialog.cpp:166 src/Properties.cpp:2060
 msgid "BMP Images"
 msgstr "BMP 圖像"
 
@@ -167,11 +167,11 @@ msgstr "BMP 圖像"
 msgid "Select an Icon File"
 msgstr "選取圖示檔案"
 
-#: src/BrowseInputDialog.cpp:137 src/HistInputDialog.cpp:156
+#: src/BrowseInputDialog.cpp:137 src/HistInputDialog.cpp:155
 msgid "Select a File"
 msgstr "選取一個檔案"
 
-#: src/BrowseInputDialog.cpp:141 src/HistInputDialog.cpp:164
+#: src/BrowseInputDialog.cpp:141 src/HistInputDialog.cpp:163
 msgid "Select a File or a Destination Folder"
 msgstr "選取檔案或目的資料夾"
 
@@ -259,19 +259,19 @@ msgstr "名稱"
 msgid "Clear\tReset history list"
 msgstr "清空書籤(&C)"
 
-#: src/ComboBox.cpp:906 src/DirPanel.cpp:1524 src/FilePanel.cpp:5037
+#: src/ComboBox.cpp:906 src/DirPanel.cpp:1524 src/FilePanel.cpp:5038
 #: src/SearchPanel.cpp:2597 src/WriteWindow.cpp:879 src/WriteWindow.cpp:920
 #: src/XFileExplorer.cpp:1429
 msgid "&Copy"
 msgstr "複製(&C)"
 
-#: src/ComboBox.cpp:907 src/DirPanel.cpp:1525 src/FilePanel.cpp:5038
+#: src/ComboBox.cpp:907 src/DirPanel.cpp:1525 src/FilePanel.cpp:5039
 #: src/SearchPanel.cpp:2598 src/XFileExplorer.cpp:1435
 msgid "C&ut"
 msgstr "剪下(&U)"
 
-#: src/ComboBox.cpp:908 src/DirPanel.cpp:1526 src/FilePanel.cpp:4855
-#: src/FilePanel.cpp:4900 src/FilePanel.cpp:5039 src/WriteWindow.cpp:891
+#: src/ComboBox.cpp:908 src/DirPanel.cpp:1526 src/FilePanel.cpp:4856
+#: src/FilePanel.cpp:4901 src/FilePanel.cpp:5040 src/WriteWindow.cpp:891
 #: src/WriteWindow.cpp:922 src/XFileExplorer.cpp:1441
 msgid "&Paste"
 msgstr "貼上(&P)"
@@ -294,9 +294,9 @@ msgid ""
 "\n"
 msgstr ""
 
-#: src/CommandWindow.cpp:196 src/FilePanel.cpp:6072 src/SearchPanel.cpp:4539
+#: src/CommandWindow.cpp:196 src/FilePanel.cpp:6073 src/SearchPanel.cpp:4539
 #: src/SearchWindow.cpp:970 src/XFileArchive.cpp:1612
-#: src/startupnotification.cpp:165 src/xfeutils.cpp:1843
+#: src/startupnotification.cpp:162 src/xfeutils.cpp:1843
 #, fuzzy, c-format
 msgid "Error: Fork failed: %s\n"
 msgstr "錯誤！衍生失敗：%s\n"
@@ -326,14 +326,14 @@ msgstr "錯誤！衍生失敗：%s\n"
 #: src/DirPanel.cpp:3912 src/DirPanel.cpp:3948 src/DirPanel.cpp:3971
 #: src/DirPanel.cpp:4025 src/DirPanel.cpp:4029 src/DirPanel.cpp:4051
 #: src/DirPanel.cpp:4056 src/DirPanel.cpp:4099 src/DirPanel.cpp:4103
-#: src/DirPanel.cpp:4125 src/DirPanel.cpp:4130 src/File.cpp:335
-#: src/File.cpp:1157 src/File.cpp:1165 src/File.cpp:1174 src/File.cpp:1198
-#: src/File.cpp:1455 src/File.cpp:1462 src/File.cpp:1472 src/File.cpp:1532
-#: src/File.cpp:1557 src/File.cpp:1577 src/File.cpp:1585 src/File.cpp:1594
-#: src/File.cpp:1613 src/File.cpp:1755 src/File.cpp:1792 src/File.cpp:1800
-#: src/File.cpp:1819 src/File.cpp:1892 src/File.cpp:1896 src/File.cpp:2307
-#: src/File.cpp:2311 src/File.cpp:2331 src/File.cpp:2336 src/File.cpp:2480
-#: src/File.cpp:2488 src/File.cpp:2495 src/File.cpp:2537 src/FileDialog.cpp:436
+#: src/DirPanel.cpp:4125 src/DirPanel.cpp:4130 src/File.cpp:348
+#: src/File.cpp:1143 src/File.cpp:1151 src/File.cpp:1160 src/File.cpp:1184
+#: src/File.cpp:1441 src/File.cpp:1448 src/File.cpp:1458 src/File.cpp:1518
+#: src/File.cpp:1543 src/File.cpp:1563 src/File.cpp:1571 src/File.cpp:1580
+#: src/File.cpp:1599 src/File.cpp:1741 src/File.cpp:1778 src/File.cpp:1786
+#: src/File.cpp:1805 src/File.cpp:1878 src/File.cpp:1882 src/File.cpp:2293
+#: src/File.cpp:2297 src/File.cpp:2317 src/File.cpp:2322 src/File.cpp:2466
+#: src/File.cpp:2474 src/File.cpp:2481 src/File.cpp:2523 src/FileDialog.cpp:436
 #: src/FileDialog.cpp:501 src/FileDialog.cpp:1144 src/FileDialog.cpp:1149
 #: src/FileDialog.cpp:1205 src/FileDialog.cpp:1215 src/FileDialog.cpp:1220
 #: src/FileDialog.cpp:1234 src/FileDialog.cpp:1239 src/FileList.cpp:886
@@ -346,31 +346,31 @@ msgstr "錯誤！衍生失敗：%s\n"
 #: src/FilePanel.cpp:2537 src/FilePanel.cpp:2565 src/FilePanel.cpp:2633
 #: src/FilePanel.cpp:2640 src/FilePanel.cpp:2813 src/FilePanel.cpp:2840
 #: src/FilePanel.cpp:3014 src/FilePanel.cpp:3044 src/FilePanel.cpp:3049
-#: src/FilePanel.cpp:3065 src/FilePanel.cpp:3120 src/FilePanel.cpp:3857
-#: src/FilePanel.cpp:3907 src/FilePanel.cpp:3912 src/FilePanel.cpp:3950
-#: src/FilePanel.cpp:3955 src/FilePanel.cpp:4010 src/FilePanel.cpp:4027
-#: src/FilePanel.cpp:4032 src/FilePanel.cpp:4108 src/FilePanel.cpp:4118
-#: src/FilePanel.cpp:4123 src/FilePanel.cpp:4139 src/FilePanel.cpp:4144
-#: src/FilePanel.cpp:4212 src/FilePanel.cpp:4227 src/FilePanel.cpp:5165
-#: src/FilePanel.cpp:5170 src/FilePanel.cpp:5182 src/FilePanel.cpp:5192
-#: src/FilePanel.cpp:5197 src/FilePanel.cpp:5221 src/FilePanel.cpp:5226
-#: src/FilePanel.cpp:5370 src/FilePanel.cpp:5375 src/FilePanel.cpp:5511
-#: src/FilePanel.cpp:5564 src/FilePanel.cpp:5569 src/FilePanel.cpp:5768
-#: src/FilePanel.cpp:6057 src/FilePanel.cpp:6062 src/FilePanel.cpp:6088
-#: src/FilePanel.cpp:6093 src/FilePanel.cpp:6120 src/FilePanel.cpp:6125
-#: src/FilePanel.cpp:6199 src/FilePanel.cpp:6203 src/FilePanel.cpp:6225
-#: src/FilePanel.cpp:6230 src/FilePanel.cpp:6353 src/FilePanel.cpp:6367
-#: src/FilePanel.cpp:6384 src/FilePanel.cpp:6481 src/FilePanel.cpp:6486
-#: src/FilePanel.cpp:6534 src/FilePanel.cpp:6539 src/KeyBindings.cpp:977
+#: src/FilePanel.cpp:3065 src/FilePanel.cpp:3120 src/FilePanel.cpp:3858
+#: src/FilePanel.cpp:3908 src/FilePanel.cpp:3913 src/FilePanel.cpp:3951
+#: src/FilePanel.cpp:3956 src/FilePanel.cpp:4011 src/FilePanel.cpp:4028
+#: src/FilePanel.cpp:4033 src/FilePanel.cpp:4109 src/FilePanel.cpp:4119
+#: src/FilePanel.cpp:4124 src/FilePanel.cpp:4140 src/FilePanel.cpp:4145
+#: src/FilePanel.cpp:4213 src/FilePanel.cpp:4228 src/FilePanel.cpp:5166
+#: src/FilePanel.cpp:5171 src/FilePanel.cpp:5183 src/FilePanel.cpp:5193
+#: src/FilePanel.cpp:5198 src/FilePanel.cpp:5222 src/FilePanel.cpp:5227
+#: src/FilePanel.cpp:5371 src/FilePanel.cpp:5376 src/FilePanel.cpp:5512
+#: src/FilePanel.cpp:5565 src/FilePanel.cpp:5570 src/FilePanel.cpp:5769
+#: src/FilePanel.cpp:6058 src/FilePanel.cpp:6063 src/FilePanel.cpp:6089
+#: src/FilePanel.cpp:6094 src/FilePanel.cpp:6121 src/FilePanel.cpp:6126
+#: src/FilePanel.cpp:6200 src/FilePanel.cpp:6204 src/FilePanel.cpp:6226
+#: src/FilePanel.cpp:6231 src/FilePanel.cpp:6354 src/FilePanel.cpp:6368
+#: src/FilePanel.cpp:6385 src/FilePanel.cpp:6482 src/FilePanel.cpp:6487
+#: src/FilePanel.cpp:6535 src/FilePanel.cpp:6540 src/KeyBindings.cpp:977
 #: src/KeyBindings.cpp:997 src/KeyBindings.cpp:1017 src/KeyBindings.cpp:1037
 #: src/KeyBindings.cpp:1129 src/KeyBindings.cpp:1149 src/KeyBindings.cpp:1241
 #: src/KeyBindings.cpp:1261 src/KeyBindings.cpp:1353 src/KeyBindings.cpp:1373
 #: src/MessageBox.cpp:240 src/MessageBox.cpp:304 src/Places.cpp:818
 #: src/Places.cpp:824 src/Places.cpp:836 src/Places.cpp:887 src/Places.cpp:893
-#: src/Properties.cpp:1487 src/Properties.cpp:1495 src/Properties.cpp:1500
-#: src/Properties.cpp:1574 src/Properties.cpp:1578 src/Properties.cpp:1604
-#: src/Properties.cpp:1656 src/Properties.cpp:1660 src/Properties.cpp:1779
-#: src/Properties.cpp:1783 src/Properties.cpp:1865 src/Properties.cpp:1870
+#: src/Properties.cpp:1489 src/Properties.cpp:1497 src/Properties.cpp:1502
+#: src/Properties.cpp:1576 src/Properties.cpp:1580 src/Properties.cpp:1606
+#: src/Properties.cpp:1658 src/Properties.cpp:1662 src/Properties.cpp:1781
+#: src/Properties.cpp:1785 src/Properties.cpp:1867 src/Properties.cpp:1872
 #: src/SearchPanel.cpp:508 src/SearchPanel.cpp:711 src/SearchPanel.cpp:933
 #: src/SearchPanel.cpp:938 src/SearchPanel.cpp:1820 src/SearchPanel.cpp:1865
 #: src/SearchPanel.cpp:2704 src/SearchPanel.cpp:2709 src/SearchPanel.cpp:2954
@@ -397,14 +397,14 @@ msgstr "錯誤！衍生失敗：%s\n"
 #: src/XFileExplorer.cpp:4705 src/XFileExplorer.cpp:5376
 #: src/XFileExplorer.cpp:5381 src/XFileExplorer.cpp:5429
 #: src/XFileExplorer.cpp:5481 src/XFileExplorer.cpp:5486
-#: src/XFileExplorer.cpp:5528 src/XFileExplorer.cpp:5554
-#: src/XFileExplorer.cpp:5559 src/XFileExplorer.cpp:5612
-#: src/XFileExplorer.cpp:5617 src/XFileExplorer.cpp:5626
-#: src/XFileExplorer.cpp:5760 src/XFileExplorer.cpp:5765
-#: src/XFileExplorer.cpp:5781 src/XFileExplorer.cpp:5786
-#: src/XFileExplorer.cpp:5841 src/XFileExplorer.cpp:6438
-#: src/XFileExplorer.cpp:6512 src/XFileExplorer.cpp:6518
-#: src/XFileExplorer.cpp:6525 src/XFileArchive.cpp:457 src/XFileArchive.cpp:520
+#: src/XFileExplorer.cpp:5528 src/XFileExplorer.cpp:5555
+#: src/XFileExplorer.cpp:5560 src/XFileExplorer.cpp:5613
+#: src/XFileExplorer.cpp:5618 src/XFileExplorer.cpp:5627
+#: src/XFileExplorer.cpp:5761 src/XFileExplorer.cpp:5766
+#: src/XFileExplorer.cpp:5782 src/XFileExplorer.cpp:5787
+#: src/XFileExplorer.cpp:5842 src/XFileExplorer.cpp:6439
+#: src/XFileExplorer.cpp:6513 src/XFileExplorer.cpp:6519
+#: src/XFileExplorer.cpp:6526 src/XFileArchive.cpp:457 src/XFileArchive.cpp:520
 #: src/XFileArchive.cpp:605 src/XFileArchive.cpp:628 src/XFileArchive.cpp:719
 #: src/XFileArchive.cpp:808 src/XFileArchive.cpp:872 src/XFileArchive.cpp:882
 #: src/XFileArchive.cpp:901 src/XFileArchive.cpp:1012 src/XFileArchive.cpp:1022
@@ -419,8 +419,8 @@ msgstr "錯誤！衍生失敗：%s\n"
 #: src/XFileArchive.cpp:1510 src/XFileArchive.cpp:1522
 #: src/XFileArchive.cpp:1534 src/XFileArchive.cpp:1546
 #: src/XFileArchive.cpp:1558 src/XFileArchive.cpp:1569
-#: src/XFileArchive.cpp:1631 src/XFileArchive.cpp:1635 src/XFileImage.cpp:1623
-#: src/XFileImage.cpp:1954 src/XFileImage.cpp:2221 src/XFileImage.cpp:2266
+#: src/XFileArchive.cpp:1631 src/XFileArchive.cpp:1635 src/XFileImage.cpp:1619
+#: src/XFileImage.cpp:1943 src/XFileImage.cpp:2213 src/XFileImage.cpp:2259
 #: src/XFilePackage.cpp:396 src/XFilePackage.cpp:415 src/XFilePackage.cpp:442
 #: src/XFilePackage.cpp:465 src/XFilePackage.cpp:590 src/XFilePackage.cpp:655
 #: src/XFilePackage.cpp:687 src/XFilePackage.cpp:711 src/XFilePackage.cpp:1031
@@ -469,7 +469,7 @@ msgstr "壓縮管理器"
 msgid "PORT:"
 msgstr ""
 
-#: src/ConnectDialog.cpp:81 src/Properties.cpp:722 src/Properties.cpp:1020
+#: src/ConnectDialog.cpp:81 src/Properties.cpp:722 src/Properties.cpp:1022
 msgid "Type:"
 msgstr "型態："
 
@@ -547,14 +547,14 @@ msgstr ""
 #: src/FilePanel.cpp:2196 src/FilePanel.cpp:2243 src/FilePanel.cpp:2282
 #: src/FilePanel.cpp:2299 src/FilePanel.cpp:2353 src/FilePanel.cpp:2488
 #: src/FilePanel.cpp:2546 src/FilePanel.cpp:2574 src/FilePanel.cpp:2849
-#: src/FilePanel.cpp:3081 src/FilePanel.cpp:3369 src/FilePanel.cpp:3992
-#: src/FilePanel.cpp:3999 src/FilePanel.cpp:4089 src/FilePanel.cpp:4096
-#: src/FilePanel.cpp:4202 src/FilePanel.cpp:4488 src/FilePanel.cpp:4533
-#: src/FilePanel.cpp:5281 src/Preferences.cpp:1144 src/Preferences.cpp:1163
-#: src/Preferences.cpp:1203 src/Preferences.cpp:1222 src/Properties.cpp:1459
-#: src/Properties.cpp:1472 src/Properties.cpp:1477 src/Properties.cpp:1561
-#: src/Properties.cpp:1591 src/Properties.cpp:1643 src/Properties.cpp:1767
-#: src/Properties.cpp:1798 src/Properties.cpp:1853 src/SearchPanel.cpp:1030
+#: src/FilePanel.cpp:3081 src/FilePanel.cpp:3369 src/FilePanel.cpp:3993
+#: src/FilePanel.cpp:4000 src/FilePanel.cpp:4090 src/FilePanel.cpp:4097
+#: src/FilePanel.cpp:4203 src/FilePanel.cpp:4489 src/FilePanel.cpp:4534
+#: src/FilePanel.cpp:5282 src/Preferences.cpp:1144 src/Preferences.cpp:1163
+#: src/Preferences.cpp:1203 src/Preferences.cpp:1222 src/Properties.cpp:1461
+#: src/Properties.cpp:1474 src/Properties.cpp:1479 src/Properties.cpp:1563
+#: src/Properties.cpp:1593 src/Properties.cpp:1645 src/Properties.cpp:1769
+#: src/Properties.cpp:1800 src/Properties.cpp:1855 src/SearchPanel.cpp:1030
 #: src/SearchPanel.cpp:1361 src/SearchPanel.cpp:2744 src/SearchPanel.cpp:3193
 #: src/SearchPanel.cpp:3432 src/SearchPanel.cpp:3945 src/SearchPanel.cpp:3952
 #: src/SearchPanel.cpp:4048 src/SearchPanel.cpp:4086 src/SearchPanel.cpp:4117
@@ -663,7 +663,7 @@ msgstr ""
 
 #: src/DirList.cpp:831 src/DirPanel.cpp:2765 src/DirPanel.cpp:3053
 #: src/DirPanel.cpp:3110 src/FileList.cpp:819 src/FilePanel.cpp:1906
-#: src/FilePanel.cpp:2249 src/FilePanel.cpp:2305 src/FilePanel.cpp:4232
+#: src/FilePanel.cpp:2249 src/FilePanel.cpp:2305 src/FilePanel.cpp:4233
 #: src/SearchPanel.cpp:3821 src/SearchPanel.cpp:4168 src/SearchPanel.cpp:4224
 msgid "Symlink"
 msgstr "符號連結"
@@ -694,7 +694,7 @@ msgstr "掛載點 %s 並未反應中…"
 #: src/DirList.cpp:1985 src/FileList.cpp:4911 src/FileList.cpp:4917
 #: src/FileList.cpp:5021 src/FileList.cpp:5717 src/FileList.cpp:5723
 #: src/FileList.cpp:5845 src/Properties.cpp:471 src/Properties.cpp:593
-#: src/Properties.cpp:1158 src/RenameDialog.cpp:249 src/SearchPanel.cpp:2068
+#: src/Properties.cpp:1160 src/RenameDialog.cpp:249 src/SearchPanel.cpp:2068
 #: src/SearchPanel.cpp:2074 src/SearchWindow.cpp:218
 msgid "Folder"
 msgstr "資料夾"
@@ -799,17 +799,17 @@ msgstr "切換面板"
 #: src/DirPanel.cpp:1651 src/DirPanel.cpp:1759 src/FileDialog.cpp:436
 #: src/FileDialog.cpp:501 src/FilePanel.cpp:1313 src/FilePanel.cpp:1516
 #: src/SearchPanel.cpp:508 src/SearchPanel.cpp:711 src/SearchPanel.cpp:1865
-#: src/XFileExplorer.cpp:4490 src/XFileImage.cpp:2221 src/XFileImage.cpp:2266
+#: src/XFileExplorer.cpp:4490 src/XFileImage.cpp:2213 src/XFileImage.cpp:2259
 #, c-format
 msgid " Permission to: %s denied."
 msgstr " 權限：%s 被拒絕。"
 
 #: src/DirPanel.cpp:817 src/DirPanel.cpp:944 src/DirPanel.cpp:1071
-#: src/DirPanel.cpp:3805 src/FilePanel.cpp:5182 src/WriteWindow.cpp:2017
+#: src/DirPanel.cpp:3805 src/FilePanel.cpp:5183 src/WriteWindow.cpp:2017
 #: src/XFileExplorer.cpp:4622 src/XFileExplorer.cpp:4689
 #: src/XFileExplorer.cpp:5429 src/XFileArchive.cpp:901
 #: src/XFileArchive.cpp:1041 src/XFileArchive.cpp:1191
-#: src/XFileArchive.cpp:1263 src/XFileImage.cpp:1954
+#: src/XFileArchive.cpp:1263 src/XFileImage.cpp:1943
 #, fuzzy, c-format
 msgid "Can't execute command %s"
 msgstr "執行命令"
@@ -817,7 +817,7 @@ msgstr "執行命令"
 #: src/DirPanel.cpp:836 src/DirPanel.cpp:963 src/DirPanel.cpp:1223
 #: src/DirPanel.cpp:1566 src/DirPanel.cpp:1646 src/DirPanel.cpp:2853
 #: src/DirPanel.cpp:2881 src/FilePanel.cpp:2047 src/FilePanel.cpp:2068
-#: src/Properties.cpp:1495 src/SearchPanel.cpp:3977 src/SearchPanel.cpp:4005
+#: src/Properties.cpp:1497 src/SearchPanel.cpp:3977 src/SearchPanel.cpp:4005
 #: src/XFileExplorer.cpp:4485
 #, c-format
 msgid "Folder %s doesn't exist"
@@ -827,21 +827,21 @@ msgstr "資料夾 %s 不存在"
 msgid "Modify Bookmark"
 msgstr "加入書籤"
 
-#: src/DirPanel.cpp:1104 src/DirPanel.cpp:1181 src/FilePanel.cpp:4275
+#: src/DirPanel.cpp:1104 src/DirPanel.cpp:1181 src/FilePanel.cpp:4276
 #: src/XFileExplorer.cpp:4339
 #, fuzzy
 #| msgid "Name: "
 msgid "Name:"
 msgstr "名稱："
 
-#: src/DirPanel.cpp:1105 src/DirPanel.cpp:1182 src/FilePanel.cpp:4276
+#: src/DirPanel.cpp:1105 src/DirPanel.cpp:1182 src/FilePanel.cpp:4277
 #: src/XFileExplorer.cpp:4340
 #, fuzzy
 #| msgid "Big Icon:"
 msgid "Icon:"
 msgstr "大圖示："
 
-#: src/DirPanel.cpp:1118 src/DirPanel.cpp:1187 src/FilePanel.cpp:4281
+#: src/DirPanel.cpp:1118 src/DirPanel.cpp:1187 src/FilePanel.cpp:4282
 #: src/Properties.cpp:713 src/Properties.cpp:728 src/XFileExplorer.cpp:4345
 msgid "Location:"
 msgstr "位置："
@@ -858,7 +858,7 @@ msgstr "清空書籤(&C)"
 msgid "Confirm Remove"
 msgstr "確認還原"
 
-#: src/DirPanel.cpp:1181 src/FilePanel.cpp:4275 src/XFileExplorer.cpp:4339
+#: src/DirPanel.cpp:1181 src/FilePanel.cpp:4276 src/XFileExplorer.cpp:4339
 msgid "Add Bookmark"
 msgstr "加入書籤"
 
@@ -867,7 +867,7 @@ msgid "New &Folder..."
 msgstr "新資料夾(&F)…"
 
 #: src/DirPanel.cpp:1483 src/DirPanel.cpp:1498 src/DirPanel.cpp:1809
-#: src/FilePanel.cpp:4852 src/FilePanel.cpp:4897
+#: src/FilePanel.cpp:4853 src/FilePanel.cpp:4898
 msgid "&Add Bookmark..."
 msgstr "加入書籤(&A)"
 
@@ -876,8 +876,8 @@ msgid "&Hidden Folders"
 msgstr "隱藏資料夾(&H)"
 
 #: src/DirPanel.cpp:1487 src/DirPanel.cpp:1502 src/FileDialog.cpp:1924
-#: src/FilePanel.cpp:4879 src/FilePanel.cpp:4924 src/SearchPanel.cpp:2513
-#: src/XFileImage.cpp:1134
+#: src/FilePanel.cpp:4880 src/FilePanel.cpp:4925 src/SearchPanel.cpp:2513
+#: src/XFileImage.cpp:1130
 msgid "Ignore C&ase"
 msgstr "忽略大小寫(&A)"
 
@@ -893,7 +893,7 @@ msgstr "展開目錄樹(&X)"
 msgid "Collap&se Tree"
 msgstr "摺疊目錄樹(&S)"
 
-#: src/DirPanel.cpp:1507 src/FilePanel.cpp:4927 src/SearchPanel.cpp:2516
+#: src/DirPanel.cpp:1507 src/FilePanel.cpp:4928 src/SearchPanel.cpp:2516
 msgid "Pane&l"
 msgstr "面板(&L)"
 
@@ -905,18 +905,18 @@ msgstr "掛載(&O)"
 msgid "Unmoun&t"
 msgstr "卸載(&T)"
 
-#: src/DirPanel.cpp:1522 src/FilePanel.cpp:5018 src/SearchPanel.cpp:2577
+#: src/DirPanel.cpp:1522 src/FilePanel.cpp:5019 src/SearchPanel.cpp:2577
 msgid "&Add to Archive..."
 msgstr "加入壓縮檔(&A)…"
 
-#: src/DirPanel.cpp:1527 src/FilePanel.cpp:5042 src/SearchPanel.cpp:2610
-#: src/XFileExplorer.cpp:6209 src/XFileExplorer.cpp:6232
+#: src/DirPanel.cpp:1527 src/FilePanel.cpp:5043 src/SearchPanel.cpp:2610
+#: src/XFileExplorer.cpp:6210 src/XFileExplorer.cpp:6233
 #, fuzzy
 #| msgid "Name"
 msgid "Cop&y Name"
 msgstr "名稱"
 
-#: src/DirPanel.cpp:1529 src/FilePanel.cpp:5049 src/Preferences.cpp:1112
+#: src/DirPanel.cpp:1529 src/FilePanel.cpp:5050 src/Preferences.cpp:1112
 #: src/SearchPanel.cpp:2600 src/XFileExplorer.cpp:1362
 msgid "Re&name..."
 msgstr "重新命名(&N)…"
@@ -925,12 +925,12 @@ msgstr "重新命名(&N)…"
 msgid "Cop&y to..."
 msgstr "複製到(&Y)…"
 
-#: src/DirPanel.cpp:1531 src/FilePanel.cpp:5051 src/SearchPanel.cpp:2602
+#: src/DirPanel.cpp:1531 src/FilePanel.cpp:5052 src/SearchPanel.cpp:2602
 #: src/XFileExplorer.cpp:1374
 msgid "&Move to..."
 msgstr "移動到(&M)…"
 
-#: src/DirPanel.cpp:1532 src/FilePanel.cpp:5052 src/SearchPanel.cpp:2603
+#: src/DirPanel.cpp:1532 src/FilePanel.cpp:5053 src/SearchPanel.cpp:2603
 msgid "Symlin&k to..."
 msgstr "符號連結(&K)…"
 
@@ -942,7 +942,7 @@ msgstr "丟進回收筒(&V)"
 msgid "R&estore From Trash"
 msgstr "從回收筒還原(&E)"
 
-#: src/DirPanel.cpp:1535 src/FilePanel.cpp:5055 src/SearchPanel.cpp:2605
+#: src/DirPanel.cpp:1535 src/FilePanel.cpp:5056 src/SearchPanel.cpp:2605
 #: src/XFileExplorer.cpp:1398
 msgid "&Delete"
 msgstr "刪除(&D)"
@@ -997,41 +997,41 @@ msgstr "移動 "
 
 #: src/DirPanel.cpp:1986 src/DirPanel.cpp:2091 src/DirPanel.cpp:3789
 #: src/DirPanel.cpp:3815 src/DirPanel.cpp:4025 src/DirPanel.cpp:4051
-#: src/DirPanel.cpp:4099 src/DirPanel.cpp:4125 src/File.cpp:2307
-#: src/File.cpp:2331 src/FilePanel.cpp:1145 src/FilePanel.cpp:1170
-#: src/FilePanel.cpp:3907 src/FilePanel.cpp:3950 src/FilePanel.cpp:5165
-#: src/FilePanel.cpp:5192 src/FilePanel.cpp:5221 src/FilePanel.cpp:5370
-#: src/FilePanel.cpp:6057 src/FilePanel.cpp:6088 src/FilePanel.cpp:6199
-#: src/FilePanel.cpp:6225 src/FilePanel.cpp:6481 src/FilePanel.cpp:6534
+#: src/DirPanel.cpp:4099 src/DirPanel.cpp:4125 src/File.cpp:2293
+#: src/File.cpp:2317 src/FilePanel.cpp:1145 src/FilePanel.cpp:1170
+#: src/FilePanel.cpp:3908 src/FilePanel.cpp:3951 src/FilePanel.cpp:5166
+#: src/FilePanel.cpp:5193 src/FilePanel.cpp:5222 src/FilePanel.cpp:5371
+#: src/FilePanel.cpp:6058 src/FilePanel.cpp:6089 src/FilePanel.cpp:6200
+#: src/FilePanel.cpp:6226 src/FilePanel.cpp:6482 src/FilePanel.cpp:6535
 #: src/SearchPanel.cpp:933 src/SearchPanel.cpp:2704 src/SearchPanel.cpp:4524
 #: src/SearchPanel.cpp:4555 src/XFileExplorer.cpp:4672
 #: src/XFileExplorer.cpp:4700 src/XFileExplorer.cpp:5376
-#: src/XFileExplorer.cpp:5481 src/XFileExplorer.cpp:5554
-#: src/XFileExplorer.cpp:5612
+#: src/XFileExplorer.cpp:5481 src/XFileExplorer.cpp:5555
+#: src/XFileExplorer.cpp:5613
 #, fuzzy, c-format
 msgid "Can't enter folder %s: %s"
 msgstr "無法刪除資料夾 %s"
 
 #: src/DirPanel.cpp:1991 src/DirPanel.cpp:2096 src/DirPanel.cpp:3793
 #: src/DirPanel.cpp:3820 src/DirPanel.cpp:4029 src/DirPanel.cpp:4056
-#: src/DirPanel.cpp:4103 src/DirPanel.cpp:4130 src/File.cpp:2311
-#: src/File.cpp:2336 src/FilePanel.cpp:1150 src/FilePanel.cpp:1175
-#: src/FilePanel.cpp:3912 src/FilePanel.cpp:3955 src/FilePanel.cpp:5170
-#: src/FilePanel.cpp:5197 src/FilePanel.cpp:5226 src/FilePanel.cpp:5375
-#: src/FilePanel.cpp:6062 src/FilePanel.cpp:6093 src/FilePanel.cpp:6203
-#: src/FilePanel.cpp:6230 src/FilePanel.cpp:6486 src/FilePanel.cpp:6539
+#: src/DirPanel.cpp:4103 src/DirPanel.cpp:4130 src/File.cpp:2297
+#: src/File.cpp:2322 src/FilePanel.cpp:1150 src/FilePanel.cpp:1175
+#: src/FilePanel.cpp:3913 src/FilePanel.cpp:3956 src/FilePanel.cpp:5171
+#: src/FilePanel.cpp:5198 src/FilePanel.cpp:5227 src/FilePanel.cpp:5376
+#: src/FilePanel.cpp:6063 src/FilePanel.cpp:6094 src/FilePanel.cpp:6204
+#: src/FilePanel.cpp:6231 src/FilePanel.cpp:6487 src/FilePanel.cpp:6540
 #: src/SearchPanel.cpp:938 src/SearchPanel.cpp:2709 src/SearchPanel.cpp:4529
 #: src/SearchPanel.cpp:4560 src/XFileExplorer.cpp:4677
 #: src/XFileExplorer.cpp:4705 src/XFileExplorer.cpp:5381
-#: src/XFileExplorer.cpp:5486 src/XFileExplorer.cpp:5559
-#: src/XFileExplorer.cpp:5617
+#: src/XFileExplorer.cpp:5486 src/XFileExplorer.cpp:5560
+#: src/XFileExplorer.cpp:5618
 #, fuzzy, c-format
 msgid "Can't enter folder %s"
 msgstr "無法建立資料夾 %s"
 
 #: src/DirPanel.cpp:2009 src/FileDialog.cpp:1184 src/FilePanel.cpp:2029
-#: src/FilePanel.cpp:4089 src/FilePanel.cpp:4202 src/FilePanel.cpp:4533
-#: src/FilePanel.cpp:5281 src/SearchPanel.cpp:1030 src/SearchPanel.cpp:2744
+#: src/FilePanel.cpp:4090 src/FilePanel.cpp:4203 src/FilePanel.cpp:4534
+#: src/FilePanel.cpp:5282 src/SearchPanel.cpp:1030 src/SearchPanel.cpp:2744
 #: src/SearchPanel.cpp:3945 src/XFileArchive.cpp:1068
 msgid "File name is empty, operation cancelled"
 msgstr "檔案名稱為空，作業取消！"
@@ -1085,7 +1085,7 @@ msgid "Symlink %s items from: %s"
 msgstr "符號連結 %s 項目自：%s"
 
 #: src/DirPanel.cpp:2802 src/DirPanel.cpp:3730 src/FileDialog.cpp:1123
-#: src/FilePanel.cpp:4000 src/Properties.cpp:1473
+#: src/FilePanel.cpp:4001 src/Properties.cpp:1475
 #, fuzzy
 msgid "The / character is not allowed in folder names, operation cancelled"
 msgstr "檔案名稱為空，作業取消！"
@@ -1093,8 +1093,8 @@ msgstr "檔案名稱為空，作業取消！"
 #: src/DirPanel.cpp:2846 src/DirPanel.cpp:2867 src/DirPanel.cpp:2874
 #: src/DirPanel.cpp:3322 src/DirPanel.cpp:3438 src/FilePanel.cpp:2054
 #: src/FilePanel.cpp:2082 src/FilePanel.cpp:2089 src/FilePanel.cpp:2633
-#: src/FilePanel.cpp:3120 src/FilePanel.cpp:5511 src/FilePanel.cpp:5768
-#: src/Properties.cpp:1487 src/Properties.cpp:1500 src/SearchPanel.cpp:2954
+#: src/FilePanel.cpp:3120 src/FilePanel.cpp:5512 src/FilePanel.cpp:5769
+#: src/Properties.cpp:1489 src/Properties.cpp:1502 src/SearchPanel.cpp:2954
 #: src/SearchPanel.cpp:3970 src/SearchPanel.cpp:3991 src/SearchPanel.cpp:3998
 #: src/XFileArchive.cpp:605 src/XFileArchive.cpp:808 src/XFileArchive.cpp:1199
 #: src/XFileArchive.cpp:1271
@@ -1109,7 +1109,7 @@ msgid "%s is not a folder"
 msgstr "%s 並非資料夾"
 
 #: src/DirPanel.cpp:2974 src/FilePanel.cpp:2170 src/FilePanel.cpp:2326
-#: src/Properties.cpp:1508 src/SearchPanel.cpp:4091 src/SearchPanel.cpp:4273
+#: src/Properties.cpp:1510 src/SearchPanel.cpp:4091 src/SearchPanel.cpp:4273
 msgid "Rename Files"
 msgstr "重新命名檔案"
 
@@ -1210,7 +1210,7 @@ msgid "Can't create folder %s : %s"
 msgstr "無法建立資料夾 %s：%s "
 
 #: src/DirPanel.cpp:3650 src/DirPanel.cpp:3762 src/FilePanel.cpp:3049
-#: src/FilePanel.cpp:4032 src/FilePanel.cpp:5569 src/XFileArchive.cpp:882
+#: src/FilePanel.cpp:4033 src/FilePanel.cpp:5570 src/XFileArchive.cpp:882
 #: src/XFileArchive.cpp:1022
 #, c-format
 msgid "Can't create folder %s"
@@ -1224,22 +1224,22 @@ msgstr "回收筒還原作業期間發生了錯誤！"
 msgid "Restore from trash file operation cancelled!"
 msgstr "取消回收筒檔案還原作業！"
 
-#: src/DirPanel.cpp:3715 src/FilePanel.cpp:3983
+#: src/DirPanel.cpp:3715 src/FilePanel.cpp:3984
 msgid "Create new folder:"
 msgstr "建立新的資料夾："
 
 #: src/DirPanel.cpp:3715 src/FileDialog.cpp:297 src/FileDialog.cpp:1107
-#: src/FilePanel.cpp:3983
+#: src/FilePanel.cpp:3984
 msgid "New Folder"
 msgstr "新資料夾"
 
-#: src/DirPanel.cpp:3722 src/FileDialog.cpp:1114 src/FilePanel.cpp:3992
+#: src/DirPanel.cpp:3722 src/FileDialog.cpp:1114 src/FilePanel.cpp:3993
 #, fuzzy
 msgid "Folder name is empty, operation cancelled"
 msgstr "檔案名稱為空，作業取消！"
 
-#: src/DirPanel.cpp:3740 src/FileDialog.cpp:1205 src/FilePanel.cpp:4010
-#: src/FilePanel.cpp:4108 src/FilePanel.cpp:4212
+#: src/DirPanel.cpp:3740 src/FileDialog.cpp:1205 src/FilePanel.cpp:4011
+#: src/FilePanel.cpp:4109 src/FilePanel.cpp:4213
 #, c-format
 msgid "File or folder %s already exists"
 msgstr "檔案或資料夾 %s 已經存在"
@@ -1257,21 +1257,21 @@ msgstr ""
 msgid "Can't find user name"
 msgstr "篩選器檔案"
 
-#: src/DirPanel.cpp:4005 src/DirPanel.cpp:4079 src/File.cpp:277
-#: src/FilePanel.cpp:6180
+#: src/DirPanel.cpp:4005 src/DirPanel.cpp:4079 src/File.cpp:282
+#: src/FilePanel.cpp:6181
 msgid "Mount file system..."
 msgstr "掛載檔案系統…"
 
-#: src/DirPanel.cpp:4006 src/DirPanel.cpp:4080 src/FilePanel.cpp:6181
+#: src/DirPanel.cpp:4006 src/DirPanel.cpp:4080 src/FilePanel.cpp:6182
 msgid "Volume busy, please wait while mounting folder:"
 msgstr ""
 
-#: src/DirPanel.cpp:4012 src/DirPanel.cpp:4086 src/File.cpp:288
-#: src/FilePanel.cpp:6187
+#: src/DirPanel.cpp:4012 src/DirPanel.cpp:4086 src/File.cpp:293
+#: src/FilePanel.cpp:6188
 msgid "Unmount file system..."
 msgstr "卸載檔案系統…"
 
-#: src/DirPanel.cpp:4013 src/DirPanel.cpp:4087 src/FilePanel.cpp:6188
+#: src/DirPanel.cpp:4013 src/DirPanel.cpp:4087 src/FilePanel.cpp:6189
 msgid "Volume busy, please wait while unmounting folder:"
 msgstr ""
 
@@ -1285,68 +1285,68 @@ msgstr "執行"
 msgid "Execute in Console &Mode"
 msgstr "主控臺模式"
 
-#: src/ExecuteBox.cpp:51 src/FilePanel.cpp:5002 src/SearchPanel.cpp:2564
+#: src/ExecuteBox.cpp:51 src/FilePanel.cpp:5003 src/SearchPanel.cpp:2564
 #: src/WriteWindow.cpp:615 src/XFileExplorer.cpp:1470
 msgid "&Edit"
 msgstr "編輯(&E)"
 
-#: src/File.cpp:121 src/xfeutils.cpp:859 src/xfeutils.cpp:945
+#: src/File.cpp:125 src/xfeutils.cpp:859 src/xfeutils.cpp:945
 #, fuzzy, c-format
 msgid "Error: Can't close folder %s\n"
 msgstr "無法關閉資料夾 %s\n"
 
-#: src/File.cpp:210 src/File.cpp:228
+#: src/File.cpp:215 src/File.cpp:233
 msgid "Source:"
 msgstr "來源："
 
-#: src/File.cpp:211 src/File.cpp:229
+#: src/File.cpp:216 src/File.cpp:234
 msgid "Target:"
 msgstr "目標："
 
-#: src/File.cpp:217
+#: src/File.cpp:222
 #, fuzzy
 msgid "Copied data:"
 msgstr "修改日期："
 
-#: src/File.cpp:219 src/File.cpp:237
+#: src/File.cpp:224 src/File.cpp:242
 msgid "Remaining time:"
 msgstr ""
 
-#: src/File.cpp:235
+#: src/File.cpp:240
 #, fuzzy
 msgid "Moved data:"
 msgstr "修改日期："
 
-#: src/File.cpp:246 src/File.cpp:1392
+#: src/File.cpp:251 src/File.cpp:1378
 msgid "Delete:"
 msgstr "刪除："
 
-#: src/File.cpp:247
+#: src/File.cpp:252
 msgid "From:"
 msgstr "從："
 
-#: src/File.cpp:257 src/File.cpp:1945 src/File.cpp:1973 src/File.cpp:2037
+#: src/File.cpp:262 src/File.cpp:1931 src/File.cpp:1959 src/File.cpp:2023
 msgid "Changing permissions..."
 msgstr "變更權限…"
 
-#: src/File.cpp:258 src/File.cpp:266 src/File.cpp:1947 src/File.cpp:2039
-#: src/File.cpp:2142 src/File.cpp:2231
+#: src/File.cpp:263 src/File.cpp:271 src/File.cpp:1933 src/File.cpp:2025
+#: src/File.cpp:2128 src/File.cpp:2217
 msgid "File: "
 msgstr "檔案： "
 
-#: src/File.cpp:265 src/File.cpp:2140 src/File.cpp:2171 src/File.cpp:2229
+#: src/File.cpp:270 src/File.cpp:2126 src/File.cpp:2157 src/File.cpp:2215
 msgid "Changing owner..."
 msgstr "變更擁有者…"
 
-#: src/File.cpp:278
+#: src/File.cpp:283
 msgid "Mounting folder:"
 msgstr "掛載資料夾："
 
-#: src/File.cpp:289
+#: src/File.cpp:294
 msgid "Unmounting folder:"
 msgstr "卸載資料夾："
 
-#: src/File.cpp:437
+#: src/File.cpp:452
 #, fuzzy, c-format
 msgid ""
 "Folder %s already exists.\n"
@@ -1356,185 +1356,185 @@ msgstr ""
 "資料夾 %s 已經存在。覆寫？\n"
 "=> 小心，這個目錄之內的所有檔案將確定會失去！"
 
-#: src/File.cpp:442 src/File.cpp:2353
+#: src/File.cpp:457 src/File.cpp:2339
 #, fuzzy, c-format
 msgid ""
 "File %s already exists.\n"
 "Overwrite?"
 msgstr "檔案 %s 已經存在。要覆寫嗎？"
 
-#: src/File.cpp:515 src/File.cpp:520 src/File.cpp:527 src/File.cpp:531
-#: src/File.cpp:2354
+#: src/File.cpp:530 src/File.cpp:535 src/File.cpp:542 src/File.cpp:546
+#: src/File.cpp:2340
 msgid "Confirm Overwrite"
 msgstr "確認覆寫"
 
-#: src/File.cpp:635 src/File.cpp:779 src/File.cpp:1208 src/File.cpp:1627
+#: src/File.cpp:633 src/File.cpp:759 src/File.cpp:1194 src/File.cpp:1613
 msgid "Source: "
 msgstr "來源："
 
-#: src/File.cpp:640 src/File.cpp:784 src/File.cpp:1213 src/File.cpp:1632
+#: src/File.cpp:638 src/File.cpp:764 src/File.cpp:1199 src/File.cpp:1618
 msgid "Target: "
 msgstr "目標："
 
-#: src/File.cpp:663 src/File.cpp:705 src/File.cpp:808 src/File.cpp:905
+#: src/File.cpp:662 src/File.cpp:710 src/File.cpp:789 src/File.cpp:889
 #, c-format
 msgid "Can't copy file %s: %s"
 msgstr "無法複製檔案 %s：%s "
 
-#: src/File.cpp:709 src/File.cpp:812 src/File.cpp:909
+#: src/File.cpp:714 src/File.cpp:793 src/File.cpp:893
 #, c-format
 msgid "Can't copy file %s"
 msgstr "無法複製檔案 %s"
 
-#: src/File.cpp:859
+#: src/File.cpp:842
 #, c-format
 msgid "Can't preserve date when copying file %s : %s"
 msgstr "無法保留複製檔案 %s 時的日期：%s"
 
-#: src/File.cpp:864
+#: src/File.cpp:847
 #, c-format
 msgid "Can't preserve date when copying file %s"
 msgstr "無法保留複製檔案 %s 時的日期"
 
-#: src/File.cpp:1006
+#: src/File.cpp:992
 #, c-format
 msgid "Can't copy folder %s : Permission denied"
 msgstr "無法複製資料夾 %s：權限被拒絕"
 
-#: src/File.cpp:1010
+#: src/File.cpp:996
 #, c-format
 msgid "Can't copy file %s : Permission denied"
 msgstr "無法複製檔案 %s：權限被拒絕"
 
-#: src/File.cpp:1047
+#: src/File.cpp:1033
 #, fuzzy, c-format
 msgid "Can't preserve date when copying folder %s: %s"
 msgstr "無法保留複製資料夾 %s 時的日期：%s"
 
-#: src/File.cpp:1051
+#: src/File.cpp:1037
 #, c-format
 msgid "Can't preserve date when copying folder %s"
 msgstr "無法於複製資料夾 %s 時保留資料"
 
-#: src/File.cpp:1157 src/File.cpp:1455 src/File.cpp:1577 src/File.cpp:1792
+#: src/File.cpp:1143 src/File.cpp:1441 src/File.cpp:1563 src/File.cpp:1778
 #, c-format
 msgid "Source %s doesn't exist"
 msgstr "來源 %s 不存在"
 
-#: src/File.cpp:1165 src/File.cpp:1198 src/File.cpp:1462 src/File.cpp:1585
-#: src/File.cpp:1613 src/File.cpp:1800 src/File.cpp:1819
+#: src/File.cpp:1151 src/File.cpp:1184 src/File.cpp:1448 src/File.cpp:1571
+#: src/File.cpp:1599 src/File.cpp:1786 src/File.cpp:1805
 #, fuzzy, c-format
 msgid "Destination %s is identical to source"
 msgstr "來源 %s 與目標完全相同"
 
-#: src/File.cpp:1174 src/File.cpp:1594
+#: src/File.cpp:1160 src/File.cpp:1580
 #, c-format
 msgid "Target %s is a sub-folder of source"
 msgstr ""
 
-#: src/File.cpp:1306
+#: src/File.cpp:1292
 #, fuzzy
 msgid "Delete folder: "
 msgstr "刪除資料夾："
 
-#: src/File.cpp:1312 src/File.cpp:1398
+#: src/File.cpp:1298 src/File.cpp:1384
 msgid "From: "
 msgstr "從："
 
-#: src/File.cpp:1354
+#: src/File.cpp:1340
 #, fuzzy, c-format
 msgid "Can't delete folder %s: %s"
 msgstr "無法刪除資料夾 %s"
 
-#: src/File.cpp:1358
+#: src/File.cpp:1344
 #, c-format
 msgid "Can't delete folder %s"
 msgstr "無法刪除資料夾 %s"
 
-#: src/File.cpp:1419
+#: src/File.cpp:1405
 #, fuzzy, c-format
 msgid "Can't delete file %s: %s"
 msgstr "無法刪除檔案 %s"
 
-#: src/File.cpp:1423
+#: src/File.cpp:1409
 #, c-format
 msgid "Can't delete file %s"
 msgstr "無法刪除檔案 %s"
 
-#: src/File.cpp:1472
+#: src/File.cpp:1458
 #, fuzzy, c-format
 msgid "Destination %s already exists"
 msgstr "檔案或資料夾 %s 已經存在"
 
-#: src/File.cpp:1532 src/File.cpp:1557 src/File.cpp:1755
+#: src/File.cpp:1518 src/File.cpp:1543 src/File.cpp:1741
 #, fuzzy, c-format
 msgid "Can't rename to target %s: %s"
 msgstr "無法重新以目標 %s 命名"
 
-#: src/File.cpp:1892
+#: src/File.cpp:1878
 #, c-format
 msgid "Can't symlink %s: %s"
 msgstr "無法符號連結 %s：%s"
 
-#: src/File.cpp:1896
+#: src/File.cpp:1882
 #, c-format
 msgid "Can't symlink %s"
 msgstr "無法符號連結 %s"
 
-#: src/File.cpp:1975 src/File.cpp:2173
+#: src/File.cpp:1961 src/File.cpp:2159
 #, fuzzy
 msgid "Folder: "
 msgstr "資料夾："
 
-#: src/File.cpp:2318
+#: src/File.cpp:2304
 msgid "Extract archive"
 msgstr "解開壓縮檔"
 
-#: src/File.cpp:2364
+#: src/File.cpp:2350
 msgid "Add to Archive "
 msgstr "加入到壓縮檔"
 
-#: src/File.cpp:2382 src/File.cpp:2629
+#: src/File.cpp:2368 src/File.cpp:2615
 msgid "Computing the size of files to copy: "
 msgstr ""
 
-#: src/File.cpp:2386 src/File.cpp:2633
+#: src/File.cpp:2372 src/File.cpp:2619
 msgid "Computing the size of files to move: "
 msgstr ""
 
-#: src/File.cpp:2480 src/FilePanel.cpp:6367 src/SearchPanel.cpp:4972
+#: src/File.cpp:2466 src/FilePanel.cpp:6368 src/SearchPanel.cpp:4972
 #, c-format
 msgid "Failed command: %s"
 msgstr "失敗的命令：%s"
 
-#: src/File.cpp:2546 src/File.cpp:2550
+#: src/File.cpp:2532 src/File.cpp:2536
 msgid "Success"
 msgstr "成功"
 
-#: src/File.cpp:2546
+#: src/File.cpp:2532
 #, c-format
 msgid "Folder %s was successfully mounted."
 msgstr "資料夾 %s 已成功掛載。"
 
-#: src/File.cpp:2550
+#: src/File.cpp:2536
 #, c-format
 msgid "Folder %s was successfully unmounted."
 msgstr "資料夾 %s 已成功卸載。"
 
-#: src/File.cpp:2561 src/XFilePackage.cpp:420
+#: src/File.cpp:2547 src/XFilePackage.cpp:420
 msgid "Install / Upgrade Package"
 msgstr "安裝/升級套件"
 
-#: src/File.cpp:2566 src/XFilePackage.cpp:424
+#: src/File.cpp:2552 src/XFilePackage.cpp:424
 #, c-format
 msgid "Installing package: %s \n"
 msgstr "正在安裝套件：%s \n"
 
-#: src/File.cpp:2579 src/XFilePackage.cpp:470
+#: src/File.cpp:2565 src/XFilePackage.cpp:470
 msgid "Uninstall Package"
 msgstr "解除安裝套件"
 
-#: src/File.cpp:2584 src/XFilePackage.cpp:474
+#: src/File.cpp:2570 src/XFilePackage.cpp:474
 #, c-format
 msgid "Uninstalling package: %s \n"
 msgstr "正在解除安裝套件：%s \n"
@@ -1556,42 +1556,41 @@ msgstr "檔案篩選器(&I)："
 msgid "Read Only"
 msgstr "唯讀"
 
-#: src/FileDialog.cpp:262 src/XFileExplorer.cpp:1081 src/XFileImage.cpp:532
+#: src/FileDialog.cpp:262 src/XFileExplorer.cpp:1081
 #, fuzzy
 msgid "Go to Previous Folder"
 msgstr "移動到前一個資料夾。"
 
-#: src/FileDialog.cpp:271 src/XFileExplorer.cpp:1090 src/XFileImage.cpp:540
+#: src/FileDialog.cpp:271 src/XFileExplorer.cpp:1090
 #, fuzzy
 msgid "Go to Next Folder"
 msgstr "移動到後一個資料夾。"
 
 #: src/FileDialog.cpp:279 src/SearchPanel.cpp:227 src/XFileExplorer.cpp:1099
-#: src/XFileImage.cpp:548
 #, fuzzy
 msgid "Go to Parent Folder"
 msgstr "前往上層目錄："
 
-#: src/FileDialog.cpp:285 src/XFileExplorer.cpp:1107 src/XFileImage.cpp:557
+#: src/FileDialog.cpp:285 src/XFileExplorer.cpp:1107
 msgid "Go to Home Folder"
 msgstr "前往個人資料夾"
 
-#: src/FileDialog.cpp:291 src/XFileImage.cpp:563
+#: src/FileDialog.cpp:291
 msgid "Go to Working Folder"
 msgstr "前往工作資料夾。"
 
 #: src/FileDialog.cpp:303 src/SearchPanel.cpp:293 src/XFileExplorer.cpp:1286
-#: src/XFileImage.cpp:573
+#: src/XFileImage.cpp:571
 msgid "Big Icon List"
 msgstr "大圖示列表"
 
 #: src/FileDialog.cpp:310 src/SearchPanel.cpp:300 src/XFileExplorer.cpp:1293
-#: src/XFileImage.cpp:579
+#: src/XFileImage.cpp:577
 msgid "Small Icon List"
 msgstr "小圖示列表"
 
 #: src/FileDialog.cpp:317 src/SearchPanel.cpp:307 src/XFileExplorer.cpp:1300
-#: src/XFileImage.cpp:585
+#: src/XFileImage.cpp:583
 msgid "Detailed File List"
 msgstr "完整檔案列表"
 
@@ -1599,12 +1598,12 @@ msgstr "完整檔案列表"
 msgid "Show hidden files"
 msgstr "顯示隱藏檔案"
 
-#: src/FileDialog.cpp:325 src/FilePanel.cpp:290 src/XFileImage.cpp:791
+#: src/FileDialog.cpp:325 src/FilePanel.cpp:290 src/XFileImage.cpp:789
 msgid "Hide Hidden Files"
 msgstr "隱入隱藏檔案"
 
 #: src/FileDialog.cpp:332 src/FilePanel.cpp:295 src/SearchPanel.cpp:320
-#: src/XFileImage.cpp:796
+#: src/XFileImage.cpp:794
 msgid "Show Thumbnails"
 msgstr "顯示縮圖"
 
@@ -1613,7 +1612,7 @@ msgid "Hide thumbnails"
 msgstr "不顯示縮圖"
 
 #: src/FileDialog.cpp:339 src/FileDialog.cpp:1321 src/FilePanel.cpp:301
-#: src/FilePanel.cpp:4695
+#: src/FilePanel.cpp:4696
 msgid "Filter"
 msgstr "篩選器"
 
@@ -1629,22 +1628,22 @@ msgstr "建立新的資料夾…"
 msgid "Create new file..."
 msgstr "建立新的檔案…"
 
-#: src/FileDialog.cpp:1176 src/FilePanel.cpp:4080
+#: src/FileDialog.cpp:1176 src/FilePanel.cpp:4081
 msgid "New File"
 msgstr "新檔案"
 
-#: src/FileDialog.cpp:1193 src/FilePanel.cpp:4097 src/Properties.cpp:1478
+#: src/FileDialog.cpp:1193 src/FilePanel.cpp:4098 src/Properties.cpp:1480
 #, fuzzy
 msgid "The / character is not allowed in file names, operation cancelled"
 msgstr "檔案名稱為空，作業取消！"
 
-#: src/FileDialog.cpp:1321 src/FilePanel.cpp:4695
+#: src/FileDialog.cpp:1321 src/FilePanel.cpp:4696
 #, fuzzy
 #| msgid "Show files:"
 msgid "Show:"
 msgstr "顯示檔案："
 
-#: src/FileDialog.cpp:1322 src/FilePanel.cpp:4696
+#: src/FileDialog.cpp:1322 src/FilePanel.cpp:4697
 #, fuzzy
 #| msgid "Go up one folder"
 msgid "Also apply to folders"
@@ -1666,11 +1665,11 @@ msgstr " - 篩選器：%s"
 msgid "Folder Name:"
 msgstr "資料夾："
 
-#: src/FileDialog.cpp:1898 src/XFileImage.cpp:1110
+#: src/FileDialog.cpp:1898 src/XFileImage.cpp:1106
 msgid "Go Ho&me"
 msgstr "前往個人資料夾(&M)"
 
-#: src/FileDialog.cpp:1899 src/XFileImage.cpp:1111
+#: src/FileDialog.cpp:1899 src/XFileImage.cpp:1107
 msgid "Go &Work"
 msgstr "前往工作資料夾(&W)"
 
@@ -1678,119 +1677,119 @@ msgstr "前往工作資料夾(&W)"
 msgid "New &File..."
 msgstr "新檔案(&F)…"
 
-#: src/FileDialog.cpp:1901 src/FilePanel.cpp:4850 src/FilePanel.cpp:4895
+#: src/FileDialog.cpp:1901 src/FilePanel.cpp:4851 src/FilePanel.cpp:4896
 msgid "New F&older..."
 msgstr "新資料夾(&O)…"
 
-#: src/FileDialog.cpp:1903 src/FilePanel.cpp:4857 src/FilePanel.cpp:4902
-#: src/XFileExplorer.cpp:1533 src/XFileExplorer.cpp:1564 src/XFileImage.cpp:973
-#: src/XFileImage.cpp:1113
+#: src/FileDialog.cpp:1903 src/FilePanel.cpp:4858 src/FilePanel.cpp:4903
+#: src/XFileExplorer.cpp:1533 src/XFileExplorer.cpp:1564 src/XFileImage.cpp:971
+#: src/XFileImage.cpp:1109
 msgid "&Hidden Files"
 msgstr "隱藏檔案(&H)"
 
-#: src/FileDialog.cpp:1904 src/FilePanel.cpp:4858 src/FilePanel.cpp:4903
-#: src/SearchPanel.cpp:2464 src/SearchPanel.cpp:2493 src/XFileImage.cpp:1114
+#: src/FileDialog.cpp:1904 src/FilePanel.cpp:4859 src/FilePanel.cpp:4904
+#: src/SearchPanel.cpp:2464 src/SearchPanel.cpp:2493 src/XFileImage.cpp:1110
 msgid "Thum&bnails"
 msgstr "縮圖(&B)"
 
-#: src/FileDialog.cpp:1906 src/FilePanel.cpp:4860 src/FilePanel.cpp:4905
-#: src/SearchPanel.cpp:2466 src/SearchPanel.cpp:2495 src/XFileImage.cpp:1116
+#: src/FileDialog.cpp:1906 src/FilePanel.cpp:4861 src/FilePanel.cpp:4906
+#: src/SearchPanel.cpp:2466 src/SearchPanel.cpp:2495 src/XFileImage.cpp:1112
 msgid "B&ig Icons"
 msgstr "大圖示(&I)"
 
-#: src/FileDialog.cpp:1907 src/FilePanel.cpp:4861 src/FilePanel.cpp:4906
+#: src/FileDialog.cpp:1907 src/FilePanel.cpp:4862 src/FilePanel.cpp:4907
 #: src/SearchPanel.cpp:2467 src/SearchPanel.cpp:2496 src/XFileExplorer.cpp:1537
-#: src/XFileExplorer.cpp:1568 src/XFileImage.cpp:993 src/XFileImage.cpp:1117
+#: src/XFileExplorer.cpp:1568 src/XFileImage.cpp:991 src/XFileImage.cpp:1113
 msgid "&Small Icons"
 msgstr "小圖示(&S)"
 
-#: src/FileDialog.cpp:1908 src/FilePanel.cpp:4862 src/FilePanel.cpp:4907
+#: src/FileDialog.cpp:1908 src/FilePanel.cpp:4863 src/FilePanel.cpp:4908
 #: src/SearchPanel.cpp:2468 src/SearchPanel.cpp:2497 src/XFileExplorer.cpp:1538
-#: src/XFileExplorer.cpp:1569 src/XFileImage.cpp:999 src/XFileImage.cpp:1118
+#: src/XFileExplorer.cpp:1569 src/XFileImage.cpp:997 src/XFileImage.cpp:1114
 msgid "&Detailed File List"
 msgstr "完整檔案列表(&D)"
 
-#: src/FileDialog.cpp:1910 src/FilePanel.cpp:4864 src/FilePanel.cpp:4909
+#: src/FileDialog.cpp:1910 src/FilePanel.cpp:4865 src/FilePanel.cpp:4910
 #: src/SearchPanel.cpp:2470 src/SearchPanel.cpp:2499 src/XFileExplorer.cpp:1540
-#: src/XFileExplorer.cpp:1571 src/XFileImage.cpp:1015 src/XFileImage.cpp:1120
+#: src/XFileExplorer.cpp:1571 src/XFileImage.cpp:1013 src/XFileImage.cpp:1116
 #, fuzzy
 #| msgid "Autosize"
 msgid "Autos&ize"
 msgstr "自動調整大小"
 
-#: src/FileDialog.cpp:1911 src/FilePanel.cpp:4865 src/FilePanel.cpp:4910
+#: src/FileDialog.cpp:1911 src/FilePanel.cpp:4866 src/FilePanel.cpp:4911
 #: src/SearchPanel.cpp:2471 src/SearchPanel.cpp:2500 src/XFileExplorer.cpp:1541
-#: src/XFileExplorer.cpp:1572 src/XFileImage.cpp:1016 src/XFileImage.cpp:1121
+#: src/XFileExplorer.cpp:1572 src/XFileImage.cpp:1014 src/XFileImage.cpp:1117
 msgid "&Rows"
 msgstr "列(&R)"
 
-#: src/FileDialog.cpp:1912 src/FilePanel.cpp:4866 src/FilePanel.cpp:4911
+#: src/FileDialog.cpp:1912 src/FilePanel.cpp:4867 src/FilePanel.cpp:4912
 #: src/SearchPanel.cpp:2472 src/SearchPanel.cpp:2501 src/XFileExplorer.cpp:1542
-#: src/XFileExplorer.cpp:1573 src/XFileImage.cpp:1017 src/XFileImage.cpp:1122
+#: src/XFileExplorer.cpp:1573 src/XFileImage.cpp:1015 src/XFileImage.cpp:1118
 msgid "&Columns"
 msgstr "欄(&C)"
 
-#: src/FileDialog.cpp:1914 src/FilePanel.cpp:4868 src/FilePanel.cpp:4913
+#: src/FileDialog.cpp:1914 src/FilePanel.cpp:4869 src/FilePanel.cpp:4914
 #: src/SearchPanel.cpp:2474 src/SearchPanel.cpp:2503 src/XFileExplorer.cpp:1544
-#: src/XFileExplorer.cpp:1575 src/XFileImage.cpp:1124
+#: src/XFileExplorer.cpp:1575 src/XFileImage.cpp:1120
 msgid "&Name"
 msgstr "名稱(&N)"
 
-#: src/FileDialog.cpp:1915 src/FilePanel.cpp:4869 src/FilePanel.cpp:4914
+#: src/FileDialog.cpp:1915 src/FilePanel.cpp:4870 src/FilePanel.cpp:4915
 #: src/SearchPanel.cpp:2475 src/SearchPanel.cpp:2504 src/XFileExplorer.cpp:1545
-#: src/XFileExplorer.cpp:1576 src/XFileImage.cpp:1125
+#: src/XFileExplorer.cpp:1576 src/XFileImage.cpp:1121
 msgid "Si&ze"
 msgstr "大小(&Z)"
 
-#: src/FileDialog.cpp:1916 src/FilePanel.cpp:4870 src/FilePanel.cpp:4915
-#: src/SearchPanel.cpp:2476 src/SearchPanel.cpp:2505 src/XFileImage.cpp:1126
+#: src/FileDialog.cpp:1916 src/FilePanel.cpp:4871 src/FilePanel.cpp:4916
+#: src/SearchPanel.cpp:2476 src/SearchPanel.cpp:2505 src/XFileImage.cpp:1122
 msgid "&Type"
 msgstr "型態(&T)"
 
-#: src/FileDialog.cpp:1917 src/FilePanel.cpp:4871 src/FilePanel.cpp:4916
+#: src/FileDialog.cpp:1917 src/FilePanel.cpp:4872 src/FilePanel.cpp:4917
 #: src/SearchPanel.cpp:2477 src/SearchPanel.cpp:2506 src/XFileExplorer.cpp:1547
-#: src/XFileExplorer.cpp:1578 src/XFileImage.cpp:1127
+#: src/XFileExplorer.cpp:1578 src/XFileImage.cpp:1123
 msgid "E&xtension"
 msgstr "擴充檔名(&X)"
 
-#: src/FileDialog.cpp:1918 src/FilePanel.cpp:4872 src/FilePanel.cpp:4917
-#: src/SearchPanel.cpp:2478 src/SearchPanel.cpp:2507 src/XFileImage.cpp:1128
+#: src/FileDialog.cpp:1918 src/FilePanel.cpp:4873 src/FilePanel.cpp:4918
+#: src/SearchPanel.cpp:2478 src/SearchPanel.cpp:2507 src/XFileImage.cpp:1124
 msgid "&Date"
 msgstr "日期(&D)"
 
-#: src/FileDialog.cpp:1919 src/FilePanel.cpp:4873 src/FilePanel.cpp:4918
-#: src/SearchPanel.cpp:2479 src/SearchPanel.cpp:2508 src/XFileImage.cpp:1129
+#: src/FileDialog.cpp:1919 src/FilePanel.cpp:4874 src/FilePanel.cpp:4919
+#: src/SearchPanel.cpp:2479 src/SearchPanel.cpp:2508 src/XFileImage.cpp:1125
 msgid "&User"
 msgstr "使用者(&U)"
 
-#: src/FileDialog.cpp:1920 src/FilePanel.cpp:4874 src/FilePanel.cpp:4919
-#: src/SearchPanel.cpp:2480 src/SearchPanel.cpp:2509 src/XFileImage.cpp:1130
+#: src/FileDialog.cpp:1920 src/FilePanel.cpp:4875 src/FilePanel.cpp:4920
+#: src/SearchPanel.cpp:2480 src/SearchPanel.cpp:2509 src/XFileImage.cpp:1126
 msgid "&Group"
 msgstr "群組(&G)"
 
-#: src/FileDialog.cpp:1921 src/Properties.cpp:226 src/Properties.cpp:1028
+#: src/FileDialog.cpp:1921 src/Properties.cpp:226 src/Properties.cpp:1030
 #: src/XFileExplorer.cpp:1551 src/XFileExplorer.cpp:1582
-#: src/XFileImage.cpp:1131
+#: src/XFileImage.cpp:1127
 msgid "&Permissions"
 msgstr "權限(&P)"
 
-#: src/FileDialog.cpp:1922 src/FilePanel.cpp:4876 src/FilePanel.cpp:4921
+#: src/FileDialog.cpp:1922 src/FilePanel.cpp:4877 src/FilePanel.cpp:4922
 #: src/SearchPanel.cpp:2482 src/SearchPanel.cpp:2511 src/XFileExplorer.cpp:1552
-#: src/XFileExplorer.cpp:1583 src/XFileImage.cpp:1132
+#: src/XFileExplorer.cpp:1583 src/XFileImage.cpp:1128
 #, fuzzy
 #| msgid "Link"
 msgid "&Link"
 msgstr "連結"
 
-#: src/FileDialog.cpp:1925 src/FilePanel.cpp:4880 src/FilePanel.cpp:4925
-#: src/SearchPanel.cpp:2485 src/SearchPanel.cpp:2514 src/XFileImage.cpp:1135
+#: src/FileDialog.cpp:1925 src/FilePanel.cpp:4881 src/FilePanel.cpp:4926
+#: src/SearchPanel.cpp:2485 src/SearchPanel.cpp:2514
 #, fuzzy
 msgid "Fold&ers First"
 msgstr "資料夾"
 
-#: src/FileDialog.cpp:1926 src/FilePanel.cpp:4881 src/FilePanel.cpp:4926
+#: src/FileDialog.cpp:1926 src/FilePanel.cpp:4882 src/FilePanel.cpp:4927
 #: src/SearchPanel.cpp:2486 src/SearchPanel.cpp:2515 src/XFileExplorer.cpp:1558
-#: src/XFileExplorer.cpp:1589 src/XFileImage.cpp:1136
+#: src/XFileExplorer.cpp:1589 src/XFileImage.cpp:1132
 msgid "Re&verse Order"
 msgstr "反向排序(&V)"
 
@@ -1827,7 +1826,7 @@ msgstr "可執行檔案"
 
 #: src/FileList.cpp:4958 src/FileList.cpp:5045 src/FileList.cpp:5764
 #: src/FileList.cpp:5869 src/Properties.cpp:525 src/Properties.cpp:570
-#: src/Properties.cpp:646 src/Properties.cpp:1130 src/Properties.cpp:1146
+#: src/Properties.cpp:646 src/Properties.cpp:1132 src/Properties.cpp:1148
 #: src/SearchPanel.cpp:2117
 msgid "Document"
 msgstr "文件"
@@ -1844,17 +1843,17 @@ msgid "Link to "
 msgstr "連結到 "
 
 #: src/FileList.cpp:5139 src/FileList.cpp:5963 src/IconList.cpp:316
-#: src/IconList.cpp:331 src/IconList.cpp:671 src/XFileImage.cpp:1741
-#: src/XFileImage.cpp:2385 src/XFileImage.cpp:2439 src/XFileImage.cpp:2530
+#: src/IconList.cpp:331 src/IconList.cpp:671 src/XFileImage.cpp:1717
+#: src/XFileImage.cpp:2415 src/XFileImage.cpp:2490 src/XFileImage.cpp:2605
 #: src/foxhacks.cpp:3886 src/foxhacks.cpp:3911
 msgid "Unable to load image"
 msgstr "無法載入圖像"
 
-#: src/FilePanel.cpp:290 src/XFileImage.cpp:791
+#: src/FilePanel.cpp:290 src/XFileImage.cpp:789
 msgid "Show Hidden Files"
 msgstr "顯示隱藏檔案"
 
-#: src/FilePanel.cpp:295 src/SearchPanel.cpp:321 src/XFileImage.cpp:796
+#: src/FilePanel.cpp:295 src/SearchPanel.cpp:321 src/XFileImage.cpp:794
 msgid "Hide Thumbnails"
 msgstr "不顯示縮圖"
 
@@ -1937,7 +1936,7 @@ msgstr "還原檔案 %s 到它的原來位置 %s？"
 msgid "Restore %s selected items to their original locations?"
 msgstr "復原 %s 已選項目到原來位置？"
 
-#: src/FilePanel.cpp:3044 src/FilePanel.cpp:4027 src/FilePanel.cpp:5564
+#: src/FilePanel.cpp:3044 src/FilePanel.cpp:4028 src/FilePanel.cpp:5565
 #, c-format
 msgid "Can't create folder %s: %s"
 msgstr "無法建立資料夾 %s：%s "
@@ -1952,7 +1951,7 @@ msgstr "確定要刪除資料夾 %s？"
 msgid "Definitively delete %s selected items?"
 msgstr "確定要刪除 %s 已選項目？ "
 
-#: src/FilePanel.cpp:3178 src/XFileExplorer.cpp:5739 src/XFileExplorer.cpp:5745
+#: src/FilePanel.cpp:3178 src/XFileExplorer.cpp:5740 src/XFileExplorer.cpp:5746
 msgid "Delete Files"
 msgstr "刪除檔案"
 
@@ -1973,55 +1972,55 @@ msgstr ""
 msgid "With:"
 msgstr ""
 
-#: src/FilePanel.cpp:3858
+#: src/FilePanel.cpp:3859
 #, c-format
 msgid ""
 "Program %s not found. Please define a file / folder comparator program in "
 "the Preferences dialog!"
 msgstr ""
 
-#: src/FilePanel.cpp:4080
+#: src/FilePanel.cpp:4081
 msgid "Create new file:"
 msgstr "建立新的檔案："
 
-#: src/FilePanel.cpp:4118
+#: src/FilePanel.cpp:4119
 #, fuzzy, c-format
 msgid "Can't create file %s: %s"
 msgstr "無法建立資料夾 %s：%s "
 
-#: src/FilePanel.cpp:4123
+#: src/FilePanel.cpp:4124
 #, fuzzy, c-format
 msgid "Can't create file %s"
 msgstr "無法建立資料夾 %s"
 
-#: src/FilePanel.cpp:4139
+#: src/FilePanel.cpp:4140
 #, fuzzy, c-format
 msgid "Can't set permissions in %s: %s"
 msgstr "無法符號連結 %s：%s"
 
-#: src/FilePanel.cpp:4144
+#: src/FilePanel.cpp:4145
 #, fuzzy, c-format
 msgid "Can't set permissions in %s"
 msgstr "無法寫入 %s：權限被拒絕"
 
-#: src/FilePanel.cpp:4192
+#: src/FilePanel.cpp:4193
 msgid "Create new symbolic link:"
 msgstr "建立新的符號連結："
 
-#: src/FilePanel.cpp:4192
+#: src/FilePanel.cpp:4193
 msgid "New Symlink"
 msgstr "新的符號連結"
 
-#: src/FilePanel.cpp:4217
+#: src/FilePanel.cpp:4218
 msgid "Select the symlink refered file or folder"
 msgstr "選取符號連結所參考的檔案或資料夾"
 
-#: src/FilePanel.cpp:4227
+#: src/FilePanel.cpp:4228
 #, c-format
 msgid "Symlink source %s does not exist"
 msgstr "符號連結來源 %s 不存在"
 
-#: src/FilePanel.cpp:4487 src/SearchPanel.cpp:1360
+#: src/FilePanel.cpp:4488 src/SearchPanel.cpp:1360
 #, c-format
 msgid ""
 "The following files have no association and were ignored:\n"
@@ -2029,257 +2028,257 @@ msgid ""
 "%s"
 msgstr ""
 
-#: src/FilePanel.cpp:4513 src/SearchPanel.cpp:1010 src/XFileArchive.cpp:1048
+#: src/FilePanel.cpp:4514 src/SearchPanel.cpp:1010 src/XFileArchive.cpp:1048
 msgid "Open selected file(s) with:"
 msgstr "開啟已選檔案經由："
 
-#: src/FilePanel.cpp:4513 src/SearchPanel.cpp:1010 src/XFileArchive.cpp:1048
+#: src/FilePanel.cpp:4514 src/SearchPanel.cpp:1010 src/XFileArchive.cpp:1048
 msgid "Open With"
 msgstr "開啟方式"
 
-#: src/FilePanel.cpp:4514 src/SearchPanel.cpp:1011
+#: src/FilePanel.cpp:4515 src/SearchPanel.cpp:1011
 msgid "A&ssociate"
 msgstr "關聯(&S)"
 
-#: src/FilePanel.cpp:4849
+#: src/FilePanel.cpp:4850
 msgid "New& File..."
 msgstr "新檔案(&F)…"
 
-#: src/FilePanel.cpp:4851 src/FilePanel.cpp:4896 src/XFileExplorer.cpp:1336
+#: src/FilePanel.cpp:4852 src/FilePanel.cpp:4897 src/XFileExplorer.cpp:1336
 msgid "New S&ymlink..."
 msgstr "新增符號連結(&Y)…"
 
-#: src/FilePanel.cpp:4853 src/FilePanel.cpp:4898
+#: src/FilePanel.cpp:4854 src/FilePanel.cpp:4899
 msgid "Fi&lter..."
 msgstr "篩選器(&L)…"
 
-#: src/FilePanel.cpp:4875 src/FilePanel.cpp:4920 src/SearchPanel.cpp:2481
+#: src/FilePanel.cpp:4876 src/FilePanel.cpp:4921 src/SearchPanel.cpp:2481
 #: src/SearchPanel.cpp:2510
 msgid "Per&missions"
 msgstr "權限(&M)"
 
-#: src/FilePanel.cpp:4877 src/FilePanel.cpp:4922
+#: src/FilePanel.cpp:4878 src/FilePanel.cpp:4923
 msgid "&Deletion Date"
 msgstr "刪除日期："
 
-#: src/FilePanel.cpp:4894
+#: src/FilePanel.cpp:4895
 msgid "Ne&w File..."
 msgstr "新檔案(&W)…"
 
-#: src/FilePanel.cpp:4934 src/XFileExplorer.cpp:1661
+#: src/FilePanel.cpp:4935 src/XFileExplorer.cpp:1661
 msgid "&Mount"
 msgstr "掛載(&M)"
 
-#: src/FilePanel.cpp:4935 src/XFileExplorer.cpp:1217
+#: src/FilePanel.cpp:4936 src/XFileExplorer.cpp:1217
 msgid "Unmount"
 msgstr "卸載"
 
-#: src/FilePanel.cpp:4943 src/XFileArchive.cpp:1859
+#: src/FilePanel.cpp:4944 src/XFileArchive.cpp:1859
 msgid "Open &With..."
 msgstr "開啟方式(&W)…"
 
-#: src/FilePanel.cpp:4944 src/SearchPanel.cpp:2524 src/XFileExplorer.cpp:1356
+#: src/FilePanel.cpp:4945 src/SearchPanel.cpp:2524 src/XFileExplorer.cpp:1356
 #: src/XFileArchive.cpp:1860
 msgid "&Open"
 msgstr "開啟(&O)"
 
-#: src/FilePanel.cpp:4956 src/FilePanel.cpp:4960
+#: src/FilePanel.cpp:4957 src/FilePanel.cpp:4961
 #, fuzzy
 msgid "Extr&act to Folder "
 msgstr "解壓到資料夾(&A) "
 
-#: src/FilePanel.cpp:4969 src/FilePanel.cpp:4985 src/SearchPanel.cpp:2543
+#: src/FilePanel.cpp:4970 src/FilePanel.cpp:4986 src/SearchPanel.cpp:2543
 msgid "&Extract Here"
 msgstr "在此解壓(&E)"
 
-#: src/FilePanel.cpp:4971 src/FilePanel.cpp:4987 src/SearchPanel.cpp:2537
+#: src/FilePanel.cpp:4972 src/FilePanel.cpp:4988 src/SearchPanel.cpp:2537
 #: src/SearchPanel.cpp:2551
 msgid "E&xtract to..."
 msgstr "解壓到(&X)…"
 
-#: src/FilePanel.cpp:4977
+#: src/FilePanel.cpp:4978
 msgid "&Extract here"
 msgstr "在此解壓(&E)"
 
-#: src/FilePanel.cpp:4993 src/FilePanel.cpp:5001 src/SearchPanel.cpp:2557
+#: src/FilePanel.cpp:4994 src/FilePanel.cpp:5002 src/SearchPanel.cpp:2557
 #: src/SearchPanel.cpp:2563 src/WriteWindow.cpp:619 src/XFileExplorer.cpp:1508
 #: src/XFileImage.cpp:343
 msgid "&View"
 msgstr "檢視(&V)"
 
-#: src/FilePanel.cpp:4994
+#: src/FilePanel.cpp:4995
 msgid "Install / Up&grade"
 msgstr "安裝/升級(&G)"
 
-#: src/FilePanel.cpp:4995
+#: src/FilePanel.cpp:4996
 msgid "Un&install"
 msgstr "解除安裝(&I)"
 
-#: src/FilePanel.cpp:5012 src/SearchPanel.cpp:2567
+#: src/FilePanel.cpp:5013 src/SearchPanel.cpp:2567
 #, fuzzy
 msgid "Com&pare..."
 msgstr "置換(&R)…"
 
-#: src/FilePanel.cpp:5016 src/SearchPanel.cpp:2571
+#: src/FilePanel.cpp:5017 src/SearchPanel.cpp:2571
 msgid "Com&pare"
 msgstr ""
 
-#: src/FilePanel.cpp:5023
+#: src/FilePanel.cpp:5024
 #, fuzzy
 msgid "Packages &Query "
 msgstr "套件查詢(&Q)"
 
-#: src/FilePanel.cpp:5031 src/SearchPanel.cpp:2590
+#: src/FilePanel.cpp:5032 src/SearchPanel.cpp:2590
 #, fuzzy
 msgid "Scripts"
 msgstr "描述(&D)"
 
-#: src/FilePanel.cpp:5034 src/SearchPanel.cpp:2593 src/XFileExplorer.cpp:1595
+#: src/FilePanel.cpp:5035 src/SearchPanel.cpp:2593 src/XFileExplorer.cpp:1595
 #: src/XFileExplorer.cpp:1650
 #, fuzzy
 msgid "&Go to Script Folder"
 msgstr "前往上層目錄："
 
-#: src/FilePanel.cpp:5046 src/SearchPanel.cpp:257 src/SearchPanel.cpp:2614
-#: src/XFileExplorer.cpp:1404 src/XFileExplorer.cpp:6214
+#: src/FilePanel.cpp:5047 src/SearchPanel.cpp:257 src/SearchPanel.cpp:2614
+#: src/XFileExplorer.cpp:1404 src/XFileExplorer.cpp:6215
 #, fuzzy
 #| msgid "Name"
 msgid "Cop&y Names"
 msgstr "名稱"
 
-#: src/FilePanel.cpp:5050 src/SearchPanel.cpp:2601
+#: src/FilePanel.cpp:5051 src/SearchPanel.cpp:2601
 msgid "Copy &to..."
 msgstr "複製到(&T)…"
 
-#: src/FilePanel.cpp:5053 src/SearchPanel.cpp:2604
+#: src/FilePanel.cpp:5054 src/SearchPanel.cpp:2604
 #, fuzzy
 msgid "M&ove to Trash"
 msgstr "丟進回收筒"
 
-#: src/FilePanel.cpp:5054
+#: src/FilePanel.cpp:5055
 #, fuzzy
 msgid "Restore &From Trash"
 msgstr "從回收筒還原"
 
-#: src/FilePanel.cpp:5057 src/SearchPanel.cpp:2607
+#: src/FilePanel.cpp:5058 src/SearchPanel.cpp:2607
 #, fuzzy
 msgid "Compare &Sizes"
 msgstr "來源："
 
-#: src/FilePanel.cpp:5058 src/SearchPanel.cpp:2616
+#: src/FilePanel.cpp:5059 src/SearchPanel.cpp:2616
 #, fuzzy
 msgid "P&roperties"
 msgstr "屬性"
 
-#: src/FilePanel.cpp:5359
+#: src/FilePanel.cpp:5360
 msgid "Create archive"
 msgstr "建立壓縮檔"
 
-#: src/FilePanel.cpp:5500 src/FilePanel.cpp:5647 src/FilePanel.cpp:5757
+#: src/FilePanel.cpp:5501 src/FilePanel.cpp:5648 src/FilePanel.cpp:5758
 #: src/SearchPanel.cpp:2943 src/XFileArchive.cpp:543 src/XFileArchive.cpp:595
 #: src/XFileArchive.cpp:725 src/XFileArchive.cpp:798
 msgid "Extract Archive"
 msgstr "解開壓縮檔"
 
-#: src/FilePanel.cpp:5811
+#: src/FilePanel.cpp:5812
 msgid "Package Install / Upgrade"
 msgstr "套件安裝/升級"
 
-#: src/FilePanel.cpp:5860
+#: src/FilePanel.cpp:5861
 msgid "Package Uninstall"
 msgstr "套件解除安裝"
 
-#: src/FilePanel.cpp:6120 src/SearchPanel.cpp:4587
+#: src/FilePanel.cpp:6121 src/SearchPanel.cpp:4587
 #, fuzzy, c-format
 msgid "Can't create script folder %s: %s"
 msgstr "無法建立資料夾 %s：%s "
 
-#: src/FilePanel.cpp:6125 src/SearchPanel.cpp:4592
+#: src/FilePanel.cpp:6126 src/SearchPanel.cpp:4592
 #, fuzzy, c-format
 msgid "Can't create script folder %s"
 msgstr "無法建立資料夾 %s"
 
-#: src/FilePanel.cpp:6353 src/SearchPanel.cpp:4958 src/XFilePackage.cpp:1031
+#: src/FilePanel.cpp:6354 src/SearchPanel.cpp:4958 src/XFilePackage.cpp:1031
 msgid "No compatible package manager (rpm or dpkg) found!"
 msgstr "找不到相容的套件管理員 (rpm 或 dpkg)！"
 
-#: src/FilePanel.cpp:6418 src/SearchPanel.cpp:5023
+#: src/FilePanel.cpp:6419 src/SearchPanel.cpp:5023
 #, fuzzy, c-format
 msgid "File %s does not belong to any package."
 msgstr "檔案 %s 屬於套件：%s"
 
-#: src/FilePanel.cpp:6419 src/FilePanel.cpp:6424 src/SearchPanel.cpp:525
+#: src/FilePanel.cpp:6420 src/FilePanel.cpp:6425 src/SearchPanel.cpp:525
 #: src/SearchPanel.cpp:728 src/SearchPanel.cpp:1881 src/SearchPanel.cpp:4245
 #: src/SearchPanel.cpp:5024 src/SearchPanel.cpp:5029
 msgid "Information"
 msgstr "資訊"
 
-#: src/FilePanel.cpp:6423 src/SearchPanel.cpp:5028
+#: src/FilePanel.cpp:6424 src/SearchPanel.cpp:5028
 #, c-format
 msgid "File %s belongs to the package: %s"
 msgstr "檔案 %s 屬於套件：%s"
 
-#: src/FilePanel.cpp:6521 src/SearchPanel.cpp:2988
+#: src/FilePanel.cpp:6522 src/SearchPanel.cpp:2988
 #, fuzzy
 msgid "Sizes of Selected Items"
 msgstr "%s 在 %s 已選檔案之中"
 
-#: src/FilePanel.cpp:6555 src/SearchPanel.cpp:4627
+#: src/FilePanel.cpp:6556 src/SearchPanel.cpp:4627
 msgid "0 bytes"
 msgstr "0 位元組"
 
-#: src/FilePanel.cpp:6600 src/SearchPanel.cpp:4659
+#: src/FilePanel.cpp:6601 src/SearchPanel.cpp:4659
 #, fuzzy, c-format
 msgid "%s in %s selected items (%s folder, %s file)"
 msgstr "%s 在 %s 已選檔案之中"
 
-#: src/FilePanel.cpp:6605 src/SearchPanel.cpp:4664
+#: src/FilePanel.cpp:6606 src/SearchPanel.cpp:4664
 #, fuzzy, c-format
 msgid "%s in %s selected items (%s folder, %s files)"
 msgstr "%s 在 %s 已選檔案之中"
 
-#: src/FilePanel.cpp:6610 src/SearchPanel.cpp:4669
+#: src/FilePanel.cpp:6611 src/SearchPanel.cpp:4669
 #, fuzzy, c-format
 msgid "%s in %s selected items (%s folders, %s file)"
 msgstr "%s 在 %s 已選檔案之中"
 
-#: src/FilePanel.cpp:6615 src/SearchPanel.cpp:4674
+#: src/FilePanel.cpp:6616 src/SearchPanel.cpp:4674
 #, fuzzy, c-format
 msgid "%s in %s selected items (%s folders, %s files)"
 msgstr "%s 在 %s 已選檔案之中"
 
-#: src/FilePanel.cpp:6627
+#: src/FilePanel.cpp:6628
 #, fuzzy
 msgid "1 item (1 folder)"
 msgstr " 資料夾："
 
-#: src/FilePanel.cpp:6651 src/FilePanel.cpp:6674
+#: src/FilePanel.cpp:6652 src/FilePanel.cpp:6675
 #, fuzzy, c-format
 msgid "%s items (%s folders, %s files, %s)"
 msgstr "%d 個檔案，%d 個資料夾"
 
-#: src/FilePanel.cpp:6656
+#: src/FilePanel.cpp:6657
 #, fuzzy, c-format
 msgid "%s items (%s folder, %s file, %s)"
 msgstr "%d 個檔案，%d 個資料夾"
 
-#: src/FilePanel.cpp:6662
+#: src/FilePanel.cpp:6663
 #, fuzzy, c-format
 msgid "%s items (%s folder, %s files, %s)"
 msgstr "%d 個檔案，%d 個資料夾"
 
-#: src/FilePanel.cpp:6668
+#: src/FilePanel.cpp:6669
 #, fuzzy, c-format
 msgid "%s items (%s folders, %s file, %s)"
 msgstr "%d 個檔案，%d 個資料夾"
 
-#: src/FilePanel.cpp:6733
+#: src/FilePanel.cpp:6734
 #, fuzzy, c-format
 #| msgid " - Filter: %s"
 msgid "Filter: %s (files and folders)"
 msgstr " - 篩選器：%s"
 
-#: src/FilePanel.cpp:6737
+#: src/FilePanel.cpp:6738
 #, fuzzy, c-format
 #| msgid "Filter files"
 msgid "Filter: %s (files)"
@@ -2596,7 +2595,7 @@ msgid "Key Binding"
 msgstr "按鍵組合"
 
 #: src/KeyBindings.cpp:304 src/Preferences.cpp:1913 src/Preferences.cpp:2690
-#: src/XFileImage.cpp:1787
+#: src/XFileImage.cpp:1773
 msgid "Restart"
 msgstr "重新啟動"
 
@@ -2661,7 +2660,7 @@ msgstr ""
 "按鍵組合 %s 已經用於 Xfw 區段中。\n"
 "\t您應該在再次指派它之前清除現有按鍵組合。"
 
-#: src/HistInputDialog.cpp:160 src/Properties.cpp:2005
+#: src/HistInputDialog.cpp:159 src/Properties.cpp:2007
 msgid "Select an Executable File"
 msgstr "選取可執行檔"
 
@@ -2681,7 +2680,7 @@ msgstr "是(&Y)"
 
 #: src/MessageBox.cpp:152 src/MessageBox.cpp:162 src/SearchWindow.cpp:275
 #: src/WriteWindow.cpp:856 src/XFileExplorer.cpp:1418 src/XFileArchive.cpp:260
-#: src/XFileArchive.cpp:293 src/XFileImage.cpp:909 src/XFilePackage.cpp:243
+#: src/XFileArchive.cpp:293 src/XFileImage.cpp:907 src/XFilePackage.cpp:243
 #: src/XFilePackage.cpp:273
 msgid "&Quit"
 msgstr "離開(&Q)"
@@ -2710,7 +2709,7 @@ msgstr "輸入使用者密碼："
 msgid "Enter root password:"
 msgstr "輸入 Root 密碼："
 
-#: src/MessageBox.cpp:304 src/XFileExplorer.cpp:5626
+#: src/MessageBox.cpp:304 src/XFileExplorer.cpp:5627
 msgid "An error has occurred!"
 msgstr "發生了錯誤！"
 
@@ -2852,7 +2851,7 @@ msgstr ""
 msgid "Custom theme, right click to rename or remove"
 msgstr ""
 
-#: src/Preferences.cpp:343 src/Properties.cpp:220 src/Properties.cpp:1011
+#: src/Preferences.cpp:343 src/Properties.cpp:220 src/Properties.cpp:1013
 msgid "&General"
 msgstr "一般(&G)"
 
@@ -3668,7 +3667,7 @@ msgstr "切換面板"
 msgid "Go to trash can"
 msgstr "前往回收筒"
 
-#: src/Preferences.cpp:1674 src/XFileExplorer.cpp:5728
+#: src/Preferences.cpp:1674 src/XFileExplorer.cpp:5729
 msgid "Empty trash can"
 msgstr "清空回收筒"
 
@@ -3864,8 +3863,8 @@ msgstr "只針對擁有者"
 msgid "Files only"
 msgstr "只針對檔案"
 
-#: src/Properties.cpp:178 src/Properties.cpp:719 src/Properties.cpp:979
-#: src/Properties.cpp:1013
+#: src/Properties.cpp:178 src/Properties.cpp:719 src/Properties.cpp:981
+#: src/Properties.cpp:1015
 msgid "Properties"
 msgstr "屬性"
 
@@ -3945,7 +3944,7 @@ msgstr "未用："
 msgid "File system:"
 msgstr "檔案系統："
 
-#: src/Properties.cpp:724 src/Properties.cpp:1022
+#: src/Properties.cpp:724 src/Properties.cpp:1024
 msgid "Total size:"
 msgstr "總計大小："
 
@@ -3990,14 +3989,14 @@ msgstr "停用這個檔案的啟動通知"
 msgid "Deletion Date:"
 msgstr "刪除日期："
 
-#: src/Properties.cpp:856 src/Properties.cpp:2152 src/Properties.cpp:2221
-#: src/XFileExplorer.cpp:5714
+#: src/Properties.cpp:856 src/Properties.cpp:2154 src/Properties.cpp:2223
+#: src/XFileExplorer.cpp:5715
 #, fuzzy, c-format
 msgid "%s (%lu bytes)"
 msgstr "%s (%llu 位元組)"
 
-#: src/Properties.cpp:858 src/Properties.cpp:2154 src/Properties.cpp:2223
-#: src/XFileExplorer.cpp:5716
+#: src/Properties.cpp:858 src/Properties.cpp:2156 src/Properties.cpp:2225
+#: src/XFileExplorer.cpp:5717
 #, c-format
 msgid "%s (%llu bytes)"
 msgstr "%s (%llu 位元組)"
@@ -4006,129 +4005,129 @@ msgstr "%s (%llu 位元組)"
 msgid "Size:"
 msgstr "大小："
 
-#: src/Properties.cpp:1016
+#: src/Properties.cpp:1018
 msgid "Selection:"
 msgstr "選擇："
 
-#: src/Properties.cpp:1141 src/Properties.cpp:1148 src/Properties.cpp:1163
+#: src/Properties.cpp:1143 src/Properties.cpp:1150 src/Properties.cpp:1165
 msgid "Multiple types"
 msgstr "多重類型"
 
-#: src/Properties.cpp:1167
+#: src/Properties.cpp:1169
 #, c-format
 msgid "%d items"
 msgstr "%d 個項目"
 
-#: src/Properties.cpp:1172
+#: src/Properties.cpp:1174
 #, fuzzy, c-format
 msgid "%d file, %d folder"
 msgstr "%d 個檔案，%d 個資料夾"
 
-#: src/Properties.cpp:1176
+#: src/Properties.cpp:1178
 #, fuzzy, c-format
 msgid "%d file, %d folders"
 msgstr "%d 個檔案，%d 個資料夾"
 
-#: src/Properties.cpp:1180
+#: src/Properties.cpp:1182
 #, fuzzy, c-format
 msgid "%d files, %d folder"
 msgstr "%d 個檔案，%d 個資料夾"
 
-#: src/Properties.cpp:1184
+#: src/Properties.cpp:1186
 #, c-format
 msgid "%d files, %d folders"
 msgstr "%d 個檔案，%d 個資料夾"
 
-#: src/Properties.cpp:1310
+#: src/Properties.cpp:1312
 #, fuzzy
 msgid "Change properties of the selected folder?"
 msgstr "顯示已選檔案的屬性"
 
-#: src/Properties.cpp:1314
+#: src/Properties.cpp:1316
 #, fuzzy
 msgid "Change properties of the selected file?"
 msgstr "顯示已選檔案的屬性"
 
-#: src/Properties.cpp:1317 src/Properties.cpp:1692
+#: src/Properties.cpp:1319 src/Properties.cpp:1694
 #, fuzzy
 msgid "Confirm Change Properties"
 msgstr "檔案屬性"
 
-#: src/Properties.cpp:1459
+#: src/Properties.cpp:1461
 #, fuzzy
 msgid "Invalid file name, operation cancelled"
 msgstr "取消移動檔案作業！"
 
-#: src/Properties.cpp:1523 src/Properties.cpp:1718
+#: src/Properties.cpp:1525 src/Properties.cpp:1720
 msgid "File owner"
 msgstr "檔案擁有者"
 
-#: src/Properties.cpp:1561 src/Properties.cpp:1767
+#: src/Properties.cpp:1563 src/Properties.cpp:1769
 msgid "Change owner cancelled!"
 msgstr "取消變更擁有者！"
 
-#: src/Properties.cpp:1574 src/Properties.cpp:1779
+#: src/Properties.cpp:1576 src/Properties.cpp:1781
 #, c-format
 msgid "Chown in %s failed: %s"
 msgstr "在 %s 中 chown 失敗：%s"
 
-#: src/Properties.cpp:1578 src/Properties.cpp:1783
+#: src/Properties.cpp:1580 src/Properties.cpp:1785
 #, c-format
 msgid "Chown in %s failed"
 msgstr "在 %s 中 chown 失敗"
 
-#: src/Properties.cpp:1592 src/Properties.cpp:1799
+#: src/Properties.cpp:1594 src/Properties.cpp:1801
 msgid ""
 "Setting special permissions could be unsafe! Is that you really want to do?"
 msgstr "設定特殊權限可能不太安全！您真的要做嗎？"
 
-#: src/Properties.cpp:1604 src/Properties.cpp:1656 src/Properties.cpp:1865
+#: src/Properties.cpp:1606 src/Properties.cpp:1658 src/Properties.cpp:1867
 #, c-format
 msgid "Chmod in %s failed: %s"
 msgstr "在 %s 中 chmod 失敗：%s"
 
-#: src/Properties.cpp:1608 src/Properties.cpp:1805
+#: src/Properties.cpp:1610 src/Properties.cpp:1807
 msgid "File permissions"
 msgstr "檔案權限"
 
-#: src/Properties.cpp:1643
+#: src/Properties.cpp:1645
 msgid "Change file permissions cancelled!"
 msgstr "取消變更檔案權限！"
 
-#: src/Properties.cpp:1660 src/Properties.cpp:1870
+#: src/Properties.cpp:1662 src/Properties.cpp:1872
 #, c-format
 msgid "Chmod in %s failed"
 msgstr "在 %s 中 chmod 失敗"
 
-#: src/Properties.cpp:1692
+#: src/Properties.cpp:1694
 #, fuzzy
 msgid "Apply permissions to the selected items?"
 msgstr " 在已選項目之中"
 
-#: src/Properties.cpp:1853
+#: src/Properties.cpp:1855
 msgid "Change file(s) permissions cancelled!"
 msgstr "取消變更檔案權限！"
 
-#: src/Properties.cpp:2060
+#: src/Properties.cpp:2062
 msgid "Select an icon file"
 msgstr "選取圖示檔案"
 
-#: src/Properties.cpp:2160 src/Properties.cpp:2229
+#: src/Properties.cpp:2162 src/Properties.cpp:2231
 #, fuzzy, c-format
 msgid "%u file, %u subfolder"
 msgstr "%u 個檔案，%u 個資料夾"
 
-#: src/Properties.cpp:2165 src/Properties.cpp:2234
+#: src/Properties.cpp:2167 src/Properties.cpp:2236
 #, fuzzy, c-format
 msgid "%u file, %u subfolders"
 msgstr "%u 個檔案，%u 個資料夾"
 
-#: src/Properties.cpp:2170 src/Properties.cpp:2239
+#: src/Properties.cpp:2172 src/Properties.cpp:2241
 #, fuzzy, c-format
 msgid "%u files, %u subfolder"
 msgstr "%u 個檔案，%u 個資料夾"
 
-#: src/Properties.cpp:2175 src/Properties.cpp:2244 src/XFileExplorer.cpp:5718
+#: src/Properties.cpp:2177 src/Properties.cpp:2246 src/XFileExplorer.cpp:5719
 #, c-format
 msgid "%u files, %u subfolders"
 msgstr "%u 個檔案，%u 個資料夾"
@@ -4737,8 +4736,8 @@ msgid "&Window"
 msgstr "視窗(&W)"
 
 #: src/WriteWindow.cpp:635 src/XFileExplorer.cpp:1699
-#: src/XFileExplorer.cpp:1706 src/XFileExplorer.cpp:6089
-#: src/XFileExplorer.cpp:6100 src/XFileArchive.cpp:229 src/XFileImage.cpp:351
+#: src/XFileExplorer.cpp:1706 src/XFileExplorer.cpp:6090
+#: src/XFileExplorer.cpp:6101 src/XFileArchive.cpp:229 src/XFileImage.cpp:351
 #: src/XFilePackage.cpp:212
 msgid "&Help"
 msgstr "求助(&H)"
@@ -4763,7 +4762,7 @@ msgstr "新增"
 msgid "Create new document."
 msgstr "建立新的資料夾。"
 
-#: src/WriteWindow.cpp:693 src/XFileImage.cpp:805
+#: src/WriteWindow.cpp:693 src/XFileImage.cpp:803
 msgid "Open"
 msgstr "開啟"
 
@@ -4787,8 +4786,8 @@ msgstr "關閉"
 msgid "Close document file."
 msgstr "關閉文件檔案。"
 
-#: src/WriteWindow.cpp:711 src/WriteWindow.cpp:1996 src/XFileImage.cpp:810
-#: src/XFileImage.cpp:1932
+#: src/WriteWindow.cpp:711 src/WriteWindow.cpp:1996 src/XFileImage.cpp:808
+#: src/XFileImage.cpp:1921
 msgid "Print"
 msgstr "列印"
 
@@ -4905,7 +4904,7 @@ msgstr "隱藏列號。"
 msgid "&New"
 msgstr "新檔案(&N)…"
 
-#: src/WriteWindow.cpp:814 src/XFileArchive.cpp:239 src/XFileImage.cpp:882
+#: src/WriteWindow.cpp:814 src/XFileArchive.cpp:239 src/XFileImage.cpp:880
 #: src/XFilePackage.cpp:222
 msgid "&Open..."
 msgstr "開啟(&O)…"
@@ -4926,11 +4925,11 @@ msgstr "儲存文件到其他檔案。"
 msgid "Close document."
 msgstr "關閉文件"
 
-#: src/WriteWindow.cpp:836 src/XFileImage.cpp:888
+#: src/WriteWindow.cpp:836 src/XFileImage.cpp:886
 msgid "&Print..."
 msgstr "列印(&P)…"
 
-#: src/WriteWindow.cpp:850 src/XFileArchive.cpp:254 src/XFileImage.cpp:902
+#: src/WriteWindow.cpp:850 src/XFileArchive.cpp:254 src/XFileImage.cpp:900
 #: src/XFilePackage.cpp:237
 msgid "&Clear Recent Files"
 msgstr "清空最近使用的檔案(&C)"
@@ -4983,12 +4982,12 @@ msgstr "前往列號(&G)…"
 msgid "Select &All"
 msgstr "全選(&A)"
 
-#: src/WriteWindow.cpp:926 src/XFileArchive.cpp:268 src/XFileImage.cpp:1021
+#: src/WriteWindow.cpp:926 src/XFileArchive.cpp:268 src/XFileImage.cpp:1019
 #: src/XFilePackage.cpp:251
 msgid "&Toolbar"
 msgstr "工具(&T)"
 
-#: src/WriteWindow.cpp:926 src/XFileImage.cpp:1021
+#: src/WriteWindow.cpp:926 src/XFileImage.cpp:1019
 msgid "Display toolbar."
 msgstr "顯示工具列。"
 
@@ -5074,7 +5073,7 @@ msgid "About X File Write."
 msgstr "關於 X File Write。"
 
 #: src/WriteWindow.cpp:1177 src/WriteWindow.cpp:1284 src/XFileArchive.cpp:2046
-#: src/XFileImage.cpp:1623 src/XFilePackage.cpp:711
+#: src/XFileImage.cpp:1619 src/XFilePackage.cpp:711
 #, c-format
 msgid "Unable to open file: %s"
 msgstr "無法開啟檔案：%s"
@@ -5202,7 +5201,7 @@ msgstr " (已變更)"
 msgid " (read only)"
 msgstr "唯讀"
 
-#: src/WriteWindow.cpp:1995 src/XFileImage.cpp:1932
+#: src/WriteWindow.cpp:1995 src/XFileImage.cpp:1921
 msgid ""
 "Print command: \n"
 "(ex: lpr -P <printer>)"
@@ -5318,12 +5317,12 @@ msgstr "顯示雙面板"
 msgid "Show Folder Panel and Two File Panels"
 msgstr "顯示單一面板"
 
-#: src/XFileExplorer.cpp:1268 src/XFileImage.cpp:595
+#: src/XFileExplorer.cpp:1268 src/XFileImage.cpp:593
 #, fuzzy
 msgid "Vertical Panels"
 msgstr "切換面板"
 
-#: src/XFileExplorer.cpp:1276 src/XFileImage.cpp:603
+#: src/XFileExplorer.cpp:1276 src/XFileImage.cpp:601
 #, fuzzy
 msgid "Horizontal Panels"
 msgstr "切換面板"
@@ -5408,12 +5407,12 @@ msgstr "雙面板(&P)"
 msgid "Fold&ers and Two Panels"
 msgstr "目錄樹與雙面板(&E)"
 
-#: src/XFileExplorer.cpp:1500 src/XFileImage.cpp:1006
+#: src/XFileExplorer.cpp:1500 src/XFileImage.cpp:1004
 #, fuzzy
 msgid "&Vertical Panels"
 msgstr "切換面板(&I)"
 
-#: src/XFileExplorer.cpp:1504 src/XFileImage.cpp:1010
+#: src/XFileExplorer.cpp:1504 src/XFileImage.cpp:1008
 #, fuzzy
 msgid "&Horizontal Panels"
 msgstr "切換面板(&I)"
@@ -5436,11 +5435,11 @@ msgstr "書籤(&B)"
 msgid "&Filter..."
 msgstr "篩選器(&F)…"
 
-#: src/XFileExplorer.cpp:1534 src/XFileExplorer.cpp:1565 src/XFileImage.cpp:979
+#: src/XFileExplorer.cpp:1534 src/XFileExplorer.cpp:1565 src/XFileImage.cpp:977
 msgid "&Thumbnails"
 msgstr "縮圖(&T)"
 
-#: src/XFileExplorer.cpp:1536 src/XFileExplorer.cpp:1567 src/XFileImage.cpp:987
+#: src/XFileExplorer.cpp:1536 src/XFileExplorer.cpp:1567 src/XFileImage.cpp:985
 msgid "&Big Icons"
 msgstr "大圖示(&B)"
 
@@ -5550,7 +5549,7 @@ msgstr "回收筒大小(&T)"
 msgid "&Empty Trash"
 msgstr "清空回收筒(&E)"
 
-#: src/XFileExplorer.cpp:1694 src/XFileExplorer.cpp:6086
+#: src/XFileExplorer.cpp:1694 src/XFileExplorer.cpp:6087
 msgid "T&rash"
 msgstr "回收筒(&R)"
 
@@ -5584,22 +5583,22 @@ msgstr "XFE 組態檔案"
 msgid "Xfe cannot run without a global xferc configuration file"
 msgstr ""
 
-#: src/XFileExplorer.cpp:3568 src/XFileExplorer.cpp:5760
+#: src/XFileExplorer.cpp:3568 src/XFileExplorer.cpp:5761
 #, c-format
 msgid "Can't create trash can 'files' folder %s: %s"
 msgstr "無法建立回收筒「檔案」資料夾 %s:%s"
 
-#: src/XFileExplorer.cpp:3573 src/XFileExplorer.cpp:5765
+#: src/XFileExplorer.cpp:3573 src/XFileExplorer.cpp:5766
 #, c-format
 msgid "Can't create trash can 'files' folder %s"
 msgstr "無法建立回收筒的「files」資料夾 %s"
 
-#: src/XFileExplorer.cpp:3592 src/XFileExplorer.cpp:5781
+#: src/XFileExplorer.cpp:3592 src/XFileExplorer.cpp:5782
 #, c-format
 msgid "Can't create trash can 'info' folder %s: %s"
 msgstr "無法建立回收筒「資訊」資料夾 %s:%s"
 
-#: src/XFileExplorer.cpp:3597 src/XFileExplorer.cpp:5786
+#: src/XFileExplorer.cpp:3597 src/XFileExplorer.cpp:5787
 #, c-format
 msgid "Can't create trash can 'info' folder %s"
 msgstr "無法建立回收筒的「info」資料夾 %s"
@@ -5611,7 +5610,7 @@ msgid ""
 msgstr ""
 
 #: src/XFileExplorer.cpp:3724 src/XFileExplorer.cpp:3736
-#: src/startupnotification.cpp:185 src/startupnotification.cpp:243
+#: src/startupnotification.cpp:183 src/startupnotification.cpp:239
 #, fuzzy, c-format
 msgid "Error: Can't execute command %s"
 msgstr "執行命令"
@@ -5726,36 +5725,36 @@ msgstr "執行命令："
 msgid "Console mode"
 msgstr "主控臺模式"
 
-#: src/XFileExplorer.cpp:5568
+#: src/XFileExplorer.cpp:5569
 msgid "Enter the user password:"
 msgstr "輸入使用者密碼："
 
-#: src/XFileExplorer.cpp:5575
+#: src/XFileExplorer.cpp:5576
 msgid "Enter the root password:"
 msgstr "輸入 Root 密碼："
 
-#: src/XFileExplorer.cpp:5643
+#: src/XFileExplorer.cpp:5644
 #, fuzzy
 #| msgid "Mount file system (Linux only)"
 msgid "Connect to Server"
 msgstr "掛載檔案系統(只限於 Linux)"
 
-#: src/XFileExplorer.cpp:5658
+#: src/XFileExplorer.cpp:5659
 #, fuzzy
 msgid "Search Files and Folders"
 msgstr "顯示隱藏檔案和目錄。"
 
-#: src/XFileExplorer.cpp:5724
+#: src/XFileExplorer.cpp:5725
 #, fuzzy
 msgid "Do you really want to empty the trash can?"
 msgstr "您真的要離開 Xfe 嗎？"
 
-#: src/XFileExplorer.cpp:5724
+#: src/XFileExplorer.cpp:5725
 #, fuzzy
 msgid " in "
 msgstr " 於根目錄"
 
-#: src/XFileExplorer.cpp:5726
+#: src/XFileExplorer.cpp:5727
 #, fuzzy
 msgid ""
 "\n"
@@ -5766,7 +5765,7 @@ msgstr ""
 "\n"
 "所有項目將確定會失去！"
 
-#: src/XFileExplorer.cpp:5831
+#: src/XFileExplorer.cpp:5832
 #, c-format
 msgid ""
 "Trash size: %s (%s files, %s subfolders)\n"
@@ -5777,26 +5776,26 @@ msgstr ""
 "\n"
 "已經修改日期：%s"
 
-#: src/XFileExplorer.cpp:5833
+#: src/XFileExplorer.cpp:5834
 msgid "Trash size"
 msgstr "回收筒大小"
 
-#: src/XFileExplorer.cpp:5841
+#: src/XFileExplorer.cpp:5842
 #, fuzzy, c-format
 msgid "Trash can 'files' folder %s is not readable!"
 msgstr "無法讀取回收筒的「檔案」資料夾 %s！"
 
-#: src/XFileExplorer.cpp:6438 src/XFileExplorer.cpp:6512
+#: src/XFileExplorer.cpp:6439 src/XFileExplorer.cpp:6513
 #, fuzzy, c-format
 msgid "Command not found: %s"
 msgstr "無法刪除資料夾 %s"
 
-#: src/XFileExplorer.cpp:6518
+#: src/XFileExplorer.cpp:6519
 #, fuzzy, c-format
 msgid "Invalid file association: %s"
 msgstr "檔案關聯(&F)"
 
-#: src/XFileExplorer.cpp:6525
+#: src/XFileExplorer.cpp:6526
 #, fuzzy, c-format
 msgid "File association not found: %s"
 msgstr "檔案關聯(&F)"
@@ -5805,7 +5804,7 @@ msgstr "檔案關聯(&F)"
 msgid "Open Archive File"
 msgstr "開啟套件檔案"
 
-#: src/XFileArchive.cpp:254 src/XFileImage.cpp:902 src/XFilePackage.cpp:237
+#: src/XFileArchive.cpp:254 src/XFileImage.cpp:900 src/XFilePackage.cpp:237
 msgid "Clear recent file menu."
 msgstr "清空最近使用的檔案選單。"
 
@@ -6059,14 +6058,14 @@ msgstr ""
 "\n"
 
 #: src/XFileArchive.cpp:2339 src/XFileArchive.cpp:2347
-#: src/XFileArchive.cpp:2355 src/XFileImage.cpp:3252 src/XFileImage.cpp:3260
-#: src/XFileImage.cpp:3268 src/XFilePackage.cpp:983 src/XFilePackage.cpp:991
+#: src/XFileArchive.cpp:2355 src/XFileImage.cpp:3343 src/XFileImage.cpp:3351
+#: src/XFileImage.cpp:3359 src/XFilePackage.cpp:983 src/XFilePackage.cpp:991
 #: src/XFilePackage.cpp:999 src/XFileWrite.cpp:352 src/XFileWrite.cpp:360
 #: src/XFileWrite.cpp:368 src/main.cpp:563 src/main.cpp:571 src/main.cpp:579
 msgid "Error loading icons"
 msgstr "載入圖示時發生錯誤 "
 
-#: src/XFileArchive.cpp:2340 src/XFileImage.cpp:3253 src/XFilePackage.cpp:984
+#: src/XFileArchive.cpp:2340 src/XFileImage.cpp:3344 src/XFilePackage.cpp:984
 #: src/XFileWrite.cpp:353 src/main.cpp:564
 #, fuzzy
 msgid ""
@@ -6075,7 +6074,7 @@ msgid ""
 "From Xfe, please check your icon path in Edit / Preferences / Appearance..."
 msgstr "無法載入某些圖示。請檢查您的圖示路徑！"
 
-#: src/XFileArchive.cpp:2348 src/XFileImage.cpp:3261 src/XFilePackage.cpp:992
+#: src/XFileArchive.cpp:2348 src/XFileImage.cpp:3352 src/XFilePackage.cpp:992
 #: src/XFileWrite.cpp:361 src/main.cpp:572
 #, fuzzy
 msgid ""
@@ -6084,7 +6083,7 @@ msgid ""
 "From Xfe, please check your icon theme in Edit / Preferences / Appearance..."
 msgstr "無法載入某些圖示。請檢查您的圖示路徑！"
 
-#: src/XFileArchive.cpp:2356 src/XFileImage.cpp:3269 src/XFilePackage.cpp:1000
+#: src/XFileArchive.cpp:2356 src/XFileImage.cpp:3360 src/XFilePackage.cpp:1000
 #: src/XFileWrite.cpp:369 src/main.cpp:580
 #, fuzzy
 msgid ""
@@ -6145,236 +6144,274 @@ msgstr "TIFF 圖像"
 msgid "&Image"
 msgstr "圖像(&I)"
 
-#: src/XFileImage.cpp:805 src/XFileImage.cpp:882
+#: src/XFileImage.cpp:530
+#, fuzzy
+msgid "Go to Previous FprevImageer"
+msgstr "移動到前一個資料夾。"
+
+#: src/XFileImage.cpp:538
+#, fuzzy
+msgid "Go to Next FprevImageer"
+msgstr "移動到後一個資料夾。"
+
+#: src/XFileImage.cpp:546
+#, fuzzy
+msgid "Go to Parent FprevImageer"
+msgstr "前往上層目錄："
+
+#: src/XFileImage.cpp:555
+#, fuzzy
+#| msgid "Go to Home Folder"
+msgid "Go to Home FprevImageer"
+msgstr "前往個人資料夾"
+
+#: src/XFileImage.cpp:561
+#, fuzzy
+#| msgid "Go to Working Folder"
+msgid "Go to Working FprevImageer"
+msgstr "前往工作資料夾。"
+
+#: src/XFileImage.cpp:803 src/XFileImage.cpp:880
 msgid "Open image file."
 msgstr "開啟圖像。"
 
-#: src/XFileImage.cpp:810 src/XFileImage.cpp:888
+#: src/XFileImage.cpp:808 src/XFileImage.cpp:886
 msgid "Print image file."
 msgstr "印出圖像檔案。"
 
-#: src/XFileImage.cpp:818
+#: src/XFileImage.cpp:816
 #, fuzzy
 #| msgid "Preview:"
 msgid "Previous"
 msgstr "預覽："
 
-#: src/XFileImage.cpp:818 src/XFileImage.cpp:917
+#: src/XFileImage.cpp:816 src/XFileImage.cpp:915
 #, fuzzy
 #| msgid "View icons row-wise."
 msgid "View previous image."
 msgstr "逐列檢視圖示。"
 
-#: src/XFileImage.cpp:823
+#: src/XFileImage.cpp:821
 msgid "Next"
 msgstr ""
 
-#: src/XFileImage.cpp:823 src/XFileImage.cpp:923
+#: src/XFileImage.cpp:821 src/XFileImage.cpp:921
 #, fuzzy
 #| msgid "Rotate left image."
 msgid "View next image."
 msgstr "向左旋轉圖像。"
 
-#: src/XFileImage.cpp:832
-msgid "Zoom in"
-msgstr "放大"
-
-#: src/XFileImage.cpp:832 src/XFileImage.cpp:930
-msgid "Zoom in image."
-msgstr "放大圖像。"
-
-#: src/XFileImage.cpp:838
+#: src/XFileImage.cpp:830
 msgid "Zoom out"
 msgstr "縮小"
 
-#: src/XFileImage.cpp:838 src/XFileImage.cpp:932
+#: src/XFileImage.cpp:830 src/XFileImage.cpp:930
 msgid "Zoom out image."
 msgstr "縮小圖像。"
 
-#: src/XFileImage.cpp:845
+#: src/XFileImage.cpp:836
+msgid "Zoom in"
+msgstr "放大"
+
+#: src/XFileImage.cpp:836 src/XFileImage.cpp:928
+msgid "Zoom in image."
+msgstr "放大圖像。"
+
+#: src/XFileImage.cpp:843
 msgid "Zoom 100%"
 msgstr "縮放 100%"
 
-#: src/XFileImage.cpp:845 src/XFileImage.cpp:936
+#: src/XFileImage.cpp:843 src/XFileImage.cpp:934
 msgid "Zoom image to 100%."
 msgstr "縮放圖像到 100%。"
 
-#: src/XFileImage.cpp:850
+#: src/XFileImage.cpp:848
 msgid "Zoom to Fit"
 msgstr "最適縮放"
 
-#: src/XFileImage.cpp:850 src/XFileImage.cpp:942
+#: src/XFileImage.cpp:848 src/XFileImage.cpp:940
 msgid "Zoom to fit window."
 msgstr "最適縮放視窗。"
 
-#: src/XFileImage.cpp:858
+#: src/XFileImage.cpp:856
 msgid "Rotate Left"
 msgstr "向左旋轉"
 
-#: src/XFileImage.cpp:858
+#: src/XFileImage.cpp:856
 msgid "Rotate left image."
 msgstr "向左旋轉圖像。"
 
-#: src/XFileImage.cpp:863
+#: src/XFileImage.cpp:861
 msgid "Rotate Right"
 msgstr "向右旋轉"
 
-#: src/XFileImage.cpp:863
+#: src/XFileImage.cpp:861
 msgid "Rotate right image."
 msgstr "向右旋轉圖像。"
 
-#: src/XFileImage.cpp:869
+#: src/XFileImage.cpp:867
 msgid "Mirror Horizontally"
 msgstr "水平鏡像"
 
-#: src/XFileImage.cpp:869
+#: src/XFileImage.cpp:867
 msgid "Mirror image horizontally."
 msgstr "水平鏡像圖像。"
 
-#: src/XFileImage.cpp:874
+#: src/XFileImage.cpp:872
 msgid "Mirror Vertically"
 msgstr "垂直鏡像"
 
-#: src/XFileImage.cpp:874
+#: src/XFileImage.cpp:872
 msgid "Mirror image vertically."
 msgstr "垂直鏡像圖像。"
 
-#: src/XFileImage.cpp:909
+#: src/XFileImage.cpp:907
 msgid "Quit Xfi."
 msgstr "離開 Xfi。"
 
-#: src/XFileImage.cpp:917
+#: src/XFileImage.cpp:915
 msgid "&Previous"
 msgstr ""
 
-#: src/XFileImage.cpp:923
+#: src/XFileImage.cpp:921
 msgid "&Next"
 msgstr ""
 
-#: src/XFileImage.cpp:930
+#: src/XFileImage.cpp:928
 msgid "Zoom &in"
 msgstr "放大(&I)"
 
-#: src/XFileImage.cpp:932
+#: src/XFileImage.cpp:930
 msgid "Zoom &out"
 msgstr "縮小(&O)"
 
-#: src/XFileImage.cpp:936
+#: src/XFileImage.cpp:934
 msgid "Zoo&m 100%"
 msgstr "縮放 100%(&M)"
 
-#: src/XFileImage.cpp:942
+#: src/XFileImage.cpp:940
 msgid "Zoom to Fit &Window"
 msgstr "最適縮放視窗(&W)"
 
-#: src/XFileImage.cpp:948
+#: src/XFileImage.cpp:946
 msgid "Rotate &Right"
 msgstr "向右旋轉(&R)"
 
-#: src/XFileImage.cpp:948
+#: src/XFileImage.cpp:946
 msgid "Rotate right."
 msgstr "向右旋轉。"
 
-#: src/XFileImage.cpp:954
+#: src/XFileImage.cpp:952
 msgid "Rotate &Left"
 msgstr "向左旋轉(&L)"
 
-#: src/XFileImage.cpp:954
+#: src/XFileImage.cpp:952
 msgid "Rotate left."
 msgstr "向左旋轉。"
 
-#: src/XFileImage.cpp:960
+#: src/XFileImage.cpp:958
 msgid "Mirror &Horizontally"
 msgstr "水平鏡像(&H)"
 
-#: src/XFileImage.cpp:960
+#: src/XFileImage.cpp:958
 msgid "Mirror horizontally."
 msgstr "水平鏡像。"
 
-#: src/XFileImage.cpp:966
+#: src/XFileImage.cpp:964
 msgid "Mirror &Vertically"
 msgstr "垂直鏡像(&V)"
 
-#: src/XFileImage.cpp:966
+#: src/XFileImage.cpp:964
 msgid "Mirror vertically."
 msgstr "垂直鏡像。"
 
-#: src/XFileImage.cpp:973
+#: src/XFileImage.cpp:971
 #, fuzzy
-msgid "Show hidden files and folders."
+msgid "Show hidden files and fprevImageers."
 msgstr "顯示隱藏檔案和目錄。"
 
-#: src/XFileImage.cpp:979
+#: src/XFileImage.cpp:977
 msgid "Show image thumbnails."
 msgstr "顯示縮圖。"
 
-#: src/XFileImage.cpp:987
-msgid "Display folders with big icons."
+#: src/XFileImage.cpp:985
+#, fuzzy
+#| msgid "Display folders with big icons."
+msgid "Display fprevImageers with big icons."
 msgstr "以大圖示顯示資料夾。"
 
-#: src/XFileImage.cpp:993
-msgid "Display folders with small icons."
+#: src/XFileImage.cpp:991
+#, fuzzy
+#| msgid "Display folders with small icons."
+msgid "Display fprevImageers with small icons."
 msgstr "以小圖示顯示資料夾。"
 
-#: src/XFileImage.cpp:999
-msgid "Display detailed folder listing."
+#: src/XFileImage.cpp:997
+#, fuzzy
+#| msgid "Display detailed folder listing."
+msgid "Display detailed fprevImageer listing."
 msgstr "顯示詳細的資料夾列表。"
 
-#: src/XFileImage.cpp:1015
+#: src/XFileImage.cpp:1013
 msgid "Autosize icon names."
 msgstr "自動調整圖示名稱大小。"
 
-#: src/XFileImage.cpp:1016
+#: src/XFileImage.cpp:1014
 msgid "View icons row-wise."
 msgstr "逐列檢視圖示。"
 
-#: src/XFileImage.cpp:1017
+#: src/XFileImage.cpp:1015
 msgid "View icons column-wise."
 msgstr "逐欄檢視圖示。"
 
-#: src/XFileImage.cpp:1022
+#: src/XFileImage.cpp:1020
 msgid "&File List"
 msgstr "檔案列表(&F)"
 
-#: src/XFileImage.cpp:1022
+#: src/XFileImage.cpp:1020
 msgid "Display file list."
 msgstr "顯示檔案列表。"
 
-#: src/XFileImage.cpp:1023
+#: src/XFileImage.cpp:1021
 #, fuzzy
 msgid "File List &Before"
 msgstr "檔案列表文字顏色"
 
-#: src/XFileImage.cpp:1023
+#: src/XFileImage.cpp:1021
 #, fuzzy
 msgid "Display file list before image window."
 msgstr "以大圖示顯示資料夾。"
 
-#: src/XFileImage.cpp:1025
+#: src/XFileImage.cpp:1023
 msgid "&Filter Images"
 msgstr "篩選器圖像(&F)"
 
-#: src/XFileImage.cpp:1025
+#: src/XFileImage.cpp:1023
 msgid "List only image files."
 msgstr "只列出圖像檔。"
 
-#: src/XFileImage.cpp:1026
+#: src/XFileImage.cpp:1024
 msgid "Fit &Window When Opening"
 msgstr "開啟時符合視窗(&W)"
 
-#: src/XFileImage.cpp:1026
+#: src/XFileImage.cpp:1024
 msgid "Zoom to fit window when opening an image."
 msgstr "開啟圖像時縮放大小以配合視窗。"
 
-#: src/XFileImage.cpp:1031
+#: src/XFileImage.cpp:1029
 msgid "&About X File Image"
 msgstr "關於 X File Image(&A)"
 
-#: src/XFileImage.cpp:1031
+#: src/XFileImage.cpp:1029
 msgid "About X File Image."
 msgstr "關於 X File Image。"
 
-#: src/XFileImage.cpp:1601
+#: src/XFileImage.cpp:1131
+#, fuzzy
+msgid "FprevImage&ers First"
+msgstr "資料夾"
+
+#: src/XFileImage.cpp:1597
 #, c-format
 msgid ""
 "X File Image Version %s is a simple image viewer.\n"
@@ -6383,24 +6420,24 @@ msgstr ""
 "X File Image 版本 %s 是簡單的圖像檢視器。\n"
 "\n"
 
-#: src/XFileImage.cpp:1603
+#: src/XFileImage.cpp:1599
 msgid "About X File Image"
 msgstr "關於 X File Image"
 
-#: src/XFileImage.cpp:1711 src/XFileImage.cpp:1717 src/XFileImage.cpp:1733
+#: src/XFileImage.cpp:1691 src/XFileImage.cpp:1707
 msgid "Error Loading Image"
 msgstr "載入圖像時發生錯誤 "
 
-#: src/XFileImage.cpp:1711 src/XFileImage.cpp:1717
+#: src/XFileImage.cpp:1691
 #, c-format
 msgid "Unsupported type: %s"
 msgstr "未支援的型態：%s"
 
-#: src/XFileImage.cpp:1734
+#: src/XFileImage.cpp:1708
 msgid "Unable to load image, the file may be corrupted"
 msgstr "無法載入圖像，檔案也許已損壞"
 
-#: src/XFileImage.cpp:1788
+#: src/XFileImage.cpp:1774
 #, fuzzy
 msgid ""
 "Change will be taken into account after restart.\n"
@@ -6409,11 +6446,11 @@ msgstr ""
 "文字字型將於重新啟動之後變更。\n"
 "現在要重新啟動 X File Explorer？"
 
-#: src/XFileImage.cpp:1903
+#: src/XFileImage.cpp:1892
 msgid "Open Image"
 msgstr "開啟圖像"
 
-#: src/XFileImage.cpp:3074
+#: src/XFileImage.cpp:3165
 msgid ""
 "\n"
 "Usage: xfi [options] [image] \n"
@@ -6837,7 +6874,7 @@ msgid ""
 " \n"
 "  Dragging a file or group or files (by moving the mouse while maintaining "
 "the left button pressed)\n"
-"  to a folder or a file panel optionally opens a dialog that allows one to "
+"  to a folder or a file panel optionally opens a dialog that allows you to "
 "select the file operation: copy,\n"
 "  move, link or cancel.\n"
 " \n"
@@ -6848,8 +6885,8 @@ msgid ""
 " \n"
 "  Xfe implements a trash system that is fully compliant with the freedesktop."
 "org standards.\n"
-"  This allows the user to move files to the trash can and to restore files "
-"from within Xfe or your favorite desktop.\n"
+"  This allows you to move files to the trash can and to restore files from "
+"within Xfe or your favorite desktop.\n"
 "  Note that the trash files location is: ~/.local/share/Trash/files\n"
 " \n"
 " \n"
@@ -6878,8 +6915,8 @@ msgid ""
 "into the local configuration file\n"
 "  ~/.config/xfe/xferc which does not exists yet. If the system-wide "
 "configuration file is not found\n"
-"  (in case of an unusal install place), a dialog asks the user to select the "
-"right place. It is thus easier to\n"
+"  (in case of an unusual install place), a dialog asks the user to select "
+"the right place. It is thus easier to\n"
 "  customize Xfe (this is particularly true for the file associations) by "
 "hand editing because all the local options\n"
 "  are located in the same file.\n"
@@ -6919,8 +6956,8 @@ msgid ""
 " \n"
 "  Starting with version 2.0, the folder panel features two tabs: one is the "
 "classic Tree view and the other\n"
-"  is a Places view. This Places view allows to view desktop folders (home, "
-"downloads, documents, music, ...), of\n"
+"  is a Places view. This Places view allows you to view desktop folders "
+"(home, downloads, documents, music, ...), of\n"
 "  drive mounts, network shares and user's bookmarks.\n"
 " \n"
 "  Network shares mounted from the desktop using gvfs (GNOME or XFCE) appear "
@@ -7021,8 +7058,8 @@ msgid ""
 " \n"
 "  Xfe can perform a bulk rename operation on selected files and folders from "
 "the file panels. The rename dialog allows\n"
-"  to replace a text pattern or insert / overwrite / remove text at a given "
-"position. It is also possible to number\n"
+"  you to replace a text pattern or insert / overwrite / remove text at a "
+"given position. It is also possible to number\n"
 "  files.\n"
 " \n"
 "  Bulk rename can also be used from the search panel results. However, in "
@@ -7049,7 +7086,7 @@ msgid ""
 "   =-=-=-=-=-=-=\n"
 " \n"
 "  Starting with version 2.1, Xfe has an integrated automounter program that "
-"allows to mount removable disks or media\n"
+"allows you to mount removable disks or media\n"
 "  when they are inserted. The automounter also supports MTP devices (ex: "
 "Android phones or tablets).\n"
 " \n"
@@ -7199,7 +7236,7 @@ msgid ""
 "  and  to all people that have provided useful patches, translations, tests "
 "and advices.\n"
 " \n"
-"  [Last revision: 11/05/2025]\n"
+"  [Last revision: 05/01/2026]\n"
 " \n"
 " "
 msgstr ""
@@ -7548,26 +7585,26 @@ msgstr ""
 msgid "Warning: Unknown panel mode, revert to last saved panel mode\n"
 msgstr "警告：不明面板模式，還原成上一次儲存的面板模式\n"
 
-#: src/startupnotification.cpp:82 src/startupnotification.cpp:134
-#: src/startupnotification.cpp:200 src/startupnotification.cpp:228
-#: src/startupnotification.cpp:257
+#: src/startupnotification.cpp:80 src/startupnotification.cpp:132
+#: src/startupnotification.cpp:198 src/startupnotification.cpp:224
+#: src/startupnotification.cpp:253
 #, fuzzy, c-format
 msgid "Error: Can't enter folder %s: %s"
 msgstr "無法刪除資料夾 %s"
 
-#: src/startupnotification.cpp:86 src/startupnotification.cpp:138
-#: src/startupnotification.cpp:204 src/startupnotification.cpp:232
-#: src/startupnotification.cpp:261
+#: src/startupnotification.cpp:84 src/startupnotification.cpp:136
+#: src/startupnotification.cpp:202 src/startupnotification.cpp:228
+#: src/startupnotification.cpp:257
 #, fuzzy, c-format
 msgid "Error: Can't enter folder %s"
 msgstr "無法建立資料夾 %s"
 
-#: src/startupnotification.cpp:127
+#: src/startupnotification.cpp:125
 #, fuzzy, c-format
 msgid "Error: Can't open display\n"
 msgstr "錯誤！無法開啟顯示\n"
 
-#: src/startupnotification.cpp:146
+#: src/startupnotification.cpp:144
 #, c-format
 msgid "Start of %s"
 msgstr "%s 的啟始"
@@ -7626,6 +7663,12 @@ msgstr "檔案管理員"
 msgid "A lightweight file manager for X Window"
 msgstr "X 視窗的輕量檔案管理員"
 
+#: xfe.desktop.in:6
+#, fuzzy
+#| msgid "File Manager"
+msgid "file manager"
+msgstr "檔案管理員"
+
 #: xfi.desktop.in:3
 msgid "Xfi"
 msgstr "Xfi"
@@ -7637,6 +7680,10 @@ msgstr "圖像檢視器"
 #: xfi.desktop.in:5
 msgid "A simple image viewer for Xfe"
 msgstr "Xfe 的簡單的圖像檢視器"
+
+#: xfi.desktop.in:6
+msgid "image viewer;image manager"
+msgstr ""
 
 #: xfp.desktop.in:3
 msgid "Xfp"
@@ -7650,6 +7697,10 @@ msgstr "套件管理員"
 msgid "A simple package manager for Xfe"
 msgstr "Xfe 的簡易套件管理員"
 
+#: xfp.desktop.in:6
+msgid "package viewer;package manager"
+msgstr ""
+
 #: xfw.desktop.in:3
 msgid "Xfw"
 msgstr "Xfw"
@@ -7661,6 +7712,10 @@ msgstr "文字編輯器"
 #: xfw.desktop.in:5
 msgid "A simple text editor for Xfe"
 msgstr "Xfe 的簡單的文字編輯器"
+
+#: xfw.desktop.in:6
+msgid "editor;viewer;text"
+msgstr ""
 
 #: org.xfe.root.policy.in.in:11
 msgid "Run Xfe as root"

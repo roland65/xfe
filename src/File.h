@@ -46,12 +46,19 @@ private:
     FXulong totalsourcesize = 0;
     FXString copysuffix;
     FXuint copysuffix_pos = 0;
+    FXlong totaldataread = 0;
+    FXlong prevTotaldataread = 0;
+    FXulong copyspeedSourcesize = 0;
+    FXString copyspeedHsourcesize;
+    FXuint numsel = 0;
+    FXdouble vecCopyspeed[NMAX_COPY_SPEED];
+    FXuint numcopyspeed = 0;
 
 protected:
 
     // Inline function
     // Force check of timeout for progress dialog (to avoid latency problems)
-    int checkTimeout(void)
+    int checkProgressBarTimeout(void)
     {
         if (getApp()->hasTimeout(this, File::ID_PROGRESSBAR))
         {
@@ -95,8 +102,6 @@ protected:
     FXbool skip_all = false;
     FXbool cancelled = false;
     MessageBox* mbox = NULL;
-    FXlong totaldataread = 0;
-    FXuint numsel = 0;
 
 public:
     File()
@@ -112,6 +117,7 @@ public:
         ID_CANCEL_BUTTON=DialogBox::ID_LAST,
         ID_PROGRESSBAR,
         ID_SOURCESIZE,
+        ID_COPYSPEED,
         ID_LAST
     };
 
@@ -165,5 +171,6 @@ public:
     long onCmdCancel(FXObject*, FXSelector, void*);
     long onTimeout(FXObject*, FXSelector, void*);
     long onSourceSizeRefresh(FXObject*, FXSelector, void*);
+    long onCopySpeed(FXObject*, FXSelector, void*);
 };
 #endif

@@ -1,4 +1,4 @@
-// Implementation of a path linker that allows to directly go to any parent directory
+// Implementation of a path linker that allows one to directly go to any parent directory
 // Initially proposed and coded by Julian Mitchell <jupeos@gmail.com>
 
 #include <sstream>

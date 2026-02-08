@@ -1,6 +1,6 @@
 #
 # Xfe default settings
-# Version : 30/11/2025
+# Version : 05/01/2026
 #
 # These settings are overridden in ~/.config/xfe/xferc
 #
@@ -188,6 +188,7 @@ rb = "<txteditor>,<txtviewer>,<txteditor>;Ruby Source;text_32x32.png;text_16x16.
 ml = "<txteditor>,<txtviewer>,<txteditor>;Caml Source;text_32x32.png;text_16x16.png;;"
 pas = "<txteditor>,<txtviewer>,<txteditor>;Pascal Source;text_32x32.png;text_16x16.png;;"
 tcl = "<txteditor>,<txtviewer>,<txteditor>;Tcl Source;tcl_32x32.png;tcl_16x16.png;;"
+vala = "<txteditor>,<txtviewer>,<txteditor>;Vala Source;text_32x32.png;text_16x16.png;;"
 bak = "<txteditor>,<txtviewer>,<txteditor>;Backup File;bak_32x32.png;bak_16x16.png;;"
 conf = "<txteditor>,<txtviewer>,<txteditor>;Configuration file;config_32x32.png;config_16x16.png;;"
 config = "<txteditor>,<txtviewer>,<txteditor>;Configuration file;config_32x32.png;config_16x16.png;;"
@@ -195,6 +196,7 @@ ini = "<txteditor>,<txtviewer>,<txteditor>;Configuration file;config_32x32.png;c
 kdelnk = "<txteditor>,<txtviewer>,<txteditor>;KDE Link;config_32x32.png;config_16x16.png;;"
 desktop = "<txteditor>,<txtviewer>,<txteditor>;Desktop Entry;config_32x32.png;config_16x16.png;;"
 txt = "<txteditor>,<txtviewer>,<txteditor>;Plain Text;text_32x32.png;text_16x16.png;;"
+md = "<txteditor>,<txtviewer>,<txteditor>;Markdown Document;text_32x32.png;text_16x16.png;;"
 m = "<txteditor>,<txtviewer>,<txteditor>;Matlab Source;m_32x32.png;m_16x16.png;;"
 sci = "<txteditor>,<txtviewer>,<txteditor>;Scilab Function;sci_32x32.png;sci_16x16.png;;"
 sce = "<txteditor>,<txtviewer>,<txteditor>;Scilab Script;sci_32x32.png;sci_16x16.png;;"
@@ -349,25 +351,27 @@ midi = "timidity,timidity,;MIDI File;midi_32x32.png;midi_16x16.png;;"
 mid = "timidity,timidity,;MIDI File;midi_32x32.png;midi_16x16.png;;"
 pls = "<audioplayer>,<audioplayer>,;XMMS Playlist;mp3_32x32.png;mp3_16x16.png;;"
 m3u = "<audioplayer>,<audioplayer>,;Audio Playlist;mp3_32x32.png;mp3_16x16.png;;"
+m3u8 = "<audioplayer>,<audioplayer>,;Audio Playlist UTF-8;mp3_32x32.png;mp3_16x16.png;;"
 flac = "<audioplayer>,<audioplayer>,audacity;FLAC Audio;sound_32x32.png;sound_16x16.png;;"
 aac = "<audioplayer>,<audioplayer>,audacity;AAC Audio;sound_32x32.png;sound_16x16.png;;"
 
 # Video
-avi = "<videoplayer>,<videoplayer>,avidemux --load;Video;video_32x32.png;video_16x16.png;;"
+avi = "<videoplayer>,<videoplayer>,avidemux --load;AVI Video;video_32x32.png;video_16x16.png;;"
 vob = "<videoplayer>,<videoplayer>,avidemux --load;MPEG Video;video_32x32.png;video_16x16.png;;"
 mpeg = "<videoplayer>,<videoplayer>,avidemux --load;MPEG Video;video_32x32.png;video_16x16.png;;"
 mpg = "<videoplayer>,<videoplayer>,avidemux --load;MPEG Video;video_32x32.png;video_16x16.png;;"
-wmv = "<videoplayer>,<videoplayer>,;WMV Video;video_32x32.png;video_16x16.png;;"
-mov = "<videoplayer>,<videoplayer>,;MPEG Video;video_32x32.png;video_16x16.png;;"
-ogm = "<videoplayer>,<videoplayer>,;OggMedia Video;video_32x32.png;video_16x16.png;;"
-ogv = "<videoplayer>,<videoplayer>,;Ogg Video;video_32x32.png;video_16x16.png;;"
-mkv = "<videoplayer>,<videoplayer>,;MKV Video;video_32x32.png;video_16x16.png;;"
-m4v = "<videoplayer>,<videoplayer>,;M4V Video;video_32x32.png;video_16x16.png;;"
-flv = "<videoplayer>,<videoplayer>,;Flash Video;video_32x32.png;video_16x16.png;;"
+wmv = "<videoplayer>,<videoplayer>,avidemux --load;WMV Video;video_32x32.png;video_16x16.png;;"
+mov = "<videoplayer>,<videoplayer>,avidemux --load;MPEG Video;video_32x32.png;video_16x16.png;;"
+ogm = "<videoplayer>,<videoplayer>,avidemux --load;OggMedia Video;video_32x32.png;video_16x16.png;;"
+ogv = "<videoplayer>,<videoplayer>,avidemux --load;Ogg Video;video_32x32.png;video_16x16.png;;"
+mkv = "<videoplayer>,<videoplayer>,avidemux --load;MKV Video;video_32x32.png;video_16x16.png;;"
+m4v = "<videoplayer>,<videoplayer>,avidemux --load;M4V Video;video_32x32.png;video_16x16.png;;"
+flv = "<videoplayer>,<videoplayer>,avidemux --load;Flash Video;video_32x32.png;video_16x16.png;;"
+webm = "<videoplayer>,<videoplayer>,avidemux --load;WEBM Video;video_32x32.png;video_16x16.png;;"
+mp4 = "<videoplayer>,<videoplayer>,avidemux --load;MPEG4 Video;video_32x32.png;video_16x16.png;;"
 rm = "realplay,realplay,;RealPlayer Video;video_32x32.png;video_16x16.png;;"
 ram = "realplay,realplay,;RealPlayer Video;video_32x32.png;video_16x16.png;;"
 tox = "<videoplayer>,<videoplayer>,;Video Playlist;video_32x32.png;video_16x16.png;;"
-mp4 = "<videoplayer>,<videoplayer>,;MPEG4 Video;video_32x32.png;video_16x16.png;;"
 
 # Archives
 rpm = "xfp,xfp,xfp;RPM Package;rpm_32x32.png;rpm_16x16.png;;"

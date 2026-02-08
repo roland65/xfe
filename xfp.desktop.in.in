@@ -2,6 +2,7 @@
 Name=Xfp
 GenericName=Package Manager
 Comment=A simple package manager for Xfe
+Keywords=package viewer;package manager
 Exec=xfp %f
 Terminal=false
 Type=Application
