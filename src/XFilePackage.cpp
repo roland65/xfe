@@ -404,11 +404,11 @@ long XFilePackage::onCmdInstall(FXObject*, FXSelector, void*)
     FXString ext = FXPath::extension(filename);
     if (comparecase(ext, "rpm") == 0)
     {
-        cmd = "pkexec cpm i " + filename;
+        cmd = "pkexec cpm i " + filename + " -y";
     }
     else if (comparecase(ext, "deb") == 0)
     {
-        cmd = "pkexec cpm i " + filename;
+        cmd = "pkexec cpm i " + filename + " -y";
     }
     else
     {
