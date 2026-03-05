@@ -606,6 +606,7 @@ long SearchPanel::onCmdItemDoubleClicked(FXObject* sender, FXSelector sel, void*
                         else
                         {
                             getApp()->endWaitCursor();
+                            MessageBox::warning(this, BOX_OK, _("Warning"), _("Program %s not found"), cmdname.text());
                             handle(this, FXSEL(SEL_COMMAND, ID_OPEN_WITH), NULL);
                         }
                     }
@@ -810,6 +811,7 @@ long SearchPanel::onCmdItemClicked(FXObject* sender, FXSelector sel, void* ptr)
                             else
                             {
                                 getApp()->endWaitCursor();
+                                MessageBox::warning(this, BOX_OK, _("Warning"), _("Program %s not found"), cmdname.text());
                                 handle(this, FXSEL(SEL_COMMAND, ID_OPEN_WITH), NULL);
                             }
                         }
@@ -892,6 +894,7 @@ void SearchPanel::execFile(FXString filepath)
             // If command does not exist, call the "Open with..." dialog
             else
             {
+                MessageBox::warning(this, BOX_OK, _("Warning"), _("Program %s not found"), cmdname.text());
                 handle(this, FXSEL(SEL_COMMAND, ID_OPEN_WITH), NULL);
             }
         }
@@ -969,6 +972,7 @@ void SearchPanel::execFile(FXString filepath)
                     // If command does not exist, call the "Open with..." dialog
                     else
                     {
+                        MessageBox::warning(this, BOX_OK, _("Warning"), _("Program %s not found"), cmdname.text());
                         handle(this, FXSEL(SEL_COMMAND, ID_OPEN_WITH), NULL);
                     }
                 }
@@ -1119,6 +1123,7 @@ long SearchPanel::onCmdOpenWith(FXObject*, FXSelector, void*)
         else
         {
             getApp()->endWaitCursor();
+            MessageBox::warning(this, BOX_OK, _("Warning"), _("Program %s not found"), cmdname.text());
             this->handle(this, FXSEL(SEL_COMMAND, ID_OPEN_WITH), NULL);
             return 1;
         }
@@ -1572,6 +1577,7 @@ long SearchPanel::onCmdEdit(FXObject*, FXSelector sel, void*)
         else
         {
             getApp()->endWaitCursor();
+            MessageBox::warning(this, BOX_OK, _("Warning"), _("Program %s not found"), cmdname.text());
             this->handle(this, FXSEL(SEL_COMMAND, ID_OPEN_WITH), NULL);
         }
     }
@@ -1684,6 +1690,7 @@ long SearchPanel::onCmdEdit(FXObject*, FXSelector sel, void*)
                             else
                             {
                                 getApp()->endWaitCursor();
+                                MessageBox::warning(this, BOX_OK, _("Warning"), _("Program %s not found"), cmdname.text());
                                 this->handle(this, FXSEL(SEL_COMMAND, ID_OPEN_WITH), NULL);
                             }
                         }
@@ -1716,6 +1723,7 @@ long SearchPanel::onCmdEdit(FXObject*, FXSelector sel, void*)
                         else
                         {
                             getApp()->endWaitCursor();
+                            MessageBox::warning(this, BOX_OK, _("Warning"), _("Program %s not found"), cmdname.text());
                             this->handle(this, FXSEL(SEL_COMMAND, ID_OPEN_WITH), NULL);
                         }
                     }
@@ -3190,7 +3198,7 @@ long SearchPanel::onCmdFileTrash(FXObject*, FXSelector, void*)
                 if (f->isCancelled())
                 {
                     f->hideProgressDialog();
-                    MessageBox::error(this, BOX_OK, _("Warning"), _("Move to trash file operation cancelled!"));
+                    MessageBox::warning(this, BOX_OK, _("Warning"), _("Move to trash file operation cancelled!"));
                     break;
                 }
             }
@@ -3429,7 +3437,7 @@ long SearchPanel::onCmdFileDelete(FXObject*, FXSelector, void*)
                     if (f->isCancelled())
                     {
                         f->hideProgressDialog();
-                        MessageBox::error(this, BOX_OK, _("Warning"), _("Delete file operation cancelled!"));
+                        MessageBox::warning(this, BOX_OK, _("Warning"), _("Delete file operation cancelled!"));
                         break;
                     }
                 }
@@ -4045,7 +4053,7 @@ x:
             if (f->isCancelled())
             {
                 f->hideProgressDialog();
-                MessageBox::error(this, BOX_OK, _("Warning"), _("Copy file operation cancelled!"));
+                MessageBox::warning(this, BOX_OK, _("Warning"), _("Copy file operation cancelled!"));
                 goto out;
             }
 
@@ -4083,7 +4091,7 @@ x:
             if (f->isCancelled())
             {
                 f->hideProgressDialog();
-                MessageBox::error(this, BOX_OK, _("Warning"), _("Copy file operation cancelled!"));
+                MessageBox::warning(this, BOX_OK, _("Warning"), _("Copy file operation cancelled!"));
             }
         }
         else if (command == "rename")
@@ -4114,7 +4122,7 @@ x:
             if (f->isCancelled())
             {
                 f->hideProgressDialog();
-                MessageBox::error(this, BOX_OK, _("Warning"), _("Move file operation cancelled!"));
+                MessageBox::warning(this, BOX_OK, _("Warning"), _("Move file operation cancelled!"));
                 goto out;
             }
 
@@ -4160,7 +4168,7 @@ x:
             if (f->isCancelled())
             {
                 f->hideProgressDialog();
-                MessageBox::error(this, BOX_OK, _("Warning"), _("Move file operation cancelled!"));
+                MessageBox::warning(this, BOX_OK, _("Warning"), _("Move file operation cancelled!"));
             }
         }
         else if (command == "symlink")
@@ -4198,7 +4206,7 @@ x:
             if (f->isCancelled())
             {
                 f->hideProgressDialog();
-                MessageBox::error(this, BOX_OK, _("Warning"), _("Copy file operation cancelled!"));
+                MessageBox::warning(this, BOX_OK, _("Warning"), _("Copy file operation cancelled!"));
                 goto out;
             }
         }
@@ -4215,7 +4223,7 @@ x:
             if (f->isCancelled())
             {
                 f->hideProgressDialog();
-                MessageBox::error(this, BOX_OK, _("Warning"), _("Move file operation cancelled!"));
+                MessageBox::warning(this, BOX_OK, _("Warning"), _("Move file operation cancelled!"));
                 goto out;
             }
         }
@@ -4297,7 +4305,7 @@ x:
                         // If action is cancelled in progress dialog
                         if (f->isCancelled())
                         {
-                            MessageBox::error(this, BOX_OK, _("Warning"), _("Rename file operation cancelled!"));
+                            MessageBox::warning(this, BOX_OK, _("Warning"), _("Rename file operation cancelled!"));
                             break;
                         }
                         // An known error has occurred
@@ -4392,7 +4400,7 @@ x:
                     if (f->isCancelled())
                     {
                         f->hideProgressDialog();
-                        MessageBox::error(this, BOX_OK, _("Warning"), _("Copy file operation cancelled!"));
+                        MessageBox::warning(this, BOX_OK, _("Warning"), _("Copy file operation cancelled!"));
                         break;
                     }
                 }
@@ -4443,7 +4451,7 @@ x:
                     if (f->isCancelled())
                     {
                         f->hideProgressDialog();
-                        MessageBox::error(this, BOX_OK, _("Warning"), _("Move file operation cancelled!"));
+                        MessageBox::warning(this, BOX_OK, _("Warning"), _("Move file operation cancelled!"));
                         break;
                     }
                 }
@@ -4464,7 +4472,7 @@ x:
                     if (f->isCancelled())
                     {
                         f->hideProgressDialog();
-                        MessageBox::error(this, BOX_OK, _("Warning"), _("Symlink operation cancelled!"));
+                        MessageBox::warning(this, BOX_OK, _("Warning"), _("Symlink operation cancelled!"));
                         break;
                     }
                 }

@@ -771,11 +771,11 @@ long DirList::onDNDDrop(FXObject* sender, FXSelector sel, void* ptr)
                 f->hideProgressDialog();
                 if (dropaction == DRAG_COPY)
                 {
-                    MessageBox::error(this, BOX_OK, _("Warning"), _("Copy file operation cancelled!"));
+                    MessageBox::warning(this, BOX_OK, _("Warning"), _("Copy file operation cancelled!"));
                 }
                 else
                 {
-                    MessageBox::error(this, BOX_OK, _("Warning"), _("Move file operation cancelled!"));
+                    MessageBox::warning(this, BOX_OK, _("Warning"), _("Move file operation cancelled!"));
                 }
                 goto out;
             }
@@ -902,7 +902,7 @@ long DirList::onDNDDrop(FXObject* sender, FXSelector sel, void* ptr)
                 if (f->isCancelled())
                 {
                     f->hideProgressDialog();
-                    MessageBox::error(this, BOX_OK, _("Warning"), _("Move file operation cancelled!"));
+                    MessageBox::warning(this, BOX_OK, _("Warning"), _("Move file operation cancelled!"));
                     break;
                 }
 
@@ -949,7 +949,7 @@ long DirList::onDNDDrop(FXObject* sender, FXSelector sel, void* ptr)
                 if (f->isCancelled())
                 {
                     f->hideProgressDialog();
-                    MessageBox::error(this, BOX_OK, _("Warning"), _("Copy file operation cancelled!"));
+                    MessageBox::warning(this, BOX_OK, _("Warning"), _("Copy file operation cancelled!"));
                     break;
                 }
             }

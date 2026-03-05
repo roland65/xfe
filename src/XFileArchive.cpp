@@ -1086,6 +1086,7 @@ long XFileArchive::onCmdFileOpenWith(FXObject*, FXSelector, void*)
         else
         {
             getApp()->endWaitCursor();
+            MessageBox::warning(this, BOX_OK, _("Warning"), _("Program %s not found"), cmdname.text());
             this->handle(this, FXSEL(SEL_COMMAND, ID_FILE_OPEN_WITH), NULL);
             return 1;
         }

@@ -174,9 +174,12 @@ int runcmd(FXString cmd, FXString cmdname, FXString dir, FXString startdir, FXbo
     // Run command without startup notification
     else
     {
-        // Run command in background through a shell (to avoid problems with pkexec)
-        FXString shcmd = "sh -c '" + cmd + "' &";
+        // Replace quotes with double quotes to avoid problems with sh -c
+        cmd.replace(cmd.find('\''), '"');
+        cmd.replace(cmd.rfind('\''), '"');
 
+        // Run command in background through a shell (to avoid problems with pkexec)
+        FXString shcmd = "sh -c \'" + cmd + "\' &";
         int ret = system(shcmd.text());
         if (ret < 0)
         {
@@ -231,9 +234,14 @@ int runcmd(FXString cmd, FXString dir, FXString startdir)
         return -1;
     }
 
+    // Replace quotes with double quotes to avoid problems with sh -c
+    cmd.replace(cmd.find('\''), '"');
+    cmd.replace(cmd.rfind('\''), '"');
+
     // Run command in background through a shell (to avoid problems with pkexec)
     FXString shcmd = "sh -c '" + cmd + "' &";
     ret = system(shcmd.text());
+
     if (ret < 0)
     {
         fprintf(stderr, _("Error: Can't execute command %s"), shcmd.text());

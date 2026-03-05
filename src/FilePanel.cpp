@@ -1408,6 +1408,7 @@ long FilePanel::onCmdItemDoubleClicked(FXObject* sender, FXSelector sel, void* p
                         else
                         {
                             getApp()->endWaitCursor();
+                            MessageBox::warning(this, BOX_OK, _("Warning"), _("Program %s not found"), cmdname.text());
                             current->handle(this, FXSEL(SEL_COMMAND, ID_OPEN_WITH), NULL);
                         }
                     }
@@ -1612,6 +1613,7 @@ long FilePanel::onCmdItemClicked(FXObject* sender, FXSelector sel, void* ptr)
                             else
                             {
                                 getApp()->endWaitCursor();
+                                MessageBox::warning(this, BOX_OK, _("Warning"), _("Program %s not found"), cmdname.text());
                                 current->handle(this, FXSEL(SEL_COMMAND, ID_OPEN_WITH), NULL);
                             }
                         }
@@ -2122,7 +2124,7 @@ long FilePanel::onCmdFileMan(FXObject* sender, FXSelector sel, void* ptr)
             if (f->isCancelled())
             {
                 f->hideProgressDialog();
-                MessageBox::error(this, BOX_OK, _("Warning"), _("Copy file operation cancelled!"));
+                MessageBox::warning(this, BOX_OK, _("Warning"), _("Copy file operation cancelled!"));
                 goto out;
             }
 
@@ -2161,7 +2163,7 @@ long FilePanel::onCmdFileMan(FXObject* sender, FXSelector sel, void* ptr)
             if (f->isCancelled())
             {
                 f->hideProgressDialog();
-                MessageBox::error(this, BOX_OK, _("Warning"), _("Copy file operation cancelled!"));
+                MessageBox::warning(this, BOX_OK, _("Warning"), _("Copy file operation cancelled!"));
                 goto out;
             }
         }
@@ -2193,7 +2195,7 @@ long FilePanel::onCmdFileMan(FXObject* sender, FXSelector sel, void* ptr)
             if (f->isCancelled())
             {
                 f->hideProgressDialog();
-                MessageBox::error(this, BOX_OK, _("Warning"), _("Move file operation cancelled!"));
+                MessageBox::warning(this, BOX_OK, _("Warning"), _("Move file operation cancelled!"));
                 goto out;
             }
 
@@ -2240,7 +2242,7 @@ long FilePanel::onCmdFileMan(FXObject* sender, FXSelector sel, void* ptr)
             if (f->isCancelled())
             {
                 f->hideProgressDialog();
-                MessageBox::error(this, BOX_OK, _("Warning"), _("Move file operation cancelled!"));
+                MessageBox::warning(this, BOX_OK, _("Warning"), _("Move file operation cancelled!"));
                 goto out;
             }
         }
@@ -2279,7 +2281,7 @@ long FilePanel::onCmdFileMan(FXObject* sender, FXSelector sel, void* ptr)
             if (f->isCancelled())
             {
                 f->hideProgressDialog();
-                MessageBox::error(this, BOX_OK, _("Warning"), _("Copy file operation cancelled!"));
+                MessageBox::warning(this, BOX_OK, _("Warning"), _("Copy file operation cancelled!"));
                 goto out;
             }
         }
@@ -2296,7 +2298,7 @@ long FilePanel::onCmdFileMan(FXObject* sender, FXSelector sel, void* ptr)
             if (f->isCancelled())
             {
                 f->hideProgressDialog();
-                MessageBox::error(this, BOX_OK, _("Warning"), _("Move file operation cancelled!"));
+                MessageBox::warning(this, BOX_OK, _("Warning"), _("Move file operation cancelled!"));
                 goto out;
             }
         }
@@ -2350,7 +2352,7 @@ long FilePanel::onCmdFileMan(FXObject* sender, FXSelector sel, void* ptr)
                         // If action is cancelled in progress dialog
                         if (f->isCancelled())
                         {
-                            MessageBox::error(this, BOX_OK, _("Warning"), _("Rename file operation cancelled!"));
+                            MessageBox::warning(this, BOX_OK, _("Warning"), _("Rename file operation cancelled!"));
                             break;
                         }
                         // An known error has occurred
@@ -2485,7 +2487,7 @@ long FilePanel::onCmdFileMan(FXObject* sender, FXSelector sel, void* ptr)
                     if (f->isCancelled())
                     {
                         f->hideProgressDialog();
-                        MessageBox::error(this, BOX_OK, _("Warning"), _("Copy file operation cancelled!"));
+                        MessageBox::warning(this, BOX_OK, _("Warning"), _("Copy file operation cancelled!"));
                         break;
                     }
                 }
@@ -2543,7 +2545,7 @@ long FilePanel::onCmdFileMan(FXObject* sender, FXSelector sel, void* ptr)
                     if (f->isCancelled())
                     {
                         f->hideProgressDialog();
-                        MessageBox::error(this, BOX_OK, _("Warning"), _("Move file operation cancelled!"));
+                        MessageBox::warning(this, BOX_OK, _("Warning"), _("Move file operation cancelled!"));
                         break;
                     }
                 }
@@ -2571,7 +2573,7 @@ long FilePanel::onCmdFileMan(FXObject* sender, FXSelector sel, void* ptr)
                     if (f->isCancelled())
                     {
                         f->hideProgressDialog();
-                        MessageBox::error(this, BOX_OK, _("Warning"), _("Symlink operation cancelled!"));
+                        MessageBox::warning(this, BOX_OK, _("Warning"), _("Symlink operation cancelled!"));
                         break;
                     }
                 }
@@ -2846,7 +2848,7 @@ long FilePanel::onCmdFileTrash(FXObject*, FXSelector, void*)
                     if (f->isCancelled())
                     {
                         f->hideProgressDialog();
-                        MessageBox::error(this, BOX_OK, _("Warning"), _("Move to trash file operation cancelled!"));
+                        MessageBox::warning(this, BOX_OK, _("Warning"), _("Move to trash file operation cancelled!"));
                         break;
                     }
                 }
@@ -3078,7 +3080,7 @@ long FilePanel::onCmdFileRestore(FXObject*, FXSelector, void*)
                 if (f->isCancelled())
                 {
                     f->hideProgressDialog();
-                    MessageBox::error(this, BOX_OK, _("Warning"), _("Restore from trash file operation cancelled!"));
+                    MessageBox::warning(this, BOX_OK, _("Warning"), _("Restore from trash file operation cancelled!"));
                     goto end;
                 }
             }
@@ -3366,7 +3368,7 @@ long FilePanel::onCmdFileDelete(FXObject*, FXSelector, void*)
                     if (f->isCancelled())
                     {
                         f->hideProgressDialog();
-                        MessageBox::error(this, BOX_OK, _("Warning"), _("Delete file operation cancelled!"));
+                        MessageBox::warning(this, BOX_OK, _("Warning"), _("Delete file operation cancelled!"));
                         break;
                     }
                 }
@@ -3597,6 +3599,7 @@ long FilePanel::onCmdEdit(FXObject*, FXSelector sel, void*)
         else
         {
             getApp()->endWaitCursor();
+            MessageBox::warning(this, BOX_OK, _("Warning"), _("Program %s not found"), cmdname.text());
             current->handle(this, FXSEL(SEL_COMMAND, ID_OPEN_WITH), NULL);
         }
     }
@@ -3710,6 +3713,7 @@ long FilePanel::onCmdEdit(FXObject*, FXSelector sel, void*)
                             else
                             {
                                 getApp()->endWaitCursor();
+                                MessageBox::warning(this, BOX_OK, _("Warning"), _("Program %s not found"), cmdname.text());
                                 current->handle(this, FXSEL(SEL_COMMAND, ID_OPEN_WITH), NULL);
                             }
                         }
@@ -3742,6 +3746,7 @@ long FilePanel::onCmdEdit(FXObject*, FXSelector sel, void*)
                         else
                         {
                             getApp()->endWaitCursor();
+                            MessageBox::warning(this, BOX_OK, _("Warning"), _("Program %s not found"), cmdname.text());
                             current->handle(this, FXSEL(SEL_COMMAND, ID_OPEN_WITH), NULL);
                         }
                     }
@@ -4623,6 +4628,7 @@ long FilePanel::onCmdOpenWith(FXObject*, FXSelector, void*)
         else
         {
             getApp()->endWaitCursor();
+            MessageBox::warning(this, BOX_OK, _("Warning"), _("Program %s not found"), cmdname.text());
             current->handle(this, FXSEL(SEL_COMMAND, ID_OPEN_WITH), NULL);
             return 1;
         }

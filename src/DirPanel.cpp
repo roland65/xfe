@@ -2926,7 +2926,7 @@ long DirPanel::onCmdDirMan(FXObject* sender, FXSelector sel, void* ptr)
             if (f->isCancelled())
             {
                 f->hideProgressDialog();
-                MessageBox::error(this, BOX_OK, _("Warning"), _("Copy file operation cancelled!"));
+                MessageBox::warning(this, BOX_OK, _("Warning"), _("Copy file operation cancelled!"));
                 goto out;
             }
 
@@ -2965,7 +2965,7 @@ long DirPanel::onCmdDirMan(FXObject* sender, FXSelector sel, void* ptr)
             if (f->isCancelled())
             {
                 f->hideProgressDialog();
-                MessageBox::error(this, BOX_OK, _("Warning"), _("Copy file operation cancelled!"));
+                MessageBox::warning(this, BOX_OK, _("Warning"), _("Copy file operation cancelled!"));
                 goto out;
             }
         }
@@ -2997,7 +2997,7 @@ long DirPanel::onCmdDirMan(FXObject* sender, FXSelector sel, void* ptr)
             if (f->isCancelled())
             {
                 f->hideProgressDialog();
-                MessageBox::error(this, BOX_OK, _("Warning"), _("Move file operation cancelled!"));
+                MessageBox::warning(this, BOX_OK, _("Warning"), _("Move file operation cancelled!"));
                 goto out;
             }
 
@@ -3044,7 +3044,7 @@ long DirPanel::onCmdDirMan(FXObject* sender, FXSelector sel, void* ptr)
             if (f->isCancelled())
             {
                 f->hideProgressDialog();
-                MessageBox::error(this, BOX_OK, _("Warning"), _("Move file operation cancelled!"));
+                MessageBox::warning(this, BOX_OK, _("Warning"), _("Move file operation cancelled!"));
                 goto out;
             }
         }
@@ -3084,7 +3084,7 @@ long DirPanel::onCmdDirMan(FXObject* sender, FXSelector sel, void* ptr)
             if (f->isCancelled())
             {
                 f->hideProgressDialog();
-                MessageBox::error(this, BOX_OK, _("Warning"), _("Copy file operation cancelled!"));
+                MessageBox::warning(this, BOX_OK, _("Warning"), _("Copy file operation cancelled!"));
                 goto out;
             }
         }
@@ -3101,7 +3101,7 @@ long DirPanel::onCmdDirMan(FXObject* sender, FXSelector sel, void* ptr)
             if (f->isCancelled())
             {
                 f->hideProgressDialog();
-                MessageBox::error(this, BOX_OK, _("Warning"), _("Move file operation cancelled!"));
+                MessageBox::warning(this, BOX_OK, _("Warning"), _("Move file operation cancelled!"));
                 goto out;
             }
         }
@@ -3206,7 +3206,7 @@ long DirPanel::onCmdDirMan(FXObject* sender, FXSelector sel, void* ptr)
                     if (f->isCancelled())
                     {
                         f->hideProgressDialog();
-                        MessageBox::error(this, BOX_OK, _("Warning"), _("Copy file operation cancelled!"));
+                        MessageBox::warning(this, BOX_OK, _("Warning"), _("Copy file operation cancelled!"));
                         break;
                     }
                 }
@@ -3257,7 +3257,7 @@ long DirPanel::onCmdDirMan(FXObject* sender, FXSelector sel, void* ptr)
                     if (f->isCancelled())
                     {
                         f->hideProgressDialog();
-                        MessageBox::error(this, BOX_OK, _("Warning"), _("Move file operation cancelled!"));
+                        MessageBox::warning(this, BOX_OK, _("Warning"), _("Move file operation cancelled!"));
                         break;
                     }
                 }
@@ -3278,7 +3278,7 @@ long DirPanel::onCmdDirMan(FXObject* sender, FXSelector sel, void* ptr)
                     if (f->isCancelled())
                     {
                         f->hideProgressDialog();
-                        MessageBox::error(this, BOX_OK, _("Warning"), _("Symlink operation cancelled!"));
+                        MessageBox::warning(this, BOX_OK, _("Warning"), _("Symlink operation cancelled!"));
                         break;
                     }
                 }
@@ -3379,7 +3379,7 @@ long DirPanel::onCmdDirDelete(FXObject*, FXSelector, void*)
             if (f->isCancelled())
             {
                 f->hideProgressDialog();
-                MessageBox::error(this, BOX_OK, _("Warning"), _("Delete folder operation cancelled!"));
+                MessageBox::warning(this, BOX_OK, _("Warning"), _("Delete folder operation cancelled!"));
             }
 
             // Return to parent directory in DirList and FileList
@@ -3406,7 +3406,7 @@ long DirPanel::onCmdDirDelete(FXObject*, FXSelector, void*)
         if (f->isCancelled())
         {
             f->hideProgressDialog();
-            MessageBox::error(this, BOX_OK, _("Warning"), _("Delete folder operation cancelled!"));
+            MessageBox::warning(this, BOX_OK, _("Warning"), _("Delete folder operation cancelled!"));
         }
         // Return to parent directory in DirList and FileList
         dirlist->setDirectory(parentdir, true);
@@ -3491,7 +3491,7 @@ long DirPanel::onCmdDirTrash(FXObject*, FXSelector, void*)
             if (f->isCancelled())
             {
                 f->hideProgressDialog();
-                MessageBox::error(this, BOX_OK, _("Warning"), _("Move to trash folder operation cancelled!"));
+                MessageBox::warning(this, BOX_OK, _("Warning"), _("Move to trash folder operation cancelled!"));
             }
 
             // Return to parent directory in DirList and FileList
@@ -3523,7 +3523,7 @@ long DirPanel::onCmdDirTrash(FXObject*, FXSelector, void*)
         if (f->isCancelled())
         {
             f->hideProgressDialog();
-            MessageBox::error(this, BOX_OK, _("Warning"), _("Move to trash folder operation cancelled!"));
+            MessageBox::warning(this, BOX_OK, _("Warning"), _("Move to trash folder operation cancelled!"));
         }
         // Return to parent directory in DirList and FileList
         dirlist->setDirectory(parentdir, true);
@@ -3677,7 +3677,7 @@ long DirPanel::onCmdDirRestore(FXObject*, FXSelector, void*)
         if (f->isCancelled())
         {
             f->hideProgressDialog();
-            MessageBox::error(this, BOX_OK, _("Warning"), _("Restore from trash file operation cancelled!"));
+            MessageBox::warning(this, BOX_OK, _("Warning"), _("Restore from trash file operation cancelled!"));
             goto end;
         }
 

@@ -444,7 +444,7 @@ long FileSelector::onCmdItemDoubleClicked(FXObject*, FXSelector, void* ptr)
     }
 
     // Only return if we wanted a file
-    if ((selectmode != SELECT_FILE_DIRECTORY) && (selectmode != SELECT_FILE_MIXED))
+    if (selectmode != SELECT_FILE_DIRECTORY)
     {
         if (list->isItemFile(index))
         {

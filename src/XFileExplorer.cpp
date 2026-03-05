@@ -4379,11 +4379,7 @@ long XFileExplorer::onCmdRemoveAllBookmarks(FXObject*, FXSelector, void*)
     else
     {
         // Remove all menu items
-        for (int i = bookmarkmc.size() - 1; i >= 0; i--)
-        {
-            bookmarkmc.pop_back();
-            delete bookmarkmc[bookmarkmc.size()]; // pop_back does not delete the menu item
-        }
+        bookmarkmc.clear();
 
         // Remove all list items
         dirpanel->getBookmarksList()->removeAllItems();
@@ -4411,12 +4407,8 @@ long XFileExplorer::onUpdBookmarksMenu(FXObject* sender, FXSelector, void* ptr)
     // Update bookmarks menu items if the sizes don't match
     if ((FXint)bookmarkmc.size() != dirpanel->getNumBookmarks())
     {
-        // Remove all bookmark menu items
-        for (int i = bookmarkmc.size() - 1; i >= 0; i--)
-        {
-            bookmarkmc.pop_back();
-            delete bookmarkmc[bookmarkmc.size()]; // pop_back does not delete the menu item
-        }
+        // Remove all menu items
+        bookmarkmc.clear();
 
         // Add items to the menu
         for (int i = 0; i < dirpanel->getNumBookmarks(); i++)
@@ -4449,12 +4441,8 @@ long XFileExplorer::onUpdBookmarksMenu(FXObject* sender, FXSelector, void* ptr)
 // Rebuild bookmarks menu (called by DirPanel)
 long XFileExplorer::onCmdRebuildBookmarksMenu(FXObject*, FXSelector, void*)
 {
-    // Remove all bookmark menu items
-    for (int i = bookmarkmc.size() - 1; i >= 0; i--)
-    {
-        bookmarkmc.pop_back();
-        delete bookmarkmc[bookmarkmc.size()]; // pop_back does not delete the menu item
-    }
+    // Remove all menu items
+    bookmarkmc.clear();
 
     // Add sorted items to the menu
     for (int i = 0; i < dirpanel->getNumBookmarks(); i++)

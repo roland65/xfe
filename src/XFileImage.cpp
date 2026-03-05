@@ -527,7 +527,7 @@ XFileImage::XFileImage(FXApp* a, FXbool smoothscroll, FXColor listbackcolor,
     new FXFrame(buttons, LAYOUT_FIX_WIDTH, 0, 0, 4, 1);
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "go_back", "Ctrl-Backspace");
-    btn = new FXButton(buttons, TAB + _("Go to Previous FprevImageer") + PARS(key), minidirbackicon, this, ID_DIR_BACK,
+    btn = new FXButton(buttons, TAB + _("Go to Previous Folder") + PARS(key), minidirbackicon, this, ID_DIR_BACK,
                        BUTTON_TOOLBAR | FRAME_GROOVE | LAYOUT_CENTER_Y | LAYOUT_LEFT);
     hotkey = xf_parseaccel(key);
     btn->addHotKey(hotkey);
@@ -535,7 +535,7 @@ XFileImage::XFileImage(FXApp* a, FXbool smoothscroll, FXColor listbackcolor,
                                     LAYOUT_FILL_Y | FRAME_GROOVE | ARROW_DOWN | ARROW_TOOLBAR);
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "go_forward", "Shift-Backspace");
-    btn = new FXButton(buttons, TAB + _("Go to Next FprevImageer") + PARS(key), minidirforwardicon, this, ID_DIR_FORWARD,
+    btn = new FXButton(buttons, TAB + _("Go to Next Folder") + PARS(key), minidirforwardicon, this, ID_DIR_FORWARD,
                        BUTTON_TOOLBAR | FRAME_GROOVE | LAYOUT_CENTER_Y | LAYOUT_LEFT);
     hotkey = xf_parseaccel(key);
     btn->addHotKey(hotkey);
@@ -543,7 +543,7 @@ XFileImage::XFileImage(FXApp* a, FXbool smoothscroll, FXColor listbackcolor,
                                        LAYOUT_FILL_Y | FRAME_GROOVE | ARROW_DOWN | ARROW_TOOLBAR);
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "go_up", "Backspace");
-    btn = new FXButton(buttons, TAB + _("Go to Parent FprevImageer") + PARS(key), minidirupicon, this, ID_DIR_UP,
+    btn = new FXButton(buttons, TAB + _("Go to Parent Folder") + PARS(key), minidirupicon, this, ID_DIR_UP,
                        BUTTON_TOOLBAR | FRAME_GROOVE | LAYOUT_CENTER_Y | LAYOUT_LEFT);
     hotkey = xf_parseaccel(key);
     btn->addHotKey(hotkey);
@@ -552,13 +552,13 @@ XFileImage::XFileImage(FXApp* a, FXbool smoothscroll, FXColor listbackcolor,
     hframeSeparator(buttons);
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "go_home", "Ctrl-H");
-    new FXButton(buttons, TAB + _("Go to Home FprevImageer") + PARS(key), minihomeicon, this, ID_GO_HOME,
+    new FXButton(buttons, TAB + _("Go to Home Folder") + PARS(key), minihomeicon, this, ID_GO_HOME,
                  BUTTON_TOOLBAR | FRAME_GROOVE | LAYOUT_CENTER_Y | LAYOUT_LEFT);
     hotkey = xf_parseaccel(key);
     btn->addHotKey(hotkey);
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "go_work", "Shift-F2");
-    new FXButton(buttons, TAB + _("Go to Working FprevImageer") + PARS(key), miniworkicon, this, ID_GO_WORK,
+    new FXButton(buttons, TAB + _("Go to Working Folder") + PARS(key), miniworkicon, this, ID_GO_WORK,
                  BUTTON_TOOLBAR | FRAME_GROOVE | LAYOUT_CENTER_Y | LAYOUT_LEFT);
     hotkey = xf_parseaccel(key);
     btn->addHotKey(hotkey);
@@ -968,7 +968,7 @@ XFileImage::XFileImage(FXApp* a, FXbool smoothscroll, FXColor listbackcolor,
 
     // View Menu entries
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "hidden_files", "Ctrl-F6");
-    text = _("&Hidden Files") + TABS(key) + _("Show hidden files and fprevImageers.") + PARS(key);
+    text = _("&Hidden Files") + TABS(key) + _("Show hidden files and folders.") + PARS(key);
     mc = new FXMenuCheck(viewmenu, text, this, ID_TOGGLE_HIDDEN);
     hotkey = xf_parseaccel(key);
     getAccelTable()->addAccel(hotkey, mc, FXSEL(SEL_COMMAND, FXMenuCommand::ID_ACCEL));
@@ -982,19 +982,19 @@ XFileImage::XFileImage(FXApp* a, FXbool smoothscroll, FXColor listbackcolor,
     new FXMenuSeparator(viewmenu);
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "big_icons", "F10");
-    text = _("&Big Icons") + TABS(key) + _("Display fprevImageers with big icons.") + PARS(key);
+    text = _("&Big Icons") + TABS(key) + _("Display folders with big icons.") + PARS(key);
     mc = new FXMenuRadio(viewmenu, text, this, ID_SHOW_BIG_ICONS);
     hotkey = xf_parseaccel(key);
     getAccelTable()->addAccel(hotkey, mc, FXSEL(SEL_COMMAND, FXMenuCommand::ID_ACCEL));
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "small_icons", "F11");
-    text = _("&Small Icons") + TABS(key) + _("Display fprevImageers with small icons.") + PARS(key);
+    text = _("&Small Icons") + TABS(key) + _("Display folders with small icons.") + PARS(key);
     mc = new FXMenuRadio(viewmenu, text, this, ID_SHOW_MINI_ICONS);
     hotkey = xf_parseaccel(key);
     getAccelTable()->addAccel(hotkey, mc, FXSEL(SEL_COMMAND, FXMenuCommand::ID_ACCEL));
 
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "detailed_file_list", "F12");
-    text = _("&Detailed File List") + TABS(key) + _("Display detailed fprevImageer listing.") + PARS(key);
+    text = _("&Detailed File List") + TABS(key) + _("Display detailed folder listing.") + PARS(key);
     mc = new FXMenuRadio(viewmenu, text, this, ID_SHOW_DETAILS);
     hotkey = xf_parseaccel(key);
     getAccelTable()->addAccel(hotkey, mc, FXSEL(SEL_COMMAND, FXMenuCommand::ID_ACCEL));
@@ -1128,7 +1128,7 @@ long XFileImage::onCmdPopupMenu(FXObject* sender, FXSelector sel, void* ptr)
     new FXMenuRadio(&menu, _("&Link"), filelist, FileList::ID_COL_LINK);
     new FXMenuSeparator(&menu);
     new FXMenuCheck(&menu, _("Ignore C&ase"), filelist, FileList::ID_SORT_CASE);
-    new FXMenuCheck(&menu, _("FprevImage&ers First"), filelist, FileList::ID_DIRS_FIRST);
+    new FXMenuCheck(&menu, _("Fold&ers First"), filelist, FileList::ID_DIRS_FIRST);
     new FXMenuCheck(&menu, _("Re&verse Order"), filelist, FileList::ID_SORT_REVERSE);
 
     menu.create();

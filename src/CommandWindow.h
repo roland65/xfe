@@ -35,6 +35,7 @@ public:
     long onUpdKillProcess(FXObject*, FXSelector, void*);
     long onWatchProcess(FXObject*, FXSelector, void*);
     long onUpdClose(FXObject*, FXSelector, void*);
+    long onCmdKeyPress(FXObject*, FXSelector, void*);
     virtual void create();
 
     virtual ~CommandWindow();

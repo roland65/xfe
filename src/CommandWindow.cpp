@@ -19,6 +19,7 @@
 #include <errno.h>
 
 #include <fx.h>
+#include <fxkeys.h>
 
 #include "xfedefs.h"
 #include "icons.h"
@@ -38,6 +39,7 @@ FXDEFMAP(CommandWindow) CommandWindowMap[] =
     FXMAPFUNC(SEL_UPDATE, CommandWindow::ID_KILLPROCESS, CommandWindow::onUpdKillProcess),
     FXMAPFUNC(SEL_UPDATE, CommandWindow::ID_CLOSE, CommandWindow::onUpdClose),
     FXMAPFUNC(SEL_CHORE, CommandWindow::ID_WATCHPROCESS, CommandWindow::onWatchProcess),
+    FXMAPFUNC(SEL_KEYPRESS, 0, CommandWindow::onCmdKeyPress),
 };
 
 
@@ -177,6 +179,29 @@ long CommandWindow::onUpdClose(FXObject* sender, FXSelector, void*)
         btn->disable();
     }
     return 1;
+}
+
+
+long CommandWindow::onCmdKeyPress(FXObject* sender, FXSelector sel, void* ptr)
+{
+    FXEvent* event = (FXEvent*)ptr;
+
+    switch (event->code)
+    {
+    case KEY_Escape:
+        handle(this, FXSEL(SEL_COMMAND, ID_CANCEL), NULL);
+        return 1;
+
+    case KEY_KP_Enter:
+    case KEY_Return:
+        handle(this, FXSEL(SEL_COMMAND, ID_ACCEPT), NULL);
+        return 1;
+
+    default:
+        FXTopWindow::onKeyPress(sender, sel, ptr);
+        return 1;
+    }
+    return 0;
 }
 
 

@@ -1560,7 +1560,7 @@ long PropertiesBox::onCmdAcceptSingle(FXObject* sender, FXSelector sel, void* pt
         if (f->isCancelled())
         {
             f->hideProgressDialog();
-            MessageBox::error(this, BOX_OK, _("Warning"), _("Change owner cancelled!"));
+            MessageBox::warning(this, BOX_OK, _("Warning"), _("Change owner cancelled!"));
             delete f;
             getApp()->endWaitCursor();
             return 0;
@@ -1642,7 +1642,7 @@ long PropertiesBox::onCmdAcceptSingle(FXObject* sender, FXSelector sel, void* pt
         if (f->isCancelled())
         {
             f->hideProgressDialog();
-            MessageBox::error(this, BOX_OK, _("Warning"), _("Change file permissions cancelled!"));
+            MessageBox::warning(this, BOX_OK, _("Warning"), _("Change file permissions cancelled!"));
             delete f;
             getApp()->endWaitCursor();
             return 0;
@@ -1766,7 +1766,7 @@ long PropertiesBox::onCmdAcceptMult(FXObject* sender, FXSelector sel, void* ptr)
         if (f->isCancelled())
         {
             f->hideProgressDialog();
-            MessageBox::error(this, BOX_OK, _("Warning"), _("Change owner cancelled!"));
+            MessageBox::warning(this, BOX_OK, _("Warning"), _("Change owner cancelled!"));
             delete f;
             getApp()->endWaitCursor();
             return 0;
@@ -1852,7 +1852,7 @@ long PropertiesBox::onCmdAcceptMult(FXObject* sender, FXSelector sel, void* ptr)
                 if (f->isCancelled())
                 {
                     f->hideProgressDialog();
-                    MessageBox::error(this, BOX_OK, _("Warning"), _("Change file(s) permissions cancelled!"));
+                    MessageBox::warning(this, BOX_OK, _("Warning"), _("Change file(s) permissions cancelled!"));
                     delete f;
                     getApp()->endWaitCursor();
                     return 0;

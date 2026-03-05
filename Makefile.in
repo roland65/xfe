@@ -102,7 +102,7 @@ DIST_COMMON = $(srcdir)/Makefile.am $(top_srcdir)/configure \
 	$(am__configure_deps) $(am__DIST_COMMON)
 am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
  configure.lineno config.status.lineno
-mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
+mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = config.h
 CONFIG_CLEAN_FILES = xferc xfe.desktop.in xfa.desktop.in \
 	xfi.desktop.in xfp.desktop.in xfw.desktop.in
@@ -198,8 +198,8 @@ am__DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/config.h.in \
 	$(srcdir)/xferc.in $(srcdir)/xfi.desktop.in.in \
 	$(srcdir)/xfp.desktop.in.in $(srcdir)/xfw.desktop.in.in \
 	ABOUT-NLS AUTHORS COPYING ChangeLog INSTALL NEWS README TODO \
-	compile config.guess config.rpath config.sub depcomp \
-	install-sh ltmain.sh missing mkinstalldirs
+	compile config.guess config.rpath config.sub install-sh \
+	ltmain.sh missing
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 distdir = $(PACKAGE)-$(VERSION)
 top_distdir = $(distdir)
