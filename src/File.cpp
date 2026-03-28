@@ -617,10 +617,6 @@ int File::copyfile(const FXString& source, const FXString& target, const FXStrin
                     // Percentage
                     int pct = (sourcesize == 0 ? 0 : (100.0 * totaldataread) / sourcesize);
                     progressbar->setProgress(pct);
-
-                    // Allow timeout checking
-                    getApp()->forceRefresh();
-                    getApp()->flush();
                 }
 
                 // Give cancel button an opportunity to be clicked
@@ -734,10 +730,6 @@ int File::copyfile(const FXString& source, const FXString& target, const FXStrin
                         {
                             break;
                         }
-
-                        // Allow timeout checking
-                        getApp()->forceRefresh();
-                        getApp()->flush();
 
                         // Set percentage value for progress dialog
                         totaldataread += nread;

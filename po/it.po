@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Xfe 1.37\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-03-01 12:08+0100\n"
+"POT-Creation-Date: 2026-03-28 10:35+0100\n"
 "PO-Revision-Date: 2013-10-10 18:18+0100\n"
 "Last-Translator: Giorgio Moscardi <software@sukkology.net>\n"
 "Language-Team: Italiano <kde-i18n-it@kde.org>\n"
@@ -329,13 +329,13 @@ msgstr "Errore: Fork fallita: %s\n"
 #: src/DirPanel.cpp:4025 src/DirPanel.cpp:4029 src/DirPanel.cpp:4051
 #: src/DirPanel.cpp:4056 src/DirPanel.cpp:4099 src/DirPanel.cpp:4103
 #: src/DirPanel.cpp:4125 src/DirPanel.cpp:4130 src/File.cpp:348
-#: src/File.cpp:1143 src/File.cpp:1151 src/File.cpp:1160 src/File.cpp:1184
-#: src/File.cpp:1441 src/File.cpp:1448 src/File.cpp:1458 src/File.cpp:1518
-#: src/File.cpp:1543 src/File.cpp:1563 src/File.cpp:1571 src/File.cpp:1580
-#: src/File.cpp:1599 src/File.cpp:1741 src/File.cpp:1778 src/File.cpp:1786
-#: src/File.cpp:1805 src/File.cpp:1878 src/File.cpp:1882 src/File.cpp:2293
-#: src/File.cpp:2297 src/File.cpp:2317 src/File.cpp:2322 src/File.cpp:2466
-#: src/File.cpp:2474 src/File.cpp:2481 src/File.cpp:2523 src/FileDialog.cpp:436
+#: src/File.cpp:1135 src/File.cpp:1143 src/File.cpp:1152 src/File.cpp:1176
+#: src/File.cpp:1433 src/File.cpp:1440 src/File.cpp:1450 src/File.cpp:1510
+#: src/File.cpp:1535 src/File.cpp:1555 src/File.cpp:1563 src/File.cpp:1572
+#: src/File.cpp:1591 src/File.cpp:1733 src/File.cpp:1770 src/File.cpp:1778
+#: src/File.cpp:1797 src/File.cpp:1870 src/File.cpp:1874 src/File.cpp:2285
+#: src/File.cpp:2289 src/File.cpp:2309 src/File.cpp:2314 src/File.cpp:2458
+#: src/File.cpp:2466 src/File.cpp:2473 src/File.cpp:2515 src/FileDialog.cpp:436
 #: src/FileDialog.cpp:501 src/FileDialog.cpp:1144 src/FileDialog.cpp:1149
 #: src/FileDialog.cpp:1205 src/FileDialog.cpp:1215 src/FileDialog.cpp:1220
 #: src/FileDialog.cpp:1234 src/FileDialog.cpp:1239 src/FileList.cpp:886
@@ -994,8 +994,8 @@ msgstr "Sposta "
 
 #: src/DirPanel.cpp:1986 src/DirPanel.cpp:2091 src/DirPanel.cpp:3789
 #: src/DirPanel.cpp:3815 src/DirPanel.cpp:4025 src/DirPanel.cpp:4051
-#: src/DirPanel.cpp:4099 src/DirPanel.cpp:4125 src/File.cpp:2293
-#: src/File.cpp:2317 src/FilePanel.cpp:1145 src/FilePanel.cpp:1170
+#: src/DirPanel.cpp:4099 src/DirPanel.cpp:4125 src/File.cpp:2285
+#: src/File.cpp:2309 src/FilePanel.cpp:1145 src/FilePanel.cpp:1170
 #: src/FilePanel.cpp:3913 src/FilePanel.cpp:3956 src/FilePanel.cpp:5172
 #: src/FilePanel.cpp:5199 src/FilePanel.cpp:5228 src/FilePanel.cpp:5377
 #: src/FilePanel.cpp:6064 src/FilePanel.cpp:6095 src/FilePanel.cpp:6206
@@ -1011,8 +1011,8 @@ msgstr "Impossibile entrare nella cartella %s: %s"
 
 #: src/DirPanel.cpp:1991 src/DirPanel.cpp:2096 src/DirPanel.cpp:3793
 #: src/DirPanel.cpp:3820 src/DirPanel.cpp:4029 src/DirPanel.cpp:4056
-#: src/DirPanel.cpp:4103 src/DirPanel.cpp:4130 src/File.cpp:2297
-#: src/File.cpp:2322 src/FilePanel.cpp:1150 src/FilePanel.cpp:1175
+#: src/DirPanel.cpp:4103 src/DirPanel.cpp:4130 src/File.cpp:2289
+#: src/File.cpp:2314 src/FilePanel.cpp:1150 src/FilePanel.cpp:1175
 #: src/FilePanel.cpp:3918 src/FilePanel.cpp:3961 src/FilePanel.cpp:5177
 #: src/FilePanel.cpp:5204 src/FilePanel.cpp:5233 src/FilePanel.cpp:5382
 #: src/FilePanel.cpp:6069 src/FilePanel.cpp:6100 src/FilePanel.cpp:6210
@@ -1314,7 +1314,7 @@ msgstr ""
 msgid "Moved data:"
 msgstr "Data modifica: "
 
-#: src/File.cpp:251 src/File.cpp:1378
+#: src/File.cpp:251 src/File.cpp:1370
 msgid "Delete:"
 msgstr "Elimina:"
 
@@ -1322,16 +1322,16 @@ msgstr "Elimina:"
 msgid "From:"
 msgstr "Da:"
 
-#: src/File.cpp:262 src/File.cpp:1931 src/File.cpp:1959 src/File.cpp:2023
+#: src/File.cpp:262 src/File.cpp:1923 src/File.cpp:1951 src/File.cpp:2015
 msgid "Changing permissions..."
 msgstr "Cambiamento dei permessi..."
 
-#: src/File.cpp:263 src/File.cpp:271 src/File.cpp:1933 src/File.cpp:2025
-#: src/File.cpp:2128 src/File.cpp:2217
+#: src/File.cpp:263 src/File.cpp:271 src/File.cpp:1925 src/File.cpp:2017
+#: src/File.cpp:2120 src/File.cpp:2209
 msgid "File: "
 msgstr "File: "
 
-#: src/File.cpp:270 src/File.cpp:2126 src/File.cpp:2157 src/File.cpp:2215
+#: src/File.cpp:270 src/File.cpp:2118 src/File.cpp:2149 src/File.cpp:2207
 msgid "Changing owner..."
 msgstr "Cambiamento del proprietario..."
 
@@ -1354,7 +1354,7 @@ msgstr ""
 "=> Attenzione, tutti i file all'interno di questa cartella saranno perduti "
 "definitivamente!"
 
-#: src/File.cpp:457 src/File.cpp:2339
+#: src/File.cpp:457 src/File.cpp:2331
 #, fuzzy, c-format
 msgid ""
 "File %s already exists.\n"
@@ -1362,177 +1362,177 @@ msgid ""
 msgstr "Il file %s esiste già. Sovrascriverlo?"
 
 #: src/File.cpp:530 src/File.cpp:535 src/File.cpp:542 src/File.cpp:546
-#: src/File.cpp:2340
+#: src/File.cpp:2332
 msgid "Confirm Overwrite"
 msgstr "Conferma sovrascrittura"
 
-#: src/File.cpp:633 src/File.cpp:759 src/File.cpp:1194 src/File.cpp:1613
+#: src/File.cpp:629 src/File.cpp:751 src/File.cpp:1186 src/File.cpp:1605
 msgid "Source: "
 msgstr "Sorgente: "
 
-#: src/File.cpp:638 src/File.cpp:764 src/File.cpp:1199 src/File.cpp:1618
+#: src/File.cpp:634 src/File.cpp:756 src/File.cpp:1191 src/File.cpp:1610
 msgid "Target: "
 msgstr "Destinazione: "
 
-#: src/File.cpp:662 src/File.cpp:710 src/File.cpp:789 src/File.cpp:889
+#: src/File.cpp:658 src/File.cpp:706 src/File.cpp:781 src/File.cpp:881
 #, c-format
 msgid "Can't copy file %s: %s"
 msgstr "Impossibile copiare il file %s: %s"
 
-#: src/File.cpp:714 src/File.cpp:793 src/File.cpp:893
+#: src/File.cpp:710 src/File.cpp:785 src/File.cpp:885
 #, c-format
 msgid "Can't copy file %s"
 msgstr "Impossibile copiare il file %s"
 
-#: src/File.cpp:842
+#: src/File.cpp:834
 #, c-format
 msgid "Can't preserve date when copying file %s : %s"
 msgstr "Impossibile preservare la data durante la copia del file %s : %s"
 
-#: src/File.cpp:847
+#: src/File.cpp:839
 #, c-format
 msgid "Can't preserve date when copying file %s"
 msgstr "Impossibile preservare la data durante la copia del file %s"
 
-#: src/File.cpp:992
+#: src/File.cpp:984
 #, c-format
 msgid "Can't copy folder %s : Permission denied"
 msgstr "Impossibile copiare la cartella %s : Permesso negato"
 
-#: src/File.cpp:996
+#: src/File.cpp:988
 #, c-format
 msgid "Can't copy file %s : Permission denied"
 msgstr "Impossibile copiare il file %s : Permesso negato"
 
-#: src/File.cpp:1033
+#: src/File.cpp:1025
 #, fuzzy, c-format
 msgid "Can't preserve date when copying folder %s: %s"
 msgstr "Impossibile preservare la data durante la copia della cartella %s : %s"
 
-#: src/File.cpp:1037
+#: src/File.cpp:1029
 #, c-format
 msgid "Can't preserve date when copying folder %s"
 msgstr "Impossibile preservare la data durante la copia della cartella %s"
 
-#: src/File.cpp:1143 src/File.cpp:1441 src/File.cpp:1563 src/File.cpp:1778
+#: src/File.cpp:1135 src/File.cpp:1433 src/File.cpp:1555 src/File.cpp:1770
 #, c-format
 msgid "Source %s doesn't exist"
 msgstr "Sorgente %s non esiste"
 
-#: src/File.cpp:1151 src/File.cpp:1184 src/File.cpp:1448 src/File.cpp:1571
-#: src/File.cpp:1599 src/File.cpp:1786 src/File.cpp:1805
+#: src/File.cpp:1143 src/File.cpp:1176 src/File.cpp:1440 src/File.cpp:1563
+#: src/File.cpp:1591 src/File.cpp:1778 src/File.cpp:1797
 #, fuzzy, c-format
 msgid "Destination %s is identical to source"
 msgstr "La destinazione %s è identica alla sorgente"
 
-#: src/File.cpp:1160 src/File.cpp:1580
+#: src/File.cpp:1152 src/File.cpp:1572
 #, c-format
 msgid "Target %s is a sub-folder of source"
 msgstr "La destinazione %s è una sottocartella della sorgente."
 
-#: src/File.cpp:1292
+#: src/File.cpp:1284
 #, fuzzy
 msgid "Delete folder: "
 msgstr "Elimina cartella: "
 
-#: src/File.cpp:1298 src/File.cpp:1384
+#: src/File.cpp:1290 src/File.cpp:1376
 msgid "From: "
 msgstr "Da: "
 
-#: src/File.cpp:1340
+#: src/File.cpp:1332
 #, c-format
 msgid "Can't delete folder %s: %s"
 msgstr "Impossibile eliminare la cartella %s: %s"
 
-#: src/File.cpp:1344
+#: src/File.cpp:1336
 #, c-format
 msgid "Can't delete folder %s"
 msgstr "Impossibile eliminare la cartella %s"
 
-#: src/File.cpp:1405
+#: src/File.cpp:1397
 #, c-format
 msgid "Can't delete file %s: %s"
 msgstr "Impossibile eliminare il file %s: %s"
 
-#: src/File.cpp:1409
+#: src/File.cpp:1401
 #, c-format
 msgid "Can't delete file %s"
 msgstr "Impossibile eliminare il file %s"
 
-#: src/File.cpp:1458
+#: src/File.cpp:1450
 #, fuzzy, c-format
 msgid "Destination %s already exists"
 msgstr "Il file o la cartella %s esiste già"
 
-#: src/File.cpp:1518 src/File.cpp:1543 src/File.cpp:1741
+#: src/File.cpp:1510 src/File.cpp:1535 src/File.cpp:1733
 #, fuzzy, c-format
 msgid "Can't rename to target %s: %s"
 msgstr "Impossibile rinominare in %s"
 
-#: src/File.cpp:1878
+#: src/File.cpp:1870
 #, c-format
 msgid "Can't symlink %s: %s"
 msgstr "Impossibile collegare con link simbolico %s: %s"
 
-#: src/File.cpp:1882
+#: src/File.cpp:1874
 #, c-format
 msgid "Can't symlink %s"
 msgstr "Impossibile collegare con link simbolico %s"
 
-#: src/File.cpp:1961 src/File.cpp:2159
+#: src/File.cpp:1953 src/File.cpp:2151
 #, fuzzy
 msgid "Folder: "
 msgstr "Cartella: "
 
-#: src/File.cpp:2304
+#: src/File.cpp:2296
 msgid "Extract archive"
 msgstr "Estrai archivio"
 
-#: src/File.cpp:2350
+#: src/File.cpp:2342
 msgid "Add to Archive "
 msgstr "Aggiungi ad un archivio"
 
-#: src/File.cpp:2368 src/File.cpp:2615
+#: src/File.cpp:2360 src/File.cpp:2607
 msgid "Computing the size of files to copy: "
 msgstr ""
 
-#: src/File.cpp:2372 src/File.cpp:2619
+#: src/File.cpp:2364 src/File.cpp:2611
 msgid "Computing the size of files to move: "
 msgstr ""
 
-#: src/File.cpp:2466 src/FilePanel.cpp:6374 src/SearchPanel.cpp:4980
+#: src/File.cpp:2458 src/FilePanel.cpp:6374 src/SearchPanel.cpp:4980
 #, c-format
 msgid "Failed command: %s"
 msgstr "Comando fallito: %s"
 
-#: src/File.cpp:2532 src/File.cpp:2536
+#: src/File.cpp:2524 src/File.cpp:2528
 msgid "Success"
 msgstr "Successo"
 
-#: src/File.cpp:2532
+#: src/File.cpp:2524
 #, c-format
 msgid "Folder %s was successfully mounted."
 msgstr "Cartella %s montata con successo."
 
-#: src/File.cpp:2536
+#: src/File.cpp:2528
 #, c-format
 msgid "Folder %s was successfully unmounted."
 msgstr "Cartella %s smontata con successo."
 
-#: src/File.cpp:2547 src/XFilePackage.cpp:420
+#: src/File.cpp:2539 src/XFilePackage.cpp:420
 msgid "Install / Upgrade Package"
 msgstr "Installa/Aggiorna pacchetto"
 
-#: src/File.cpp:2552 src/XFilePackage.cpp:424
+#: src/File.cpp:2544 src/XFilePackage.cpp:424
 #, c-format
 msgid "Installing package: %s \n"
 msgstr "Installazione pacchetto: %s \n"
 
-#: src/File.cpp:2565 src/XFilePackage.cpp:470
+#: src/File.cpp:2557 src/XFilePackage.cpp:470
 msgid "Uninstall Package"
 msgstr "Disinstalla pacchetto"
 
-#: src/File.cpp:2570 src/XFilePackage.cpp:474
+#: src/File.cpp:2562 src/XFilePackage.cpp:474
 #, c-format
 msgid "Uninstalling package: %s \n"
 msgstr "Disinstallazione pacchetto: %s \n"
