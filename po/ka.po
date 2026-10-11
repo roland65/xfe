@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: xfe 2.1.9\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-03 11:24+0200\n"
+"POT-Creation-Date: 2026-10-11 11:48+0200\n"
 "PO-Revision-Date: 2026-07-21 14:17+0200\n"
 "Last-Translator: Ekaterine Papava <papava.e@gtu.ge>\n"
 "Language-Team: Georgian <(nothing)>\n"
@@ -5395,7 +5395,7 @@ msgid ""
 "Colombian Spanish: Vladimir Támara (Pasos de Jesús)\n"
 "Czech: David Vachulka\n"
 "Danish: Jonas Bardino, Vidar Jon Bauge\n"
-"Dutch: Hans Strijards\n"
+"Dutch: Pjotr Vertaalt, Hans Strijards\n"
 "Finnish: Kimmo Siira\n"
 "French: Claude Leo Mercier, Roland Baudin\n"
 "Georgian: Ekaterine Papava\n"
@@ -5427,7 +5427,7 @@ msgstr ""
 "კოლუმბიური ესპანური: Vladimir Támara (Pasos de Jesús)\n"
 "ჩეხური: David Vachulka\n"
 "დანიური: Jonas Bardino, Vidar Jon Bauge\n"
-"ჰოლანდიური: Hans Strijards\n"
+"ჰოლანდიური: Pjotr Vertaalt, Hans Strijards\n"
 "ფინური: Kimmo Siira\n"
 "ფრანგული: Claude Leo Mercier, Roland Baudin\n"
 "გერმანული: Bastian Kleineidam, Joachim Wiedorn, Tim Benke, Jens Körner\n"
@@ -6544,8 +6544,8 @@ msgid ""
 "   Trash system\n"
 "   =-=-=-=-=-=-=\n"
 " \n"
-"  Xfe implements a trash system that is fully compliant with the freedesktop."
-"org standards.\n"
+"  Xfe implements a trash system that is fully compliant with the "
+"freedesktop.org standards.\n"
 "  This allows you to move files to the trash can and to restore files from "
 "within Xfe or your favorite desktop.\n"
 "  Note that the trash files location is: ~/.local/share/Trash/files\n"
@@ -7002,83 +7002,83 @@ msgstr "შეცდომა: ჯგუფების სიის წაკ�
 msgid "Error: Can't read group list"
 msgstr "შეცდომა: ჯგუფების სიის წაკითხვა შეუძლებელია"
 
-#: src/xfeutils.cpp:2069
+#: src/xfeutils.cpp:2071
 #, c-format
 msgid "%u h %u min %u s"
 msgstr "%u სთ %u წთ %u წმ"
 
-#: src/xfeutils.cpp:2073
+#: src/xfeutils.cpp:2075
 #, c-format
 msgid "%u min %u s"
 msgstr "%u წთ %u წმ"
 
-#: src/xfeutils.cpp:2077
+#: src/xfeutils.cpp:2079
 #, c-format
 msgid "%u s"
 msgstr "%u წმ"
 
-#: xfe.desktop.in:3
+#: xfe.desktop.in:2
 msgid "Xfe"
 msgstr "Xfe"
 
-#: xfe.desktop.in:4
+#: xfe.desktop.in:3
 msgid "File Manager"
 msgstr "ფაილების მმართველი"
 
-#: xfe.desktop.in:5
+#: xfe.desktop.in:4
 msgid "A lightweight file manager for X Window"
 msgstr "მსუბუქი ფაილების მმართველი X Window-ისთვის"
 
-#: xfe.desktop.in:6
+#: xfe.desktop.in:5
 msgid "file manager"
 msgstr "ფაილების მმართველი"
 
-#: xfi.desktop.in:3
+#: xfi.desktop.in:2
 msgid "Xfi"
 msgstr "Xfi"
 
-#: xfi.desktop.in:4
+#: xfi.desktop.in:3
 msgid "Image Viewer"
 msgstr "სურათების გამხსნელი"
 
-#: xfi.desktop.in:5
+#: xfi.desktop.in:4
 msgid "A simple image viewer for Xfe"
 msgstr "მარტივი სურათების დამთვალიერებელი Xfe-ისთვის"
 
-#: xfi.desktop.in:6
+#: xfi.desktop.in:5
 msgid "image viewer;image manager"
 msgstr "image viewer;image manager;სურათების დათვალიერება;სურათების მმართველი"
 
-#: xfp.desktop.in:3
+#: xfp.desktop.in:2
 msgid "Xfp"
 msgstr "Xfp"
 
-#: xfp.desktop.in:4
+#: xfp.desktop.in:3
 msgid "Package Manager"
 msgstr "პაკეტების მმართველი"
 
-#: xfp.desktop.in:5
+#: xfp.desktop.in:4
 msgid "A simple package manager for Xfe"
 msgstr "მარტივი პაკეტების მმართველი Xfe-ისთვის"
 
-#: xfp.desktop.in:6
+#: xfp.desktop.in:5
 msgid "package viewer;package manager"
 msgstr ""
 "package viewer;package manager;პაკეტების დათვალიერება;პაკეტების მმართველი"
 
-#: xfw.desktop.in:3
+#: xfw.desktop.in:2
 msgid "Xfw"
 msgstr "Xfw"
 
-#: xfw.desktop.in:4
+#: xfw.desktop.in:3
 msgid "Text Editor"
 msgstr "ტექსტური რედაქტორი"
 
-#: xfw.desktop.in:5
+#: xfw.desktop.in:4
 msgid "A simple text editor for Xfe"
 msgstr "მარტივი ტექსტური რედაქტორი Xfe-ისთვის"
 
-#: xfw.desktop.in:6
+#: xfw.desktop.in:5
 msgid "editor;viewer;text"
 msgstr "editor;viewer;text;რედაქტორი;ტექსტი"
 

@@ -1,6 +1,6 @@
 #
 # Xfe default settings
-# Version : 05/01/2026
+# Version : 11/10/2026
 #
 # These settings are overridden in ~/.config/xfe/xferc
 #
@@ -226,6 +226,7 @@ rs = "<txteditor>,<txtviewer>,<txteditor>;Rust Source;rs_32x32.png;rs_16x16.png;
 f = "<txteditor>,<txtviewer>,<txteditor>;Fortran Source;for_32x32.png;for_16x16.png;;"
 f90 = "<txteditor>,<txtviewer>,<txteditor>;Fortran Source;for_32x32.png;for_16x16.png;;"
 series = "<txteditor>,<txtviewer>,<txteditor>;Debian Patches;text_32x32.png;text_16x16.png;;"
+csv = "<txteditor>,<txtviewer>,<txteditor>;CSV;text_32x32.png;text_16x16.png;;"
 
 # Web
 html = "firefox,firefox,<txteditor>;Hyper Text;html_32x32.png;html_16x16.png;;"

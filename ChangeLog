@@ -1,3 +1,10 @@
+Version 2.1.12 (released 11/10/2026)
+- add text association for csv files
+- fix new mount point /run/media not recognized in Linux systems
+- fix missing quotes in mount path when opening it with xfe in xfe-automount program (PR #15)
+- update dutch translation (Pjotr Vertaalt <pjotrvertaalt@gmail.com>) (PR #16)
+- fix regression introduced in version 2.1.7 that broke the cursor behaviour in file panels 
+
 Version 2.1.11 (released 03/08/2026)
 - fix regression introduced in version 2.1.7 when opening files with single or double quotes in their name
   and startup notification is disabled

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: xfe 2.1.9\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-03 11:24+0200\n"
+"POT-Creation-Date: 2026-10-11 11:48+0200\n"
 "PO-Revision-Date: 2026-07-18 11:12+0600\n"
 "Last-Translator: вдмЪ <vg72proton@proton.me>\n"
 "Language-Team: Russian\n"
@@ -5628,38 +5628,6 @@ msgid "FOX Toolkit by Jeroen van der Zijp\n"
 msgstr "'FOX Toolkit' от Jeroen van der Zijp\n"
 
 #: src/XFileExplorer.cpp:4789
-#, fuzzy
-#| msgid ""
-#| "\n"
-#| "Translators\n"
-#| "-------------\n"
-#| "Argentinian Spanish: Bruno Gilberto Luciani\n"
-#| "Brazilian Portuguese: Eduardo R.B.S., Jose Carlos Medeiros,\n"
-#| "Phantom X, Tomas Acauan Schertel\n"
-#| "Bosnian: Samir Ribi, Bajrami Emran, Balagija Jasmina,\n"
-#| "Bilalovi, Omar Cogo Emir\n"
-#| "Catalan: Pere Orga\n"
-#| "Chinese: Xin Li\n"
-#| "Chinese (Taïwan): Wei-Lun Chao\n"
-#| "Colombian Spanish: Vladimir Támara (Pasos de Jesús)\n"
-#| "Czech: David Vachulka\n"
-#| "Danish: Jonas Bardino, Vidar Jon Bauge\n"
-#| "Dutch: Hans Strijards\n"
-#| "Finnish: Kimmo Siira\n"
-#| "French: Claude Leo Mercier, Roland Baudin\n"
-#| "German: Bastian Kleineidam, Joachim Wiedorn, Tim Benke, Jens Körner\n"
-#| "Greek: Nikos Papadopoulos\n"
-#| "Hungarian: Attila Szervac, Sandor Sipos\n"
-#| "Italian: Claudio Fontana, Giorgio Moscardi\n"
-#| "Japanese: Karl Skewes\n"
-#| "Norwegian: Vidar Jon Bauge\n"
-#| "Polish: Jacek Dziura, Franciszek Janowski\n"
-#| "Portuguese: Miguel Santinho\n"
-#| "Russian: Dimitri Sertolov, Vad Vad\n"
-#| "Spanish: Felix Medrano Sanz, Lucas 'Basurero' Vieites,\n"
-#| "Martin Carr\n"
-#| "Swedish: Anders F. Bjorklund\n"
-#| "Turkish: erkaN\n"
 msgid ""
 "\n"
 "Translators\n"
@@ -5675,7 +5643,7 @@ msgid ""
 "Colombian Spanish: Vladimir Támara (Pasos de Jesús)\n"
 "Czech: David Vachulka\n"
 "Danish: Jonas Bardino, Vidar Jon Bauge\n"
-"Dutch: Hans Strijards\n"
+"Dutch: Pjotr Vertaalt, Hans Strijards\n"
 "Finnish: Kimmo Siira\n"
 "French: Claude Leo Mercier, Roland Baudin\n"
 "Georgian: Ekaterine Papava\n"
@@ -5707,7 +5675,7 @@ msgstr ""
 "Колумбийский испанский: Vladimir Támara (Pasos de Jesús)\n"
 "Чешский: David Vachulka\n"
 "Датский: Jonas Bardino, Vidar Jon Bauge\n"
-"Голландский: Hans Strijards\n"
+"Голландский: Pjotr Vertaalt, Hans Strijards\n"
 "Финский: Kimmo Siira\n"
 "Французский: Claude Leo Mercier, Roland Baudin\n"
 "Немецкий: Bastian Kleineidam, Joachim Wiedorn, Tim Benke, Jens Körner\n"
@@ -6838,8 +6806,8 @@ msgid ""
 "   Trash system\n"
 "   =-=-=-=-=-=-=\n"
 " \n"
-"  Xfe implements a trash system that is fully compliant with the freedesktop."
-"org standards.\n"
+"  Xfe implements a trash system that is fully compliant with the "
+"freedesktop.org standards.\n"
 "  This allows you to move files to the trash can and to restore files from "
 "within Xfe or your favorite desktop.\n"
 "  Note that the trash files location is: ~/.local/share/Trash/files\n"
@@ -7260,8 +7228,8 @@ msgstr ""
 "подключением к SSH-серверу)\n"
 "     - Поиск файлов или каталогов\n"
 "     - Массовое переименование файлов\n"
-"     - Естественный порядок сортировки (файл foo10.txt идёт после foo2."
-"txt...)\n"
+"     - Естественный порядок сортировки (файл foo10.txt идёт после "
+"foo2.txt...)\n"
 "     - Управление файлами рабочего стола (GNOME / KDE / XFCE)\n"
 "     - Поддержка Drag-and-drop на рабочем столе (GNOME / KDE / XFCE)\n"
 "     - Запуск от 'root' с аутентификацией через pkexec, su или sudo\n"
@@ -7619,8 +7587,8 @@ msgstr ""
 "набор символов. Чтобы выбрать\n"
 "  подходящий шрифт используйте окно «Настройки > Шрифты».\n"
 " \n"
-"  Многоязычные шрифты Unicode TrueType можно найти по адресу: http:   //www."
-"slovo.info/unifonts.htm\n"
+"  Многоязычные шрифты Unicode TrueType можно найти по адресу: http:   //"
+"www.slovo.info/unifonts.htm\n"
 " \n"
 " \n"
 " \n"
@@ -7901,82 +7869,82 @@ msgstr ""
 msgid "Error: Can't read group list"
 msgstr "Ошибка: Не удалось прочитать список групп"
 
-#: src/xfeutils.cpp:2069
+#: src/xfeutils.cpp:2071
 #, c-format
 msgid "%u h %u min %u s"
 msgstr "%u ч %u мин %u с"
 
-#: src/xfeutils.cpp:2073
+#: src/xfeutils.cpp:2075
 #, c-format
 msgid "%u min %u s"
 msgstr "%u мин %u с"
 
-#: src/xfeutils.cpp:2077
+#: src/xfeutils.cpp:2079
 #, c-format
 msgid "%u s"
 msgstr "%u с"
 
-#: xfe.desktop.in:3
+#: xfe.desktop.in:2
 msgid "Xfe"
 msgstr "Xfe"
 
-#: xfe.desktop.in:4
+#: xfe.desktop.in:3
 msgid "File Manager"
 msgstr "Файловый менеджер"
 
-#: xfe.desktop.in:5
+#: xfe.desktop.in:4
 msgid "A lightweight file manager for X Window"
 msgstr "Легкий файловый менеджер для X Window"
 
-#: xfe.desktop.in:6
+#: xfe.desktop.in:5
 msgid "file manager"
 msgstr "файловый менеджер"
 
-#: xfi.desktop.in:3
+#: xfi.desktop.in:2
 msgid "Xfi"
 msgstr "Xfi"
 
-#: xfi.desktop.in:4
+#: xfi.desktop.in:3
 msgid "Image Viewer"
 msgstr "Просмотр изображений"
 
-#: xfi.desktop.in:5
+#: xfi.desktop.in:4
 msgid "A simple image viewer for Xfe"
 msgstr "Простая программа для просмотра изображений для Xfe"
 
-#: xfi.desktop.in:6
+#: xfi.desktop.in:5
 msgid "image viewer;image manager"
 msgstr "просмотр изображений;управление изображениями"
 
-#: xfp.desktop.in:3
+#: xfp.desktop.in:2
 msgid "Xfp"
 msgstr "Xfp"
 
-#: xfp.desktop.in:4
+#: xfp.desktop.in:3
 msgid "Package Manager"
 msgstr "Менеджер пакетов"
 
-#: xfp.desktop.in:5
+#: xfp.desktop.in:4
 msgid "A simple package manager for Xfe"
 msgstr "Простой менеджер пакетов для Xfe"
 
-#: xfp.desktop.in:6
+#: xfp.desktop.in:5
 msgid "package viewer;package manager"
 msgstr "просмотр пакетов;управление пакетами"
 
-#: xfw.desktop.in:3
+#: xfw.desktop.in:2
 msgid "Xfw"
 msgstr "Xfw"
 
-#: xfw.desktop.in:4
+#: xfw.desktop.in:3
 msgid "Text Editor"
 msgstr "Текстовый редактор"
 
-#: xfw.desktop.in:5
+#: xfw.desktop.in:4
 msgid "A simple text editor for Xfe"
 msgstr "Простой текстовый редактор для Xfe"
 
-#: xfw.desktop.in:6
+#: xfw.desktop.in:5
 msgid "editor;viewer;text"
 msgstr "правка;просмотр;текст"
 

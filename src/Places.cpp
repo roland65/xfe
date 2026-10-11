@@ -291,7 +291,7 @@ MountsList::MountsList(FXWindow* owner, FXComposite* p, FXObject* tgt, FXSelecto
                     mounts->insert(name.text(), pathname.text());
                     FXList::appendItem(name, mininetdriveicon);
                 }
-                else if (strncmp(mnt->mnt_dir, "/media", 6) == 0)
+                else if (strncmp(mnt->mnt_dir, "/run/media", 10) == 0 || strncmp(mnt->mnt_dir, "/media", 6) == 0)
                 {
                     if (strncmp(mnt->mnt_type, "iso", 3) == 0)
                     {
@@ -511,7 +511,7 @@ long MountsList::onMountsRefresh(FXObject* sender, FXSelector, void* ptr)
                         mounts->insert(name.text(), pathname.text());
                         FXList::appendItem(name, mininetdriveicon);
                     }
-                    else if (strncmp(mnt->mnt_dir, "/media", 6) == 0)
+                    else if (strncmp(mnt->mnt_dir, "/run/media", 10) == 0 || strncmp(mnt->mnt_dir, "/media", 6) == 0)
                     {
                         if (strncmp(mnt->mnt_type, "iso", 3) == 0)
                         {

@@ -151,6 +151,26 @@ static void send_notification(char *path)
 #endif
 
 
+// Quote a string for shell command
+std::string shell_quote(std::string const& value)
+{
+    std::string quoted = "'";
+    for (char c : value)
+    {
+        if (c == '\'')
+        {
+            quoted += "'\\''";
+        }
+        else
+        {
+            quoted += c;
+        }
+    }
+    quoted += "'";
+    return quoted;
+}
+
+
 // Return command output or error message
 std::string getcommandoutput(std::string cmd)
 {
@@ -274,7 +294,7 @@ static void mount_and_add_filesystem(FileSystemInfo const & result)
         // Open a new Xfe window
         if (automount_open)
         {           
-            std::string cmd_xfe = std::string("xfe ") + mnt_path + "&";            
+            std::string cmd_xfe = std::string("xfe ") + shell_quote(mnt_path) + " &";            
             errno = 0;
             int ret = system(cmd_xfe.data());
             if (ret == -1)
@@ -473,7 +493,7 @@ gboolean mtp_monitor_mount(gpointer data)
                                 // Open a new Xfe window
                                 if (automount_open)
                                 {
-                                    std::string cmd_xfe = std::string("xfe ") + mtp_path + "&";                                    
+                                    std::string cmd_xfe = std::string("xfe ") + shell_quote(mtp_path) + " &";                                    
                                     errno = 0;
                                     int ret = system(cmd_xfe.data());
                                     if (ret == -1)
@@ -562,7 +582,7 @@ int main()
 
     GDBusObjectManager* manager = udisks_client_get_object_manager(client);
 
-    // Mount all mountable filesystems that are not mounted (does not handle MTP devices)
+    // Mount all mountable file systems that are not mounted (does not handle MTP devices)
     mount_unmounted_filesystems(manager);
 
     g_signal_connect(manager, "object-added", G_CALLBACK(on_object_added), NULL);

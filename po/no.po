@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: xfe 0.87\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-03 11:24+0200\n"
+"POT-Creation-Date: 2026-10-11 11:48+0200\n"
 "PO-Revision-Date: 2007-02-13 09:54+0100\n"
 "Last-Translator: Vidar Jon Bauge <vidarjon@tiscali.dk>\n"
 "Language-Team: Norwegian\n"
@@ -5945,7 +5945,7 @@ msgid ""
 "Colombian Spanish: Vladimir Támara (Pasos de Jesús)\n"
 "Czech: David Vachulka\n"
 "Danish: Jonas Bardino, Vidar Jon Bauge\n"
-"Dutch: Hans Strijards\n"
+"Dutch: Pjotr Vertaalt, Hans Strijards\n"
 "Finnish: Kimmo Siira\n"
 "French: Claude Leo Mercier, Roland Baudin\n"
 "Georgian: Ekaterine Papava\n"
@@ -7114,8 +7114,8 @@ msgid ""
 "   Trash system\n"
 "   =-=-=-=-=-=-=\n"
 " \n"
-"  Xfe implements a trash system that is fully compliant with the freedesktop."
-"org standards.\n"
+"  Xfe implements a trash system that is fully compliant with the "
+"freedesktop.org standards.\n"
 "  This allows you to move files to the trash can and to restore files from "
 "within Xfe or your favorite desktop.\n"
 "  Note that the trash files location is: ~/.local/share/Trash/files\n"
@@ -7564,88 +7564,88 @@ msgstr "Kan ikke slette mappen"
 msgid "Error: Can't read group list"
 msgstr " Mappen :"
 
-#: src/xfeutils.cpp:2069
+#: src/xfeutils.cpp:2071
 #, c-format
 msgid "%u h %u min %u s"
 msgstr ""
 
-#: src/xfeutils.cpp:2073
+#: src/xfeutils.cpp:2075
 #, c-format
 msgid "%u min %u s"
 msgstr ""
 
-#: src/xfeutils.cpp:2077
+#: src/xfeutils.cpp:2079
 #, c-format
 msgid "%u s"
 msgstr ""
 
-#: xfe.desktop.in:3
+#: xfe.desktop.in:2
 msgid "Xfe"
 msgstr ""
 
-#: xfe.desktop.in:4
+#: xfe.desktop.in:3
 #, fuzzy
 msgid "File Manager"
 msgstr "Eier"
 
-#: xfe.desktop.in:5
+#: xfe.desktop.in:4
 msgid "A lightweight file manager for X Window"
 msgstr ""
 
-#: xfe.desktop.in:6
+#: xfe.desktop.in:5
 #, fuzzy
 msgid "file manager"
 msgstr "Eier"
 
-#: xfi.desktop.in:3
+#: xfi.desktop.in:2
 msgid "Xfi"
 msgstr ""
 
-#: xfi.desktop.in:4
+#: xfi.desktop.in:3
 #, fuzzy
 msgid "Image Viewer"
 msgstr "Standard tekstviser"
 
-#: xfi.desktop.in:5
+#: xfi.desktop.in:4
 msgid "A simple image viewer for Xfe"
 msgstr ""
 
-#: xfi.desktop.in:6
+#: xfi.desktop.in:5
 msgid "image viewer;image manager"
 msgstr ""
 
-#: xfp.desktop.in:3
+#: xfp.desktop.in:2
 msgid "Xfp"
 msgstr ""
 
-#: xfp.desktop.in:4
+#: xfp.desktop.in:3
 #, fuzzy
 msgid "Package Manager"
 msgstr "Pakke :"
 
-#: xfp.desktop.in:5
+#: xfp.desktop.in:4
 #, fuzzy
 msgid "A simple package manager for Xfe"
 msgstr "RedHat package manager (RPM) ikke funnet!"
 
-#: xfp.desktop.in:6
+#: xfp.desktop.in:5
 msgid "package viewer;package manager"
 msgstr ""
 
-#: xfw.desktop.in:3
+#: xfw.desktop.in:2
 msgid "Xfw"
 msgstr ""
 
-#: xfw.desktop.in:4
+#: xfw.desktop.in:3
 #, fuzzy
 msgid "Text Editor"
 msgstr "Standard Teksteditor"
 
-#: xfw.desktop.in:5
+#: xfw.desktop.in:4
 msgid "A simple text editor for Xfe"
 msgstr ""
 
-#: xfw.desktop.in:6
+#: xfw.desktop.in:5
 msgid "editor;viewer;text"
 msgstr ""
 

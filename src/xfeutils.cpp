@@ -2030,12 +2030,14 @@ FXbool xf_keepmount(FXString mntdir, FXString mntname)
 {
     FXbool ret = false;
 
-    if ((mntdir.left(4) != "/sys") &&
-        (mntdir.left(4) != "/dev") &&
-        (mntdir.left(5) != "/proc") &&
-        (mntdir.left(4) != "/run") &&
-        (mntname.left(5) != "gvfsd") &&         // gvfsd mounts
-        (mntname.left(6) != "portal"))          // Some fuse mounts
+    if ( (mntdir.left(6) == "/media") ||
+         (mntdir.left(10) == "/run/media") ||
+         ( (mntdir.left(4) != "/sys") &&
+           (mntdir.left(4) != "/dev") &&
+           (mntdir.left(5) != "/proc") &&
+           (mntname.left(5) != "gvfsd") &&    // gvfsd mounts
+           (mntname.left(6) != "portal") &&   // Some fuse mounts
+           (mntname.left(4) != "/run") ) )
     {
         ret = true;
     }

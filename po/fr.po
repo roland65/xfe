@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Xfe 2.1.9\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-03 11:24+0200\n"
+"POT-Creation-Date: 2026-10-11 11:48+0200\n"
 "PO-Revision-Date: 2022-12-12 11:28+0100\n"
 "Last-Translator: Roland Baudin <roland65@free.fr>\n"
 "Language-Team: français <>\n"
@@ -5419,7 +5419,7 @@ msgid ""
 "Colombian Spanish: Vladimir Támara (Pasos de Jesús)\n"
 "Czech: David Vachulka\n"
 "Danish: Jonas Bardino, Vidar Jon Bauge\n"
-"Dutch: Hans Strijards\n"
+"Dutch: Pjotr Vertaalt, Hans Strijards\n"
 "Finnish: Kimmo Siira\n"
 "French: Claude Leo Mercier, Roland Baudin\n"
 "Georgian: Ekaterine Papava\n"
@@ -5455,7 +5455,7 @@ msgstr ""
 "Français : Claude Leo Mercier, Roland Baudin\n"
 "Géorgien : Ekaterine Papava\n"
 "Grec : Nikos Papadopoulos\n"
-"Hollandais : Hans Strijards\n"
+"Hollandais : Pjotr Vertaalt, Hans Strijards\n"
 "Hongrois : Attila Szervac, Sandor Sipos\n"
 "Italien: Claudio Fontana, Giorgio Moscardi\n"
 "Japonais : Karl Skewes\n"
@@ -6575,8 +6575,8 @@ msgid ""
 "   Trash system\n"
 "   =-=-=-=-=-=-=\n"
 " \n"
-"  Xfe implements a trash system that is fully compliant with the freedesktop."
-"org standards.\n"
+"  Xfe implements a trash system that is fully compliant with the "
+"freedesktop.org standards.\n"
 "  This allows you to move files to the trash can and to restore files from "
 "within Xfe or your favorite desktop.\n"
 "  Note that the trash files location is: ~/.local/share/Trash/files\n"
@@ -6998,8 +6998,8 @@ msgstr ""
 "serveur SSH)\n"
 "    - Recherche de fichiers et dossiers\n"
 "    - Renommage en masse de fichiers\n"
-"    - Tri des fichiers dans l'ordre naturel (fich10.txt vient après fich2."
-"txt...)\n"
+"    - Tri des fichiers dans l'ordre naturel (fich10.txt vient après "
+"fich2.txt...)\n"
 "    - Copier/Couper/Coller depuis et vers votre bureau favori (GNOME/KDE/"
 "XFCE)\n"
 "    - Glisser/Déposer depuis et vers votre bureau favori (GNOME/KDE/XFCE)\n"
@@ -7692,82 +7692,82 @@ msgstr "Erreur : Ne peut lire la liste de groupes : %s"
 msgid "Error: Can't read group list"
 msgstr "Erreur : Ne peut lire la liste de groupes"
 
-#: src/xfeutils.cpp:2069
+#: src/xfeutils.cpp:2071
 #, c-format
 msgid "%u h %u min %u s"
 msgstr "%u h %u min %u s"
 
-#: src/xfeutils.cpp:2073
+#: src/xfeutils.cpp:2075
 #, c-format
 msgid "%u min %u s"
 msgstr "%u min %u s"
 
-#: src/xfeutils.cpp:2077
+#: src/xfeutils.cpp:2079
 #, c-format
 msgid "%u s"
 msgstr "%u s"
 
-#: xfe.desktop.in:3
+#: xfe.desktop.in:2
 msgid "Xfe"
 msgstr "Xfe"
 
-#: xfe.desktop.in:4
+#: xfe.desktop.in:3
 msgid "File Manager"
 msgstr "Gestionnaire de fichiers"
 
-#: xfe.desktop.in:5
+#: xfe.desktop.in:4
 msgid "A lightweight file manager for X Window"
 msgstr "Un gestionnaire de fichiers léger pour X Window"
 
-#: xfe.desktop.in:6
+#: xfe.desktop.in:5
 msgid "file manager"
 msgstr "gestionnaire de fichiers"
 
-#: xfi.desktop.in:3
+#: xfi.desktop.in:2
 msgid "Xfi"
 msgstr "Xfi"
 
-#: xfi.desktop.in:4
+#: xfi.desktop.in:3
 msgid "Image Viewer"
 msgstr "Visualiseur d'images"
 
-#: xfi.desktop.in:5
+#: xfi.desktop.in:4
 msgid "A simple image viewer for Xfe"
 msgstr "Un visualiseur d'images simple pour Xfe"
 
-#: xfi.desktop.in:6
+#: xfi.desktop.in:5
 msgid "image viewer;image manager"
 msgstr "visualiseur d'images;gestionnaire d'images"
 
-#: xfp.desktop.in:3
+#: xfp.desktop.in:2
 msgid "Xfp"
 msgstr "Xfp"
 
-#: xfp.desktop.in:4
+#: xfp.desktop.in:3
 msgid "Package Manager"
 msgstr "Gestionnaire de paquets"
 
-#: xfp.desktop.in:5
+#: xfp.desktop.in:4
 msgid "A simple package manager for Xfe"
 msgstr "Un gestionnaire de paquets simple pour Xfe"
 
-#: xfp.desktop.in:6
+#: xfp.desktop.in:5
 msgid "package viewer;package manager"
 msgstr "visualiseur de paquets;gestionnaire de paquets"
 
-#: xfw.desktop.in:3
+#: xfw.desktop.in:2
 msgid "Xfw"
 msgstr "Xfw"
 
-#: xfw.desktop.in:4
+#: xfw.desktop.in:3
 msgid "Text Editor"
 msgstr "Éditeur de texte"
 
-#: xfw.desktop.in:5
+#: xfw.desktop.in:4
 msgid "A simple text editor for Xfe"
 msgstr "Un éditeur de texte simple pour Xfe"
 
-#: xfw.desktop.in:6
+#: xfw.desktop.in:5
 msgid "editor;viewer;text"
 msgstr "éditeur;visualiseur;texte"
 

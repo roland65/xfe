@@ -4799,7 +4799,7 @@ Chinese (Taïwan): Wei-Lun Chao\n\
 Colombian Spanish: Vladimir Támara (Pasos de Jesús)\n\
 Czech: David Vachulka\n\
 Danish: Jonas Bardino, Vidar Jon Bauge\n\
-Dutch: Hans Strijards\n\
+Dutch: Pjotr Vertaalt, Hans Strijards\n\
 Finnish: Kimmo Siira\n\
 French: Claude Leo Mercier, Roland Baudin\n\
 Georgian: Ekaterine Papava\n\

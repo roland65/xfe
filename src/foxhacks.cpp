@@ -1529,7 +1529,6 @@ bool FXApp::dispatchEvent(FXRawEvent& ev)
 
         // Keyboard
         case KeyPress:
-        case KeyRelease:
 
             // !!! Hack to fix the bug with composed characters !!!
             FXWindow* focuswin;
@@ -1551,6 +1550,7 @@ bool FXApp::dispatchEvent(FXRawEvent& ev)
             }
             // !!! End of hack !!!
             
+        case KeyRelease:
             event.type = SEL_KEYPRESS + ev.xkey.type - KeyPress;
             event.time = ev.xkey.time;
             event.win_x = ev.xkey.x;
