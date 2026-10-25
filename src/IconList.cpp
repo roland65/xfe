@@ -1851,13 +1851,16 @@ int IconList::getItemAt(int x, int y, int state)
         if (xf_setwaitcursor(getApp(), QUERY_CURSOR) == 0)
         {
             // Set arrow cursor if control or shift key is pressed
-            if (state & (SHIFTMASK | CONTROLMASK))
-            {
+            if (state > 0  && (state & (SHIFTMASK | CONTROLMASK)))
+            {                
                 setDefaultCursor(getApp()->getDefaultCursor(DEF_ARROW_CURSOR));
             }
             else
             {
-                setDefaultCursor(getApp()->getDefaultCursor(DEF_HAND_CURSOR));
+                if (x < header->getItemSize(0))  // On first column 
+                {
+                    setDefaultCursor(getApp()->getDefaultCursor(DEF_HAND_CURSOR));
+                }
             }
         }
     }

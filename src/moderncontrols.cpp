@@ -10,6 +10,9 @@ extern FXint scaleint;
 // Threshold used to check if dark theme
 #define DARK_COLOR_THRESHOLD    125
 
+// Lightness factor for disabled text in dark theme
+#define DARK_DISABLED_TEXT_LIGHTNESS 1.3
+
 
 //
 // Specific functions and macros
@@ -319,7 +322,9 @@ long FXButton::onPaint(FXObject*, FXSelector, void* ptr)
             FXColor color;
             if ((rk + gk + bk) / 3 < DARK_COLOR_THRESHOLD)
             {
-                color = FXRGB(FXMIN(1.1 * r, 255), FXMIN(1.1 * g, 255), FXMIN(1.1 * b, 255));
+                color = FXRGB(FXMIN(DARK_DISABLED_TEXT_LIGHTNESS * r, 255), 
+                              FXMIN(DARK_DISABLED_TEXT_LIGHTNESS * g, 255),
+                              FXMIN(DARK_DISABLED_TEXT_LIGHTNESS * b, 255));
             }
             else
             {
@@ -526,7 +531,9 @@ long FXCheckButton::onPaint(FXObject*, FXSelector, void* ptr)
             FXColor color;
             if ((rk + gk + bk) / 3 < DARK_COLOR_THRESHOLD)
             {
-                color = FXRGB(FXMIN(1.1 * r, 255), FXMIN(1.1 * g, 255), FXMIN(1.1 * b, 255));
+                color = FXRGB(FXMIN(DARK_DISABLED_TEXT_LIGHTNESS * r, 255),
+                              FXMIN(DARK_DISABLED_TEXT_LIGHTNESS * g, 255),
+                              FXMIN(DARK_DISABLED_TEXT_LIGHTNESS * b, 255));
             }
             else
             {
@@ -1461,7 +1468,9 @@ long FXRadioButton::onPaint(FXObject*, FXSelector, void* ptr)
             FXColor color;
             if ((rk + gk + bk) / 3 < DARK_COLOR_THRESHOLD)
             {
-                color = FXRGB(FXMIN(1.1 * r, 255), FXMIN(1.1 * g, 255), FXMIN(1.1 * b, 255));
+                color = FXRGB(FXMIN(DARK_DISABLED_TEXT_LIGHTNESS * r, 255),
+                              FXMIN(DARK_DISABLED_TEXT_LIGHTNESS * g, 255),
+                              FXMIN(DARK_DISABLED_TEXT_LIGHTNESS * b, 255));
             }
             else
             {
@@ -2390,7 +2399,9 @@ long FXMenuRadio::onPaint(FXObject*, FXSelector, void* ptr)
             FXColor color;
             if ((rk + gk + bk) / 3 < DARK_COLOR_THRESHOLD)
             {
-                color = FXRGB(FXMIN(1.1 * r, 255), FXMIN(1.1 * g, 255), FXMIN(1.1 * b, 255));
+                color = FXRGB(FXMIN(DARK_DISABLED_TEXT_LIGHTNESS * r, 255),
+                              FXMIN(DARK_DISABLED_TEXT_LIGHTNESS * g, 255),
+                              FXMIN(DARK_DISABLED_TEXT_LIGHTNESS * b, 255));
             }
             else
             {
@@ -2548,7 +2559,9 @@ long FXMenuCheck::onPaint(FXObject*, FXSelector, void* ptr)
             FXColor color;
             if ((rk + gk + bk) / 3 < DARK_COLOR_THRESHOLD)
             {
-                color = FXRGB(FXMIN(1.1 * r, 255), FXMIN(1.1 * g, 255), FXMIN(1.1 * b, 255));
+                color = FXRGB(FXMIN(DARK_DISABLED_TEXT_LIGHTNESS * r, 255),
+                              FXMIN(DARK_DISABLED_TEXT_LIGHTNESS * g, 255),
+                              FXMIN(DARK_DISABLED_TEXT_LIGHTNESS * b, 255));
             }
             else
             {
@@ -3666,7 +3679,9 @@ long FXMenuCommand::onPaint(FXObject*, FXSelector, void* ptr)
             FXColor color;
             if ((rk + gk + bk) / 3 < DARK_COLOR_THRESHOLD)
             {
-                color = FXRGB(FXMIN(1.1 * r, 255), FXMIN(1.1 * g, 255), FXMIN(1.1 * b, 255));
+                color = FXRGB(FXMIN(DARK_DISABLED_TEXT_LIGHTNESS * r, 255),
+                              FXMIN(DARK_DISABLED_TEXT_LIGHTNESS * g, 255),
+                              FXMIN(DARK_DISABLED_TEXT_LIGHTNESS * b, 255));
             }
             else
             {
@@ -3853,7 +3868,9 @@ long FXLabel::onPaint(FXObject*, FXSelector, void* ptr)
             FXColor color;
             if ((rk + gk + bk) / 3 < DARK_COLOR_THRESHOLD)
             {
-                color = FXRGB(FXMIN(1.1 * r, 255), FXMIN(1.1 * g, 255), FXMIN(1.1 * b, 255));
+                color = FXRGB(FXMIN(DARK_DISABLED_TEXT_LIGHTNESS * r, 255),
+                              FXMIN(DARK_DISABLED_TEXT_LIGHTNESS * g, 255),
+                              FXMIN(DARK_DISABLED_TEXT_LIGHTNESS * b, 255));
             }
             else
             {
@@ -3960,7 +3977,9 @@ long FXGroupBox::onPaint(FXObject*, FXSelector, void* ptr)
                 FXColor color;
                 if ((rk + gk + bk) / 3 < DARK_COLOR_THRESHOLD)
                 {
-                    color = FXRGB(FXMIN(1.1 * r, 255), FXMIN(1.1 * g, 255), FXMIN(1.1 * b, 255));
+                    color = FXRGB(FXMIN(DARK_DISABLED_TEXT_LIGHTNESS * r, 255),
+                                  FXMIN(DARK_DISABLED_TEXT_LIGHTNESS * g, 255),
+                                  FXMIN(DARK_DISABLED_TEXT_LIGHTNESS * b, 255));
                 }
                 else
                 {

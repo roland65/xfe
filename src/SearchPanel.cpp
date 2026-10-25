@@ -672,9 +672,6 @@ long SearchPanel::onCmdItemClicked(FXObject* sender, FXSelector sel, void* ptr)
             allow = false;
         }
 
-        // Wait cursor
-        getApp()->beginWaitCursor();
-
         // At most one item selected
         if (list->getNumSelectedItems() <= 1)
         {
@@ -711,7 +708,6 @@ long SearchPanel::onCmdItemClicked(FXObject* sender, FXSelector sel, void* ptr)
                     {
                         MessageBox::error(getApp(), BOX_OK_SU, _("Error"), _(" Permission to: %s denied."),
                                           pathname.text());
-                        getApp()->endWaitCursor();
                         return 0;
                     }
 
@@ -810,7 +806,6 @@ long SearchPanel::onCmdItemClicked(FXObject* sender, FXSelector sel, void* ptr)
                             // If command does not exist, call the "Open with..." dialog
                             else
                             {
-                                getApp()->endWaitCursor();
                                 MessageBox::warning(this, BOX_OK, _("Warning"), _("Program %s not found"), cmdname.text());
                                 handle(this, FXSEL(SEL_COMMAND, ID_OPEN_WITH), NULL);
                             }
@@ -823,7 +818,6 @@ long SearchPanel::onCmdItemClicked(FXObject* sender, FXSelector sel, void* ptr)
                         // Or call the "Open with..." dialog
                         else
                         {
-                            getApp()->endWaitCursor();
                             handle(this, FXSEL(SEL_COMMAND, ID_OPEN_WITH), NULL);
                         }
                     }
@@ -835,7 +829,6 @@ long SearchPanel::onCmdItemClicked(FXObject* sender, FXSelector sel, void* ptr)
                     // Other cases
                     else
                     {
-                        getApp()->endWaitCursor();
                         handle(this, FXSEL(SEL_COMMAND, ID_OPEN_WITH), NULL);
                     }
 
@@ -848,8 +841,6 @@ long SearchPanel::onCmdItemClicked(FXObject* sender, FXSelector sel, void* ptr)
         {
             handle(this, FXSEL(SEL_COMMAND, ID_OPEN), NULL);
         }
-
-        getApp()->endWaitCursor();
     }
     return 1;
 }

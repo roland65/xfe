@@ -2439,22 +2439,18 @@ long PreferencesBox::onCmdAccept(FXObject* sender, FXSelector sel, void* ptr)
     getApp()->reg().writeUnsignedEntry("SETTINGS", "smooth_scroll", scroll->getCheck());
     if (scroll->getCheck() != smoothscroll_prev)
     {
-        getApp()->reg().write();
         restart_smoothscroll = true;
     }
 
     // Scrollbar size
     if (getApp()->getScrollBarSize() != scrollbarsize_prev)
     {
-        getApp()->reg().write();
         restart_scrollbarsize = true;
     }
 
     // Define hilite and shadow from basecolor
     getApp()->reg().writeColorEntry("SETTINGS", "hilitecolor", makeHiliteColorGradient(currTheme.color[0]));
     getApp()->reg().writeColorEntry("SETTINGS", "shadowcolor", makeShadowColorGradient(currTheme.color[0]));
-
-    getApp()->reg().write();
 
     // Single click navigation
     FXuint single_click;
@@ -2480,6 +2476,7 @@ long PreferencesBox::onCmdAccept(FXObject* sender, FXSelector sel, void* ptr)
         ((XFileExplorer*)mainWindow)->setDefaultCursor(getApp()->getDefaultCursor(DEF_ARROW_CURSOR));
     }
     getApp()->reg().writeUnsignedEntry("SETTINGS", "single_click", (FXuint)single_click);
+
     if (diropen_prev != diropen->getCheck())
     {
         restart_diropen = true;
@@ -2518,7 +2515,6 @@ long PreferencesBox::onCmdAccept(FXObject* sender, FXSelector sel, void* ptr)
     getApp()->reg().writeUnsignedEntry("SETTINGS", "showpathlinker", show_pathlink);
     if (show_pathlink != show_pathlink_prev)
     {
-        getApp()->reg().write();
         restart_showpathlink = true;
     }
 
@@ -2542,17 +2538,17 @@ long PreferencesBox::onCmdAccept(FXObject* sender, FXSelector sel, void* ptr)
         getApp()->reg().writeColorEntry("SETTINGS", "hilitecolor", makeHiliteColorGradient(currTheme.color[0]));
         getApp()->reg().writeColorEntry("SETTINGS", "shadowcolor", makeShadowColorGradient(currTheme.color[0]));
 
-        getApp()->reg().write();
         restart_theme = true;
     }
-    
+   
     // Save custom themes
     if (Themes.size() > NUM_DEFAULT_THEMES)
     {
         // Delete themes section
+        getApp()->reg().write();  // Apply previous changes
         getApp()->reg().read();
         getApp()->reg().deleteSection("THEMES");
-        
+
         // Add custom themes to registry
         for (FXuint i = NUM_DEFAULT_THEMES; i < Themes.size(); i++)
         {
@@ -2573,9 +2569,6 @@ long PreferencesBox::onCmdAccept(FXObject* sender, FXSelector sel, void* ptr)
             
             getApp()->reg().writeStringEntry("THEMES", regkey.text(), str.text());
         }
-
-        // Update registry
-        getApp()->reg().write();       
     }
 
     // Thumbnails size
@@ -2595,9 +2588,9 @@ long PreferencesBox::onCmdAccept(FXObject* sender, FXSelector sel, void* ptr)
     if (uidpi != uidpi_prev)
     {
         getApp()->reg().writeUnsignedEntry("SETTINGS", "screenres", uidpi);
-        getApp()->reg().write();
         restart_uidpi = true;
     }
+
 
     if (dirpanel_mode != dirpanel_mode_prev)
     {
@@ -2692,6 +2685,9 @@ long PreferencesBox::onCmdAccept(FXObject* sender, FXSelector sel, void* ptr)
         {
             // Set restarted flag
             getApp()->reg().writeUnsignedEntry("SETTINGS", "restarted", true);
+
+            // Update the registry
+            getApp()->reg().write();
 
             // Restart Xfe
             mainWindow->handle(this, FXSEL(SEL_COMMAND, XFileExplorer::ID_RESTART), NULL);

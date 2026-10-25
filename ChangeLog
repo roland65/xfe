@@ -1,3 +1,8 @@
+Version 2.1.13 (released 25/10/2026)
+- increased lightness of disabled text in a dark theme, for better readability
+- fix mouse cursor lag in detailed file list and single click mode
+- fix settings changes not retained when there is a custom theme
+
 Version 2.1.12 (released 11/10/2026)
 - add text association for csv files
 - fix new mount point /run/media not recognized in Linux systems

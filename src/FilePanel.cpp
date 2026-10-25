@@ -1477,9 +1477,6 @@ long FilePanel::onCmdItemClicked(FXObject* sender, FXSelector sel, void* ptr)
             allow = false;
         }
 
-        // Wait cursor
-        getApp()->beginWaitCursor();
-
         // At most one item selected
         if (current->list->getNumSelectedItems() <= 1)
         {
@@ -1516,7 +1513,6 @@ long FilePanel::onCmdItemClicked(FXObject* sender, FXSelector sel, void* ptr)
                     {
                         MessageBox::error(getApp(), BOX_OK_SU, _("Error"), _(" Permission to: %s denied."),
                                           pathname.text());
-                        getApp()->endWaitCursor();
                         return 0;
                     }
                     if (filename == "..")
@@ -1612,7 +1608,6 @@ long FilePanel::onCmdItemClicked(FXObject* sender, FXSelector sel, void* ptr)
                             // If command does not exist, call the "Open with..." dialog
                             else
                             {
-                                getApp()->endWaitCursor();
                                 MessageBox::warning(this, BOX_OK, _("Warning"), _("Program %s not found"), cmdname.text());
                                 current->handle(this, FXSEL(SEL_COMMAND, ID_OPEN_WITH), NULL);
                             }
@@ -1625,7 +1620,6 @@ long FilePanel::onCmdItemClicked(FXObject* sender, FXSelector sel, void* ptr)
                         // Or call the "Open with..." dialog
                         else
                         {
-                            getApp()->endWaitCursor();
                             current->handle(this, FXSEL(SEL_COMMAND, ID_OPEN_WITH), NULL);
                         }
                     }
@@ -1637,7 +1631,6 @@ long FilePanel::onCmdItemClicked(FXObject* sender, FXSelector sel, void* ptr)
                     // Other cases
                     else
                     {
-                        getApp()->endWaitCursor();
                         current->handle(this, FXSEL(SEL_COMMAND, ID_OPEN_WITH), NULL);
                     }
 
@@ -1650,8 +1643,6 @@ long FilePanel::onCmdItemClicked(FXObject* sender, FXSelector sel, void* ptr)
         {
             current->handle(this, FXSEL(SEL_COMMAND, ID_OPEN), NULL);
         }
-
-        getApp()->endWaitCursor();
     }
     return 1;
 }
