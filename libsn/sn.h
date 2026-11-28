@@ -27,9 +27,9 @@
 #define __SN_SN_H__
 
 /* Convenience header that includes all the other headers */
-#include <libsn/sn-launchee.h>
-#include <libsn/sn-launcher.h>
-#include <libsn/sn-monitor.h>
+#include "libsn/sn-launchee.h"
+#include "libsn/sn-launcher.h"
+#include "libsn/sn-monitor.h"
 
 #endif /* __SN_SN_H__ */
 

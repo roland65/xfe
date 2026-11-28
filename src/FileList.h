@@ -1,6 +1,9 @@
 #ifndef FILELIST_H
 #define FILELIST_H
 
+#include <map>
+#include <set>
+
 #include "xfedefs.h"
 #include "StringList.h"
 #include "IconList.h"
@@ -27,8 +30,11 @@ class FXAPI FileItem : public IconItem
     friend class FileList;
     friend class SearchPanel;
 protected:
+    FXString pathname;                              // Full path, including the expanded parent directory
+    FileItem* parent = NULL;                         // Parent row, or NULL for a top-level item
     FileAssoc* assoc = NULL;                       // File association record
     FileItem* link = NULL;                         // Link to next item
+    FXlong itemcount = -1;                         // Immediate directory entries (-1 when unavailable)
     FXulong size = 0;                              // File size
     FXTime date = 0;                               // File date (mtime)
     FXTime cdate = 0;                              // Changed date (ctime)
@@ -155,6 +161,15 @@ protected:
     FXuint idColTrash[NMAX_COLS + 2] = { 0 };
     FXuint nbColsTrash = 0;
 
+    FXbool expandablefolders = false;                  // Expand folders in the detailed file list
+    FXbool disclosurepress = false;                    // Consume release after clicking a disclosure arrow
+    std::set<FXString> expandedfolders;                 // Paths of expanded directories
+    std::map<FXString, FXTime> folderdates;              // Modification times of displayed directories
+
+    std::map<FXString, FXTime> hiddenfiledates;          // Modification times of .hidden files
+
+    FXbool naturalsort = true;
+
     // Static variables
     static int name_index;                              // Index of name column (always 0)
     static int size_index;                              // Index of size column
@@ -179,14 +194,24 @@ protected:
     }
     virtual IconItem* createItem(const FXString& text, FXIcon* big, FXIcon* mini, void* ptr);
 
+    virtual int compareItems(const IconItem*, const IconItem*) const;
     FXbool updateItems(FXbool);
-    void   listItems(FXbool);
+    void listItems(FXbool);
+    FXString getFolderSize(FileItem*, const FXString&, const FXString&);
+    void readHiddenNames(const FXString&, std::set<FXString>&);
 
 private:
     FileList(const FileList&);
     FileList& operator=(const FileList&);
 
 public:
+    long onExpandPress(FXObject*, FXSelector, void*);
+    long onExpandRelease(FXObject*, FXSelector, void*);
+    long onCmdView(FXObject*, FXSelector, void*);
+    void toggleFolder(int index);
+    void deselectDescendants();
+    virtual void setListStyle(FXuint style);
+
     long onCmdRefresh(FXObject*, FXSelector, void*);
     long onCmdRefreshTimer(FXObject*, FXSelector, void*);
     long onOpenTimer(FXObject*, FXSelector, void*);
@@ -226,6 +251,8 @@ public:
     long onUpdSortByOrigpath(FXObject*, FXSelector, void*);
     long onCmdSortReverse(FXObject*, FXSelector, void*);
     long onUpdSortReverse(FXObject*, FXSelector, void*);
+    long onCmdSortNatural(FXObject*, FXSelector, void*);
+    long onUpdSortNatural(FXObject*, FXSelector, void*);
     long onCmdSortCase(FXObject*, FXSelector, void*);
     long onUpdSortCase(FXObject*, FXSelector, void*);
     long onCmdSetPattern(FXObject*, FXSelector, void*);
@@ -250,7 +277,7 @@ public:
     long onCmdCloseFilter(FXObject*, FXSelector, void*);
 
 public:
-    static int compare(const IconItem*, const IconItem*, FXbool, FXbool, FXbool, FXuint);
+    static int compare(const IconItem*, const IconItem*, FXbool, FXbool, FXbool, FXbool, FXuint);
     static int ascending(const IconItem*, const IconItem*);
     static int descending(const IconItem*, const IconItem*);
     static int ascendingCase(const IconItem*, const IconItem*);
@@ -259,6 +286,14 @@ public:
     static int descendingDir(const IconItem*, const IconItem*);
     static int ascendingDirCase(const IconItem*, const IconItem*);
     static int descendingDirCase(const IconItem*, const IconItem*);
+    static int ascendingNatural(const IconItem*, const IconItem*);
+    static int descendingNatural(const IconItem*, const IconItem*);
+    static int ascendingCaseNatural(const IconItem*, const IconItem*);
+    static int descendingCaseNatural(const IconItem*, const IconItem*);
+    static int ascendingDirNatural(const IconItem*, const IconItem*);
+    static int descendingDirNatural(const IconItem*, const IconItem*);
+    static int ascendingDirCaseNatural(const IconItem*, const IconItem*);
+    static int descendingDirCaseNatural(const IconItem*, const IconItem*);
     static int ascendingType(const IconItem*, const IconItem*);
     static int descendingType(const IconItem*, const IconItem*);
     static int ascendingSize(const IconItem*, const IconItem*);
@@ -277,6 +312,10 @@ public:
     static int descendingLink(const IconItem*, const IconItem*);
     static int ascendingLinkCase(const IconItem*, const IconItem*);
     static int descendingLinkCase(const IconItem*, const IconItem*);
+    static int ascendingLinkNatural(const IconItem*, const IconItem*);
+    static int descendingLinkNatural(const IconItem*, const IconItem*);
+    static int ascendingLinkCaseNatural(const IconItem*, const IconItem*);
+    static int descendingLinkCaseNatural(const IconItem*, const IconItem*);
     static int ascendingDeldate(const IconItem*, const IconItem*);
     static int descendingDeldate(const IconItem*, const IconItem*);
     static int ascendingOrigpath(const IconItem*, const IconItem*);
@@ -291,6 +330,18 @@ public:
     static int descendingDirMix(const IconItem*, const IconItem*);
     static int ascendingDirCaseMix(const IconItem*, const IconItem*);
     static int descendingDirCaseMix(const IconItem*, const IconItem*);
+    static int ascendingOrigpathNatural(const IconItem*, const IconItem*);
+    static int descendingOrigpathNatural(const IconItem*, const IconItem*);
+    static int ascendingOrigpathCaseNatural(const IconItem*, const IconItem*);
+    static int descendingOrigpathCaseNatural(const IconItem*, const IconItem*);
+    static int ascendingMixNatural(const IconItem*, const IconItem*);
+    static int descendingMixNatural(const IconItem*, const IconItem*);
+    static int ascendingCaseMixNatural(const IconItem*, const IconItem*);
+    static int descendingCaseMixNatural(const IconItem*, const IconItem*);
+    static int ascendingDirMixNatural(const IconItem*, const IconItem*);
+    static int descendingDirMixNatural(const IconItem*, const IconItem*);
+    static int ascendingDirCaseMixNatural(const IconItem*, const IconItem*);
+    static int descendingDirCaseMixNatural(const IconItem*, const IconItem*);
     static int ascendingTypeMix(const IconItem*, const IconItem*);
     static int descendingTypeMix(const IconItem*, const IconItem*);
     static int ascendingSizeMix(const IconItem*, const IconItem*);
@@ -309,13 +360,20 @@ public:
     static int descendingLinkMix(const IconItem*, const IconItem*);
     static int ascendingLinkCaseMix(const IconItem*, const IconItem*);
     static int descendingLinkCaseMix(const IconItem*, const IconItem*);
+    static int ascendingLinkMixNatural(const IconItem*, const IconItem*);
+    static int descendingLinkMixNatural(const IconItem*, const IconItem*);
+    static int ascendingLinkCaseMixNatural(const IconItem*, const IconItem*);
+    static int descendingLinkCaseMixNatural(const IconItem*, const IconItem*);
     static int ascendingDeldateMix(const IconItem*, const IconItem*);
     static int descendingDeldateMix(const IconItem*, const IconItem*);
     static int ascendingOrigpathMix(const IconItem*, const IconItem*);
     static int descendingOrigpathMix(const IconItem*, const IconItem*);
     static int ascendingOrigpathCaseMix(const IconItem*, const IconItem*);
     static int descendingOrigpathCaseMix(const IconItem*, const IconItem*);
-
+    static int ascendingOrigpathMixNatural(const IconItem*, const IconItem*);
+    static int descendingOrigpathMixNatural(const IconItem*, const IconItem*);
+    static int ascendingOrigpathCaseMixNatural(const IconItem*, const IconItem*);
+    static int descendingOrigpathCaseMixNatural(const IconItem*, const IconItem*);
     int getHeaderIndex(FXuint);
     int getHeaderSize(FXuint);
     void setHeaderSize(FXuint, FXuint);
@@ -343,6 +401,7 @@ public:
         ID_COL_DELDATE,
         ID_COL_DIRNAME,
         ID_SORT_REVERSE,
+        ID_SORT_NATURAL,
         ID_SORT_CASE,
         ID_DIRS_FIRST,
         ID_DIRECTORY_UP,
@@ -374,6 +433,15 @@ public:
 
     // Scan the current directory and update the items if needed, or if force is true
     void scan(FXbool force = true);
+
+    // Return natural sort flag
+    FXbool getNaturalSort() const
+    {
+        return naturalsort;
+    }
+
+    // Set natural sort flag
+    void setNaturalSort(const FXbool);
 
     // Set current file
     void setCurrentFile(const FXString& file);

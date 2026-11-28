@@ -24,6 +24,12 @@ public:
     {
     }
 
+    ~StringList();
+
+    // A list owns its nodes; copying the raw links would share that ownership.
+    StringList(const StringList&) = delete;
+    StringList& operator=(const StringList&) = delete;
+
     // Get first item
     StringItem* getFirst(void)
     {

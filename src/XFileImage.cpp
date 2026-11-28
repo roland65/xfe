@@ -5,6 +5,7 @@
 #include "i18n.h"
 
 #include <stdio.h>
+#include <memory>
 #include <stdlib.h>
 #include <sys/stat.h>
 #include <sys/wait.h>
@@ -615,12 +616,12 @@ XFileImage::XFileImage(FXApp* a, FXbool smoothscroll, FXColor listbackcolor,
     statusbar = new FXHorizontalFrame(vframe, JUSTIFY_LEFT | LAYOUT_FILL_X | FRAME_NONE, 0, 0, 0, 0, 3, 3, 0, 0);
 
     // Read and set sort function for file list
-    FXString sort_func = getApp()->reg().readStringEntry("OPTIONS", "sort_func", "ascendingCase");
+    FXString sort_func = getApp()->reg().readStringEntry("OPTIONS", "sort_func", "ascendingCaseNatural");
     if (sort_func == "ascendingCase")
     {
         filelist->setSortFunc(filelist->ascendingCase);
     }
-    if (sort_func == "ascendingCaseMix")
+    else if (sort_func == "ascendingCaseMix")
     {
         filelist->setSortFunc(filelist->ascendingCaseMix);
     }
@@ -647,6 +648,38 @@ XFileImage::XFileImage(FXApp* a, FXbool smoothscroll, FXColor listbackcolor,
     else if (sort_func == "descendingMix")
     {
         filelist->setSortFunc(filelist->descendingMix);
+    }
+    else if (sort_func == "ascendingCaseNatural")
+    {
+        filelist->setSortFunc(filelist->ascendingCaseNatural);
+    }
+    else if (sort_func == "ascendingCaseMixNatural")
+    {
+        filelist->setSortFunc(filelist->ascendingCaseMixNatural);
+    }
+    else if (sort_func == "descendingCaseNatural")
+    {
+        filelist->setSortFunc(filelist->descendingCaseNatural);
+    }
+    else if (sort_func == "descendingCaseMixNatural")
+    {
+        filelist->setSortFunc(filelist->descendingCaseMixNatural);
+    }
+    else if (sort_func == "ascendingNatural")
+    {
+        filelist->setSortFunc(filelist->ascendingNatural);
+    }
+    else if (sort_func == "ascendingMixNatural")
+    {
+        filelist->setSortFunc(filelist->ascendingMixNatural);
+    }
+    else if (sort_func == "descendingNatural")
+    {
+        filelist->setSortFunc(filelist->descendingNatural);
+    }
+    else if (sort_func == "descendingMixNatural")
+    {
+        filelist->setSortFunc(filelist->descendingMixNatural);
     }
     else if (sort_func == "ascendingSize")
     {
@@ -776,6 +809,34 @@ XFileImage::XFileImage(FXApp* a, FXbool smoothscroll, FXColor listbackcolor,
     {
         filelist->setSortFunc(filelist->descendingLinkMix);
     }
+    else if (sort_func == "ascendingLinkNatural")
+    {
+        filelist->setSortFunc(filelist->ascendingLinkNatural);
+    }
+    else if (sort_func == "ascendingLinkMixNatural")
+    {
+        filelist->setSortFunc(filelist->ascendingLinkMixNatural);
+    }
+    else if (sort_func == "descendingLinkNatural")
+    {
+        filelist->setSortFunc(filelist->descendingLinkNatural);
+    }
+    else if (sort_func == "descendingLinkMixNatural")
+    {
+        filelist->setSortFunc(filelist->descendingLinkMixNatural);
+    }  
+    else
+    {
+        filelist->setSortFunc(filelist->ascendingCaseNatural);
+    }
+
+    // Sort options
+    FXuint ignorecase = getApp()->reg().readUnsignedEntry("OPTIONS", "ignore_case", 1);
+    filelist->setIgnoreCase(ignorecase);
+    FXuint naturalsort = getApp()->reg().readUnsignedEntry("OPTIONS", "natural_sort", 1);
+    filelist->setNaturalSort(naturalsort);
+    FXuint dirsfirst = getApp()->reg().readUnsignedEntry("OPTIONS", "dirs_first", 1);
+    filelist->setDirsFirst(dirsfirst);
 
     // Single click navigation
     single_click = getApp()->reg().readUnsignedEntry("SETTINGS", "single_click", SINGLE_CLICK_NONE);
@@ -908,7 +969,6 @@ XFileImage::XFileImage(FXApp* a, FXbool smoothscroll, FXColor listbackcolor,
     mc = new FXMenuCommand(filemenu, text, miniquiticon, this, ID_QUIT);
     hotkey = xf_parseaccel(key);
     getAccelTable()->addAccel(hotkey, mc, FXSEL(SEL_COMMAND, FXMenuCommand::ID_ACCEL));
-    getAccelTable()->addAccel(KEY_Escape, this, FXSEL(SEL_COMMAND, ID_QUIT));
 
     // Image Menu entries
     key = getApp()->reg().readStringEntry("KEYBINDINGS", "view_prev", "Ctrl-J");
@@ -1072,9 +1132,26 @@ XFileImage::XFileImage(FXApp* a, FXbool smoothscroll, FXColor listbackcolor,
 }
 
 
+// Replace the displayed image, freeing scaled copies but retaining the original.
+void XFileImage::setImage(FXImage* image)
+{
+    if (!imageview)
+    {
+        return;
+    }
+    FXImage* previous = imageview->getImage();
+    imageview->setImage(image);
+    if (previous && previous != img && previous != image)
+    {
+        delete previous;
+    }
+}
+
+
 // Clean up
 XFileImage::~XFileImage()
 {
+    setImage(NULL);
     delete toolbar;
     delete menubar;
     delete statusbar;
@@ -1129,7 +1206,8 @@ long XFileImage::onCmdPopupMenu(FXObject* sender, FXSelector sel, void* ptr)
     new FXMenuSeparator(&menu);
     new FXMenuCheck(&menu, _("Ignore C&ase"), filelist, FileList::ID_SORT_CASE);
     new FXMenuCheck(&menu, _("Fold&ers First"), filelist, FileList::ID_DIRS_FIRST);
-    new FXMenuCheck(&menu, _("Re&verse Order"), filelist, FileList::ID_SORT_REVERSE);
+    new FXMenuCheck(&menu, _("Nat&ural Sorting"), filelist, FileList::ID_SORT_NATURAL);
+    new FXMenuCommand(&menu, _("Re&verse Order"), minireverseicon, filelist, FileList::ID_SORT_REVERSE);
 
     menu.create();
     menu.popup(NULL, x, y);
@@ -1624,69 +1702,64 @@ FXbool XFileImage::loadimage(const FXString& file)
         fclose(fp);
     }
 
-    // Free actual image if any, before loading a new one
-    FXImage* img_ptr = img; // Save image pointer
-    if (img != NULL)
-    {
-        delete img;
-        img = NULL;
-    }
+    // Keep the current original and display alive until decoding succeeds.
+    std::unique_ptr<FXImage> loaded;
 
     if (comparecase(ext, "gif") == 0)
     {
-        img = new FXGIFImage(getApp(), NULL, IMAGE_KEEP | IMAGE_SHMI | IMAGE_SHMP);
+        loaded.reset(new FXGIFImage(getApp(), NULL, IMAGE_KEEP | IMAGE_SHMI | IMAGE_SHMP));
     }
     else if (comparecase(ext, "bmp") == 0)
     {
-        img = new FXBMPImage(getApp(), NULL, IMAGE_KEEP | IMAGE_SHMI | IMAGE_SHMP);
+        loaded.reset(new FXBMPImage(getApp(), NULL, IMAGE_KEEP | IMAGE_SHMI | IMAGE_SHMP));
     }
     else if (comparecase(ext, "xpm") == 0)
     {
-        img = new FXXPMImage(getApp(), NULL, IMAGE_KEEP | IMAGE_SHMI | IMAGE_SHMP);
+        loaded.reset(new FXXPMImage(getApp(), NULL, IMAGE_KEEP | IMAGE_SHMI | IMAGE_SHMP));
     }
     else if (comparecase(ext, "pcx") == 0)
     {
-        img = new FXPCXImage(getApp(), NULL, IMAGE_KEEP | IMAGE_SHMI | IMAGE_SHMP);
+        loaded.reset(new FXPCXImage(getApp(), NULL, IMAGE_KEEP | IMAGE_SHMI | IMAGE_SHMP));
     }
     else if ((comparecase(ext, "ico") == 0) || (comparecase(ext, "cur") == 0))
     {
-        img = new FXICOImage(getApp(), NULL, IMAGE_KEEP | IMAGE_SHMI | IMAGE_SHMP);
+        loaded.reset(new FXICOImage(getApp(), NULL, IMAGE_KEEP | IMAGE_SHMI | IMAGE_SHMP));
     }
     else if (comparecase(ext, "tga") == 0)
     {
-        img = new FXTGAImage(getApp(), NULL, IMAGE_KEEP | IMAGE_SHMI | IMAGE_SHMP);
+        loaded.reset(new FXTGAImage(getApp(), NULL, IMAGE_KEEP | IMAGE_SHMI | IMAGE_SHMP));
     }
     else if (comparecase(ext, "rgb") == 0)
     {
-        img = new FXRGBImage(getApp(), NULL, IMAGE_KEEP | IMAGE_SHMI | IMAGE_SHMP);
+        loaded.reset(new FXRGBImage(getApp(), NULL, IMAGE_KEEP | IMAGE_SHMI | IMAGE_SHMP));
     }
     else if (comparecase(ext, "xbm") == 0)
     {
-        img = new FXXBMImage(getApp(), NULL, NULL, IMAGE_KEEP | IMAGE_SHMI | IMAGE_SHMP);
+        loaded.reset(new FXXBMImage(getApp(), NULL, NULL, IMAGE_KEEP | IMAGE_SHMI | IMAGE_SHMP));
     }
     else if (comparecase(ext, "ppm") == 0)
     {
-        img = new FXPPMImage(getApp(), NULL, IMAGE_KEEP | IMAGE_SHMI | IMAGE_SHMP);
+        loaded.reset(new FXPPMImage(getApp(), NULL, IMAGE_KEEP | IMAGE_SHMI | IMAGE_SHMP));
     }
     else if (comparecase(ext, "png") == 0)
     {
-        img = new FXPNGImage(getApp(), NULL, IMAGE_KEEP | IMAGE_SHMI | IMAGE_SHMP);
+        loaded.reset(new FXPNGImage(getApp(), NULL, IMAGE_KEEP | IMAGE_SHMI | IMAGE_SHMP));
     }
     else if ((comparecase(ext, "jpg") == 0) || (comparecase(ext, "jpeg") == 0))
     {
-        img = new FXJPGImage(getApp(), NULL, IMAGE_KEEP | IMAGE_SHMI | IMAGE_SHMP);
+        loaded.reset(new FXJPGImage(getApp(), NULL, IMAGE_KEEP | IMAGE_SHMI | IMAGE_SHMP));
     }
     else if ((comparecase(ext, "tif") == 0) || (comparecase(ext, "tiff") == 0))
     {
-        img = new FXTIFImage(getApp(), NULL, IMAGE_KEEP | IMAGE_SHMI | IMAGE_SHMP);
+        loaded.reset(new FXTIFImage(getApp(), NULL, IMAGE_KEEP | IMAGE_SHMI | IMAGE_SHMP));
     }
     else
     {
-        img = NULL;
+        loaded.reset();
     }
 
     // Perhaps failed
-    if (img == NULL)
+    if (!loaded)
     {
         MessageBox::error(this, BOX_OK, _("Error Loading Image"), _("Unsupported type: %s"), ext.text());
         return false;
@@ -1697,7 +1770,7 @@ FXbool XFileImage::loadimage(const FXString& file)
     if (stream.open(file, FXStreamLoad))
     {
         getApp()->beginWaitCursor();
-        FXbool res = img->loadPixels(stream);
+        FXbool res = loaded->loadPixels(stream);
 
         stream.close();
 
@@ -1710,28 +1783,22 @@ FXbool XFileImage::loadimage(const FXString& file)
             return false;
         }
 
+        std::unique_ptr<FXImage> image(new FXImage(getApp(), NULL, IMAGE_KEEP | IMAGE_SHMI | IMAGE_SHMP));
         FXColor* data = NULL;
-        
-        if (!FXMEMDUP(&data, img->getData(), FXColor, img->getWidth() * img->getHeight()))
+        if (!FXMEMDUP(&data, loaded->getData(), FXColor, loaded->getWidth() * loaded->getHeight()))
         {
             throw FXMemoryException(_("Unable to load image"));
         }
-        FXImage* image = new FXImage(getApp(), NULL, IMAGE_KEEP | IMAGE_SHMI | IMAGE_SHMP);
-        image->setData(data, IMAGE_OWNED, img->getWidth(), img->getHeight());
-
-        img->create();
+        image->setData(data, IMAGE_OWNED, loaded->getWidth(), loaded->getHeight());
+        loaded->create();
         image->create();
-        
-        FXImage* prevImage = NULL;       
-        prevImage = imageview->getImage();
-        imageview->setImage(image);
 
-        // Free previous image        
-        if (prevImage != NULL && prevImage != img_ptr)
-        {
-            delete prevImage;
-            prevImage = NULL;
-        }
+        // Detach the previous display before releasing its original image.
+        setImage(NULL);
+        FXImage* previousOriginal = img;
+        img = loaded.release();
+        delete previousOriginal;
+        setImage(image.release());
 
         // Initial zoom and image format
         indZoom = ZOOM_100;
@@ -1743,6 +1810,11 @@ FXbool XFileImage::loadimage(const FXString& file)
         {
             handle(this, FXSEL(SEL_COMMAND, ID_ZOOM_WIN), NULL);
         }
+    }
+    else
+    {
+        MessageBox::error(this, BOX_OK, _("Error"), _("Unable to open file: %s"), file.text());
+        return false;
     }
 
     filelist->setDirectory(FXPath::directory(file));
@@ -2280,6 +2352,11 @@ long XFileImage::onCmdItemClicked(FXObject* sender, FXSelector sel, void* ptr)
 // Rotate image
 long XFileImage::onCmdRotate(FXObject*, FXSelector sel, void*)
 {
+    if (!img || !imageview->getImage())
+    {
+        return 1;
+    }
+
     getApp()->beginWaitCursor();
     FXImage* image = imageview->getImage();
     switch (FXSELID(sel))
@@ -2308,7 +2385,7 @@ long XFileImage::onCmdRotate(FXObject*, FXSelector sel, void*)
         }
         break;
     }
-    imageview->setImage(image);
+    setImage(image);
     filelist->setFocus();
     getApp()->endWaitCursor();
 
@@ -2367,6 +2444,11 @@ long XFileImage::onUpdZoomOut(FXObject* sender, FXSelector, void*)
 // Mirror image
 long XFileImage::onCmdMirror(FXObject*, FXSelector sel, void*)
 {
+    if (!img || !imageview->getImage())
+    {
+        return 1;
+    }
+
     getApp()->beginWaitCursor();
     FXImage* image = imageview->getImage();
     switch (FXSELID(sel))
@@ -2395,7 +2477,7 @@ long XFileImage::onCmdMirror(FXObject*, FXSelector sel, void*)
         }
         break;
     }
-    imageview->setImage(image);
+    setImage(image);
     filelist->setFocus();
     getApp()->endWaitCursor();
 
@@ -2406,15 +2488,20 @@ long XFileImage::onCmdMirror(FXObject*, FXSelector sel, void*)
 // Zoom in image
 long XFileImage::onCmdZoomIn(FXObject*, FXSelector, void*)
 {
+    if (!img || !imageview->getImage())
+    {
+        return 1;
+    }
+
     getApp()->beginWaitCursor();
 
     // Copy the original image into the actual one
+    std::unique_ptr<FXImage> image(new FXImage(getApp(), NULL, IMAGE_KEEP | IMAGE_SHMI | IMAGE_SHMP));
     FXColor* data = NULL;   
     if (!FXMEMDUP(&data, img->getData(), FXColor, img->getWidth() * img->getHeight()))
     {
         throw FXMemoryException(_("Unable to load image"));
     }
-    FXImage* image = new FXImage(getApp(), NULL, IMAGE_KEEP | IMAGE_SHMI | IMAGE_SHMP);
     image->setData(data, IMAGE_OWNED, img->getWidth(), img->getHeight());
 
     // Resize the actual image according to the new zoom factor
@@ -2432,7 +2519,8 @@ long XFileImage::onCmdZoomIn(FXObject*, FXSelector, void*)
     // Scale only if the actual image size is different
     if (indZoom == ZOOM_100)
     {
-        imageview->setImage(img);
+        image.reset();
+        setImage(img);
     }
     else
     {
@@ -2454,17 +2542,7 @@ long XFileImage::onCmdZoomIn(FXObject*, FXSelector, void*)
         image->scale(sx, sy, 1);
         image->create();
 
-        FXImage* prevImage = NULL;
-        prevImage = imageview->getImage();
-        
-        imageview->setImage(image);
-        
-        // Free previous image
-        if (prevImage != NULL && prevImage != img)
-        {
-            delete prevImage;
-            prevImage = NULL;
-        }
+        setImage(image.release());
 
     }
 
@@ -2481,16 +2559,21 @@ long XFileImage::onCmdZoomIn(FXObject*, FXSelector, void*)
 // Zoom out image
 long XFileImage::onCmdZoomOut(FXObject*, FXSelector, void*)
 {
+    if (!img || !imageview->getImage())
+    {
+        return 1;
+    }
+
     getApp()->beginWaitCursor();
 
     // Copy the original image into the actual one
+    std::unique_ptr<FXImage> image(new FXImage(getApp(), NULL, IMAGE_KEEP | IMAGE_SHMI | IMAGE_SHMP));
     FXColor* data = NULL;
     if (!FXMEMDUP(&data, img->getData(), FXColor, img->getWidth() * img->getHeight()))
     {
         throw FXMemoryException(_("Unable to load image"));
     }
 
-    FXImage* image = new FXImage(getApp(), NULL, IMAGE_KEEP | IMAGE_SHMI | IMAGE_SHMP);
     image->setData(data, IMAGE_OWNED, img->getWidth(), img->getHeight());
 
     // Resize the image according to the new zoom factor
@@ -2508,7 +2591,8 @@ long XFileImage::onCmdZoomOut(FXObject*, FXSelector, void*)
     // Scale only if the actual image size is different
     if (indZoom == ZOOM_100)
     {
-        imageview->setImage(img);
+        image.reset();
+        setImage(img);
     }
     else
     {
@@ -2516,17 +2600,7 @@ long XFileImage::onCmdZoomOut(FXObject*, FXSelector, void*)
         image->scale(sx, sy, 1);
         image->create();
        
-        FXImage* prevImage = NULL;
-        prevImage = imageview->getImage();
-       
-        imageview->setImage(image);
-        
-        // Free previous image
-        if (prevImage != NULL && prevImage != img)
-        {
-            delete prevImage;
-            prevImage = NULL;
-        }
+        setImage(image.release());
     }
 
     // Set zoom value for window title
@@ -2542,12 +2616,17 @@ long XFileImage::onCmdZoomOut(FXObject*, FXSelector, void*)
 // Zoom to 100%
 long XFileImage::onCmdZoom100(FXObject*, FXSelector, void*)
 {
+    if (!img || !imageview->getImage())
+    {
+        return 1;
+    }
+
     getApp()->beginWaitCursor();
     indZoom = ZOOM_100;
     zoomMax = false;
     zoomMin = false;
     zoomval = zoomtab[indZoom];
-    imageview->setImage(img);
+    setImage(img);
     filelist->setFocus();
     getApp()->endWaitCursor();
 
@@ -2558,6 +2637,11 @@ long XFileImage::onCmdZoom100(FXObject*, FXSelector, void*)
 // Zoom to fit window
 long XFileImage::onCmdZoomWin(FXObject*, FXSelector, void*)
 {
+    if (!img || !imageview->getImage())
+    {
+        return 1;
+    }
+
     getApp()->beginWaitCursor();
 
     // Window and image sizes
@@ -2599,13 +2683,13 @@ long XFileImage::onCmdZoomWin(FXObject*, FXSelector, void*)
     }
    
     // Copy the original image into the actual one
+    std::unique_ptr<FXImage> image(new FXImage(getApp(), NULL, IMAGE_KEEP | IMAGE_SHMI | IMAGE_SHMP));
     FXColor* data = NULL;
     if (!FXMEMDUP(&data, img->getData(), FXColor, img->getWidth() * img->getHeight()))
     {
         throw FXMemoryException(_("Unable to load image"));
     }
     
-    FXImage* image = new FXImage(getApp(), NULL, IMAGE_KEEP | IMAGE_SHMI | IMAGE_SHMP);
     image->setData(data, IMAGE_OWNED, img->getWidth(), img->getHeight());
 
     // Resize the image according to the new zoom factor
@@ -2616,17 +2700,7 @@ long XFileImage::onCmdZoomWin(FXObject*, FXSelector, void*)
     image->scale(sx, sy, 1);
     image->create();
 
-    FXImage* prevImage = NULL;    
-    prevImage = imageview->getImage();
-    
-    imageview->setImage(image);
-    
-    // Free previous image
-    if (prevImage != NULL && prevImage != img)
-    {
-        delete prevImage;
-        prevImage = NULL;
-    }
+    setImage(image.release());
 
     // Set zoom value for window title
     zoomval = fitwin;
@@ -2764,7 +2838,7 @@ void XFileImage::create()
                 {
                     break;
                 }
-                xf_strlcpy(FilterHistory[i], histent.text(), histent.length() + 1);
+                xf_strlcpy(FilterHistory[i], histent.text(), sizeof(FilterHistory[i]));
             }
             else
             {
@@ -2971,7 +3045,7 @@ void XFileImage::saveConfig()
     {
         sort_func = "ascendingCase";
     }
-    if (filelist->getSortFunc() == filelist->ascendingCaseMix)
+    else if (filelist->getSortFunc() == filelist->ascendingCaseMix)
     {
         sort_func = "ascendingCaseMix";
     }
@@ -2998,6 +3072,38 @@ void XFileImage::saveConfig()
     else if (filelist->getSortFunc() == filelist->descendingMix)
     {
         sort_func = "descendingMix";
+    }
+    else if (filelist->getSortFunc() == filelist->ascendingCaseNatural)
+    {
+        sort_func = "ascendingCaseNatural";
+    }
+    else if (filelist->getSortFunc() == filelist->ascendingCaseMixNatural)
+    {
+        sort_func = "ascendingCaseMixNatural";
+    }
+    else if (filelist->getSortFunc() == filelist->descendingCaseNatural)
+    {
+        sort_func = "descendingCaseNatural";
+    }
+    else if (filelist->getSortFunc() == filelist->descendingCaseMixNatural)
+    {
+        sort_func = "descendingCaseMixNatural";
+    }
+    else if (filelist->getSortFunc() == filelist->ascendingNatural)
+    {
+        sort_func = "ascendingNatural";
+    }
+    else if (filelist->getSortFunc() == filelist->ascendingMixNatural)
+    {
+        sort_func = "ascendingMixNatural";
+    }
+    else if (filelist->getSortFunc() == filelist->descendingNatural)
+    {
+        sort_func = "descendingNatural";
+    }
+    else if (filelist->getSortFunc() == filelist->descendingMixNatural)
+    {
+        sort_func = "descendingMixNatural";
     }
     else if (filelist->getSortFunc() == filelist->ascendingSize)
     {
@@ -3127,11 +3233,35 @@ void XFileImage::saveConfig()
     {
         sort_func = "descendingLinkMix";
     }
+    else if (filelist->getSortFunc() == filelist->ascendingLinkNatural)
+    {
+        sort_func = "ascendingLinkNatural";
+    }
+    else if (filelist->getSortFunc() == filelist->ascendingLinkMixNatural)
+    {
+        sort_func = "ascendingLinkMixNatural";
+    }
+    else if (filelist->getSortFunc() == filelist->descendingLinkNatural)
+    {
+        sort_func = "descendingLinkNatural";
+    }
+    else if (filelist->getSortFunc() == filelist->descendingLinkMixNatural)
+    {
+        sort_func = "descendingLinkMixNatural";
+    }
     else
     {
-        sort_func = "ascendingCase";
+        sort_func = "ascendingCaseNatural";
     }
     getApp()->reg().writeStringEntry("OPTIONS", "sort_func", sort_func.text());
+
+
+    // Sort options
+    getApp()->reg().writeUnsignedEntry("OPTIONS", "ignore_case", filelist->getIgnoreCase());
+    getApp()->reg().writeUnsignedEntry("OPTIONS", "natural_sort", filelist->getNaturalSort());
+    getApp()->reg().writeUnsignedEntry("OPTIONS", "dirs_first", filelist->getDirsFirst());
+
+
 
     // Write filter history
     FXString history = "";
@@ -3258,7 +3388,9 @@ int main(int argc, char* argv[])
         hand = new FXCursor(application, hand3_bits, hand3_mask_bits, hand3_width, hand3_height, hand3_x_hot,
                             hand3_y_hot);
     }
+    FXCursor* previousHand = application->getDefaultCursor(DEF_HAND_CURSOR);
     application->setDefaultCursor(DEF_HAND_CURSOR, hand);
+    delete previousHand;
 
     // Load all application icons
     FXuint iconpathstatus;
@@ -3276,9 +3408,9 @@ int main(int argc, char* argv[])
     fontspec = reg_xfe->readStringEntry("SETTINGS", "font", DEFAULT_NORMAL_FONT);
     if (!fontspec.empty())
     {
-        FXFont* normalFont = new FXFont(application, fontspec);
-        normalFont->create();
-        application->setNormalFont(normalFont);
+        // Keep the default font owned by the application.
+        application->getNormalFont()->setFont(fontspec);
+        application->getNormalFont()->create();
     }
 
     // Set Xfi file list colors according to the Xfe registry
@@ -3359,5 +3491,7 @@ int main(int argc, char* argv[])
     window->start(startimage);
 
     // Run
-    return application->run();
+    int result = application->run();
+    delete application;
+    return result;
 }

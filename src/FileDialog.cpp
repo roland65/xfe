@@ -1309,7 +1309,7 @@ long FileSelector::onCmdItemFilter(FXObject* sender, FXSelector sel, void*)
 {
     if (FilterNum == 0)
     {
-        xf_strlcpy(FilterHistory[FilterNum], "*", 2);
+        xf_strlcpy(FilterHistory[FilterNum], "*", sizeof(FilterHistory[FilterNum]));
         FilterNum++;
     }
 
@@ -1354,7 +1354,7 @@ long FileSelector::onCmdItemFilter(FXObject* sender, FXSelector sel, void*)
         // Append new string to the list bottom
         if (newstr && (FilterNum < FILTER_HIST_SIZE))
         {
-            xf_strlcpy(FilterHistory[FilterNum], pat.text(), pat.length() + 1);
+            xf_strlcpy(FilterHistory[FilterNum], pat.text(), sizeof(FilterHistory[FilterNum]));
             FilterNum++;
         }
     }
@@ -1923,7 +1923,8 @@ long FileSelector::onCmdPopupMenu(FXObject* sender, FXSelector sel, void* ptr)
     new FXMenuSeparator(&menu);
     new FXMenuCheck(&menu, _("Ignore C&ase"), list, FileList::ID_SORT_CASE);
     new FXMenuCheck(&menu, _("Fold&ers First"), list, FileList::ID_DIRS_FIRST);
-    new FXMenuCheck(&menu, _("Re&verse Order"), list, FileList::ID_SORT_REVERSE);
+    new FXMenuCheck(&menu, _("Nat&ural Sorting"), list, FileList::ID_SORT_NATURAL);
+    new FXMenuCommand(&menu, _("Re&verse Order"), minireverseicon, list, FileList::ID_SORT_REVERSE);
 
     menu.create();
     menu.popup(NULL, x, y);

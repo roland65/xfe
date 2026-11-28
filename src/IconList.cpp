@@ -38,6 +38,58 @@
 #define TYPE_MASK           (ICONLIST_FILELIST | ICONLIST_SEARCH | ICONLIST_STANDARD)
 
 
+// Used for inline rename in file list
+// The editor owns keyboard and focus handling while the list remains interactive
+class NameEditor : public FXTextField
+{
+    FXDECLARE(NameEditor)
+protected:
+    NameEditor() {}
+public:
+    enum { ID_ACCEPT = FXTextField::ID_LAST };
+
+    NameEditor(IconList* parent) :
+        FXTextField(parent, 1, NULL, ID_ACCEPT,
+                    TEXTFIELD_ENTER_ONLY | FRAME_LINE | LAYOUT_FIX_X | LAYOUT_FIX_Y |
+                    LAYOUT_FIX_WIDTH | LAYOUT_FIX_HEIGHT, 0, 0, 0, 0, 2, 2, 0, 0)
+    {
+        setTarget(this);
+    }
+
+    long onAccept(FXObject* sender, FXSelector sel, void* ptr)
+    {
+        return ((IconList*)getParent())->onAcceptName(sender, sel, ptr);
+    }
+
+    long onKeyPress(FXObject* sender, FXSelector sel, void* ptr)
+    {
+        if (((FXEvent*)ptr)->code == KEY_Escape)
+        {
+            hide();
+            getParent()->setFocus();
+            return 1;
+        }
+        return FXTextField::onKeyPress(sender, sel, ptr);
+    }
+
+    long onFocusOut(FXObject* sender, FXSelector sel, void* ptr)
+    {
+        FXTextField::onFocusOut(sender, sel, ptr);
+        hide();
+        return 1;
+    }
+};
+
+
+FXDEFMAP(NameEditor) NameEditorMap[] =
+{
+    FXMAPFUNC(SEL_COMMAND, NameEditor::ID_ACCEPT, NameEditor::onAccept),
+    FXMAPFUNC(SEL_KEYPRESS, 0, NameEditor::onKeyPress),
+    FXMAPFUNC(SEL_FOCUSOUT, 0, NameEditor::onFocusOut),
+};
+
+FXIMPLEMENT(NameEditor, FXTextField, NameEditorMap, ARRAYNUMBER(NameEditorMap))
+
 
 // Object implementation
 FXIMPLEMENT(IconItem, FXObject, NULL, 0)
@@ -51,7 +103,7 @@ inline FXbool IconItem::isOdd(int i) const
 
 
 // Draw item
-void IconItem::draw(IconList* list, FXDC& dc, int x, int y, int w, int h) const
+void IconItem::draw(IconList* list, FXDC& dc, int x, int y, int w, int h, double scalefrac) const
 {
     FXuint options = list->getListStyle();
 
@@ -65,7 +117,7 @@ void IconItem::draw(IconList* list, FXDC& dc, int x, int y, int w, int h) const
     }
     else
     {
-        drawDetails(list, dc, x, y, w, h);
+        drawDetails(list, dc, x, y, w, h, scalefrac);
     }
 }
 
@@ -250,11 +302,12 @@ void IconItem::drawMiniIcon(const IconList* list, FXDC& dc, int x, int y, int w,
 }
 
 
-void IconItem::drawDetails(IconList* list, FXDC& dc, int x, int y, int, int h) const
+// Draw mini icon in detailed list
+void IconItem::drawDetails(IconList* list, FXDC& dc, int x, int y, int, int h, double scalefrac) const
 {
     FXHeader* header = list->getHeader();
     FXFont* font = list->getFont();
-    int iw = 0, ih = 0, tw = 0, th = 0, yt, beg, end, hi, drw, space, used, dw, xx, dx = 0;
+    FXint iw = 0, ih = 0, tw = 0, th = 0, yt, beg, end, hi, drw, space, used, dw, xx, dx = 0;
     FXbool highlight;
 
     // Icon list type
@@ -302,16 +355,45 @@ void IconItem::drawDetails(IconList* list, FXDC& dc, int x, int y, int, int h) c
         dc.drawFocusRectangle(x + 1, y + 1, header->getTotalSize() - 2, h - 2);
     }
     xx = x + SIDE_SPACING / 2;
+    if (expandable && xx + getTreeOffset() <= x + header->getItemSize(0))
+    {
+        int ax = xx + scalefrac * (getTreeOffset() - 8);
+        int ay = y + h / 2;
+        FXPoint points[3];
+        if (expanded)
+        {
+            // Take into account scaling factor
+            points[0].x = ax - scalefrac * 4;
+            points[0].y = ay - scalefrac * 2;
+            points[1].x = ax + scalefrac * 4;
+            points[1].y = ay - scalefrac * 2;
+            points[2].x = ax;
+            points[2].y = ay + scalefrac * 3;
+        }
+        else
+        {
+            // Take into account scaling factor
+            points[0].x = ax - scalefrac * 2;
+            points[0].y = ay - scalefrac * 4;
+            points[1].x = ax - scalefrac * 2;
+            points[1].y = ay + scalefrac * 4;
+            points[2].x = ax + scalefrac * 3;
+            points[2].y = ay;
+        }
+        dc.setForeground(isSelected() ? list->getSelTextColor() : list->getTextColor());
+        dc.fillPolygon(points, 3);
+    }
+    xx += scalefrac * getTreeOffset();
     if (miniIcon)
     {
         FXColor* tmpdata;
-        FXuint w = miniIcon->getWidth();
-        FXuint h = miniIcon->getHeight();
+        iw = miniIcon->getWidth();
+        ih = miniIcon->getHeight();
 
         if (isSelected())
         {
             // Save original pixels
-            if (!FXMEMDUP(&tmpdata, miniIcon->getData(), FXColor, w * h))
+            if (!FXMEMDUP(&tmpdata, miniIcon->getData(), FXColor, iw * ih))
             {
                 throw FXMemoryException(_("Unable to load image"));
             }
@@ -321,12 +403,12 @@ void IconItem::drawDetails(IconList* list, FXDC& dc, int x, int y, int, int h) c
             miniIcon->render();
 
             // Restore original pixels
-            miniIcon->setData(tmpdata, IMAGE_KEEP | IMAGE_OWNED, w, h);
+            miniIcon->setData(tmpdata, IMAGE_KEEP | IMAGE_OWNED, iw, ih);
         }
         else
         {
             // Save original pixels
-            if (!FXMEMDUP(&tmpdata, miniIcon->getData(), FXColor, w * h))
+            if (!FXMEMDUP(&tmpdata, miniIcon->getData(), FXColor, iw * ih))
             {
                 throw FXMemoryException(_("Unable to load image"));
             }
@@ -336,13 +418,11 @@ void IconItem::drawDetails(IconList* list, FXDC& dc, int x, int y, int, int h) c
             miniIcon->render();
 
             // Restore original pixels
-            miniIcon->setData(tmpdata, IMAGE_KEEP | IMAGE_OWNED, w, h);
+            miniIcon->setData(tmpdata, IMAGE_KEEP | IMAGE_OWNED, iw, ih);
         }
 
-        iw = miniIcon->getWidth();
-        ih = miniIcon->getHeight();
         dc.setClipRectangle(x, y, header->getItemSize(0), h);
-        dc.drawIcon(miniIcon, xx, y + (h - ih) / 2);
+        dc.drawIcon(miniIcon, xx, y  + (h - ih) / 2);
 
         if (miniIconBadge != NULL)
         {
@@ -369,7 +449,7 @@ void IconItem::drawDetails(IconList* list, FXDC& dc, int x, int y, int, int h) c
         {
             dc.setForeground(list->getTextColor());
         }
-        used = iw + DETAIL_TEXT_SPACING + SIDE_SPACING / 2;
+        used = iw + DETAIL_TEXT_SPACING + SIDE_SPACING / 2 + getTreeOffset();
 
         for (hi = beg = 0; beg < label.length() && hi < header->getNumItems(); hi++, beg = end + 1)
         {
@@ -377,7 +457,7 @@ void IconItem::drawDetails(IconList* list, FXDC& dc, int x, int y, int, int h) c
             for (end = beg; end < label.length() && label[end] != '\t'; end++)
             {
             }
-            if (end > beg)
+            if (end > beg && space > 4)
             {
                 drw = end - beg;
                 tw = font->getTextWidth(&label[beg], drw);
@@ -492,8 +572,8 @@ int IconItem::hitItem(const IconList* list, int rx, int ry, int rw, int rh) cons
     }
     else
     {
-        ix = SIDE_SPACING / 2;
-        tx = SIDE_SPACING / 2;
+        ix = SIDE_SPACING / 2 + getTreeOffset();
+        tx = SIDE_SPACING / 2 + getTreeOffset();
         if (miniIcon)
         {
             iw = miniIcon->getWidth();
@@ -983,9 +1063,112 @@ IconList::IconList(FXComposite* p, FXuint *ic, FXuint nc, FXObject* tgt, FXSelec
 }
 
 
+void IconList::cancelEditName()
+{
+    if (nameEditor)
+    {
+        nameEditor->hide();
+    }
+}
+
+void IconList::editItemName(int index, FXObject* receiver, FXSelector selector, FXbool selectExtension)
+{
+    cancelEditName();
+    if (index < 0 || index >= items.no())
+    {
+        return;
+    }
+    makeItemVisible(index);
+    // Recompute before using the row/column geometry.
+    if (flags & FLAG_RECALC)
+    {
+        recompute();
+    }
+    FXString name = items[index]->getText().section('\t', 0);
+    int x = pos_x, y = pos_y, w = viewport_w, h = font->getFontHeight() + 4;
+    if (options & (ICONLIST_BIG_ICONS | ICONLIST_MINI_ICONS))
+    {
+        int row = (options & ICONLIST_COLUMNS) ? index / ncols : index % nrows;
+        int col = (options & ICONLIST_COLUMNS) ? index % ncols : index / nrows;
+        x += col * itemSpace;
+        y += row * itemHeight;
+        w = itemSpace;
+        if (options & ICONLIST_BIG_ICONS)
+        {
+            y += itemHeight - h - BIG_LINE_SPACING / 2;
+            x += SIDE_SPACING / 2;
+            w -= SIDE_SPACING;
+        }
+        else
+        {
+            y += (itemHeight - h) / 2;
+            int offset = SIDE_SPACING / 2;
+            if (items[index]->getMiniIcon())
+            {
+                offset += items[index]->getMiniIcon()->getWidth() + MINI_TEXT_SPACING;
+            }
+            x += offset;
+            w -= offset;
+        }
+    }
+    else
+    {
+        int offset = SIDE_SPACING / 2 + items[index]->getTreeOffset();
+        if (items[index]->getMiniIcon())
+        {
+            offset += items[index]->getMiniIcon()->getWidth() + DETAIL_TEXT_SPACING;
+        }
+        x += offset;
+        y += header->getDefaultHeight() + index * itemHeight + (itemHeight - h) / 2;
+        w = header->getItemSize(0) - offset;
+    }
+    // Keep the text field within the visible viewport, including narrow columns.
+    int right = FXMIN(x + FXMAX(w, 40), viewport_w);
+    x = FXMAX(0, FXMIN(x, viewport_w - 40));
+    w = FXMAX(1, right - x);
+    if (!nameEditor)
+    {
+        nameEditor = new NameEditor(this);
+        nameEditor->create();
+    }
+    editTarget = receiver;
+    editMessage = selector;
+    nameEditor->setFont(font);
+    nameEditor->setText(name);
+    nameEditor->position(x, y, w, h);
+    nameEditor->show();
+    nameEditor->raise();
+    nameEditor->setFocus();
+    int end = name.length();
+    if (!selectExtension && name.rfind('.') > 0)
+    {
+        end = name.rfind('.');
+    }
+    nameEditor->setCursorPos(end);
+    nameEditor->setSelection(0, end);
+}
+
+long IconList::onAcceptName(FXObject*, FXSelector, void*)
+{
+    if (!isEditingName())
+    {
+        return 1;
+    }
+    FXString name = nameEditor->getText();
+    cancelEditName();
+    setFocus();
+    if (editTarget)
+    {
+        editTarget->handle(this, FXSEL(SEL_COMMAND, editMessage), &name);
+    }
+    return 1;
+}
+
+
 // Used to resize the headers relatively to the list width
 long IconList::onConfigure(FXObject*, FXSelector, void*)
 {
+    cancelEditName();
     // Obtain the main window width
     int width = (this->getShell())->getWidth();
 
@@ -1087,6 +1270,10 @@ void IconList::killFocus()
 // Move content
 void IconList::moveContents(int x, int y)
 {
+    if (x != pos_x || y != pos_y)
+    {
+        cancelEditName();
+    }
     int dx = x - pos_x;
     int dy = y - pos_y;
     int top = 0;
@@ -1293,6 +1480,7 @@ void IconList::resize(int w, int h)
 
     if ((w != width) || (h != height))
     {
+        cancelEditName();
         getrowscols(nrows, ncols, w, h);
         if ((nr != nrows) || (nc != ncols))
         {
@@ -1313,6 +1501,7 @@ void IconList::position(int x, int y, int w, int h)
 
     if ((w != width) || (h != height))
     {
+        cancelEditName();
         getrowscols(nrows, ncols, w, h);
         if ((nr != nrows) || (nc != ncols))
         {
@@ -1370,6 +1559,7 @@ long IconList::onHeaderResize(FXObject*, FXSelector, void* ptr)
             // The first header item may have an icon
             if (hi == 0)
             {
+                w += items[i]->getTreeOffset();
                 if (items[i]->miniIcon)
                 {
                     iw = items[i]->miniIcon->getWidth();
@@ -1418,7 +1608,7 @@ void IconList::autosizeNameHeader(void)
 
         for (i = 0; i < items.no(); i++)
         {
-            w = 0;
+            w = items[i]->getTreeOffset();
 
             // Measure icon
             if (items[i]->miniIcon)
@@ -2784,7 +2974,7 @@ long IconList::onPaint(FXObject*, FXSelector, void* ptr)
                     dc.fillRectangle(x, y, itemSpace, itemHeight);
                     if (index < items.no())
                     {
-                        items[index]->draw(this, dc, x, y, itemSpace, itemHeight);
+                        items[index]->draw(this, dc, x, y, itemSpace, itemHeight, scalefrac);
                     }
                 }
             }
@@ -2803,7 +2993,7 @@ long IconList::onPaint(FXObject*, FXSelector, void* ptr)
                     dc.fillRectangle(x, y, itemSpace, itemHeight);
                     if (index < items.no())
                     {
-                        items[index]->draw(this, dc, x, y, itemSpace, itemHeight);
+                        items[index]->draw(this, dc, x, y, itemSpace, itemHeight, scalefrac);
                     }
                 }
             }
@@ -2844,7 +3034,7 @@ long IconList::onPaint(FXObject*, FXSelector, void* ptr)
         {
             dc.setForeground(backColor);
             dc.fillRectangle(0, y, width, itemHeight);
-            items[index]->draw(this, dc, pos_x, y, width, itemHeight);
+            items[index]->draw(this, dc, pos_x, y, width, itemHeight, scalefrac);
         }
 
         // Repaint left-over background
@@ -3133,10 +3323,19 @@ int IconList::descendingCase(const IconItem* a, const IconItem* b)
 }
 
 
+// Compare two items using the selected sort function
+int IconList::compareItems(const IconItem* a, const IconItem* b) const
+{
+    return sortfunc(a, b);
+}
+
+
 // Sort the items based on the sort function
 void IconList::sortItems()
 {
-    IconItem* v, * c = 0;
+    IconItem* v, * c = NULL;
+    IconItem* a = (anchor >= 0 && anchor < items.no()) ? items[anchor] : NULL;
+    IconItem* e = (extent >= 0 && extent < items.no()) ? items[extent] : NULL;
     FXbool exch = false;
     int i, j, h;
 
@@ -3155,7 +3354,7 @@ void IconList::sortItems()
             {
                 v = items[i - 1];
                 j = i;
-                while (j > h && sortfunc(items[j - h - 1], v) > 0)
+                while (j > h && compareItems(items[j - h - 1], v) > 0)
                 {
                     items[j - 1] = items[j - h - 1];
                     exch = true;
@@ -3164,15 +3363,19 @@ void IconList::sortItems()
                 items[j - 1] = v;
             }
         }
-        if (0 <= current)
+        for (i = 0; i < items.no(); i++)
         {
-            for (i = 0; i < items.no(); i++)
+            if (items[i] == c)
             {
-                if (items[i] == c)
-                {
-                    current = i;
-                    break;
-                }
+                current = i;
+            }
+            if (items[i] == a)
+            {
+                anchor = i;
+            }
+            if (items[i] == e)
+            {
+                extent = i;
             }
         }
         if (exch)
@@ -3253,8 +3456,13 @@ long IconList::onLookupTimer(FXObject*, FXSelector, void*)
 }
 
 
-long IconList::onKeyPress(FXObject*, FXSelector, void* ptr)
+long IconList::onKeyPress(FXObject* sender, FXSelector sel, void* ptr)
 {
+    // IconList overrides composite key dispatch, so forward editor input first.
+    if (isEditingName())
+    {
+        return nameEditor->handle(sender, sel, ptr);
+    }
     FXEvent* event = (FXEvent*)ptr;
     int index = current;
 
@@ -3515,8 +3723,13 @@ hop:
 
 
 // Key Release
-long IconList::onKeyRelease(FXObject*, FXSelector, void* ptr)
+long IconList::onKeyRelease(FXObject* sender, FXSelector sel, void* ptr)
 {
+    // IconList overrides composite key dispatch, so forward editor input first.
+    if (isEditingName())
+    {
+        return nameEditor->handle(sender, sel, ptr);
+    }
     FXEvent* event = (FXEvent*)ptr;
 
     if (!isEnabled())
@@ -4426,6 +4639,7 @@ void IconList::removeItem(int index, FXbool notify)
 // Remove all items
 void IconList::clearItems(FXbool notify)
 {
+    cancelEditName();
     int old = current;
 
     // Delete items

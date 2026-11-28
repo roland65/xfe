@@ -131,6 +131,9 @@ menu.lst = "<txteditor>,<txtviewer>,<txteditor>;Grub Configuration;config_32x32.
 # Trash info
 trashinfo = "<txteditor>,<txtviewer>,<txteditor>;Trash info;text_32x32.png;text_16x16.png;;"
 
+# Hidden files
+.hidden = "<txteditor>,<txtviewer>,<txteditor>;Hidden files;text_32x32.png;text_16x16.png;;"
+
 # Information
 bugs = "<txteditor>,<txtviewer>,<txteditor>;Bugs File;bug_32x32.png;bug_16x16.png;;"
 news = "<txteditor>,<txtviewer>,<txteditor>;News File;news_32x32.png;news_16x16.png;;"

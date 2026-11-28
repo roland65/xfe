@@ -34,7 +34,9 @@ protected:
     InputDialog* newdirdialog = NULL;
     ArchInputDialog* archdialog = NULL;
     BrowseInputDialog* operationdialog = NULL;
-    InputDialog* operationdialogrename = NULL;
+    FXTextField* renamefield = NULL;              // Inline directory name editor
+    FXbool renaming = false;                      // Guard focus changes while closing editor
+    FXString renamesource;                       // Path captured when editing starts
     BookmarkDialog* addbookmarkdialog = NULL;
     BookmarkDialog* modifybookmarkdialog = NULL;
     FXbool fromPaste = false;
@@ -82,6 +84,8 @@ public:
         ID_DIR_COPYTO,
         ID_DIR_MOVETO,
         ID_DIR_RENAME,
+        ID_RENAME_BEGIN,
+        ID_RENAME_ACCEPT,
         ID_DIR_SYMLINK,
         ID_DIR_DELETE,
         ID_DIR_TRASH,
@@ -165,6 +169,10 @@ public:
     long onUpdBookmarks(FXObject*, FXSelector, void*);
 
     long onCmdDirMan(FXObject*, FXSelector, void*);
+    long onBeginRename(FXObject*, FXSelector, void*);
+    long onAcceptRename(FXObject*, FXSelector, void*);
+    long onCancelRename(FXObject*, FXSelector, void*);
+    long onRenameKeyPress(FXObject*, FXSelector, void*);
     long onCmdDirDelete(FXObject*, FXSelector, void*);
     long onCmdDirTrash(FXObject*, FXSelector, void*);
     long onCmdDirRestore(FXObject*, FXSelector, void*);
@@ -258,6 +266,18 @@ public:
     void showHiddenFiles(FXbool shown)
     {
         dirlist->showHiddenFiles(shown);
+    }
+
+    // Set natural sort
+    void setNaturalSort(FXbool natsort)
+    {
+        dirlist->setNaturalSort(natsort);
+    }
+
+    // Get natural sort
+    FXbool getNaturalSort(void)
+    {
+        return dirlist->getNaturalSort();
     }
 
     // Set focus on list

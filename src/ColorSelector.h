@@ -950,7 +950,7 @@ public:
     enum
     {
         ID_CUSTOM_FIRST =FXPacker::ID_LAST,
-        ID_CUSTOM_LAST    =ID_CUSTOM_FIRST + 24,
+        ID_CUSTOM_LAST    =ID_CUSTOM_FIRST + 23,
         ID_RGB_RED_SLIDER,
         ID_RGB_GREEN_SLIDER,
         ID_RGB_BLUE_SLIDER,

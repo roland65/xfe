@@ -1,3 +1,37 @@
+Version 2.2.0
+- display a message when some files or directories were not read in General tab of Properties.cpp
+- fix wrong libsn includes
+- fix compiler warning in libsn when buiding xfe package
+- complete all translations (including help text) using OpenAI Codex
+- fix warning message about file changed in FreeBSD when editing a file with Xfw in an sshfs mount
+- fix missing refresh when dragging a file to a removable media
+- make root mode work with su in Linux and FreeBSD
+- use OpenAI Codex to find and fix several memory leaks and memory faults in all five applications
+- fix FreeBSD 15.1 build and run issues
+- fix memory leak in startupnotification.cpp and libsn
+- reduce timeout in fxsendrequest() and fxwaitforevent() to fix unresponsive UI with slow file systems (github bug #23)
+- fix broken execute text file when confirmation dialog is disabled (bug #280) 
+- better and faster composed characters fix
+- faster xf_isutf8() function
+- fix bookmarks synchronization between Xfe instances and wrong recopy of items in main Bookmarks menu (bug #328) 
+- now a file named .hidden can contain in each folder a list of files or folders (one per line) that the user
+  doesn't want to display when Show hidden files is unchecked (same feature as in Nautilus or Nemo)
+- display number of elements in a folder in the size column
+- optional expandable folders in detailed file lists
+- escape key does not quit applications anymore
+- reverse menu item in panel menus isn't a menu check anymore
+- add a Natural Sorting menu item to panel menus, to enable/disable natural sorting order in file lists
+- it is now possible to select a pair of files or a pair of directories, one in each panel, and then compare them using
+  the right click Compare menu item 
+- disable Accept button if input text is empty in BrowseInput dialog
+- use mime type to select applications in Open With menu
+- fix wrong icon alignment in detailed list mode
+- when comparing two files or folders, select opposite panel directory as browsing start directory
+- create automount desktop autostart file when automount is enabled instead of launching xfe-automount from xfe
+- fix popup menus not closing when clicking outside popup in Wayland
+- move files does not anymore compute data size if source and target are on the same file system 
+- implement inline rename for file panels, search panel and directory panel
+
 Version 2.1.13 (released 25/10/2026)
 - increased lightness of disabled text in a dark theme, for better readability
 - fix mouse cursor lag in detailed file list and single click mode

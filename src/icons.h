@@ -154,6 +154,7 @@ extern FXIcon* minireloadicon;
 extern FXIcon* minirenameicon;
 extern FXIcon* minireplaceicon;
 extern FXIcon* minireverticon;
+extern FXIcon* minireverseicon;
 extern FXIcon* minirotatelefticon;
 extern FXIcon* minirotaterighticon;
 extern FXIcon* minirunicon;

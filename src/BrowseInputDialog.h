@@ -19,6 +19,8 @@ class BrowseInputDialog : public DialogBox
     FXDECLARE(BrowseInputDialog)
 protected:
     FXTextField* input = NULL;
+    FXButton* accept = NULL;
+    FXButton* cancel = NULL;
     TextLabel* msg = NULL;
     FXLabel* iconlabel = NULL;
     FXHorizontalFrame* checkbutton = NULL;
@@ -41,6 +43,7 @@ public:
     virtual ~BrowseInputDialog();
     long onCmdKeyPress(FXObject*, FXSelector, void*);
     long onCmdBrowsePath(FXObject*, FXSelector, void*);
+    long onUpdAccept(FXObject*, FXSelector, void*);
     void setMessage(FXString);
     void setIcon(FXIcon*);
     void setDirectory(const FXString&);

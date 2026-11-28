@@ -10,8 +10,10 @@ class CommandWindow : public DialogBox
 protected:
 
     int pid = 0;                                        // Proccess ID of child (valid if busy).
-    int pipes[2] = { 0, 0 };                            // Pipes to communicate with child process.
+    int pipes[2] = { -1, -1 };                          // Pipes to communicate with child process.
     FXText* text = NULL;
+    FXFont* font = NULL;                                // Owned text font
+    void closePipes();
 
     FXString command;                                   // Command string
     FXbool killed = false;                              // True if the cancel button was pressed

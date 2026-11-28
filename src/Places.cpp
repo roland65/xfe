@@ -1,6 +1,8 @@
 #include "config.h"
 #include "i18n.h"
 
+#include <fcntl.h>
+#include <sys/file.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -19,6 +21,64 @@
 #include "xfeutils.h"
 #include "MessageBox.h"
 #include "Places.h"
+
+
+extern FXString xdgconfighome;
+extern bool xf_writebookmarks(FXRegistry&);
+
+
+// Serialize bookmark changes from different Xfe instances.
+class BookmarkLock
+{
+private:
+    int fd = -1;
+public:
+    BookmarkLock(FXWindow* owner)
+    {
+        FXString directory = xdgconfighome + PATHSEPSTRING XFECONFIGPATH;
+        if (!xf_isdirectory(directory))
+        {
+            FXDir::create(directory);
+        }
+        FXString pathname = directory + PATHSEPSTRING "bookmarks.lock";
+        fd = open(pathname.text(), O_CREAT | O_RDWR, 0600);
+        if (fd >= 0)
+        {
+            int ret;
+            do
+            {
+                ret = flock(fd, LOCK_EX);
+            }
+            while (ret < 0 && errno == EINTR);
+            if (ret == 0)
+            {
+                return;
+            }
+            int errcode = errno;
+            close(fd);
+            fd = -1;
+            errno = errcode;
+        }
+        MessageBox::error(owner, BOX_OK, _("Error"), _("Can't lock bookmarks: %s"), strerror(errno));
+    }
+
+    ~BookmarkLock()
+    {
+        if (fd >= 0)
+        {
+            flock(fd, LOCK_UN);
+            close(fd);
+        }
+    }
+
+    FXbool locked() const
+    {
+        return fd >= 0;
+    }
+};
+
+
+#define BOOKMARKS_POLL_INTERVAL    1000
 
 
 // mtab polling interval (ms)
@@ -650,6 +710,7 @@ long MountsList::onQueryTip(FXObject* sender, FXSelector, void* ptr)
 FXDEFMAP(BookmarksList) BookmarksListMap[] =
 {
     FXMAPFUNC(SEL_QUERY_TIP, 0, BookmarksList::onQueryTip),
+    FXMAPFUNC(SEL_TIMEOUT, BookmarksList::ID_REFRESH_BOOKMARKS, BookmarksList::onRefreshBookmarks),
 };
 
 
@@ -662,6 +723,35 @@ BookmarksList::BookmarksList(FXWindow* owner, FXComposite* p, FXObject* tgt, FXS
                              FXColor listforecolor, FXuint opts, int x, int y, int w, int h) :
     FXList(p, tgt, sel, opts | LIST_SINGLESELECT, x, y, w, h)
 {
+    BookmarkLock lock(this);
+    if (lock.locked())
+    {
+        // Import only bookmarks, preserving this instance's other settings.
+        FXString pathname = xdgconfighome + PATHSEPSTRING XFECONFIGPATH + PATHSEPSTRING +
+                            getApp()->reg().getAppKey() + "rc";
+        FXSettings settings;
+        if (settings.parseFile(pathname, true))
+        {
+            FXbool legacy = settings.readUnsignedEntry("OPTIONS", "legacy_bookmarks", true);
+            getApp()->reg().writeUnsignedEntry("OPTIONS", "legacy_bookmarks", legacy);
+            if (!legacy)
+            {
+                getApp()->reg().deleteSection("bookmarks");
+            }
+            getApp()->reg().deleteSection("BOOKMARKS");
+            for (FXuint i = 0; ; i++)
+            {
+                FXString key = "bookmark" + FXStringVal(i);
+                FXString data = settings.readStringEntry("BOOKMARKS", key.text(), "");
+                if (data.empty())
+                {
+                    break;
+                }
+                getApp()->reg().writeStringEntry("BOOKMARKS", key.text(), data.text());
+            }
+        }
+    }
+
     // Fractional scaling factor
     FXint res = getApp()->reg().readUnsignedEntry("SETTINGS", "screenres", 100);
     scalefrac = FXMAX(1.0, res / 100.0);
@@ -704,7 +794,11 @@ BookmarksList::BookmarksList(FXWindow* owner, FXComposite* p, FXObject* tgt, FXS
                         icon->create();
                     }
 
-                    FXList::appendItem(name, icon);  // Dedicated icon
+                    FXList::appendItem(name, minibookmarkicon);
+                    if (icon)
+                    {
+                        setItemIcon(getNumItems() - 1, icon, true);
+                    }
                 }
 
                 i++;
@@ -766,7 +860,10 @@ BookmarksList::BookmarksList(FXWindow* owner, FXComposite* p, FXObject* tgt, FXS
     getApp()->reg().writeUnsignedEntry("OPTIONS", "legacy_bookmarks", false);
 
     // Update registry
-    getApp()->reg().write();
+    if (lock.locked())
+    {
+        xf_writebookmarks(getApp()->reg());
+    }
 }
 
 
@@ -774,16 +871,134 @@ BookmarksList::BookmarksList(FXWindow* owner, FXComposite* p, FXObject* tgt, FXS
 void BookmarksList::create()
 {
     FXList::create();
+    getApp()->addTimeout(this, ID_REFRESH_BOOKMARKS, BOOKMARKS_POLL_INTERVAL);
 }
 
 
 // Destructor
 BookmarksList::~BookmarksList()
 {
+    getApp()->removeTimeout(this, ID_REFRESH_BOOKMARKS);
     if (associations)
     {
         delete associations;
     }
+}
+
+
+// Read bookmarks into a separate settings object so deleted keys cannot survive.
+void BookmarksList::refresh()
+{
+    FXString pathname = xdgconfighome + PATHSEPSTRING XFECONFIGPATH + PATHSEPSTRING +
+                        getApp()->reg().getAppKey() + "rc";
+    FXSettings settings;
+    if (!settings.parseFile(pathname, true))
+    {
+        return;
+    }
+    vector_FXString updated;
+    for (FXuint i = 0; ; i++)
+    {
+        FXString key = "bookmark" + FXStringVal(i);
+        FXString data = settings.readStringEntry("BOOKMARKS", key.text(), "");
+        if (data.empty())
+        {
+            break;
+        }
+        updated.push_back(data);
+    }
+    if (updated != bookmarks)
+    {
+        // Synchronize only bookmarks; keep this instance's other settings intact.
+        FXbool modified = getApp()->reg().isModified();
+        getApp()->reg().deleteSection("BOOKMARKS");
+        for (FXuint i = 0; i < updated.size(); i++)
+        {
+            FXString key = "bookmark" + FXStringVal(i);
+            getApp()->reg().writeStringEntry("BOOKMARKS", key.text(), updated[i].text());
+        }
+        getApp()->reg().setModified(modified);
+        FXString currentpath;
+        int current = FXList::getCurrentItem();
+        if (current >= 0 && current < (int)bookmarks.size())
+        {
+            currentpath = getBookmarkPathname(current);
+        }
+        bookmarks.swap(updated);
+        nbBookmarks = bookmarks.size();
+        rebuildList(currentpath);
+    }
+}
+
+
+// Keep the current location and selection when names, icons, or order change.
+void BookmarksList::rebuildList(FXString pathname)
+{
+    FXbool selected = false;
+    int current = FXList::getCurrentItem();
+    if (current >= 0 && current < getNumItems())
+    {
+        FXString name = getItemText(current);
+        if (pathname.empty())
+        {
+            pathname = getItemPathname(name);
+        }
+        selected = isItemSelected(current);
+    }
+    FXList::clearItems();
+    for (FXuint i = 0; i < nbBookmarks; i++)
+    {
+        FXString name = getBookmarkName(i);
+        FXString iconpathname = getBookmarkIconPathname(i);
+        FXIcon* icon = NULL;
+        if (!iconpathname.empty() && xf_existfile(iconpathname))
+        {
+            icon = xf_loadiconfile(getApp(), FXPath::directory(iconpathname), FXPath::name(iconpathname),
+                                   scalefrac, getBackColor());
+        }
+        FXList::appendItem(name, minibookmarkicon);
+        if (icon)
+        {
+            if (id())
+            {
+                icon->create();
+            }
+            setItemIcon(i, icon, true);
+        }
+        if (!pathname.empty() && getBookmarkPathname(i) == pathname)
+        {
+            FXList::setCurrentItem(i);
+            if (selected)
+            {
+                selectItem(i);
+            }
+        }
+    }
+}
+
+
+// Persist a complete bookmark section, including removal of the last bookmark.
+void BookmarksList::saveBookmarks()
+{
+    getApp()->reg().deleteSection("BOOKMARKS");
+    for (FXuint i = 0; i < nbBookmarks; i++)
+    {
+        FXString key = "bookmark" + FXStringVal(i);
+        getApp()->reg().writeStringEntry("BOOKMARKS", key.text(), bookmarks[i].text());
+    }
+    xf_writebookmarks(getApp()->reg());
+}
+
+
+long BookmarksList::onRefreshBookmarks(FXObject*, FXSelector, void*)
+{
+    // Do not change items while a mouse operation or context menu is in progress.
+    if (!grabbed() && !getApp()->getPopupWindow())
+    {
+        refresh();
+    }
+    getApp()->addTimeout(this, ID_REFRESH_BOOKMARKS, BOOKMARKS_POLL_INTERVAL);
+    return 1;
 }
 
 
@@ -807,64 +1022,47 @@ void BookmarksList::setBookmark(FXString& key)
 int BookmarksList::modifyBookmark(FXString& oldname, FXString& newname, FXString& oldiconpathname,
                                   FXString& newiconpathname, FXString& pathname)
 {
-    // Check new name
-    if (newname == "" || (newname == oldname && newiconpathname == oldiconpathname))
+    if (newname.empty() || (newname == oldname && newiconpathname == oldiconpathname))
     {
         return 0;
     }
-
     if (newname.contains(';'))
     {
         MessageBox::error(this, BOX_OK, _("Error"), _("Bookmark name must not contain the character ';'"));
         return 0;
     }
-
     if (newiconpathname.contains(';'))
     {
         MessageBox::error(this, BOX_OK, _("Error"), _("Bookmark icon path name must not contain the character ';'"));
         return 0;
     }
-
-    // Bookmark position
-    FXuint index = FXList::getCurrentItem();
-
-    // Check if an item with the same name already exists
+    BookmarkLock lock(this);
+    if (!lock.locked())
+    {
+        return 0;
+    }
+    refresh();
+    int index = -1;
     for (FXuint i = 0; i < nbBookmarks; i++)
     {
-        if ((getBookmarkName(i) == newname) && (i != index))
+        if (getBookmarkPathname(i) == pathname)
+        {
+            index = i;
+        }
+        else if (getBookmarkName(i) == newname)
         {
             MessageBox::error(this, BOX_OK, _("Error"), _("Bookmark %s already exists"), newname.text());
             return 0;
         }
     }
-
-    // Modify bookmark
-    if (newiconpathname == "" || !xf_existfile(newiconpathname))
+    if (index < 0)
     {
-        FXList::setItem(index, newname, minibookmarkicon);   // Default icon
-        bookmarks[index] = newname + ";" + getBookmarkPathname(index) + ";" + "";
+        return 0;
     }
-    else
-    {
-        FXIcon* icon = xf_loadiconfile(getApp(), FXPath::directory(newiconpathname),
-                                    FXPath::name(newiconpathname), scalefrac, this->getBackColor());
-        if (icon)
-        {
-            icon->create();
-        }
-
-        FXList::setItem(index, newname, icon);   // Dedicated icon
-
-        bookmarks[index] = newname + ";" + getBookmarkPathname(index) + ";" + newiconpathname;
-    }
-
-    // Write registry key
-    FXString regkey = "bookmark" + FXStringVal(index);
-    getApp()->reg().writeStringEntry("BOOKMARKS", regkey.text(), bookmarks[index].text());
-
-    // Update registry
-    getApp()->reg().write();
-
+    FXString icon = xf_existfile(newiconpathname) ? newiconpathname : FXString::null;
+    bookmarks[index] = newname + ";" + pathname + ";" + icon;
+    rebuildList(pathname);
+    saveBookmarks();
     return 1;
 }
 
@@ -873,32 +1071,34 @@ int BookmarksList::modifyBookmark(FXString& oldname, FXString& newname, FXString
 // Return 1 if success else return 0
 int BookmarksList::appendBookmark(FXString& name, FXString& pathname, FXString& iconpathname)
 {
-    // Check name
-    if (name == "")
+    if (name.empty())
     {
         return 0;
     }
-    else
+    BookmarkLock lock(this);
+    if (!lock.locked())
     {
-        for (FXuint i = 0; i < nbBookmarks; i++)
+        return 0;
+    }
+    refresh();
+    for (FXuint i = 0; i < nbBookmarks; i++)
+    {
+        if (getBookmarkName(i) == name)
         {
-            if (getBookmarkName(i) == name)
-            {
-                MessageBox::error(this, BOX_OK, _("Error"), _("Bookmark %s already exists"), name.text());
-                return 0;
-            }
-
-            if (getBookmarkPathname(i) == pathname)
-            {
-                MessageBox::error(this, BOX_OK, _("Error"), _("Bookmark location %s already exists"), pathname.text());
-                return 0;
-            }
+            MessageBox::error(this, BOX_OK, _("Error"), _("Bookmark %s already exists"), name.text());
+            return 0;
+        }
+        if (getBookmarkPathname(i) == pathname)
+        {
+            MessageBox::error(this, BOX_OK, _("Error"), _("Bookmark location %s already exists"), pathname.text());
+            return 0;
         }
     }
-
-    // Append bookmark
-    appendItem(name, pathname, iconpathname);
-
+    FXString icon = xf_existfile(iconpathname) ? iconpathname : FXString::null;
+    bookmarks.push_back(name + ";" + pathname + ";" + icon);
+    nbBookmarks = bookmarks.size();
+    rebuildList();
+    saveBookmarks();
     return 1;
 }
 
@@ -906,180 +1106,87 @@ int BookmarksList::appendBookmark(FXString& name, FXString& pathname, FXString& 
 // Append an item
 void BookmarksList::appendItem(FXString& name, FXString& pathname, FXString& iconpathname)
 {
-    // Append item to vector
-    FXString data;
-
-    if (xf_existfile(iconpathname))
-    {
-        data = name + ";" + pathname + ";" + iconpathname;
-    }
-    else
-    {
-        data = name + ";" + pathname + ";";
-    }
-    bookmarks.push_back(data);
-    nbBookmarks = bookmarks.size();
-
-    // Write registry key
-    FXString regkey = "bookmark" + FXStringVal(nbBookmarks - 1);
-    getApp()->reg().writeStringEntry("BOOKMARKS", regkey.text(), data.text());
-
-
-    // Append item to list
-    if (xf_existfile(iconpathname))
-    {
-        FXIcon* icon = xf_loadiconfile(getApp(), FXPath::directory(iconpathname),
-                                    FXPath::name(iconpathname), scalefrac, this->getBackColor());
-        if (icon)
-        {
-            icon->create();
-        }
-
-        FXList::appendItem(name, icon);  // Dedicated icon
-    }
-    else
-    {
-        FXList::appendItem(name, minibookmarkicon);   // Default icon
-    }
-
-    // Update registry
-    getApp()->reg().write();
+    appendBookmark(name, pathname, iconpathname);
 }
 
 
 // Remove an item
 void BookmarksList::removeItem(const FXString& name)
 {
-    // Remove item from list
-    FXList::removeItem(FXList::findItem(name));
-
-    // Remove item from vector
+    BookmarkLock lock(this);
+    if (!lock.locked())
+    {
+        return;
+    }
+    refresh();
     for (FXuint i = 0; i < nbBookmarks; i++)
     {
         if (getBookmarkName(i) == name)
         {
             bookmarks.erase(bookmarks.begin() + i);
+            nbBookmarks = bookmarks.size();
+            rebuildList();
+            saveBookmarks();
             break;
         }
     }
-    nbBookmarks = bookmarks.size();
-
-    // Delete bookmarks section
-    getApp()->reg().read();
-    getApp()->reg().deleteSection("BOOKMARKS");
-
-    // Add bookmarks to registry
-    for (FXuint i = 0; i < nbBookmarks; i++)
-    {
-        FXString regkey = "bookmark" + FXStringVal(i);
-        getApp()->reg().writeStringEntry("BOOKMARKS", regkey.text(), bookmarks[i].text());
-    }
-
-    // Update registry
-    getApp()->reg().write();
 }
 
 
 // Remove all items
 void BookmarksList::removeAllItems(void)
 {
-    // Remove all bookmarks from list
-    FXList::clearItems();
-
-    // Clear bookmarks vector
+    BookmarkLock lock(this);
+    if (!lock.locked())
+    {
+        return;
+    }
+    refresh();
     bookmarks.clear();
     nbBookmarks = 0;
-
-    // Remove registry section
-    getApp()->reg().read();
-    getApp()->reg().deleteSection("BOOKMARKS");
-
-    // Update registry
-    getApp()->reg().write();
+    rebuildList();
+    saveBookmarks();
 }
 
 
 // Move bookmark up
 void BookmarksList::moveUp(FXString& name)
 {
-    FXuint index = FXList::getCurrentItem();
-
+    BookmarkLock lock(this);
+    if (!lock.locked())
+    {
+        return;
+    }
+    refresh();
+    int index = FXList::findItem(name);
     if (index > 0)
     {
         FXString tmp = bookmarks[index - 1];
         bookmarks[index - 1] = bookmarks[index];
         bookmarks[index] = tmp;
-
-        FXList::clearItems();
-
-        getApp()->reg().deleteSection("BOOKMARKS");
-
-        for (FXuint i = 0; i < nbBookmarks; i++)
-        {
-            // Append item to list
-            FXString iconpathname = getItemIconPathname(getBookmarkName(i));
-            if (xf_existfile(iconpathname))
-            {
-                FXIcon* icon = xf_loadiconfile(getApp(), FXPath::directory(iconpathname),
-                                            FXPath::name(iconpathname), scalefrac, this->getBackColor());
-                if (icon)
-                {
-                    icon->create();
-                }
-
-                FXList::appendItem(getBookmarkName(i), icon);  // Dedicated icon
-            }
-            else
-            {
-                FXList::appendItem(getBookmarkName(i), minibookmarkicon);   // Default icon
-            }
-
-            FXString regkey = "bookmark" + FXStringVal(i);
-            getApp()->reg().writeStringEntry("BOOKMARKS", regkey.text(), bookmarks[i].text());
-        }
-        getApp()->reg().write();
+        rebuildList();
+        saveBookmarks();
     }
 }
+
 
 // Move bookmark down
 void BookmarksList::moveDown(FXString& name)
 {
-    FXuint index = FXList::getCurrentItem();
-
-    if (index < nbBookmarks - 1)
+    BookmarkLock lock(this);
+    if (!lock.locked())
+    {
+        return;
+    }
+    refresh();
+    int index = FXList::findItem(name);
+    if (index >= 0 && index + 1 < (int)nbBookmarks)
     {
         FXString tmp = bookmarks[index + 1];
         bookmarks[index + 1] = bookmarks[index];
         bookmarks[index] = tmp;
-
-        FXList::clearItems();
-
-        getApp()->reg().deleteSection("BOOKMARKS");
-
-        for (FXuint i = 0; i < nbBookmarks; i++)
-        {
-            // Append item to list
-            FXString iconpathname = getItemIconPathname(getBookmarkName(i));
-            if (xf_existfile(iconpathname))
-            {
-                FXIcon* icon = xf_loadiconfile(getApp(), FXPath::directory(iconpathname),
-                                            FXPath::name(iconpathname), scalefrac, this->getBackColor());
-                if (icon)
-                {
-                    icon->create();
-                }
-
-                FXList::appendItem(getBookmarkName(i), icon);  // Dedicated icon
-            }
-            else
-            {
-                FXList::appendItem(getBookmarkName(i), minibookmarkicon);       // Default icon
-            }
-
-            FXString regkey = "bookmark" + FXStringVal(i);
-            getApp()->reg().writeStringEntry("BOOKMARKS", regkey.text(), bookmarks[i].text());
-        }
-        getApp()->reg().write();
+        rebuildList();
+        saveBookmarks();
     }
 }
 

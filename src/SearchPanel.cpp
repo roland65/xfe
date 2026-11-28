@@ -84,6 +84,7 @@ FXDEFMAP(SearchPanel) SearchPanelMap[] =
     FXMAPFUNC(SEL_COMMAND, SearchPanel::ID_FILE_COPYTO, SearchPanel::onCmdFileMan),
     FXMAPFUNC(SEL_COMMAND, SearchPanel::ID_FILE_MOVETO, SearchPanel::onCmdFileMan),
     FXMAPFUNC(SEL_COMMAND, SearchPanel::ID_FILE_RENAME, SearchPanel::onCmdFileMan),
+    FXMAPFUNC(SEL_COMMAND, SearchPanel::ID_RENAME_APPLY, SearchPanel::onCmdFileMan),
     FXMAPFUNC(SEL_COMMAND, SearchPanel::ID_FILE_SYMLINK, SearchPanel::onCmdFileMan),
     FXMAPFUNC(SEL_COMMAND, SearchPanel::ID_ADD_TO_ARCH, SearchPanel::onCmdAddToArch),
     FXMAPFUNC(SEL_COMMAND, SearchPanel::ID_EXTRACT, SearchPanel::onCmdExtract),
@@ -209,6 +210,10 @@ SearchPanel::SearchPanel(FXComposite* p, FXuint* ic, FXuint nc, FXuint name_size
     // Set ignore case
     FXuint ignorecase = getApp()->reg().readUnsignedEntry("SEARCH PANEL", "ignore_case", 1);
     list->setIgnoreCase(ignorecase);
+
+    // Set natural sorting
+    FXuint naturalsort = getApp()->reg().readUnsignedEntry("SEARCH PANEL", "natural_sort", 1);
+    list->setNaturalSort(naturalsort);
 
     // Toolbar buttons
     FXHotKey hotkey;
@@ -404,10 +409,6 @@ SearchPanel::~SearchPanel()
     {
         delete operationdialogsingle;
     }
-    if (operationdialogrename != NULL)
-    {
-        delete operationdialogrename;
-    }
     if (operationdialogmultiple != NULL)
     {
         delete operationdialogmultiple;
@@ -425,6 +426,12 @@ SearchPanel::~SearchPanel()
 // Keyboard press
 long SearchPanel::onKeyPress(FXObject* sender, FXSelector sel, void* ptr)
 {
+    // The inline editor must receive Enter/Escape before panel shortcuts do.
+    if (list->isEditingName())
+    {
+        return list->onKeyPress(sender, sel, ptr);
+    }
+
     FXEvent* event = (FXEvent*)ptr;
 
     int currentitem = list->getCurrentItem();
@@ -968,6 +975,17 @@ void SearchPanel::execFile(FXString filepath)
                     }
                 }
             }
+            // Without confirmation dialog
+            else
+            {
+                cmdname = FXPath::name(filepath);
+                cmd = ::xf_quote(filepath);
+#ifdef STARTUP_NOTIFICATION
+                runcmd(cmd, cmdname, searchdir, searchdir, usesn, snexcepts);
+#else
+                runcmd(cmd, searchdir, searchdir);
+#endif
+            }
         }
     }
     // Binary file, execute it
@@ -1005,11 +1023,7 @@ long SearchPanel::onCmdOpenWith(FXObject*, FXSelector, void*)
         opendialog = new HistInputDialog(this, "", _("Open selected file(s) with:"), _("Open With"), "",
                                          bigfileopenicon, false, true, HIST_INPUT_EXECUTABLE_FILE, true, _("A&ssociate"));
     }
-    opendialog->setText(cmd);
-
     // Dialog with history list and associate checkbox
-    opendialog->CursorEnd();
-    opendialog->selectAll();
     opendialog->clearItems();
     for (int i = 0; i < OpenNum; i++)
     {
@@ -1017,6 +1031,17 @@ long SearchPanel::onCmdOpenWith(FXObject*, FXSelector, void*)
     }
     opendialog->sortItems();
     opendialog->setDirectory(ROOTDIR);
+    for (int i = 0; i < list->getNumItems(); ++i)
+    {
+        if (list->isItemSelected(i))
+        {
+            FileAssoc* association = list->getItemAssoc(i);
+            opendialog->setApplications(list->getItemFullPathname(i),
+                                        association ? association->command.section(',', 0) : FXString::null,
+                                        association ? association->miniicon : NULL);
+            break;
+        }
+    }
     if (opendialog->execute())
     {
         cmd = opendialog->getText();
@@ -1151,11 +1176,10 @@ long SearchPanel::onCmdOpenWith(FXObject*, FXSelector, void*)
         if (newstr)
         {
             // FIFO
-            xf_strlcpy(OpenHistory[0], cmd.text(), cmd.length() + 1);
+            xf_strlcpy(OpenHistory[0], cmd.text(), sizeof(OpenHistory[0]));
             for (int i = 1; i < OpenNum; i++)
             {
-                xf_strlcpy(OpenHistory[i], opendialog->getHistoryItem(i - 1).text(),
-                         opendialog->getHistoryItem(i - 1).length() + 1);
+                xf_strlcpy(OpenHistory[i], opendialog->getHistoryItem(i - 1).text(), sizeof(OpenHistory[i]));
             }
         }
 
@@ -2042,11 +2066,8 @@ long SearchPanel::appendItem(FXString& pathname)
             // Except in the case of a broken link
             if (isBrokenLink)
             {
-                int ret = xf_lstat(pathname.text(), &info);
-                if (ret < 0)  // Should not happen
-                {
-                    fprintf(stderr, "%s", strerror(errno));
-                }
+                // Use the metadata already read if the link disappears now.
+                info = linfo;
             }
             else
             {
@@ -2482,7 +2503,8 @@ long SearchPanel::onCmdPopupMenu(FXObject* sender, FXSelector sel, void* ptr)
         new FXMenuSeparator(menu);
         new FXMenuCheck(menu, _("I&gnore Case"), list, FileList::ID_SORT_CASE);
         new FXMenuCheck(menu, _("Fold&ers First"), list, FileList::ID_DIRS_FIRST);
-        new FXMenuCheck(menu, _("Re&verse Order"), list, FileList::ID_SORT_REVERSE);
+        new FXMenuCheck(menu, _("Nat&ural Sorting"), list, FileList::ID_SORT_NATURAL);
+        new FXMenuCommand(menu, _("Re&verse Order"), minireverseicon, list, FileList::ID_SORT_REVERSE);
     }
     // Non empty selection
     else
@@ -2511,7 +2533,8 @@ long SearchPanel::onCmdPopupMenu(FXObject* sender, FXSelector sel, void* ptr)
         new FXMenuSeparator(submenu);
         new FXMenuCheck(submenu, _("Ignore C&ase"), list, FileList::ID_SORT_CASE);
         new FXMenuCheck(submenu, _("Fold&ers First"), list, FileList::ID_DIRS_FIRST);
-        new FXMenuCheck(submenu, _("Re&verse Order"), list, FileList::ID_SORT_REVERSE);
+        new FXMenuCheck(submenu, _("Nat&ural Sorting"), list, FileList::ID_SORT_NATURAL);
+        new FXMenuCommand(submenu, _("Re&verse Order"), minireverseicon, list, FileList::ID_SORT_REVERSE);
         new FXMenuCascade(menu, _("Pane&l"), NULL, submenu);
         new FXMenuSeparator(menu);
 
@@ -2617,6 +2640,8 @@ long SearchPanel::onCmdPopupMenu(FXObject* sender, FXSelector sel, void* ptr)
     menu->create();
     menu->popup(NULL, x, y);
     getApp()->runModalWhileShown(menu);
+    xf_clear_menu(menu);
+    delete menu;
     list->setAllowRefresh(true);
 
     return 1;
@@ -3475,35 +3500,14 @@ long SearchPanel::onClipboardRequest(FXObject* sender, FXSelector sel, void* ptr
         return 1;
     }
 
-    // Clipboard target is xfelistType (Xfe, Gnome or XFCE)
-    if (event->target == xfelistType)
+    // Build the format-specific response without changing the stored URI list.
+    if (event->target == xfelistType && !clipboard.empty())
     {
-        // Prepend "copy" or "cut" as in the Gnome way and avoid duplicating these strings
-        if ((clipboard.find("copy\n") < 0) && (clipboard.find("cut\n") < 0))
-        {
-            if (clipboard_type == CUT_CLIPBOARD)
-            {
-                clipboard = "cut\n" + clipboard;
-            }
-            else
-            {
-                clipboard = "copy\n" + clipboard;
-            }
-        }
-
-        // Return clipboard content
-        if (event->target == xfelistType)
-        {
-            if (!clipboard.empty())
-            {
-                len = clipboard.length();
-                FXMEMDUP(&data, clipboard.text(), FXuchar, len);
-                setDNDData(FROM_CLIPBOARD, event->target, data, len);
-
-                // Return because xfelistType is not compatible with other types
-                return 1;
-            }
-        }
+        FXString response = (clipboard_type == CUT_CLIPBOARD ? "cut\n" : "copy\n") + clipboard;
+        len = response.length();
+        FXMEMDUP(&data, response.text(), FXuchar, len);
+        setDNDData(FROM_CLIPBOARD, event->target, data, len);
+        return 1;
     }
 
     // Clipboard target is kdelisType (KDE)
@@ -3719,10 +3723,17 @@ long SearchPanel::onCmdCopyName(FXObject*, FXSelector sel, void*)
 
 
 // Copy/Move/Rename/Symlink file(s)
-long SearchPanel::onCmdFileMan(FXObject* sender, FXSelector sel, void*)
+long SearchPanel::onCmdFileMan(FXObject* sender, FXSelector sel, void* ptr)
 {
     int num;
     FXString src, targetdir, target, name, source;
+    int firstitem = 0;
+
+    FXbool applyRename = FXSELID(sel) == ID_RENAME_APPLY;
+    if (applyRename)
+    {
+        sel = FXSEL(SEL_COMMAND, ID_FILE_RENAME);
+    }
 
     // Confirmation dialog?
     FXbool ask_before_copy = getApp()->reg().readUnsignedEntry("OPTIONS", "ask_before_copy", true);
@@ -3736,17 +3747,37 @@ long SearchPanel::onCmdFileMan(FXObject* sender, FXSelector sel, void*)
         return 0;
     }
 
+    if (FXSELID(sel) == ID_FILE_RENAME)
+    {
+        num = list->getNumSelectedItems();
+        if (num == 0)
+        {
+            return 0;
+        }
+    }
+
     // Obtain the list of source files
     for (int u = 0; u < list->getNumItems(); u++)
     {
         if (list->isItemSelected(u))
         {
+            if (firstitem == 0)
+            {
+                firstitem = u;
+            }
+
             src += list->getItemFullPathname(u) + "\n";
         }
     }
 
     // Name and directory of the first source file
     source = src.section('\n', 0);
+
+    if (applyRename && (num != 1 || source != inlineRenameSource))
+    {
+        return 0;
+    }
+
     name = FXPath::name(source);
     FXString dir = FXPath::directory(source);
 
@@ -3839,34 +3870,31 @@ x:
         {
             if (FXSELID(sel) == ID_FILE_RENAME)
             {
-                if (operationdialogrename == NULL)
+                if (!applyRename)
                 {
-                    operationdialogrename = new InputDialog(this, "", "", title, _("To:"), icon);
+                    inlineRenameSource = source;
+                    list->editItemName(firstitem, this, ID_RENAME_APPLY, xf_isdirectory(source));
+                    return 1;
                 }
-                operationdialogrename->setTitle(title);
-                operationdialogrename->setIcon(icon);
-                operationdialogrename->setMessage(message);
-                operationdialogrename->setText(target);
+                target = *(FXString*)ptr;
 
-                if (xf_isdirectory(source)) // directory
+                if (target == name)
                 {
-                    operationdialogrename->selectAll();
-                }
-                else
-                {
-                    int pos = target.rfind('.');
-                    if (pos <= 0)
-                    {
-                        operationdialogrename->selectAll(); // no extension or dot file
-                    }
-                    else
-                    {
-                        operationdialogrename->setSelection(0, pos);
-                    }
+                    return 1;
                 }
 
-                int rc = operationdialogrename->execute(PLACEMENT_CURSOR);
-                target = operationdialogrename->getText();
+                // Target name contains '/'
+                if (target.contains(PATHSEPCHAR))
+                {
+                    MessageBox::warning(this, BOX_OK, _("Warning"),
+                    _("The / character is not allowed in file or folder names, operation cancelled"));
+                    return 0;
+                }
+
+                if (target == "." || target == "..")
+                {
+                    return 0;
+                }
 
                 // Target name contains '/'
                 if (target.contains(PATHSEPCHAR))
@@ -3876,7 +3904,7 @@ x:
                     return 0;
                 }
 
-                if (!rc)
+                if (target == "." || target == "..")
                 {
                     return 0;
                 }
@@ -4017,7 +4045,7 @@ x:
 
     // One source
     File* f = NULL;
-    int ret;
+    int ret = 0;
     if (num == 1)
     {
         // An empty source file name corresponds to the ".." file
@@ -4037,7 +4065,7 @@ x:
             f->create();
 
             // Get total source size and start time
-            hsourcesize = f->sourcesize(source, &sourcesize);
+            hsourcesize = f->sourcesize(source, &sourcesize, false, target);
             tstart = xf_getcurrenttime();
 
             // If action is cancelled in progress dialog
@@ -4094,7 +4122,8 @@ x:
             // If source file is located at trash location, try to also remove the corresponding trashinfo file if it exists
             // Do it silently and don't report any error if it fails
             FXbool use_trash_can = getApp()->reg().readUnsignedEntry("OPTIONS", "use_trash_can", true);
-            if (use_trash_can && ret && (source.left(trashfileslocation.length()) == trashfileslocation))
+            if (use_trash_can && ret == true && !xf_existfile(source) &&
+                (FXPath::directory(source) == trashfileslocation))
             {
                 FXString trashinfopathname = trashinfolocation + PATHSEPSTRING + FXPath::name(source) + ".trashinfo";
                 unlink(trashinfopathname.text());
@@ -4106,7 +4135,7 @@ x:
             f->create();
 
             // Get total source size and start time
-            hsourcesize = f->sourcesize(source, &sourcesize);
+            hsourcesize = f->sourcesize(source, &sourcesize, false, target);
             tstart = xf_getcurrenttime();
 
             // If action is cancelled in progress dialog
@@ -4142,7 +4171,8 @@ x:
 
             // If source file is located at trash location, try to also remove the corresponding trashinfo file if it exists
             // Do it silently and don't report any error if it fails
-            if (use_trash_can && ret && (source.left(trashfileslocation.length()) == trashfileslocation))
+            if (use_trash_can && ret == true && !xf_existfile(source) &&
+                (FXPath::directory(source) == trashfileslocation))
             {
                 FXString trashinfopathname = trashinfolocation + PATHSEPSTRING + FXPath::name(source) + ".trashinfo";
                 unlink(trashinfopathname.text());
@@ -4190,7 +4220,7 @@ x:
             f->create();
 
             // Get total source size and start time
-            hsourcesize = f->sourcesize(src, &sourcesize);
+            hsourcesize = f->sourcesize(src, &sourcesize, false, target);
             tstart = xf_getcurrenttime();
 
             // If action is cancelled in progress dialog
@@ -4207,7 +4237,7 @@ x:
             f->create();
 
             // Get total source size and start time
-            hsourcesize = f->sourcesize(src, &sourcesize);
+            hsourcesize = f->sourcesize(src, &sourcesize, false, target);
             tstart = xf_getcurrenttime();
 
             // If action is cancelled in progress dialog
@@ -4286,7 +4316,8 @@ x:
                         // If source file is located at trash location, try to also remove the corresponding trashinfo file if it exists
                         // Do it silently and don't report any error if it fails
                         FXbool use_trash_can = getApp()->reg().readUnsignedEntry("OPTIONS", "use_trash_can", true);
-                        if (use_trash_can && ret && (source.left(trashfileslocation.length()) == trashfileslocation))
+                        if (use_trash_can && ret == true && !xf_existfile(source) &&
+                            (FXPath::directory(source) == trashfileslocation))
                         {
                             FXString trashinfopathname = trashinfolocation + PATHSEPSTRING + FXPath::name(source) +
                                                          ".trashinfo";
@@ -4422,7 +4453,8 @@ x:
 
                     // If source file is located at trash location, try to also remove the corresponding trashinfo file if it exists
                     // Do it silently and don't report any error if it fails
-                    if (use_trash_can && ret && (source.left(trashfileslocation.length()) == trashfileslocation))
+                    if (use_trash_can && ret == true && !xf_existfile(source) &&
+                        (FXPath::directory(source) == trashfileslocation))
                     {
                         FXString trashinfopathname = trashinfolocation + PATHSEPSTRING + FXPath::name(source) +
                                                      ".trashinfo";
@@ -4483,6 +4515,20 @@ out:
     // Force list refresh
     list->setAllowRefresh(true);
     list->onCmdRefresh(0, 0, 0);
+
+    if (applyRename)
+    {
+        FXString selected = (ret > 0 && !xf_existfile(source)) ? target : source;
+        int renamed = list->findItem(FXPath::name(selected));
+        if (renamed >= 0)
+        {
+            list->killSelection(true);
+            list->selectItem(renamed, true);
+            list->setCurrentItem(renamed);
+            list->makeItemVisible(renamed);
+        }
+        return 1;
+    }
 
     return 1;
 }

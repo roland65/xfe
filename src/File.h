@@ -155,7 +155,7 @@ public:
     int symlink(const FXString&, const FXString&);
     int remove(const FXString&);
 
-    FXString sourcesize(const FXString, FXulong*, const FXbool url = false);
+    FXString sourcesize(const FXString, FXulong*, const FXbool url = false, const FXString& target = "");
 
     int chmod(char*, char*, mode_t, const FXbool, const FXbool dironly = false, const FXbool fileonly = false);
     int chown(char*, char*, uid_t, gid_t, const FXbool, const FXbool dironly = false, const FXbool fileonly = false);

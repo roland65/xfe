@@ -12,6 +12,7 @@ protected:
     FXMenuPane* helpmenu = NULL;                    // Help menu
     FXMenuPane* prefsmenu = NULL;                   // Preferences menu
     FXRecentFiles mrufiles;                         // Recent files
+    FXFont* textfont = NULL;                           // Owned list/description font
     FXToolBar* toolbar = NULL;                      // Toolbar
     FXString filename;                              // Current package name
     FXTreeList* list = NULL;                        // File list

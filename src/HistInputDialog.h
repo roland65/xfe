@@ -49,6 +49,7 @@ protected:
     FXButton* accept = NULL;
     FXButton* cancel = NULL;
     HistComboBox* input = NULL;
+    FXList* applications = NULL;
     FXuint browsetype = 0;
     FXString initialdir;
 private:
@@ -59,12 +60,17 @@ public:
     enum
     {
         ID_BROWSE_PATH=DialogBox::ID_LAST,
+        ID_APPLICATION,
         ID_LAST
     };
     HistInputDialog(FXWindow*, FXString, FXString, FXString, FXString label = "", FXIcon* ic = NULL,
                     FXbool addr = false, FXbool clrbtn = false, FXuint browse = HIST_INPUT_FILE,
                     FXbool option = false, FXString = FXString::null);
     virtual void create();
+    virtual ~HistInputDialog();
+    void setApplications(const FXString& pathname, const FXString& defaultCommand = FXString::null,
+                         FXIcon* defaultIcon = NULL);
+    long onCmdApplication(FXObject*, FXSelector, void*);
 
     long onCmdKeyPress(FXObject*, FXSelector, void*);
     long onCmdBrowsePath(FXObject*, FXSelector, void*);

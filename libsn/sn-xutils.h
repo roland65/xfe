@@ -25,7 +25,7 @@
 #ifndef __SN_XUTILS_H__
 #define __SN_XUTILS_H__
 
-#include <libsn/sn-common.h>
+#include "libsn/sn-common.h"
 
 SN_BEGIN_DECLS
 

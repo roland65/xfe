@@ -49,6 +49,8 @@
     - Panels synchronization and switching\n \
     - Tabs\n \
     - Places panel with customizable bookmarks\n \
+    - Optional expandable folders in detailed file lists\n \
+    - Per-folder .hidden files to hide named files and folders\n \
     - Customizable columns in detailed file list mode\n \
     - Integrated text editor and viewer (X File Write, Xfw)\n \
     - Integrated image viewer (X File Image, Xfi)\n \
@@ -59,7 +61,7 @@
     - Managing network shares (Windows shares or connecting to SSH server)\n \
     - Search files and directories\n \
     - Bulk rename files\n \
-    - Natural sort order (foo10.txt comes after foo2.txt...)\n \
+    - Optional natural sort order (foo10.txt comes after foo2.txt...)\n \
     - Copy/Cut/Paste files from and to your favorite desktop (GNOME/KDE/XFCE)\n \
     - Drag and Drop files from and to your favorite desktop (GNOME/KDE/XFCE)\n \
     - Disk usage command \n \
@@ -327,7 +329,6 @@
   Search files and directories\n \
   =-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n \
 \n \
-\n \
  Xfe can quickly search files and directories by using find and grep command backends. This is done through the\n \
  Tools / Search files menu item (or by using the Ctrl-F shortcut).\n \
 \n \
@@ -366,15 +367,14 @@
   Automounting\n \
   =-=-=-=-=-=-=\n \
 \n \
- Starting with version 2.1, Xfe has an integrated automounter program that allows you to mount removable disks or media\n \
- when they are inserted. The automounter also supports MTP devices (ex: Android phones or tablets).\n \
+ Starting with version 2.1, Xfe has an integrated automounter program that allows you to mount removable disks\n \
+ or media when they are inserted. The automounter also supports MTP devices (ex: Android phones or tablets).\n \
 \n \
  The automounter is optional and should only be used if your system does not already provides that feature. By\n \
  default, it is disabled and can be enabled in the Edit / Preferences / Settings dialog.\n \
 \n \
  The automounter relies on udisks2 and gvfs / gio, so these components must be installed on your system. The process\n \
- is called xfe-automount and is launched at first startup of Xfe. It can possibly be added to your session startup\n \
- programs.\n \
+ is called xfe-automount and is launched when the session opens.\n \
 \n \
 \n \
 \n \
@@ -394,6 +394,7 @@
 \n \
   Custom Color Themes\n \
   =-=-=-=-=-=-=-=-=-=\n \
+\n \
  Starting with version 2.1, it is possible to save the current theme to a custom theme, that can be renamed\n \
  or removed. You can thus have different custom color themes and easily switch between them.\n \
 \n \
@@ -426,6 +427,15 @@
       content by pressing Ctrl-Shift-C. This does not erase the previous clipboard content. At last, you can move\n \
       to the destination and press Ctrl-V to copy all the files you have in the clipboard. Of course, this also works\n \
       with Ctrl-X and Ctrl-Shift-X to cut and paste the files.\n \
+\n \
+ File / folder comparison\n \
+    - In a file panel, select two files or two folders to compare them (using the external comparator tool defined in\n \
+      Edit / Preferences / Programs) by right clicking and selecting the Compare menu item.\n \
+    - In a file panel, select a file or folder to compare it with another file or folder by right clicking and\n \
+      selecting the Compare menu item. Use the dialog to enter the name of the file or folder to compare with,\n \
+      or click on the icon to browse and select an item.\n \
+    - In two panels mode or tree and two panel mode, select one file or one folder per panel, then right click and\n \
+      select the Compare menu item to open the external comparator tool.\n \
 \n \
  Startup notification\n \
     - Startup notification is the process that displays a feedback (a sandbox cursor or whatever) to the user when\n \
@@ -473,7 +483,7 @@
  Many thanks to Maxim Baranov for his excellent X Win Commander, to Jeroen van der Zijp for the FOX toolkit\n \
  and  to all people that have provided useful patches, translations, tests and advices.\n \
 \n \
- [Last revision: 25/07/2026]\n \
+ [Last revision: 11/11/2026]\n \
 \n \
 ");
 

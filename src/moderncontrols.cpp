@@ -72,9 +72,11 @@ static void drawGradientRectangle(FXDC& dc, FXColor upper, FXColor lower, int x,
         bb = (b1 << 16) + 32767;
         yy = 32767;
 
-        dr = (dr << 16) / n;
-        dg = (dg << 16) / n;
-        db = (db << 16) / n;
+        // Channel deltas can be negative; multiplication keeps their fixed-point
+        // scaling defined for both lighter and darker gradients.
+        dr = (dr * 65536) / n;
+        dg = (dg * 65536) / n;
+        db = (db * 65536) / n;
         dy = (h << 16) / n;
 
         do

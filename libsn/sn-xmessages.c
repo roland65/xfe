@@ -25,9 +25,9 @@
 
 #include <config.h>
 
-#include "sn-xmessages.h"
-#include "sn-list.h"
-#include "sn-internals.h"
+#include "libsn/sn-xmessages.h"
+#include "libsn/sn-list.h"
+#include "libsn/sn-internals.h"
 
 typedef struct
 {
@@ -183,7 +183,8 @@ sn_internal_broadcast_xmessage   (SnDisplay      *display,
                     attrs);
 
   {
-      xcb_client_message_event_t xevent;
+      /* Initialize the sequence field and unused message bytes sent to XCB. */
+      xcb_client_message_event_t xevent = { 0 };
       const char *src;
       const char *src_end;
       unsigned char *dest;
@@ -586,9 +587,7 @@ parse_prefix_up_to (const char *str,
 {
   char *prefix;
   const char *p;
-  int len;
-  
-  prefix = NULL;
+
   *end = NULL;
   
   p = str;
@@ -598,10 +597,10 @@ parse_prefix_up_to (const char *str,
   if (*p == '\0')
     return NULL;
 
-  len = p - str;
-  prefix = sn_internal_strndup (str, len);
+  prefix = sn_internal_strndup (str, p - str);
 
-  *end = str + len;
+  if (prefix)
+    *end = p;
 
   return prefix;
 }                    
@@ -718,6 +717,12 @@ parse_property (const char  *str,
       }
 
     val = sn_internal_strndup (p, end - p);
+    if (val == NULL)
+      {
+        sn_free (copy);
+        sn_free (name);
+        return FALSE;
+      }
     
     p = end;
   }

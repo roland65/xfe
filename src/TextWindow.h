@@ -8,6 +8,7 @@ class TextWindow : public DialogBox
     FXDECLARE(TextWindow)
 protected:
     FXText* text = NULL;
+    FXFont* ownedFont = NULL;
 private:
     TextWindow()
     {
@@ -26,7 +27,7 @@ public:
     void setText(const char*);
     void appendText(const char*);
     void scrollToLastLine(void);
-    void setFont(FXFont*);
+    void setFont(FXFont*, FXbool owned = false);
     int getLength(void);
 };
 

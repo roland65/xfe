@@ -883,7 +883,8 @@ stty(char** args)
     siz = sizeof(cmd) - n;
     for (p = args; p && (s = *p); ++p)
     {
-        if ((n = strlen(s)) > siz - 1)
+        /* Reserve space for both the separator and the terminating NUL. */
+        if (siz < 2 || (n = strlen(s)) > siz - 2)
         {
             die("stty parameter length too long\n");
         }

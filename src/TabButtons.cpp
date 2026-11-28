@@ -105,7 +105,7 @@ void TabButtons::create()
 TabButtons::~TabButtons()
 {
     delete highlightFont;
-    delete tabPaths;    
+    delete[] tabPaths;    
 }
 
 

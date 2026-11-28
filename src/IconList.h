@@ -43,6 +43,9 @@ protected:
     void* data = NULL;                                  // Item user data pointer
     FXuint state = 0;                                   // Item state flags
     FXApp* app = NULL;
+    int treeDepth = -1;                                 // Indentation in detailed mode (-1 for a flat list)
+    FXbool expandable = false;                         // Show a directory disclosure arrow
+    FXbool expanded = false;                           // Directory contents are visible
 private:
     IconItem(const IconItem&);
     IconItem& operator=(const IconItem&);
@@ -51,14 +54,14 @@ protected:
     IconItem()
     {
     }
-    virtual void draw(IconList*, FXDC&, int, int, int, int) const;
+    virtual void draw(IconList*, FXDC&, int, int, int, int, double) const;
     virtual int hitItem(const IconList*, int, int, int rw = 1, int rh = 1) const;
 
 protected:
     virtual void drawBigIcon(const IconList*, FXDC&, int, int, int, int) const;
     virtual void drawMiniIcon(const IconList*, FXDC&, int, int, int, int) const;
     FXbool isOdd(int) const;
-    virtual void drawDetails(IconList*, FXDC&, int, int, int, int) const;
+    virtual void drawDetails(IconList*, FXDC&, int, int, int, int, double) const;
 
 public:
     enum
@@ -77,6 +80,12 @@ public:
         label(text), bigIcon(bi), miniIcon(mi), data(ptr), state(0)
     {
         app = a;
+    }
+
+    // Space reserved for the disclosure arrow and directory indentation
+    int getTreeOffset() const
+    {
+        return treeDepth < 0 ? 0 : (treeDepth + 1) * 12;
     }
 
     // Change item's text label
@@ -211,6 +220,9 @@ class FXAPI IconList : public FXScrollArea
 {
     FXDECLARE(IconList)
 protected:
+    FXTextField* nameEditor = NULL;                 // Inline filename editor
+    FXObject* editTarget = NULL;
+    FXSelector editMessage = 0;
     FXHeader* header = NULL;                        // Header control
     IconItemList items;                             // Item list
     int nrows = 0;                                  // Number of rows
@@ -264,6 +276,7 @@ protected:
     IconList()
     {
     }
+    virtual int compareItems(const IconItem*, const IconItem*) const;
     void recompute();
     void getrowscols(int&, int&, int, int) const;
     void drawLasso(int, int, int, int);
@@ -344,6 +357,8 @@ public:
         ID_DESELECT_ALL,
         ID_SELECT_INVERSE,
         ID_AUTOSIZE,
+        // FileList column IDs follow ID_LAST and are persisted in user settings.
+        // Editor messages belong to NameEditor so this boundary stays unchanged.
         ID_LAST
     };
 public:
@@ -351,6 +366,13 @@ public:
     // Construct icon list with no items in it initially
     IconList(FXComposite* p, FXuint* ic, FXuint nc, FXObject* tgt = NULL, FXSelector sel = 0,
              FXuint opts = ICONLIST_NORMAL, int x = 0, int y = 0, int w = 0, int h = 0);
+
+    
+    void editItemName(int index, FXObject* receiver, FXSelector selector, FXbool selectExtension);
+    FXbool isEditingName() const { return nameEditor && nameEditor->shown(); }
+    void cancelEditName();
+    long onAcceptName(FXObject*, FXSelector, void*);
+
 
     // Create server-side resources
     virtual void create();
@@ -735,7 +757,7 @@ public:
     FXuint getListStyle() const;
 
     // Set the current icon list style
-    void setListStyle(FXuint style);
+    virtual void setListStyle(FXuint style);
 
     // Get the current icon list type
     FXuint getListType() const;

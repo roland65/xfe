@@ -115,7 +115,8 @@ protected:
     double scalefrac = 1.0;                  // Icon scaling factor
     FileDict* associations = NULL;           // Association table
 
-
+    void rebuildList(FXString pathname = FXString::null);
+    void saveBookmarks();
 
 public:
     BookmarksList(FXWindow*, FXComposite*, FXObject*, FXSelector, FXColor listbackcolor = FXRGB(255, 255, 255),
@@ -227,6 +228,15 @@ public:
     {
         killSelection();
     }
+
+    enum
+    {
+        ID_REFRESH_BOOKMARKS = FXList::ID_LAST,
+        ID_LAST,
+    };
+
+    void refresh();
+    long onRefreshBookmarks(FXObject*, FXSelector, void*);
 
     // Select item from key and set it current
     void setBookmark(FXString&);

@@ -3,6 +3,8 @@
 #include "config.h"
 #include "i18n.h"
 
+#include <memory>
+
 #include <fx.h>
 #include <FXPNGIcon.h>
 
@@ -42,7 +44,7 @@ IconDict::IconDict(FXApp* a, const FXString& p) : path(p)
 void* IconDict::createData(const void* ptr)
 {
     // Load icon
-    FXIcon* icon = source->loadIconFile(FXPath::search(path, (const char*)ptr));
+    std::unique_ptr<FXIcon> icon(source ? source->loadIconFile(FXPath::search(path, (const char*)ptr)) : NULL);
 
     // Scale icon
     if (icon)
@@ -50,7 +52,7 @@ void* IconDict::createData(const void* ptr)
         icon->scale(scalefrac * icon->getWidth(), scalefrac * icon->getHeight());
     }
 
-    return icon;
+    return icon.release();
 }
 
 
@@ -140,10 +142,10 @@ void* FileDict::createData(const void* ptr)
     char bignameopen[ICONNAMELEN];
     char mininame[ICONNAMELEN];
     char mininameopen[ICONNAMELEN];
-    FileAssoc* fileassoc;
+    std::unique_ptr<FileAssoc> fileassoc;
 
     // Make association record
-    fileassoc = new FileAssoc;
+    fileassoc.reset(new FileAssoc);
 
     // Parse command
     for (q = command; *p && *p != ';' && q < command + COMMANDLEN - 1; *q++ = *p++)
@@ -255,7 +257,7 @@ void* FileDict::createData(const void* ptr)
     }
 
     // Return the binding
-    return fileassoc;
+    return fileassoc.release();
 }
 
 
@@ -313,27 +315,25 @@ FileAssoc* FileDict::associate(const char* key)
 {
     const char* association;
     FileAssoc* record;
-    char lowkey[MAXPATHLEN];
+    FXString lowkey(key);
 
-    // Convert the association key to lower case
-    // Uses these functions because they seem to be faster than FXString
-    xf_strlcpy(lowkey, key, strlen(key) + 1);
-    xf_tolowercase(lowkey);
+    // Association keys can be full directory paths; retain their complete length.
+    xf_tolowercase(&lowkey[0]);
 
     // See if we have an existing record already and stores the key extension
-    if ((record = find(lowkey)) != NULL)
+    if ((record = find(lowkey.text())) != NULL)
     {
         record->key = lowkey;
         return record;
     }
 
     // See if this entry is known in FILETYPES
-    association = settings->readStringEntry("FILETYPES", lowkey, "");
+    association = settings->readStringEntry("FILETYPES", lowkey.text(), "");
 
     // If not an empty string, make a record for it now and stores the key extension
     if (association[0])
     {
-        record = (FileAssoc*)FXDict::insert(lowkey, association);
+        record = (FileAssoc*)FXDict::insert(lowkey.text(), association);
         record->key = lowkey;
         return record;
     }

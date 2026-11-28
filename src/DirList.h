@@ -142,6 +142,8 @@ protected:
 
     FXbool file_tooltips = true;                                // File tooltips
 
+    FXbool naturalsort = true;
+
 protected:
     DirList()
     {
@@ -156,6 +158,7 @@ private:
     DirList& operator=(const DirList&);
 
 public:
+    long onKeyPress(FXObject*, FXSelector, void*);
     long onCmdRefresh(FXObject*, FXSelector, void*);
     long onCmdRefreshTimer(FXObject*, FXSelector, void*);
 #if defined(linux)
@@ -191,6 +194,8 @@ public:
     long onUpdSetPattern(FXObject*, FXSelector, void*);
     long onCmdSortReverse(FXObject*, FXSelector, void*);
     long onUpdSortReverse(FXObject*, FXSelector, void*);
+    long onCmdSortNatural(FXObject*, FXSelector, void*);
+    long onUpdSortNatural(FXObject*, FXSelector, void*);
     long onCmdSortCase(FXObject*, FXSelector, void*);
     long onUpdSortCase(FXObject*, FXSelector, void*);
     long onCmdDragCopy(FXObject*, FXSelector, void*);
@@ -200,11 +205,15 @@ public:
     long onUpdRefreshTimers(FXObject*, FXSelector, void*);
 
 public:
-    static int compareItem(const FXTreeItem*, const FXTreeItem*, FXbool, FXbool);
+    static int compareItem(const FXTreeItem*, const FXTreeItem*, FXbool, FXbool, FXbool);
     static int ascending(const FXTreeItem*, const FXTreeItem*);
     static int descending(const FXTreeItem*, const FXTreeItem*);
     static int ascendingCase(const FXTreeItem*, const FXTreeItem*);
     static int descendingCase(const FXTreeItem*, const FXTreeItem*);
+    static int ascendingNatural(const FXTreeItem*, const FXTreeItem*);
+    static int descendingNatural(const FXTreeItem*, const FXTreeItem*);
+    static int ascendingCaseNatural(const FXTreeItem*, const FXTreeItem*);
+    static int descendingCaseNatural(const FXTreeItem*, const FXTreeItem*);
 
 public:
     enum
@@ -218,6 +227,7 @@ public:
         ID_TOGGLE_HIDDEN,
         ID_SET_PATTERN,
         ID_SORT_REVERSE,
+        ID_SORT_NATURAL,
         ID_SORT_CASE,
         ID_EXPAND_TIMER,
 #if defined(linux)
@@ -257,6 +267,15 @@ public:
 
     // Expand directory tree
     virtual FXbool expandDirTree(TreeItem* tree, FXbool notify = false);
+
+    // Return natural sort flag
+    FXbool getNaturalSort() const
+    {
+        return naturalsort;
+    }
+
+    // Set natural sort flag
+    void setNaturalSort(const FXbool);
 
     // Set current file
     void setCurrentFile(const FXString& file, FXbool notify = false);

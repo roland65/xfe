@@ -279,6 +279,8 @@ FREETYPE_LIBS = @FREETYPE_LIBS@
 GETGROUPS_LIB = @GETGROUPS_LIB@
 GETTEXT_MACRO_VERSION = @GETTEXT_MACRO_VERSION@
 GETTEXT_PACKAGE = @GETTEXT_PACKAGE@
+GIO_CFLAGS = @GIO_CFLAGS@
+GIO_LIBS = @GIO_LIBS@
 GMSGFMT = @GMSGFMT@
 GMSGFMT_015 = @GMSGFMT_015@
 INSTALL = @INSTALL@
@@ -1040,19 +1042,20 @@ uninstall-man: uninstall-man1
 .PRECIOUS: Makefile
 
 
+# Use explicit template names: BSD make does not set $< in these explicit rules.
 xfe.desktop: xfe.desktop.in Makefile
-		$(AM_V_GEN)$(MSGFMT) --desktop -d $(top_srcdir)/po --template $< -o $@
+		$(AM_V_GEN)$(MSGFMT) --desktop -d $(top_srcdir)/po --template xfe.desktop.in -o $@
 xfa.desktop: xfa.desktop.in Makefile
-		$(AM_V_GEN)$(MSGFMT) --desktop -d $(top_srcdir)/po --template $< -o $@
+		$(AM_V_GEN)$(MSGFMT) --desktop -d $(top_srcdir)/po --template xfa.desktop.in -o $@
 xfi.desktop: xfi.desktop.in Makefile
-		$(AM_V_GEN)$(MSGFMT) --desktop -d $(top_srcdir)/po --template $< -o $@
+		$(AM_V_GEN)$(MSGFMT) --desktop -d $(top_srcdir)/po --template xfi.desktop.in -o $@
 xfp.desktop: xfp.desktop.in Makefile
-		$(AM_V_GEN)$(MSGFMT) --desktop -d $(top_srcdir)/po --template $< -o $@
+		$(AM_V_GEN)$(MSGFMT) --desktop -d $(top_srcdir)/po --template xfp.desktop.in -o $@
 xfw.desktop: xfw.desktop.in Makefile
-		$(AM_V_GEN)$(MSGFMT) --desktop -d $(top_srcdir)/po --template $< -o $@
+		$(AM_V_GEN)$(MSGFMT) --desktop -d $(top_srcdir)/po --template xfw.desktop.in -o $@
 
 org.xfe.root.policy: org.xfe.root.policy.in Makefile
-		$(AM_V_GEN)$(MSGFMT) --xml -d $(top_srcdir)/po --template $< -o $@
+		$(AM_V_GEN)$(MSGFMT) --xml -d $(top_srcdir)/po --template org.xfe.root.policy.in -o $@
 
 org.xfe.root.policy.in: org.xfe.root.policy.in.in Makefile
 	$(do_subst) < org.xfe.root.policy.in.in > org.xfe.root.policy.in

@@ -9,6 +9,8 @@
 #include "config.h"
 #include "i18n.h"
 
+#include <memory>
+
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -126,9 +128,11 @@ void CommandWindow::create()
     fontspec = getApp()->reg().readStringEntry("SETTINGS", "textfont", DEFAULT_TEXT_FONT);
     if (!fontspec.empty())
     {
-        FXFont* font = new FXFont(getApp(), fontspec);
-        font->create();
-        text->setFont(font);
+        std::unique_ptr<FXFont> newfont(new FXFont(getApp(), fontspec));
+        newfont->create();
+        text->setFont(newfont.get());
+        delete font;
+        font = newfont.release();
     }
 
     DialogBox::create();
@@ -219,6 +223,7 @@ int CommandWindow::execCmd(FXString command)
     if (pid == -1)
     {
         fprintf(stderr, _("Error: Fork failed: %s\n"), strerror(errno));
+        closePipes();
         return -1;
     }
     if (pid == 0) // Child
@@ -272,8 +277,7 @@ long CommandWindow::onWatchProcess(FXObject*, FXSelector, void*)
         // and delete the object
 
         // Close pipes
-        ::close(pipes[0]);
-        ::close(pipes[1]);
+        closePipes();
 
         // Object deletes itself!
         delete this;
@@ -343,8 +347,7 @@ long CommandWindow::onWatchProcess(FXObject*, FXSelector, void*)
         scrollToLastLine();
 
         // Close pipes
-        ::close(pipes[0]);
-        ::close(pipes[1]);
+        closePipes();
     }
 
 
@@ -407,6 +410,27 @@ int CommandWindow::getLength(void)
 CommandWindow::~CommandWindow()
 {
     getApp()->removeChore(this, ID_WATCHPROCESS);
+    closePipes();
+    delete font;
+
+    // Clear a tracking owner's pointer before this self-deleting window is gone.
+    if (target)
+    {
+        target->tryHandle(this, FXSEL(SEL_COMMAND, message), NULL);
+    }
 
     text = (FXText*)-1;
+}
+
+
+void CommandWindow::closePipes()
+{
+    for (int i = 0; i < 2; i++)
+    {
+        if (pipes[i] >= 0)
+        {
+            ::close(pipes[i]);
+            pipes[i] = -1;
+        }
+    }
 }

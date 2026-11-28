@@ -23,7 +23,7 @@
  */
 
 #include <config.h>
-#include "sn-internals.h"
+#include "libsn/sn-internals.h"
 
 #include <xcb/xcb.h>
 

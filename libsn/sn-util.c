@@ -18,8 +18,8 @@
  */
 
 #include <config.h>
-#include "sn-util.h"
-#include "sn-internals.h"
+#include "libsn/sn-util.h"
+#include "libsn/sn-internals.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -264,18 +264,19 @@ sn_internal_strdup (const char *str)
 
 char*
 sn_internal_strndup (const char *str,
-                     int         n)
+                     ptrdiff_t   n)
 {
   char *new_str;
-  
-  if (str)
+
+  if (str == NULL || n < 0)
+    return NULL;
+
+  new_str = sn_new (char, (size_t) n + 1);
+  if (new_str)
     {
-      new_str = sn_new (char, n + 1);
       strncpy (new_str, str, n);
       new_str[n] = '\0';
     }
-  else
-    new_str = NULL;
 
   return new_str;
 }

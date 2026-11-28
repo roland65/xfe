@@ -45,6 +45,16 @@
 #include <fx.h>
 
 
+// Clear a menu and delete its exclusively owned cascade popup trees.
+void xf_clear_menu(FXComposite* menu);
+
+
+#if defined(linux) && defined(XFE_AUTOMOUNTER)
+// Create or remove the user's session autostart entry for the automounter.
+FXbool xf_setautomountautostart(const FXString& configdir, FXbool enabled);
+#endif
+
+
 // Global variables
 #if defined(linux)
 extern FXStringDict* mtdevices;
@@ -654,7 +664,7 @@ size_t xf_strlcpy(char*, const char*, size_t);
 size_t xf_strlcat(char*, const char*, size_t);
 
 FXulong xf_dirsize(const char*);
-FXulong xf_pathsize(char*, FXuint*, FXuint*, FXulong*, int* = NULL);
+FXulong xf_pathsize(const char*, FXuint*, FXuint*, FXulong*, FXbool*, int* = NULL);
 
 FXString xf_humansize(char*);
 FXString xf_cleanpath(const FXString);
@@ -697,7 +707,6 @@ FXbool xf_keepmount(FXString, FXString);
 FXulong xf_getcurrenttime(void);
 FXString xf_secondstotimestring(FXuint);
 
-void xf_replacestring(FXchar*, FXint*, FXint, FXint, const FXchar*, FXint);
 FXString xf_substitutecase(const FXString&, const FXString&, const FXString&, bool all = true);
 
 FXulong xf_hashfile(const FXchar*);

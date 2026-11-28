@@ -375,7 +375,7 @@ SearchWindow::SearchWindow(FXApp* app, const FXString& name, int x, int y, int w
     searchpanel->showThumbnails(showthumbnails);
 
     // Read and set sort function for file list
-    FXString sort_func = getApp()->reg().readStringEntry("SEARCH PANEL", "sort_func", "ascendingCase");
+    FXString sort_func = getApp()->reg().readStringEntry("SEARCH PANEL", "sort_func", "ascendingCaseNatural");
     if (sort_func == "ascendingCase")
     {
         searchpanel->setSortFunc(FileList::ascendingCase);
@@ -439,6 +439,70 @@ SearchWindow::SearchWindow(FXApp* app, const FXString& name, int x, int y, int w
     else if (sort_func == "descendingDirMix")
     {
         searchpanel->setSortFunc(FileList::descendingDirMix);
+    }
+    else if (sort_func == "ascendingCaseNatural")
+    {
+        searchpanel->setSortFunc(FileList::ascendingCaseNatural);
+    }
+    else if (sort_func == "ascendingCaseMixNatural")
+    {
+        searchpanel->setSortFunc(FileList::ascendingCaseMixNatural);
+    }
+    else if (sort_func == "descendingCaseNatural")
+    {
+        searchpanel->setSortFunc(FileList::descendingCaseNatural);
+    }
+    else if (sort_func == "descendingCaseMixNatural")
+    {
+        searchpanel->setSortFunc(FileList::descendingCaseMixNatural);
+    }
+    else if (sort_func == "ascendingNatural")
+    {
+        searchpanel->setSortFunc(FileList::ascendingNatural);
+    }
+    else if (sort_func == "ascendingMixNatural")
+    {
+        searchpanel->setSortFunc(FileList::ascendingMixNatural);
+    }
+    else if (sort_func == "descendingNatural")
+    {
+        searchpanel->setSortFunc(FileList::descendingNatural);
+    }
+    else if (sort_func == "descendingMixNatural")
+    {
+        searchpanel->setSortFunc(FileList::descendingMixNatural);
+    }
+    else if (sort_func == "ascendingDirCaseNatural")
+    {
+        searchpanel->setSortFunc(FileList::ascendingDirCaseNatural);
+    }
+    else if (sort_func == "ascendingDirCaseMixNatural")
+    {
+        searchpanel->setSortFunc(FileList::ascendingDirCaseMixNatural);
+    }
+    else if (sort_func == "descendingDirCaseNatural")
+    {
+        searchpanel->setSortFunc(FileList::descendingDirCaseNatural);
+    }
+    else if (sort_func == "descendingDirCaseMixNatural")
+    {
+        searchpanel->setSortFunc(FileList::descendingDirCaseMixNatural);
+    }
+    else if (sort_func == "ascendingDirNatural")
+    {
+        searchpanel->setSortFunc(FileList::ascendingDirNatural);
+    }
+    else if (sort_func == "ascendingDirMixNatural")
+    {
+        searchpanel->setSortFunc(FileList::ascendingDirMixNatural);
+    }
+    else if (sort_func == "descendingDirNatural")
+    {
+        searchpanel->setSortFunc(FileList::descendingDirNatural);
+    }
+    else if (sort_func == "descendingDirMixNatural")
+    {
+        searchpanel->setSortFunc(FileList::descendingDirMixNatural);
     }
     else if (sort_func == "ascendingSize")
     {
@@ -568,6 +632,26 @@ SearchWindow::SearchWindow(FXApp* app, const FXString& name, int x, int y, int w
     {
         searchpanel->setSortFunc(FileList::descendingLinkMix);
     }
+    else if (sort_func == "ascendingLinkNatural")
+    {
+        searchpanel->setSortFunc(FileList::ascendingLinkNatural);
+    }
+    else if (sort_func == "ascendingLinkMixNatural")
+    {
+        searchpanel->setSortFunc(FileList::ascendingLinkMixNatural);
+    }
+    else if (sort_func == "descendingLinkNatural")
+    {
+        searchpanel->setSortFunc(FileList::descendingLinkNatural);
+    }
+    else if (sort_func == "descendingLinkMixNatural")
+    {
+        searchpanel->setSortFunc(FileList::descendingLinkMixNatural);
+    }
+    else
+    {
+        searchpanel->setSortFunc(FileList::ascendingCaseNatural);
+    }
 
     // Add some accelerators
     FXHotKey hotkey;
@@ -631,7 +715,7 @@ SearchWindow::SearchWindow(FXApp* app, const FXString& name, int x, int y, int w
     {
         FXFont* font = new FXFont(getApp(), fontspec);
         font->create();
-        warnwindow->setFont(font);
+        warnwindow->setFont(font, true);
     }
 
     // Initialize variables
@@ -760,7 +844,7 @@ long SearchWindow::onCmdClose(FXObject*, FXSelector, void*)
                 break;
             }
             FXString str = findfile->getItemText(i);
-            xf_strlcpy(FindHistory[i], str.text(), str.length() + 1);
+            xf_strlcpy(FindHistory[i], str.text(), sizeof(FindHistory[i]));
             FindNum++;
         }
     }
@@ -1275,6 +1359,12 @@ long SearchWindow::onKeyPress(FXObject* sender, FXSelector sel, void* ptr)
 
     if (event->code == KEY_Escape)
     {
+        // The inline editor must receive Enter/Escape before
+        if (searchpanel->getFileList()->isEditingName())
+        {
+            return searchpanel->getFileList()->onKeyPress(sender, sel, ptr);
+        }
+
         // Kill process
         handle(this, FXSEL(SEL_COMMAND, ID_STOP), NULL);
 

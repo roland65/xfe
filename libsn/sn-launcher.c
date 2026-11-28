@@ -21,9 +21,9 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-#include "sn-launcher.h"
-#include "sn-internals.h"
-#include "sn-xmessages.h"
+#include "libsn/sn-launcher.h"
+#include "libsn/sn-internals.h"
+#include "libsn/sn-xmessages.h"
 
 #include <sys/types.h>
 #include <unistd.h>

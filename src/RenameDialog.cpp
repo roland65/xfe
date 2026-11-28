@@ -429,11 +429,9 @@ void RenameDialog::appendItem(FXString sourcepath, FXString targetname)
         // Obtain the stat info on the file itself
         if (xf_stat(sourcepath.text(), &info) != 0)
         {
-            // Except in the case of a broken link
-            if (isBrokenLink)
-            {
-                xf_lstat(sourcepath.text(), &info);
-            }
+            // The file may have disappeared since lstat, or its link target
+            // may be inaccessible.  Keep the metadata we already obtained.
+            info = linfo;
         }
 
         // Assume no associations

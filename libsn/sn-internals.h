@@ -26,14 +26,15 @@
 #ifndef __SN_INTERNALS_H__
 #define __SN_INTERNALS_H__
 
-#include <libsn/sn-common.h>
+#include "libsn/sn-common.h"
 
+#include <stddef.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 
-#include <libsn/sn-list.h>
-#include <libsn/sn-xutils.h>
+#include "libsn/sn-list.h"
+#include "libsn/sn-xutils.h"
 
 SN_BEGIN_DECLS
 
@@ -80,7 +81,7 @@ sn_bool_t sn_internal_utf8_validate (const char *str,
                                      int         max_len);
 char*     sn_internal_strdup        (const char *str);
 char*     sn_internal_strndup       (const char *str,
-                                     int         n);
+                                     ptrdiff_t   n);
 void      sn_internal_strfreev      (char      **strings);
 
 unsigned long sn_internal_string_to_ulong (const char* str);

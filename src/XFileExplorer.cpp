@@ -1,5 +1,4 @@
 #include "config.h"
-#include "config.h"
 #include "i18n.h"
 
 #include <stdio.h>
@@ -126,10 +125,7 @@ long MenuPane::onMap(FXObject*, FXSelector, void*)
     open = true;
 
     // Delete menu items
-    while (this->getFirst())
-    {
-        delete this->getFirst();
-    }
+    xf_clear_menu(this);
 
     // Add fixed menu items
     FXMenuCommand* mc = new FXMenuCommand(this, _("&Go to Script Folder"), minigotodiricon,
@@ -756,7 +752,7 @@ XFileExplorer::XFileExplorer(FXApp* app, vector_FXString URIs, const int pm, con
 
     // Dir panel options
     FXString sort_func;
-    sort_func = getApp()->reg().readStringEntry("DIR PANEL", "sort_func", "ascendingCase");
+    sort_func = getApp()->reg().readStringEntry("DIR PANEL", "sort_func", "ascendingCaseNatural");
     if (sort_func == "ascendingCase")
     {
         dirpanel->setSortFunc(DirList::ascendingCase);
@@ -773,13 +769,32 @@ XFileExplorer::XFileExplorer(FXApp* app, vector_FXString URIs, const int pm, con
     {
         dirpanel->setSortFunc(DirList::descending);
     }
+    else if (sort_func == "ascendingCaseNatural")
+    {
+        dirpanel->setSortFunc(DirList::ascendingCaseNatural);
+    }
+    else if (sort_func == "descendingCaseNatural")
+    {
+        dirpanel->setSortFunc(DirList::descendingCaseNatural);
+    }
+    else if (sort_func == "ascendingNatural")
+    {
+        dirpanel->setSortFunc(DirList::ascendingNatural);
+    }
+    else if (sort_func == "descendingNatural")
+    {
+        dirpanel->setSortFunc(DirList::descendingNatural);
+    }
     else
     {
-        dirpanel->setSortFunc(DirList::ascendingCase);
+        dirpanel->setSortFunc(DirList::ascendingCaseNatural);
     }
 
+    FXuint naturalsort = getApp()->reg().readUnsignedEntry("DIR PANEL", "natural_sort", 1);
+    dirpanel->setNaturalSort(naturalsort);
+
     // Left panel options
-    sort_func = getApp()->reg().readStringEntry("LEFT PANEL", "sort_func", "ascendingCase");
+    sort_func = getApp()->reg().readStringEntry("LEFT PANEL", "sort_func", "ascendingCaseNatural");
     if (sort_func == "ascendingCase")
     {
         lpanel->setSortFunc(FileList::ascendingCase);
@@ -811,6 +826,38 @@ XFileExplorer::XFileExplorer(FXApp* app, vector_FXString URIs, const int pm, con
     else if (sort_func == "descendingMix")
     {
         lpanel->setSortFunc(FileList::descendingMix);
+    }
+    else if (sort_func == "ascendingCaseNatural")
+    {
+        lpanel->setSortFunc(FileList::ascendingCaseNatural);
+    }
+    else if (sort_func == "ascendingCaseMixNatural")
+    {
+        lpanel->setSortFunc(FileList::ascendingCaseMixNatural);
+    }
+    else if (sort_func == "descendingCaseNatural")
+    {
+        lpanel->setSortFunc(FileList::descendingCaseNatural);
+    }
+    else if (sort_func == "descendingCaseMixNatural")
+    {
+        lpanel->setSortFunc(FileList::descendingCaseMixNatural);
+    }
+    else if (sort_func == "ascendingNatural")
+    {
+        lpanel->setSortFunc(FileList::ascendingNatural);
+    }
+    else if (sort_func == "ascendingMixNatural")
+    {
+        lpanel->setSortFunc(FileList::ascendingMixNatural);
+    }
+    else if (sort_func == "descendingNatural")
+    {
+        lpanel->setSortFunc(FileList::descendingNatural);
+    }
+    else if (sort_func == "descendingMixNatural")
+    {
+        lpanel->setSortFunc(FileList::descendingMixNatural);
     }
     else if (sort_func == "ascendingSize")
     {
@@ -940,14 +987,33 @@ XFileExplorer::XFileExplorer(FXApp* app, vector_FXString URIs, const int pm, con
     {
         lpanel->setSortFunc(FileList::descendingLinkMix);
     }
+    else if (sort_func == "ascendingLinkNatural")
+    {
+        lpanel->setSortFunc(FileList::ascendingLinkNatural);
+    }
+    else if (sort_func == "ascendingLinkMixNatural")
+    {
+        lpanel->setSortFunc(FileList::ascendingLinkMixNatural);
+    }
+    else if (sort_func == "descendingLinkNatural")
+    {
+        lpanel->setSortFunc(FileList::descendingLinkNatural);
+    }
+    else if (sort_func == "descendingLinkMixNatural")
+    {
+        lpanel->setSortFunc(FileList::descendingLinkMixNatural);
+    }
     else
     {
-        lpanel->setSortFunc(FileList::ascendingCase);
+        lpanel->setSortFunc(FileList::ascendingCaseNatural);
     }
-    FXuint ignore_case = getApp()->reg().readUnsignedEntry("LEFT PANEL", "ignore_case", 1);
-    lpanel->setIgnoreCase(ignore_case);
-    FXuint dirs_first = getApp()->reg().readUnsignedEntry("LEFT PANEL", "dirs_first", 1);
-    lpanel->setDirsFirst(dirs_first);
+
+    FXuint ignorecase = getApp()->reg().readUnsignedEntry("LEFT PANEL", "ignore_case", 1);
+    lpanel->setIgnoreCase(ignorecase);
+    naturalsort = getApp()->reg().readUnsignedEntry("LEFT PANEL", "natural_sort", 1);
+    lpanel->setNaturalSort(naturalsort);
+    FXuint dirsfirst = getApp()->reg().readUnsignedEntry("LEFT PANEL", "dirs_first", 1);
+    lpanel->setDirsFirst(dirsfirst);
 
     // Right panel options
     sort_func = getApp()->reg().readStringEntry("RIGHT PANEL", "sort_func", "ascendingCase");
@@ -982,6 +1048,38 @@ XFileExplorer::XFileExplorer(FXApp* app, vector_FXString URIs, const int pm, con
     else if (sort_func == "descendingMix")
     {
         rpanel->setSortFunc(FileList::descendingMix);
+    }
+    else if (sort_func == "ascendingCaseNatural")
+    {
+        rpanel->setSortFunc(FileList::ascendingCaseNatural);
+    }
+    else if (sort_func == "ascendingCaseMixNatural")
+    {
+        rpanel->setSortFunc(FileList::ascendingCaseMixNatural);
+    }
+    else if (sort_func == "descendingCaseNatural")
+    {
+        rpanel->setSortFunc(FileList::descendingCaseNatural);
+    }
+    else if (sort_func == "descendingCaseMixNatural")
+    {
+        rpanel->setSortFunc(FileList::descendingCaseMixNatural);
+    }
+    else if (sort_func == "ascendingNatural")
+    {
+        rpanel->setSortFunc(FileList::ascendingNatural);
+    }
+    else if (sort_func == "ascendingMixNatural")
+    {
+        rpanel->setSortFunc(FileList::ascendingMixNatural);
+    }
+    else if (sort_func == "descendingNatural")
+    {
+        rpanel->setSortFunc(FileList::descendingNatural);
+    }
+    else if (sort_func == "descendingMixNatural")
+    {
+        rpanel->setSortFunc(FileList::descendingMixNatural);
     }
     else if (sort_func == "ascendingSize")
     {
@@ -1111,14 +1209,33 @@ XFileExplorer::XFileExplorer(FXApp* app, vector_FXString URIs, const int pm, con
     {
         rpanel->setSortFunc(FileList::descendingLinkMix);
     }
+    else if (sort_func == "ascendingLinkNatural")
+    {
+        rpanel->setSortFunc(FileList::ascendingLinkNatural);
+    }
+    else if (sort_func == "ascendingLinkMixNatural")
+    {
+        rpanel->setSortFunc(FileList::ascendingLinkMixNatural);
+    }
+    else if (sort_func == "descendingLinkNatural")
+    {
+        rpanel->setSortFunc(FileList::descendingLinkNatural);
+    }
+    else if (sort_func == "descendingLinkMixNatural")
+    {
+        rpanel->setSortFunc(FileList::descendingLinkMixNatural);
+    }
     else
     {
-        rpanel->setSortFunc(FileList::ascendingCase);
+        rpanel->setSortFunc(FileList::ascendingCaseNatural);
     }
-    ignore_case = getApp()->reg().readUnsignedEntry("RIGHT PANEL", "ignore_case", 1);
-    rpanel->setIgnoreCase(ignore_case);
-    dirs_first = getApp()->reg().readUnsignedEntry("RIGHT PANEL", "dirs_first", 1);
-    rpanel->setDirsFirst(dirs_first);
+
+    ignorecase = getApp()->reg().readUnsignedEntry("RIGHT PANEL", "ignore_case", 1);
+    rpanel->setIgnoreCase(ignorecase);
+    naturalsort = getApp()->reg().readUnsignedEntry("RIGHT PANEL", "natural_sort", 1);
+    rpanel->setNaturalSort(naturalsort);
+    dirsfirst = getApp()->reg().readUnsignedEntry("RIGHT PANEL", "dirs_first", 1);
+    rpanel->setDirsFirst(dirsfirst);
 
     FXButton* btn = NULL;
     FXHotKey hotkey;
@@ -1605,7 +1722,8 @@ XFileExplorer::XFileExplorer(FXApp* app, vector_FXString URIs, const int pm, con
     new FXMenuSeparator(lpanelmenu);
     new FXMenuCheck(lpanelmenu, _("I&gnore Case"), lpanel->getList(), FileList::ID_SORT_CASE);
     new FXMenuCheck(lpanelmenu, _("Fol&ders First"), lpanel->getList(), FileList::ID_DIRS_FIRST);
-    new FXMenuCheck(lpanelmenu, _("Re&verse Order"), lpanel->getList(), FileList::ID_SORT_REVERSE);
+    new FXMenuCheck(lpanelmenu, _("Nat&ural Sorting"), lpanel->getList(), FileList::ID_SORT_NATURAL);
+    new FXMenuCommand(lpanelmenu, _("Re&verse Order"), minireverseicon, lpanel->getList(), FileList::ID_SORT_REVERSE);
     lpanelmenutitle = new FXMenuTitle(menubar, _("&Left Panel"), NULL, lpanelmenu);
 
     // Right Panel Menu
@@ -1636,7 +1754,8 @@ XFileExplorer::XFileExplorer(FXApp* app, vector_FXString URIs, const int pm, con
     new FXMenuSeparator(rpanelmenu);
     new FXMenuCheck(rpanelmenu, _("I&gnore Case"), rpanel->getList(), FileList::ID_SORT_CASE);
     new FXMenuCheck(rpanelmenu, _("&Folders First"), rpanel->getList(), FileList::ID_DIRS_FIRST);
-    new FXMenuCheck(rpanelmenu, _("Re&verse Order"), rpanel->getList(), FileList::ID_SORT_REVERSE);
+    new FXMenuCheck(rpanelmenu, _("Nat&ural Sorting"), rpanel->getList(), FileList::ID_SORT_NATURAL);
+    new FXMenuCommand(rpanelmenu, _("Re&verse Order"), minireverseicon, rpanel->getList(), FileList::ID_SORT_REVERSE);
     rpanelmenutitle = new FXMenuTitle(menubar, _("&Right Panel"), NULL, rpanelmenu);
 
     // Scripts menu (dynamic menu)
@@ -1913,11 +2032,29 @@ void XFileExplorer::saveConfig()
         {
             sort_func = "descending";
         }
+        else if (dirpanel->getSortFunc() == DirList::ascendingCaseNatural)
+        {
+            sort_func = "ascendingCaseNatural";
+        }
+        else if (dirpanel->getSortFunc() == DirList::descendingCaseNatural)
+        {
+            sort_func = "descendingCaseNatural";
+        }
+        else if (dirpanel->getSortFunc() == DirList::ascendingNatural)
+        {
+            sort_func = "ascendingNatural";
+        }
+        else if (dirpanel->getSortFunc() == DirList::descendingNatural)
+        {
+            sort_func = "descendingNatural";
+        }
         else
         {
-            sort_func = "ascendingCase";
+            sort_func = "ascendingCaseNatural";
         }
+
         getApp()->reg().writeStringEntry("DIR PANEL", "sort_func", sort_func.text());
+        getApp()->reg().writeUnsignedEntry("DIR PANEL", "natural_sort", dirpanel->getNaturalSort());
         getApp()->reg().writeUnsignedEntry("DIR PANEL", "hidden_dir", dirpanel->shownHiddenFiles());
 
         // Search panel options
@@ -1991,6 +2128,7 @@ void XFileExplorer::saveConfig()
             getApp()->reg().writeUnsignedEntry("SEARCH PANEL", "liststyle", (FXuint)searchwindow->getListStyle());
             getApp()->reg().writeUnsignedEntry("SEARCH PANEL", "dirs_first", (FXuint)searchwindow->getDirsFirst());
             getApp()->reg().writeUnsignedEntry("SEARCH PANEL", "ignore_case", (FXuint)searchwindow->getIgnoreCase());
+            getApp()->reg().writeUnsignedEntry("SEARCH PANEL", "natural_sort", (FXuint)searchwindow->getNaturalSort());
 
             // Get and write sort function for search window
             if (searchwindow->getSortFunc() == FileList::ascendingCase)
@@ -2056,6 +2194,70 @@ void XFileExplorer::saveConfig()
             else if (searchwindow->getSortFunc() == FileList::descendingDirMix)
             {
                 sort_func = "descendingDirMix";
+            }
+            else if (searchwindow->getSortFunc() == FileList::ascendingCaseNatural)
+            {
+                sort_func = "ascendingCaseNatural";
+            }
+            else if (searchwindow->getSortFunc() == FileList::ascendingCaseMixNatural)
+            {
+                sort_func = "ascendingCaseMixNatural";
+            }
+            else if (searchwindow->getSortFunc() == FileList::descendingCaseNatural)
+            {
+                sort_func = "descendingCaseNatural";
+            }
+            else if (searchwindow->getSortFunc() == FileList::descendingCaseMixNatural)
+            {
+                sort_func = "descendingCaseMixNatural";
+            }
+            else if (searchwindow->getSortFunc() == FileList::ascendingNatural)
+            {
+                sort_func = "ascendingNatural";
+            }
+            else if (searchwindow->getSortFunc() == FileList::ascendingMixNatural)
+            {
+                sort_func = "ascendingMixNatural";
+            }
+            else if (searchwindow->getSortFunc() == FileList::descendingNatural)
+            {
+                sort_func = "descendingNatural";
+            }
+            else if (searchwindow->getSortFunc() == FileList::descendingMixNatural)
+            {
+                sort_func = "descendingMixNatural";
+            }
+            else if (searchwindow->getSortFunc() == FileList::ascendingDirCaseNatural)
+            {
+                sort_func = "ascendingDirCaseNatural";
+            }
+            else if (searchwindow->getSortFunc() == FileList::ascendingDirCaseMixNatural)
+            {
+                sort_func = "ascendingDirCaseMixNatural";
+            }
+            else if (searchwindow->getSortFunc() == FileList::descendingDirCaseNatural)
+            {
+                sort_func = "descendingDirCasev";
+            }
+            else if (searchwindow->getSortFunc() == FileList::descendingDirCaseMixNatural)
+            {
+                sort_func = "descendingDirCaseMixNatural";
+            }
+            else if (searchwindow->getSortFunc() == FileList::ascendingDirNatural)
+            {
+                sort_func = "ascendingDirNatural";
+            }
+            else if (searchwindow->getSortFunc() == FileList::ascendingDirMixNatural)
+            {
+                sort_func = "ascendingDirMixNatural";
+            }
+            else if (searchwindow->getSortFunc() == FileList::descendingDirNatural)
+            {
+                sort_func = "descendingDirNatural";
+            }
+            else if (searchwindow->getSortFunc() == FileList::descendingDirMixNatural)
+            {
+                sort_func = "descendingDirMixNatural";
             }
             else if (searchwindow->getSortFunc() == FileList::ascendingSize)
             {
@@ -2185,9 +2387,25 @@ void XFileExplorer::saveConfig()
             {
                 sort_func = "descendingLinkMix";
             }
+            else if (searchwindow->getSortFunc() == FileList::ascendingLinkNatural)
+            {
+                sort_func = "ascendingLinkNatural";
+            }
+            else if (searchwindow->getSortFunc() == FileList::ascendingLinkMixNatural)
+            {
+                sort_func = "ascendingLinkMixNatural";
+            }
+            else if (searchwindow->getSortFunc() == FileList::descendingLinkNatural)
+            {
+                sort_func = "descendingLinkNatural";
+            }
+            else if (searchwindow->getSortFunc() == FileList::descendingLinkMixNatural)
+            {
+                sort_func = "descendingLinkMixNatural";
+            }
             else
             {
-                sort_func = "ascendingCase";
+                sort_func = "ascendingCaseNatural";
             }
             getApp()->reg().writeStringEntry("SEARCH PANEL", "sort_func", sort_func.text());
         }
@@ -2281,6 +2499,38 @@ void XFileExplorer::saveConfig()
         else if (lpanel->getSortFunc() == FileList::descendingMix)
         {
             sort_func = "descendingMix";
+        }
+        else if (lpanel->getSortFunc() == FileList::ascendingCaseNatural)
+        {
+            sort_func = "ascendingCaseNatural";
+        }
+        else if (lpanel->getSortFunc() == FileList::ascendingCaseMixNatural)
+        {
+            sort_func = "ascendingCaseMixNatural";
+        }
+        else if (lpanel->getSortFunc() == FileList::descendingCaseNatural)
+        {
+            sort_func = "descendingCaseNatural";
+        }
+        else if (lpanel->getSortFunc() == FileList::descendingCaseMixNatural)
+        {
+            sort_func = "descendingCaseMixNatural";
+        }
+        else if (lpanel->getSortFunc() == FileList::ascendingNatural)
+        {
+            sort_func = "ascendingNatural";
+        }
+        else if (lpanel->getSortFunc() == FileList::ascendingMixNatural)
+        {
+            sort_func = "ascendingMixNatural";
+        }
+        else if (lpanel->getSortFunc() == FileList::descendingNatural)
+        {
+            sort_func = "descendingNatural";
+        }
+        else if (lpanel->getSortFunc() == FileList::descendingMixNatural)
+        {
+            sort_func = "descendingMixNatural";
         }
         else if (lpanel->getSortFunc() == FileList::ascendingSize)
         {
@@ -2410,12 +2660,29 @@ void XFileExplorer::saveConfig()
         {
             sort_func = "descendingLinkMix";
         }
+        else if (lpanel->getSortFunc() == FileList::ascendingLinkNatural)
+        {
+            sort_func = "ascendingLinkNatural";
+        }
+        else if (lpanel->getSortFunc() == FileList::ascendingLinkMixNatural)
+        {
+            sort_func = "ascendingLinkMixNatural";
+        }
+        else if (lpanel->getSortFunc() == FileList::descendingLinkNatural)
+        {
+            sort_func = "descendingLinkNatural";
+        }
+        else if (lpanel->getSortFunc() == FileList::descendingLinkMixNatural)
+        {
+            sort_func = "descendingLinkMixNatural";
+        }
         else
         {
-            sort_func = "ascendingCase";
+            sort_func = "ascendingCaseNatural";
         }
         getApp()->reg().writeStringEntry("LEFT PANEL", "sort_func", sort_func.text());
         getApp()->reg().writeUnsignedEntry("LEFT PANEL", "ignore_case", lpanel->getIgnoreCase());
+        getApp()->reg().writeUnsignedEntry("LEFT PANEL", "natural_sort", lpanel->getNaturalSort());
         getApp()->reg().writeUnsignedEntry("LEFT PANEL", "dirs_first", lpanel->getDirsFirst());
 
         // Right panel options
@@ -2507,6 +2774,38 @@ void XFileExplorer::saveConfig()
         else if (rpanel->getSortFunc() == FileList::descendingMix)
         {
             sort_func = "descendingMix";
+        }
+        else if (rpanel->getSortFunc() == FileList::ascendingCaseNatural)
+        {
+            sort_func = "ascendingCaseNatural";
+        }
+        else if (rpanel->getSortFunc() == FileList::ascendingCaseMixNatural)
+        {
+            sort_func = "ascendingCaseMixNatural";
+        }
+        else if (rpanel->getSortFunc() == FileList::descendingCaseNatural)
+        {
+            sort_func = "descendingCaseNatural";
+        }
+        else if (rpanel->getSortFunc() == FileList::descendingCaseMixNatural)
+        {
+            sort_func = "descendingCaseMixNatural";
+        }
+        else if (rpanel->getSortFunc() == FileList::ascendingNatural)
+        {
+            sort_func = "ascendingNatural";
+        }
+        else if (rpanel->getSortFunc() == FileList::ascendingMixNatural)
+        {
+            sort_func = "ascendingMixNatural";
+        }
+        else if (rpanel->getSortFunc() == FileList::descendingNatural)
+        {
+            sort_func = "descendingNatural";
+        }
+        else if (rpanel->getSortFunc() == FileList::descendingMixNatural)
+        {
+            sort_func = "descendingMixNatural";
         }
         else if (rpanel->getSortFunc() == FileList::ascendingSize)
         {
@@ -2636,12 +2935,29 @@ void XFileExplorer::saveConfig()
         {
             sort_func = "descendingLinkMix";
         }
+        else if (rpanel->getSortFunc() == FileList::ascendingLinkNatural)
+        {
+            sort_func = "ascendingLinkNatural";
+        }
+        else if (rpanel->getSortFunc() == FileList::ascendingLinkMixNatural)
+        {
+            sort_func = "ascendingLinkMixNatural";
+        }
+        else if (rpanel->getSortFunc() == FileList::descendingLinkNatural)
+        {
+            sort_func = "descendingLinkNatural";
+        }
+        else if (rpanel->getSortFunc() == FileList::descendingLinkMixNatural)
+        {
+            sort_func = "descendingLinkMixNatural";
+        }
         else
         {
-            sort_func = "ascendingCase";
+            sort_func = "ascendingCaseNatural";
         }
         getApp()->reg().writeStringEntry("RIGHT PANEL", "sort_func", sort_func.text());
         getApp()->reg().writeUnsignedEntry("RIGHT PANEL", "ignore_case", rpanel->getIgnoreCase());
+        getApp()->reg().writeUnsignedEntry("RIGHT PANEL", "natural_sort", rpanel->getNaturalSort());
         getApp()->reg().writeUnsignedEntry("RIGHT PANEL", "dirs_first", rpanel->getDirsFirst());
 
         // Global options
@@ -3025,32 +3341,6 @@ void XFileExplorer::saveConfig()
         getApp()->reg().deleteSection("TABS");
     }
 
-    // Read registry file to get bookmarks that could have been changed from another Xfe instance
-    FXRegistry* reg = new FXRegistry(XFEAPPNAME, XFEVDRNAME);
-    reg->read();
-
-    if (reg->readStringEntry("BOOKMARKS", "bookmark0", NULL))
-    {
-        getApp()->reg().deleteSection("BOOKMARKS");
-
-        FXuint i = 0;
-        while (1)
-        {
-            FXString regkey = "bookmark" + FXStringVal(i);
-            FXString data = reg->readStringEntry("BOOKMARKS", regkey.text(), NULL);
-
-            if (data != "")
-            {
-                getApp()->reg().writeStringEntry("BOOKMARKS", regkey.text(), data.text());
-                i++;
-            }
-            else
-            {
-                break;
-            }
-        }
-    }
-
     // Reset restarted flag
     getApp()->reg().writeUnsignedEntry("SETTINGS", "restarted", false);
 
@@ -3304,7 +3594,7 @@ void XFileExplorer::create()
                 {
                     break;
                 }
-                xf_strlcpy(RunHistory[i], histent.text(), histent.length() + 1);
+                xf_strlcpy(RunHistory[i], histent.text(), sizeof(RunHistory[i]));
             }
             else
             {
@@ -3329,7 +3619,7 @@ void XFileExplorer::create()
                 {
                     break;
                 }
-                xf_strlcpy(OpenHistory[i], histent.text(), histent.length() + 1);
+                xf_strlcpy(OpenHistory[i], histent.text(), sizeof(OpenHistory[i]));
             }
             else
             {
@@ -3354,7 +3644,7 @@ void XFileExplorer::create()
                 {
                     break;
                 }
-                xf_strlcpy(FilterHistory[i], histent.text(), histent.length() + 1);
+                xf_strlcpy(FilterHistory[i], histent.text(), sizeof(FilterHistory[i]));
             }
             else
             {
@@ -3379,7 +3669,7 @@ void XFileExplorer::create()
                 {
                     break;
                 }
-                xf_strlcpy(FindHistory[i], histent.text(), histent.length() + 1);
+                xf_strlcpy(FindHistory[i], histent.text(), sizeof(FindHistory[i]));
             }
             else
             {
@@ -3404,7 +3694,7 @@ void XFileExplorer::create()
                 {
                     break;
                 }
-                xf_strlcpy(ServerHistory[i], histent.text(), histent.length() + 1);
+                xf_strlcpy(ServerHistory[i], histent.text(), sizeof(ServerHistory[i]));
             }
             else
             {
@@ -3429,7 +3719,7 @@ void XFileExplorer::create()
                 {
                     break;
                 }
-                xf_strlcpy(ShareHistory[i], histent.text(), histent.length() + 1);
+                xf_strlcpy(ShareHistory[i], histent.text(), sizeof(ShareHistory[i]));
             }
             else
             {
@@ -3454,7 +3744,7 @@ void XFileExplorer::create()
                 {
                     break;
                 }
-                xf_strlcpy(DomainHistory[i], histent.text(), histent.length() + 1);
+                xf_strlcpy(DomainHistory[i], histent.text(), sizeof(DomainHistory[i]));
             }
             else
             {
@@ -3479,7 +3769,7 @@ void XFileExplorer::create()
                 {
                     break;
                 }
-                xf_strlcpy(UserHistory[i], histent.text(), histent.length() + 1);
+                xf_strlcpy(UserHistory[i], histent.text(), sizeof(UserHistory[i]));
             }
             else
             {
@@ -3725,63 +4015,16 @@ void XFileExplorer::create()
     }
 
 #if defined(linux) && defined(XFE_AUTOMOUNTER)
-
-    // Non root user
+    // Migrate existing automount preferences to session autostart.
     if (getuid())
-    {        
-        // Automount status 
+    {
         FXbool automount = getApp()->reg().readUnsignedEntry("OPTIONS", "automount", false);
-
-        // Check if udisks2 is installed
-        if (automount)
+        if (!xf_setautomountautostart(xdgconfighome, automount))
         {
-            FXString cmd = "udisksctl status";
-            FXString str = xf_getcommandoutput(cmd);
-
-            if (str.find("DEVICE") == -1)
-            {
-                MessageBox::error(this, BOX_OK, _("Error"), _("Unable to find udisksctl command on your system.\
-\nPackage udisks2 is probably not installed, Xfe automounter is disabled."));       
-                
-                getApp()->reg().writeUnsignedEntry("OPTIONS", "automount", false);
-                automount = false;
-            }            
+            MessageBox::error(this, BOX_OK, _("Error"),
+                              _("Unable to update the Xfe automounter autostart file."));
         }
-        
-        // Check if Xfe automounter is running for the actual user    
-        FXString cmd = "pgrep -u "+ FXSystem::userName(FXSystem::user()) + " xfe-automount";
-        FXString pid = xf_getcommandoutput(cmd);
-
-        // Restart flag
-        FXbool restart_automount = getApp()->reg().readUnsignedEntry("OPTIONS", "restart_automount", false);
-       
-        // Stop automounter if running and (disabled or (enabled and restart))
-        if ( (pid != "") && ( !automount || (automount && restart_automount) ) )
-        {
-            cmd = "killall -q xfe-automount";
-            int ret = system(cmd.text());
-            if (ret < 0)
-            {
-                fprintf(stderr, _("Error: Can't execute command %s"), cmd.text());
-            }            
-        }
-        
-        // Start automounter if enabled and (not running or (running and restart)
-        if (automount && ( (pid == "") || ( (pid != "") && restart_automount) ) )
-        {
-            // Run  automounter
-            cmd = "xfe-automount &";
-            int ret = system(cmd.text());
-            if (ret < 0)
-            {
-                fprintf(stderr, _("Error: Can't execute command %s"), cmd.text());
-            }            
-        }
-
-        // Reset restart flag
-        getApp()->reg().writeUnsignedEntry("OPTIONS", "restart_automount", false);
     }
-
 #endif
 }
 
@@ -3789,9 +4032,8 @@ void XFileExplorer::create()
 // Destructor
 XFileExplorer::~XFileExplorer()
 {
-    delete menubar;
-    delete addresstoolbar;
     delete addressbox;
+    delete addresstoolbar;
     delete filemenu;
     delete toolsmenu;
     delete trashmenu;
@@ -3799,6 +4041,7 @@ XFileExplorer::~XFileExplorer()
     delete viewmenu;
     delete lpanelmenu;
     delete rpanelmenu;
+    xf_clear_menu(scriptsmenu);
     delete scriptsmenu;
     delete helpmenu;
     delete filemenutitle;
@@ -3809,16 +4052,16 @@ XFileExplorer::~XFileExplorer()
     delete rpanelmenutitle;
     delete scriptsmenutitle;
     delete helpmenutitle;
-    delete generaltoolbar;
     delete paneltoolbar;
-    delete tabtoolbar;
     delete toolstoolbar;
     delete tabbuttons;
+    delete tabtoolbar;
     delete dirpanel;
     delete lpanel;
     delete rpanel;
     delete btnbackhist;
     delete btnforwardhist;
+    delete generaltoolbar;
     delete rundialog;
     delete prefsdialog;
     delete helpwindow;
@@ -3828,6 +4071,7 @@ XFileExplorer::~XFileExplorer()
     delete bookmarksmenu;
     delete addbookmarkdialog;
     delete connectdialog;
+    delete menubar;
 }
 
 
@@ -4420,6 +4664,10 @@ long XFileExplorer::onCmdRemoveAllBookmarks(FXObject*, FXSelector, void*)
     else
     {
         // Remove all menu items
+        for (FXuint i = 0; i < bookmarkmc.size(); i++)
+        {
+            delete bookmarkmc[i];
+        }
         bookmarkmc.clear();
 
         // Remove all list items
@@ -4434,7 +4682,7 @@ long XFileExplorer::onCmdRemoveAllBookmarks(FXObject*, FXSelector, void*)
 long XFileExplorer::onUpdBookmarksMenu(FXObject* sender, FXSelector, void* ptr)
 {
     // Update remove all button
-    if (bookmarkmc.size() > 0)
+    if (dirpanel->getNumBookmarks() > 0)
     {
         sender->handle(this, FXSEL(SEL_COMMAND, ID_ENABLE), ptr);
         bookmarkssep->show();
@@ -4445,10 +4693,20 @@ long XFileExplorer::onUpdBookmarksMenu(FXObject* sender, FXSelector, void* ptr)
         bookmarkssep->hide();
     }
 
-    // Update bookmarks menu items if the sizes don't match
-    if ((FXint)bookmarkmc.size() != dirpanel->getNumBookmarks())
+    // Names and ordering may change without changing the number of bookmarks.
+    FXbool changed = (FXint)bookmarkmc.size() != dirpanel->getNumBookmarks();
+    for (int i = 0; !changed && i < dirpanel->getNumBookmarks(); i++)
+    {
+        FXString name = dirpanel->getBookmarkName(i);
+        changed = bookmarkmc[i]->getText() != name;
+    }
+    if (changed)
     {
         // Remove all menu items
+        for (FXuint i = 0; i < bookmarkmc.size(); i++)
+        {
+            delete bookmarkmc[i];
+        }
         bookmarkmc.clear();
 
         // Add items to the menu
@@ -4483,6 +4741,10 @@ long XFileExplorer::onUpdBookmarksMenu(FXObject* sender, FXSelector, void* ptr)
 long XFileExplorer::onCmdRebuildBookmarksMenu(FXObject*, FXSelector, void*)
 {
     // Remove all menu items
+    for (FXuint i = 0; i < bookmarkmc.size(); i++)
+    {
+        delete bookmarkmc[i];
+    }
     bookmarkmc.clear();
 
     // Add sorted items to the menu
@@ -4759,7 +5021,7 @@ long XFileExplorer::onCmdHelp(FXObject*, FXSelector, void*)
     {
         FXFont* font = new FXFont(getApp(), fontspec);
         font->create();
-        helpwindow->setFont(font);
+        helpwindow->setFont(font, true);
     }
 
     // NB: The HELP_TEXT macro is defined in help.h
@@ -4842,6 +5104,11 @@ long XFileExplorer::onCmdFileAssoc(FXObject*, FXSelector, void* ptr)
     associations->replace(ext, cmd);
     associations = rpanel->getAssociations();
     associations->replace(ext, cmd);
+
+    // All senders transfer these heap-allocated arguments to this handler.
+    delete[] str[0];
+    delete[] str[1];
+    delete[] str;
 
     saveConfig();
 
@@ -5494,11 +5761,10 @@ long XFileExplorer::onCmdRun(FXObject*, FXSelector, void*)
         if (newstr)
         {
             // FIFO
-            xf_strlcpy(RunHistory[0], command.text(), command.length() + 1);
+            xf_strlcpy(RunHistory[0], command.text(), sizeof(RunHistory[0]));
             for (int i = 1; i < RunNum; i++)
             {
-                xf_strlcpy(RunHistory[i], rundialog->getHistoryItem(i - 1).text(),
-                         rundialog->getHistoryItem(i - 1).length() + 1);
+                xf_strlcpy(RunHistory[i], rundialog->getHistoryItem(i - 1).text(), sizeof(RunHistory[i]));
             }
         }
     }
@@ -5730,10 +5996,11 @@ long XFileExplorer::onCmdEmptyTrash(FXObject*, FXSelector, void*)
     FXulong dirsize;
     FXuint nbfiles = 0, nbsubfolders = 0;
     FXulong totalsize = 0;
+    FXbool readsuccess = true;
 
     FXString dirpath = trashfileslocation;
     xf_strlcpy(buf, dirpath.text(), dirpath.length() + 1);
-    dirsize = xf_pathsize(buf, &nbfiles, &nbsubfolders, &totalsize);
+    dirsize = xf_pathsize(buf, &nbfiles, &nbsubfolders, &totalsize, &readsuccess);
 
 #if __WORDSIZE == 64
     snprintf(size, sizeof(size), "%lu", dirsize);
@@ -5846,8 +6113,10 @@ long XFileExplorer::onCmdTrashSize(FXObject*, FXSelector, void*)
         FXulong dirsize = 0;
         FXuint nbfiles = 0, nbsubfolders = 0;
         FXulong totalsize = 0;
+        FXbool readsuccess = true;
         xf_strlcpy(buf, trashfileslocation.text(), trashfileslocation.length() + 1);
-        dirsize = xf_pathsize(buf, &nbfiles, &nbsubfolders, &totalsize);
+        dirsize = xf_pathsize(buf, &nbfiles, &nbsubfolders, &totalsize, &readsuccess);
+
 #if __WORDSIZE == 64
         snprintf(buf, sizeof(buf), "%lu", dirsize);
 #else
@@ -6333,7 +6602,6 @@ long XFileExplorer::onUpdSu(FXObject* sender, FXSelector, void*)
 
     return 1;
 }
-
 
 
 // Open files URIS

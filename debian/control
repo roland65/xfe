@@ -6,6 +6,7 @@ Build-Depends:
     debhelper-compat (= 13),
     libfox-1.6-dev (>= 1.6.45),
     libfreetype-dev,
+    libglib2.0-dev (>= 2.28),
     libpng-dev,
     libxft-dev,
     libx11-dev,

@@ -252,7 +252,7 @@
 #define PACKAGE_NAME "xfe"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "xfe 2.1.13"
+#define PACKAGE_STRING "xfe 2.2.0"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "xfe"
@@ -261,7 +261,7 @@
 #define PACKAGE_URL ""
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "2.1.13"
+#define PACKAGE_VERSION "2.2.0"
 
 /* If using the C implementation of alloca, define if you know the
    direction of stack growth for your system; otherwise it will be
@@ -372,7 +372,7 @@
 
 
 /* Version number of package */
-#define VERSION "2.1.13"
+#define VERSION "2.2.0"
 
 /* Number of bits in a file offset, on hosts where this is settable. */
 /* #undef _FILE_OFFSET_BITS */

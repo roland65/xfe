@@ -33,6 +33,7 @@ FXbool Theme::operator !=(const Theme& t)
 // Main window
 extern FXMainWindow* mainWindow;
 extern FXString execpath;
+extern FXString xdgconfighome;
 
 
 // Create hilite color from given color for gradient controls
@@ -359,6 +360,7 @@ PreferencesBox::PreferencesBox(FXWindow* win, FXColor listbackcolor, FXColor lis
                                     this, ID_TRASH_BYPASS);
     autosave = new FXCheckButton(group, _("Auto save layout") + FXString(" "));
     savewinpos = new FXCheckButton(group, _("Save window position") + FXString(" "));
+    expandablefolders = new FXCheckButton(group, _("Expandable folders in detailed file lists") + FXString(" "));
     diropen = new FXCheckButton(group, _("Single click folder open") + FXString(" "));
     fileopen = new FXCheckButton(group, _("Single click file open") + FXString(" "), this, ID_SINGLE_CLICK_FILEOPEN);
     filetooltips = new FXCheckButton(group, _("Display tooltips in file and folder lists") + FXString(" "), this,
@@ -595,7 +597,7 @@ PreferencesBox::PreferencesBox(FXWindow* win, FXColor listbackcolor, FXColor lis
     automountgroup = new FXGroupBox(settings, _("Automount"),
                                     GROUPBOX_TITLE_LEFT | FRAME_GROOVE | LAYOUT_FILL_X | LAYOUT_FILL_Y);
     vframe = new FXVerticalFrame(automountgroup, LAYOUT_SIDE_TOP | FRAME_NONE | LAYOUT_FILL_X | LAYOUT_FILL_Y);
-    automountlabel = new FXLabel(vframe, _("(Only enable automounting if your system does not have this feature)"), NULL, JUSTIFY_LEFT);
+    automountlabel = new FXLabel(vframe, _("(Only enable automounting if your system does not have this feature.\nChanges take effect at next login.)"), NULL, JUSTIFY_LEFT);
     matrix = new FXMatrix(vframe, 2, MATRIX_BY_COLUMNS | LAYOUT_SIDE_TOP);
     automountbutton = new FXCheckButton(matrix, _("Enable automounting") + FXString(" "));
     FXbool automount = getApp()->reg().readUnsignedEntry("OPTIONS", "automount", false);
@@ -695,6 +697,8 @@ PreferencesBox::PreferencesBox(FXWindow* win, FXColor listbackcolor, FXColor lis
     // File tooltips
     FXbool file_tooltips = getApp()->reg().readUnsignedEntry("SETTINGS", "file_tooltips", true);
     filetooltips->setCheck(file_tooltips);
+
+    expandablefolders->setCheck(getApp()->reg().readUnsignedEntry("SETTINGS", "expandable_folders", true));
 
     // Relative resizing
     FXbool relative_resize = getApp()->reg().readUnsignedEntry("SETTINGS", "relative_resize", true);
@@ -1937,7 +1941,15 @@ long PreferencesBox::onCmdAccept(FXObject* sender, FXSelector sel, void* ptr)
     FXbool restart_relativeresize = false;
     FXbool restart_alwaysshowtabbar = false;
     FXbool restart_filetooltips = false;
-    FXbool restart_automount = false;
+
+#if defined(linux) && defined(XFE_AUTOMOUNTER)
+    if (getuid() && !xf_setautomountautostart(xdgconfighome, automountbutton->getCheck()))
+    {
+        MessageBox::error(this, BOX_OK, _("Error"),
+                          _("Unable to update the Xfe automounter autostart file."));
+        return 1;
+    }
+#endif
 
     oldtimeformat = timeformat->getText();
     oldcopysuffix = copysuffix->getText();
@@ -2493,6 +2505,9 @@ long PreferencesBox::onCmdAccept(FXObject* sender, FXSelector sel, void* ptr)
         restart_filetooltips = true;
     }
 
+    // Expandable folders
+    getApp()->reg().writeUnsignedEntry("SETTINGS", "expandable_folders", (FXuint)expandablefolders->getCheck());
+
     // Relative resize
     getApp()->reg().writeUnsignedEntry("SETTINGS", "relative_resize", (FXuint)relativeresize->getCheck());
     if (relativeresize_prev != relativeresize->getCheck())
@@ -2628,16 +2643,16 @@ long PreferencesBox::onCmdAccept(FXObject* sender, FXSelector sel, void* ptr)
         usercol->getCheck() != usercol_prev || groupcol->getCheck() != groupcol_prev ||
         permscol->getCheck() != permscol_prev || linkcol->getCheck() != linkcol_prev)
     {
-        ((XFileExplorer*)mainWindow)->getLeftPanel()->setSortFunc(FileList::ascendingCase);
-        ((XFileExplorer*)mainWindow)->getRightPanel()->setSortFunc(FileList::ascendingCase);
+        ((XFileExplorer*)mainWindow)->getLeftPanel()->setSortFunc(FileList::ascendingCaseNatural);
+        ((XFileExplorer*)mainWindow)->getRightPanel()->setSortFunc(FileList::ascendingCaseNatural);
 
         if (((XFileExplorer*)mainWindow)->getSearchWindow() != NULL)
         {
-            ((XFileExplorer*)mainWindow)->getSearchWindow()->setSortFunc(FileList::ascendingCase);
+            ((XFileExplorer*)mainWindow)->getSearchWindow()->setSortFunc(FileList::ascendingCaseNatural);
         }
         else
         {
-            getApp()->reg().writeStringEntry("SEARCH PANEL", "sort_func", "ascendingCase");
+            getApp()->reg().writeStringEntry("SEARCH PANEL", "sort_func", "ascendingCaseNatural");
         }
 
         restart_columns = true;
@@ -2666,19 +2681,11 @@ long PreferencesBox::onCmdAccept(FXObject* sender, FXSelector sel, void* ptr)
         }
     }
 
-#if defined(linux) && defined(XFE_AUTOMOUNTER)
-    if (automountbutton->getCheck() != automount_prev || autoopenbutton->getCheck() != autoopen_prev)
-    {
-        getApp()->reg().writeUnsignedEntry("OPTIONS", "restart_automount", true);
-        restart_automount = true;
-    }
-#endif
-
     // Restart application if necessary
     if (restart_smoothscroll | restart_scrollbarsize | restart_theme | restart_showpathlink |
         restart_normalfont | restart_textfont | restart_uidpi | restart_dirpanel_mode |
         restart_columns | restart_filetooltips | restart_relativeresize | restart_alwaysshowtabbar |
-        restart_diropen | restart_fileopen | restart_automount)
+        restart_diropen | restart_fileopen)
     {
         if (BOX_CLICKED_CANCEL != MessageBox::question(this, BOX_OK_CANCEL, _("Restart"),
                                  _("Preferences will be changed after restart.\nRestart X File Explorer now?")))
@@ -2719,6 +2726,7 @@ long PreferencesBox::onCmdCancel(FXObject* sender, FXSelector sel, void* ptr)
     diropen->setCheck(diropen_prev);
     fileopen->setCheck(fileopen_prev);
     filetooltips->setCheck(filetooltips_prev);
+    expandablefolders->setCheck(expandablefolders_prev);
     relativeresize->setCheck(relativeresize_prev);
     alwaysshowtabbar->setCheck(alwaysshowtabbar_prev);
     restoretabs->setCheck(restoretabs_prev);
@@ -2840,6 +2848,7 @@ FXuint PreferencesBox::execute(FXuint placement)
     diropen_prev = diropen->getCheck();
     fileopen_prev = fileopen->getCheck();
     filetooltips_prev = filetooltips->getCheck();
+    expandablefolders_prev = expandablefolders->getCheck();
     relativeresize_prev = relativeresize->getCheck();
     alwaysshowtabbar_prev = alwaysshowtabbar->getCheck();
     restoretabs_prev = restoretabs->getCheck();
@@ -3160,6 +3169,8 @@ long PreferencesBox::onCmdMountTimeout(FXObject* sender, FXSelector, void*)
 // Update mount timeout button
 long PreferencesBox::onUpdMountTimeout(FXObject* sender, FXSelector, void*)
 {
+
+#if defined(linux)
     if (mountwarn->getCheck())
     {
         sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_ENABLE), NULL);
@@ -3168,6 +3179,7 @@ long PreferencesBox::onUpdMountTimeout(FXObject* sender, FXSelector, void*)
     {
         sender->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_DISABLE), NULL);
     }
+#endif
 
     return 1;
 }

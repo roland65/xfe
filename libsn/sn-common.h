@@ -26,7 +26,7 @@
 #ifndef __SN_COMMON_H__
 #define __SN_COMMON_H__
 
-#include <libsn/sn-util.h>
+#include "libsn/sn-util.h"
 #include <X11/Xlib.h>
 #include <xcb/xcb.h>
 

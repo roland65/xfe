@@ -55,6 +55,7 @@ FXIMPLEMENT(DirItem, FXTreeItem, NULL, 0)
 // Map
 FXDEFMAP(DirList) DirListMap[] =
 {
+    FXMAPFUNC(SEL_KEYPRESS, 0, DirList::onKeyPress),
     FXMAPFUNC(SEL_DRAGGED, 0, DirList::onDragged),
     FXMAPFUNC(SEL_TIMEOUT, DirList::ID_REFRESH_TIMER, DirList::onCmdRefreshTimer),
 #if defined(linux)
@@ -81,6 +82,7 @@ FXDEFMAP(DirList) DirListMap[] =
     FXMAPFUNC(SEL_UPDATE, DirList::ID_TOGGLE_FILES, DirList::onUpdToggleFiles),
     FXMAPFUNC(SEL_UPDATE, DirList::ID_SET_PATTERN, DirList::onUpdSetPattern),
     FXMAPFUNC(SEL_UPDATE, DirList::ID_SORT_REVERSE, DirList::onUpdSortReverse),
+    FXMAPFUNC(SEL_UPDATE, DirList::ID_SORT_NATURAL, DirList::onUpdSortNatural),
     FXMAPFUNC(SEL_COMMAND, DirList::ID_SHOW_HIDDEN, DirList::onCmdShowHidden),
     FXMAPFUNC(SEL_COMMAND, DirList::ID_DRAG_COPY, DirList::onCmdDragCopy),
     FXMAPFUNC(SEL_COMMAND, DirList::ID_DRAG_MOVE, DirList::onCmdDragMove),
@@ -93,6 +95,7 @@ FXDEFMAP(DirList) DirListMap[] =
     FXMAPFUNC(SEL_COMMAND, DirList::ID_TOGGLE_FILES, DirList::onCmdToggleFiles),
     FXMAPFUNC(SEL_COMMAND, DirList::ID_SET_PATTERN, DirList::onCmdSetPattern),
     FXMAPFUNC(SEL_COMMAND, DirList::ID_SORT_REVERSE, DirList::onCmdSortReverse),
+    FXMAPFUNC(SEL_COMMAND, DirList::ID_SORT_NATURAL, DirList::onCmdSortNatural),
     FXMAPFUNC(SEL_COMMAND, DirList::ID_REFRESH, DirList::onCmdRefresh),
     FXMAPFUNC(SEL_COMMAND, DirList::ID_SORT_CASE, DirList::onCmdSortCase),
     FXMAPFUNC(SEL_UPDATE, DirList::ID_SORT_CASE, DirList::onUpdSortCase),
@@ -118,7 +121,7 @@ DirList::DirList(FXWindow* focuswin, FXComposite* p, FXObject* tgt, FXSelector s
         associations = new FileDict(getApp());
     }
     list = NULL;
-    sortfunc = (FXTreeListSortFunc)ascendingCase;
+    sortfunc = (FXTreeListSortFunc)ascendingCaseNatural;
     dropaction = DRAG_MOVE;
     counter = 0;
     prevSelItem = NULL;
@@ -301,7 +304,7 @@ TreeItem* DirList::createItem(const FXString& text, FXIcon* oi, FXIcon* ci, void
  * @return 0 if equal, negative if p<q, positive if p>q
  * If jmp has an invalid value returns 0 and errno will be EINVAL
  */
-static inline int compare_nolocale(char* p, char* q, FXbool igncase, FXbool asc)
+static inline int compare_nolocale(char* p, char* q, FXbool natsort, FXbool igncase, FXbool asc)
 {
     // Compare names
 
@@ -328,7 +331,22 @@ static inline int compare_nolocale(char* p, char* q, FXbool igncase, FXbool asc)
     *qq = '\0';
 
     // Compare strings
-    int ret = xf_comparenat(p, q, igncase);
+    int ret = 0;
+    if (natsort)
+    {
+        ret = xf_comparenat(p, q, igncase);
+    }
+    else
+    {
+        if (igncase)
+        {
+            ret = comparecase(p, q);
+        }
+        else
+        {
+            ret = compare(p, q);
+        }
+    }
 
     // Restore saved characters
     *pp = pw;
@@ -354,7 +372,7 @@ static inline int compare_nolocale(char* p, char* q, FXbool igncase, FXbool asc)
  * @return 0 if equal, negative if p<q, positive if p>q
  * If jmp has an invalid value returns 0 and errno will be EINVAL
  */
-static inline int compare_locale(wchar_t* p, wchar_t* q, FXbool igncase, FXbool asc)
+static inline int compare_locale(wchar_t* p, wchar_t* q, FXbool natsort, FXbool igncase, FXbool asc)
 {
     // Compare names
 
@@ -381,7 +399,22 @@ static inline int compare_locale(wchar_t* p, wchar_t* q, FXbool igncase, FXbool 
     *qq = '\0';
 
     // Compare wide strings
-    int ret = xf_comparewnat(p, q, igncase);
+    int ret = 0;
+    if (natsort)
+    {
+        ret = xf_comparewnat(p, q, igncase);
+    }
+    else
+    {
+        if (igncase)
+        {
+            ret = comparecase(p, q);
+        }
+        else
+        {
+            ret = compare(p, q);
+        }
+    }
 
     // Restore saved characters
     *pp = pw;
@@ -408,7 +441,7 @@ static inline int compare_locale(wchar_t* p, wchar_t* q, FXbool igncase, FXbool 
  * function returns 0 and errno will be ENOMEM
  * If jmp has an invalid value returns 0 and errno will be EINVAL
  */
-int DirList::compareItem(const FXTreeItem* pa, const FXTreeItem* pb, FXbool igncase, FXbool asc)
+int DirList::compareItem(const FXTreeItem* pa, const FXTreeItem* pb, FXbool natsort, FXbool igncase, FXbool asc)
 {
     const DirItem* a = (DirItem*)pa;
     const DirItem* b = (DirItem*)pb;
@@ -423,7 +456,7 @@ int DirList::compareItem(const FXTreeItem* pa, const FXTreeItem* pb, FXbool ignc
     an = mbstowcs(NULL, (const char*)p, 0);
     if (an == (size_t)-1)
     {
-        return compare_nolocale(p, q, igncase, asc); // If error, fall back to no locale comparison
+        return compare_nolocale(p, q, natsort, igncase, asc); // If error, fall back to no locale comparison
     }
     wa = (wchar_t*)calloc(an + 1, sizeof(wchar_t));
     if (wa == NULL)
@@ -436,7 +469,7 @@ int DirList::compareItem(const FXTreeItem* pa, const FXTreeItem* pb, FXbool ignc
     if (bn == (size_t)-1)
     {
         free(wa);
-        return compare_nolocale(p, q, igncase, asc); // If error, fall back to no locale comparison
+        return compare_nolocale(p, q, natsort, igncase, asc); // If error, fall back to no locale comparison
     }
     wb = (wchar_t*)calloc(bn + 1, sizeof(wchar_t));
     if (wb == NULL)
@@ -448,7 +481,7 @@ int DirList::compareItem(const FXTreeItem* pa, const FXTreeItem* pb, FXbool ignc
     mbstowcs(wb, q, bn + 1);
 
     // Perform comparison based on the current locale
-    int ret = compare_locale(wa, wb, igncase, asc);
+    int ret = compare_locale(wa, wb, natsort, igncase, asc);
 
     // Free memory
     if (wa != NULL)
@@ -467,28 +500,56 @@ int DirList::compareItem(const FXTreeItem* pa, const FXTreeItem* pb, FXbool ignc
 // Sort ascending order, keeping directories first
 int DirList::ascending(const FXTreeItem* pa, const FXTreeItem* pb)
 {
-    return compareItem(pa, pb, false, true);
+    return compareItem(pa, pb, false, false, true);
 }
 
 
 // Sort descending order, keeping directories first
 int DirList::descending(const FXTreeItem* pa, const FXTreeItem* pb)
 {
-    return compareItem(pa, pb, false, false);
+    return compareItem(pa, pb, false, false, false);
 }
 
 
 // Sort ascending order, case insensitive, keeping directories first
 int DirList::ascendingCase(const FXTreeItem* pa, const FXTreeItem* pb)
 {
-    return compareItem(pa, pb, true, true);
+    return compareItem(pa, pb, false, true, true);
 }
 
 
 // Sort descending order, case insensitive, keeping directories first
 int DirList::descendingCase(const FXTreeItem* pa, const FXTreeItem* pb)
 {
-    return compareItem(pa, pb, true, false);
+    return compareItem(pa, pb, true, true, false);
+}
+
+
+// Sort ascending order, keeping directories first, natural sorting
+int DirList::ascendingNatural(const FXTreeItem* pa, const FXTreeItem* pb)
+{
+    return compareItem(pa, pb, true, false, true);
+}
+
+
+// Sort descending order, keeping directories first, natural sorting
+int DirList::descendingNatural(const FXTreeItem* pa, const FXTreeItem* pb)
+{
+    return compareItem(pa, pb, true, false, false);
+}
+
+
+// Sort ascending order, case insensitive, keeping directories first, natural sorting
+int DirList::ascendingCaseNatural(const FXTreeItem* pa, const FXTreeItem* pb)
+{
+    return compareItem(pa, pb, true, true, true);
+}
+
+
+// Sort descending order, case insensitive, keeping directories first, natural sorting
+int DirList::descendingCaseNatural(const FXTreeItem* pa, const FXTreeItem* pb)
+{
+    return compareItem(pa, pb, true, true, false);
 }
 
 
@@ -762,7 +823,7 @@ long DirList::onDNDDrop(FXObject* sender, FXSelector sel, void* ptr)
 
         if (dropaction == DRAG_COPY || dropaction == DRAG_MOVE)
         {
-            hsourcesize = f->sourcesize(buf, &sourcesize, true);
+            hsourcesize = f->sourcesize(buf, &sourcesize, true, targetdir);
             tstart = xf_getcurrenttime();
 
             // If action is cancelled in progress dialog
@@ -846,6 +907,7 @@ long DirList::onDNDDrop(FXObject* sender, FXSelector sel, void* ptr)
                 if (!rc)
                 {
                     delete f;
+                    FXFREE(&data);
                     return 0;
                 }
             }
@@ -1302,6 +1364,27 @@ long DirList::onCmdSortReverse(FXObject*, FXSelector, void*)
     {
         sortfunc = (FXTreeListSortFunc)ascendingCase;
     }
+    else if (sortfunc == (FXTreeListSortFunc)ascendingNatural)
+    {
+        sortfunc = (FXTreeListSortFunc)descendingNatural;
+    }
+    else if (sortfunc == (FXTreeListSortFunc)descendingNatural)
+    {
+        sortfunc = (FXTreeListSortFunc)ascendingNatural;
+    }
+    else if (sortfunc == (FXTreeListSortFunc)ascendingCaseNatural)
+    {
+        sortfunc = (FXTreeListSortFunc)descendingCaseNatural;
+    }
+    else if (sortfunc == (FXTreeListSortFunc)descendingCaseNatural)
+    {
+        sortfunc = (FXTreeListSortFunc)ascendingCaseNatural;
+    }
+    else
+    {
+        sortfunc = (FXTreeListSortFunc)ascendingCaseNatural;
+    }
+
     scan(true);
     return 1;
 }
@@ -1310,9 +1393,71 @@ long DirList::onCmdSortReverse(FXObject*, FXSelector, void*)
 // Update sender
 long DirList::onUpdSortReverse(FXObject* sender, FXSelector, void* ptr)
 {
-    sender->handle(this,
-                   (sortfunc == (FXTreeListSortFunc)descending || sortfunc == (FXTreeListSortFunc)descendingCase) ?
+    sender->handle(this, (sortfunc == (FXTreeListSortFunc)descending || sortfunc == (FXTreeListSortFunc)descendingCase || 
+                          sortfunc == (FXTreeListSortFunc)descendingNatural || sortfunc == (FXTreeListSortFunc)descendingCaseNatural) ?
                    FXSEL(SEL_COMMAND, ID_CHECK) : FXSEL(SEL_COMMAND, ID_UNCHECK), ptr);
+    return 1;
+}
+
+
+// Natural sort order
+long DirList::onCmdSortNatural(FXObject*, FXSelector, void*)
+{
+    naturalsort = !naturalsort;
+
+    if (sortfunc == (FXTreeListSortFunc)ascending)
+    {
+        sortfunc = (FXTreeListSortFunc)ascendingNatural;
+    }
+    else if (sortfunc == (FXTreeListSortFunc)descending)
+    {
+        sortfunc = (FXTreeListSortFunc)descendingNatural;
+    }
+    else if (sortfunc == (FXTreeListSortFunc)ascendingCase)
+    {
+        sortfunc = (FXTreeListSortFunc)ascendingCaseNatural;
+    }
+    else if (sortfunc == (FXTreeListSortFunc)descendingCase)
+    {
+        sortfunc = (FXTreeListSortFunc)descendingCaseNatural;
+    }
+    else if (sortfunc == (FXTreeListSortFunc)ascendingNatural)
+    {
+        sortfunc = (FXTreeListSortFunc)ascending;
+    }
+    else if (sortfunc == (FXTreeListSortFunc)descendingNatural)
+    {
+        sortfunc = (FXTreeListSortFunc)descending;
+    }
+    else if (sortfunc == (FXTreeListSortFunc)ascendingCaseNatural)
+    {
+        sortfunc = (FXTreeListSortFunc)ascendingCase;
+    }
+    else if (sortfunc == (FXTreeListSortFunc)descendingCaseNatural)
+    {
+        sortfunc = (FXTreeListSortFunc)descendingCase;
+    }
+    else
+    {
+        sortfunc = (FXTreeListSortFunc)ascendingCaseNatural;        
+    }
+
+    scan(true);
+    return 1;
+}
+
+
+long DirList::onUpdSortNatural(FXObject* sender, FXSelector, void*)
+{   
+    FXSelector selector = FXSEL(SEL_COMMAND, ID_UNCHECK);
+
+    if (getNaturalSort() == true)
+    {
+        selector = FXSEL(SEL_COMMAND, ID_CHECK);
+    }
+
+    sender->handle(this, selector, NULL);
+
     return 1;
 }
 
@@ -1336,6 +1481,27 @@ long DirList::onCmdSortCase(FXObject*, FXSelector, void*)
     {
         sortfunc = (FXTreeListSortFunc)descending;
     }
+    else if (sortfunc == (FXTreeListSortFunc)ascendingNatural)
+    {
+        sortfunc = (FXTreeListSortFunc)ascendingCaseNatural;
+    }
+    else if (sortfunc == (FXTreeListSortFunc)descendingNatural)
+    {
+        sortfunc = (FXTreeListSortFunc)descendingCaseNatural;
+    }
+    else if (sortfunc == (FXTreeListSortFunc)ascendingCaseNatural)
+    {
+        sortfunc = (FXTreeListSortFunc)ascendingNatural;
+    }
+    else if (sortfunc == (FXTreeListSortFunc)descendingCaseNatural)
+    {
+        sortfunc = (FXTreeListSortFunc)descendingNatural;
+    }
+    else
+    {
+        sortfunc = (FXTreeListSortFunc)ascendingCaseNatural;
+    }
+
     scan(true);
     return 1;
 }
@@ -1344,9 +1510,9 @@ long DirList::onCmdSortCase(FXObject*, FXSelector, void*)
 // Check if case sensitive
 long DirList::onUpdSortCase(FXObject* sender, FXSelector, void* ptr)
 {
-    sender->handle(this,
-                   (sortfunc == (FXTreeListSortFunc)ascendingCase || sortfunc == (FXTreeListSortFunc)descendingCase) ?
-                   FXSEL(SEL_COMMAND, ID_CHECK) : FXSEL(SEL_COMMAND, ID_UNCHECK), ptr);
+    sender->handle(this, (sortfunc == (FXTreeListSortFunc)ascendingCase || sortfunc == (FXTreeListSortFunc)descendingCase ||
+                          sortfunc == (FXTreeListSortFunc)ascendingCaseNatural || sortfunc == (FXTreeListSortFunc)descendingCaseNatural) ?
+                          FXSEL(SEL_COMMAND, ID_CHECK) : FXSEL(SEL_COMMAND, ID_UNCHECK), ptr);
     return 1;
 }
 
@@ -1584,6 +1750,17 @@ long DirList::onUpdevicesRefresh(FXObject*, FXSelector, void*)
 
 
 #endif
+
+
+// Give an inline editor first access to keyboard input.
+long DirList::onKeyPress(FXObject* sender, FXSelector sel, void* ptr)
+{
+    if (getFocus() && getFocus()->shown())
+    {
+        return getFocus()->handle(sender, sel, ptr);
+    }
+    return FXTreeList::onKeyPress(sender, sel, ptr);
+}
 
 
 // Refresh with timer
@@ -2308,6 +2485,13 @@ FXString DirList::getDirectory() const
         item = (TreeItem*)item->parent;
     }
     return "";
+}
+
+
+// Set natural sort flag
+void DirList::setNaturalSort(const FXbool natsort)
+{
+    naturalsort = natsort;    
 }
 
 

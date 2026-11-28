@@ -514,7 +514,9 @@ int main(int argc, char* argv[])
         hand = new FXCursor(application, hand3_bits, hand3_mask_bits, hand3_width, hand3_height, hand3_x_hot,
                             hand3_y_hot);
     }
+    FXCursor* previousHand = application->getDefaultCursor(DEF_HAND_CURSOR);
     application->setDefaultCursor(DEF_HAND_CURSOR, hand);
+    delete previousHand;
 
     // Set base and border colors (to change the default colors at first run)
     FXColor basecolor = application->reg().readColorEntry("SETTINGS", "basecolor", FXRGB(237, 236, 235));
@@ -532,8 +534,8 @@ int main(int argc, char* argv[])
     fontspec = application->reg().readStringEntry("SETTINGS", "font", DEFAULT_NORMAL_FONT);
     if (!fontspec.empty())
     {
-        FXFont* normalFont = new FXFont(application, fontspec);
-        application->setNormalFont(normalFont);
+        // Configure the application-owned font instead of replacing it with a borrowed one.
+        application->getNormalFont()->setFont(fontspec);
     }
 
     // If root
@@ -581,5 +583,7 @@ int main(int argc, char* argv[])
 \n\nPlease check your Xfe installation..."));       
     }
 
-    return application->run();
+    int result = application->run();
+    delete application;
+    return result;
 }

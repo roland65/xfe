@@ -23,8 +23,8 @@
  * SOFTWARE.
  */
 
-#include "sn-list.h"
-#include "sn-internals.h"
+#include "libsn/sn-list.h"
+#include "libsn/sn-internals.h"
 
 typedef struct SnListNode
 {

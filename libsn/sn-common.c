@@ -24,8 +24,8 @@
  */
 
 #include <config.h>
-#include "sn-common.h"
-#include "sn-internals.h"
+#include "libsn/sn-common.h"
+#include "libsn/sn-internals.h"
 
 #include <xcb/xcb.h>
 #include <xcb/xcb_aux.h>

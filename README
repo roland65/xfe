@@ -112,6 +112,8 @@
    - Panels synchronization and switching
    - Tabs
    - Places panel with customizable bookmarks
+   - Optional expandable folders in detailed file lists
+   - Per-folder .hidden files to hide named files and folders
    - Customizable columns in detailed file list mode
    - Integrated text editor and viewer (X File Write, Xfw)
    - Integrated image viewer (X File Image, Xfi)
@@ -122,7 +124,7 @@
    - Managing network shares (Windows shares or connecting to SSH server)
    - Search files and directories
    - Bulk rename files
-   - Natural sort order (foo10.txt comes after foo2.txt...)
+   - Optional natural sort order (foo10.txt comes after foo2.txt...)
    - Copy/Cut/Paste files from and to your favorite desktop (GNOME/KDE/XFCE)
    - Drag and Drop files from and to your favorite desktop (GNOME/KDE/XFCE)
    - Disk usage command 
@@ -436,8 +438,7 @@
  default, it is disabled and can be enabled in the Edit / Preferences / Settings dialog.
 
  The automounter relies on udisks2 and gvfs / gio, so these components must be installed on your system. The process
- is called xfe-automount and is launched at first startup of Xfe. It can possibly be added to your session startup
- programs.
+ is called xfe-automount and is launched when the session opens.
 
 
 
@@ -490,6 +491,15 @@
       to the destination and press Ctrl-V to copy all the files you have in the clipboard. Of course, this also works
       with Ctrl-X and Ctrl-Shift-X to cut and paste the files.
 
+ File / folder comparison
+    - In a file panel, select two files or two folders to compare them (using the external comparator tool defined in
+      Edit / Preferences / Programs) by right clicking and selecting the Compare menu item.
+    - In a file panel, select a file or folder to compare it with another file or folder by right clicking and
+      selecting the Compare menu item. Use the dialog to enter the name of the file or folder to compare with, or click
+      on the icon to browse and select an item.
+    - In two panels mode or tree and two panel mode, select one file or one folder per panel, then right click and
+      select the Compare menu item to open the external comparator tool. 
+
  Startup notification
     - Startup notification is the process that displays a feedback (a sandbox cursor or whatever) to the user when
       he has started an action (file copying, application launching, etc.). Depending on the system, there can be
@@ -536,4 +546,4 @@
  Many thanks to Maxim Baranov for his excellent X Win Commander, to Jeroen van der Zijp for the FOX toolkit
  and  to all people that have provided useful patches, translations, tests and advices.
 
- [Last revision: 11/05/2025]
+ [Last revision: 11/11/2026]

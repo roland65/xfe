@@ -34,6 +34,7 @@ protected:
     FXButton* activeicon = NULL;
     FXButton* closefilter = NULL;
     FXString name;
+    FXString inlineRenameSource;                         // Source captured when editing begins
     FXbool ctrlkey = false;
     FXbool selmult = false;
     FXString trashlocation;
@@ -54,7 +55,6 @@ protected:
     ArchInputDialog* archdialog = NULL;
     HistInputDialog* filterdialog = NULL;
     BrowseInputDialog* operationdialogsingle = NULL;
-    InputDialog* operationdialogrename = NULL;
     BrowseInputDialog* operationdialogmultiple = NULL;
     BrowseInputDialog* comparedialog = NULL;
     BookmarkDialog* addbookmarkdialog = NULL;
@@ -86,6 +86,10 @@ public:
     virtual void create();
 
     ~FilePanel();
+
+    FXbool getComparePair(FXString& first, FXString& second);
+    void validatePanelSelection();
+    long onPanelSelection(FXObject*, FXSelector, void*);
 
     void setActive();
 
@@ -161,6 +165,7 @@ public:
         ID_PKG_INSTALL,
         ID_PKG_UNINSTALL,
 #endif
+        ID_RENAME_APPLY,
         ID_LAST,
     };
 public:
@@ -171,6 +176,7 @@ public:
     long onKeyPress(FXObject*, FXSelector, void*);
     long onCmdItemDoubleClicked(FXObject*, FXSelector, void*);
     long onCmdItemClicked(FXObject*, FXSelector, void*);
+    long onListLeftBtnPress(FXObject*, FXSelector, void*);
     long onCmdFocus(FXObject*, FXSelector, void*);
     long onCmdItemFilter(FXObject*, FXSelector, void*);
     long onCmdCopyCut(FXObject*, FXSelector, void*);
@@ -374,6 +380,18 @@ public:
     FXbool getIgnoreCase(void)
     {
         return list->getIgnoreCase();
+    }
+
+    // Set natural sort
+    void setNaturalSort(FXbool natsort)
+    {
+        list->setNaturalSort(natsort);
+    }
+
+    // Get natural sort
+    FXbool getNaturalSort(void)
+    {
+        return list->getNaturalSort();
     }
 
     // Set directory first

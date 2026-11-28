@@ -416,7 +416,7 @@ PropertiesBox::PropertiesBox(FXWindow* win, FXString file, FXString path, FXbool
                         isMountpoint = true;
                         snprintf(buf, sizeof(buf), _("Filesystem (%s)"), mnt->mnt_fsname);
                         type = buf;
-                        xf_strlcpy(mnttype, mnt->mnt_type, strlen(mnt->mnt_type) + 1);
+                        xf_strlcpy(mnttype, mnt->mnt_type, sizeof(mnttype));
                     }
                 }
             }
@@ -429,41 +429,38 @@ PropertiesBox::PropertiesBox(FXWindow* win, FXString file, FXString path, FXbool
             // Use block size 1024
             snprintf(buf, sizeof(buf), "df -k '%s'", pathname.text());
             p = popen(buf, "r");
-            FXbool success = true;
-            if (fgets(buf, sizeof(buf), p) == NULL)
+            FXbool success = false;
+            used[0] = avail[0] = pctr[0] = '\0';
+            if (p != NULL)
             {
-                success = false;
-            }
-            if (fgets(buf, sizeof(buf), p) == NULL)
-            {
-                success = false;
+                if (fgets(buf, sizeof(buf), p) != NULL && fgets(buf, sizeof(buf), p) != NULL)
+                {
+                    char* fields[5];
+                    fields[0] = strtok(buf, " \t\r\n");
+                    int count = 1;
+                    while (count < 5 && fields[count - 1] != NULL)
+                    {
+                        fields[count++] = strtok(NULL, " \t\r\n");
+                    }
+                    if (count == 5 && fields[4] != NULL)
+                    {
+                        xf_strlcpy(used, fields[2], sizeof(used));
+                        xf_strlcpy(avail, fields[3], sizeof(avail));
+                        xf_strlcpy(pctr, fields[4], sizeof(pctr));
+                        success = true;
+                    }
+                }
+                pclose(p);
             }
             if (success)
             {
-                strtok(buf, " ");
-                strtok(NULL, " ");
-                char* pstr;
-                pstr = strtok(NULL, " ");
-                xf_strlcpy(used, pstr, strlen(pstr) + 1);         // get used (block size 1024)
-                pstr = strtok(NULL, " ");
-                xf_strlcpy(avail, pstr, strlen(pstr) + 1);        // get available (block size 1024)
-                pstr = strtok(NULL, " ");
-                xf_strlcpy(pctr, pstr, strlen(pstr) + 1);         // get percentage
-
                 // Conversion to block size 1
                 FXString str;
                 str = FXStringVal(FXULongVal(used) * 1024);
-                xf_strlcpy(used, str.text(), strlen(str.text()) + 1);
+                xf_strlcpy(used, str.text(), sizeof(used));
                 str = FXStringVal(FXULongVal(avail) * 1024);
-                xf_strlcpy(avail, str.text(), strlen(str.text()) + 1);
+                xf_strlcpy(avail, str.text(), sizeof(avail));
             }
-            else
-            {
-                xf_strlcpy(used, "", 1);
-                xf_strlcpy(avail, "", 1);
-                xf_strlcpy(pctr, "", 1);
-            }
-            pclose(p);
         }
         // If it is a folder
         else
@@ -549,12 +546,14 @@ PropertiesBox::PropertiesBox(FXWindow* win, FXString file, FXString path, FXbool
             if (bigicon)
             {
                 bigicbtn->setIcon(bigicon);
+                ownedBigIcon.reset(bigicon);
             }
 
             FXIcon* miniicon = xf_loadiconfile(getApp(), iconpath, miniic->getText(), scalefrac, getApp()->getBaseColor());
             if (miniicon)
             {
                 miniicbtn->setIcon(miniicon);
+                ownedMiniIcon.reset(miniicon);
             }
         }
         else
@@ -722,7 +721,7 @@ PropertiesBox::PropertiesBox(FXWindow* win, FXString file, FXString path, FXbool
         new FXLabel(attrmatrix, _("Type:"), NULL, LAYOUT_LEFT);
         fileType = new FXLabel(attrmatrix, FXString::null, NULL, LAYOUT_LEFT | LAYOUT_FILL_COLUMN | JUSTIFY_LEFT);
         sizelabel = new FXLabel(attrmatrix, _("Total size:"), NULL, LAYOUT_LEFT);
-        fileSize = new FXLabel(attrmatrix, "\n", NULL, LAYOUT_LEFT | LAYOUT_FILL_COLUMN | JUSTIFY_LEFT);
+        fileSize = new FXLabel(attrmatrix, "\n\n", NULL, LAYOUT_LEFT | LAYOUT_FILL_COLUMN | JUSTIFY_LEFT);
         new FXLabel(attrmatrix, FXString::null, NULL, LAYOUT_LEFT | JUSTIFY_LEFT);
         fileSizeDetails = new FXLabel(attrmatrix, FXString::null, NULL, LAYOUT_LEFT | JUSTIFY_LEFT);
         new FXLabel(attrmatrix, _("Location:"), NULL, LAYOUT_LEFT);
@@ -942,7 +941,7 @@ PropertiesBox::PropertiesBox(FXWindow* win, FXString file, FXString path, FXbool
     mode = orig_mode;
     perms->cmd = PropertiesBox::ID_SET;
     perms->flt = PropertiesBox::ID_ALL;
-    files = &file;
+    files = &filename;
     source = file;
     num = 1;
 
@@ -980,6 +979,11 @@ PropertiesBox::PropertiesBox(FXWindow* win, FXString file, FXString path, FXbool
 PropertiesBox::PropertiesBox(FXWindow* win, FXString* file, int n, FXString* path) :
     DialogBox(win, _("Properties"), DECOR_TITLE | DECOR_BORDER | DECOR_MAXIMIZE | DECOR_STRETCHABLE | DECOR_CLOSE)
 {
+    // Take ownership before any early return from construction.
+    files = file;
+    paths = path;
+    ownsFileArrays = true;
+
     struct stat linfo;
     FXString grpid, usrid;
     FXString type, extension, extension2, fileassoc;
@@ -1227,6 +1231,7 @@ PropertiesBox::PropertiesBox(FXWindow* win, FXString* file, int n, FXString* pat
     totaldirsize = 0;
     totalnbfiles = 0;
     totalnbsubdirs = 0;
+    readsuccess = true;
 }
 
 
@@ -1887,11 +1892,29 @@ long PropertiesBox::onCmdAcceptMult(FXObject* sender, FXSelector sel, void* ptr)
     ((XFileExplorer*)mainWindow)->deselectAll();
     ((XFileExplorer*)mainWindow)->refreshPanels();
 
-    delete[]files;
-    delete[]paths;
     delete this;
 
     return 1;
+}
+
+
+// Release arrays owned by the multiple-file dialog on every close path.
+PropertiesBox::~PropertiesBox()
+{
+    // Buttons borrow their icons; detach owned previews before releasing them.
+    if (ownedBigIcon)
+    {
+        bigicbtn->setIcon(NULL);
+    }
+    if (ownedMiniIcon)
+    {
+        miniicbtn->setIcon(NULL);
+    }
+    if (ownsFileArrays)
+    {
+        delete[] files;
+        delete[] paths;
+    }
 }
 
 
@@ -2081,6 +2104,7 @@ long PropertiesBox::onCmdBrowseIcon(FXObject* sender, FXSelector sel, void* ptr)
             if (bigicon)
             {
                 bigicbtn->setIcon(bigicon);
+                ownedBigIcon.reset(bigicon);
             }
         }
         else
@@ -2090,6 +2114,7 @@ long PropertiesBox::onCmdBrowseIcon(FXObject* sender, FXSelector sel, void* ptr)
 
             FXIcon* miniicon = xf_loadiconfile(getApp(), path, miniic->getText(), scalefrac, getApp()->getBaseColor());
             miniicbtn->setIcon(miniicon);
+            ownedMiniIcon.reset(miniicon);
         }
     }
     return 1;
@@ -2103,11 +2128,11 @@ long PropertiesBox::onWatchProcess(FXObject*, FXSelector, void*)
     char size[256];
     int nread;
 
-
     FXString strbuf, hsize;
-    FXString dsize, subdirs, files;
+    FXString dsize, subdirs, rdsuccess, files;
     FXuint nbsubdirs = 0, nbfiles;
     FXulong dirsize;
+    FXbool readsuccess = true;
 
     if ((waitpid(pid, NULL, WNOHANG) == 0))
     {
@@ -2138,6 +2163,7 @@ long PropertiesBox::onWatchProcess(FXObject*, FXSelector, void*)
                     dsize = strbuf.section(' ', 0);
                     files = strbuf.section(' ', 1);
                     subdirs = strbuf.section(' ', 2);
+                    rdsuccess = strbuf.section(' ', 3);
 
                     hsize = xf_humansize((char*)dsize.text());
 
@@ -2149,6 +2175,8 @@ long PropertiesBox::onWatchProcess(FXObject*, FXSelector, void*)
                     {
                         nbsubdirs--;
                     }
+                    readsuccess = (FXbool)FXUIntVal(rdsuccess);
+                    
 
 #if __WORDSIZE == 64
                     snprintf(size, sizeof(size), _("%s (%lu bytes)"), hsize.text(), dirsize);
@@ -2157,25 +2185,33 @@ long PropertiesBox::onWatchProcess(FXObject*, FXSelector, void*)
 #endif
                     fileSize->setText(size);
 
+                    // Warn the user about unread files or folders
+                    FXString msg = "";
+                    if (readsuccess == false)
+                    {
+                        msg = FXString("\n") + _("(some files or folders could not be read)");
+                        //~ msg = _("(some files or folders could not be read)");
+                    }
+
                     if (nbfiles - nbsubdirs - nbseldirs <= 1 && nbsubdirs <= 1)
                     {
-                        snprintf(size, sizeof(size), _("%u file, %u subfolder"), nbfiles - nbsubdirs - nbseldirs,
-                                 nbsubdirs);
+                        snprintf(size, sizeof(size), _("%u file, %u subfolder %s"), nbfiles - nbsubdirs - nbseldirs,
+                                 nbsubdirs, msg.text());
                     }
                     else if (nbfiles - nbsubdirs - nbseldirs <= 1 && nbsubdirs > 1)
                     {
-                        snprintf(size, sizeof(size), _("%u file, %u subfolders"), nbfiles - nbsubdirs - nbseldirs,
-                                 nbsubdirs);
+                        snprintf(size, sizeof(size), _("%u file, %u subfolders %s"), nbfiles - nbsubdirs - nbseldirs,
+                                 nbsubdirs, msg.text());
                     }
                     else if (nbfiles - nbsubdirs - nbseldirs > 1 && nbsubdirs <= 1)
                     {
-                        snprintf(size, sizeof(size), _("%u files, %u subfolder"), nbfiles - nbsubdirs - nbseldirs,
-                                 nbsubdirs);
+                        snprintf(size, sizeof(size), _("%u files, %u subfolder %s"), nbfiles - nbsubdirs - nbseldirs,
+                                 nbsubdirs, msg.text());
                     }
                     else
                     {
-                        snprintf(size, sizeof(size), _("%u files, %u subfolders"), nbfiles - nbsubdirs - nbseldirs,
-                                 nbsubdirs);
+                        snprintf(size, sizeof(size), _("%u files, %u subfolders %s"), nbfiles - nbsubdirs - nbseldirs,
+                                 nbsubdirs, msg.text());
                     }
 
                     fileSizeDetails->setText(size);
@@ -2207,6 +2243,7 @@ long PropertiesBox::onWatchProcess(FXObject*, FXSelector, void*)
                 dsize = strbuf.section(' ', 0);
                 files = strbuf.section(' ', 1);
                 subdirs = strbuf.section(' ', 2);
+                rdsuccess = strbuf.section(' ', 3);
 
                 hsize = xf_humansize((char*)dsize.text());
 
@@ -2218,6 +2255,7 @@ long PropertiesBox::onWatchProcess(FXObject*, FXSelector, void*)
                 {
                     nbsubdirs--;
                 }
+                readsuccess = (FXbool)FXUIntVal(rdsuccess);
 
 #if __WORDSIZE == 64
                 snprintf(size, sizeof(size), _("%s (%lu bytes)"), hsize.text(), dirsize);
@@ -2226,25 +2264,33 @@ long PropertiesBox::onWatchProcess(FXObject*, FXSelector, void*)
 #endif
                 fileSize->setText(size);
 
+                // Warn the user about unread files or folders
+                FXString msg = "";
+                if (readsuccess == false)
+                {
+                    msg = FXString("\n") + _("(some files or folders could not be read)");
+                    //~ msg = _("(some files or folders could not be read)");
+                }
+
                 if (nbfiles - nbsubdirs - nbseldirs <= 1 && nbsubdirs <= 1)
                 {
-                    snprintf(size, sizeof(size), _("%u file, %u subfolder"), nbfiles - nbsubdirs - nbseldirs,
-                             nbsubdirs);
+                    snprintf(size, sizeof(size), _("%u file, %u subfolder %s"), nbfiles - nbsubdirs - nbseldirs,
+                             nbsubdirs, msg.text());
                 }
                 else if (nbfiles - nbsubdirs - nbseldirs <= 1 && nbsubdirs > 1)
                 {
-                    snprintf(size, sizeof(size), _("%u file, %u subfolders"), nbfiles - nbsubdirs - nbseldirs,
-                             nbsubdirs);
+                    snprintf(size, sizeof(size), _("%u file, %u subfolders %s"), nbfiles - nbsubdirs - nbseldirs,
+                             nbsubdirs, msg.text());
                 }
                 else if (nbfiles - nbsubdirs - nbseldirs > 1 && nbsubdirs <= 1)
                 {
-                    snprintf(size, sizeof(size), _("%u files, %u subfolder"), nbfiles - nbsubdirs - nbseldirs,
-                             nbsubdirs);
+                    snprintf(size, sizeof(size), _("%u files, %u subfolder %s"), nbfiles - nbsubdirs - nbseldirs,
+                             nbsubdirs, msg.text());
                 }
                 else
                 {
-                    snprintf(size, sizeof(size), _("%u files, %u subfolders"), nbfiles - nbsubdirs - nbseldirs,
-                             nbsubdirs);
+                    snprintf(size, sizeof(size), _("%u files, %u subfolders %s"), nbfiles - nbsubdirs - nbseldirs,
+                             nbsubdirs, msg.text());
                 }
 
                 fileSizeDetails->setText(size);
@@ -2282,6 +2328,7 @@ long PropertiesBox::onUpdSizeAndPerms(FXObject* sender, FXSelector sel, void* pt
             {
                 FXuint nbfiles = 0, nbsubdirs = 0;
                 FXulong dirsize = 0;
+                FXbool readsuccess = true;
 
                 FXString dirpath = FXPath::absolute(parentdir, filename);
                 xf_strlcpy(buf, dirpath.text(), dirpath.length() + 1);
@@ -2303,8 +2350,7 @@ long PropertiesBox::onUpdSizeAndPerms(FXObject* sender, FXSelector sel, void* pt
                 }
                 if (pid == 0) // Child
                 {
-                    xf_pathsize(buf, &nbfiles, &nbsubdirs, &dirsize, pipes);
-
+                    xf_pathsize(buf, &nbfiles, &nbsubdirs, &dirsize, &readsuccess, pipes);
                     _exit(EXIT_SUCCESS);
                 }
                 else // Parent
@@ -2372,12 +2418,12 @@ long PropertiesBox::onUpdSizeAndPerms(FXObject* sender, FXSelector sel, void* pt
                             totalnbsubdirs--;
                         }
 
-                        xf_pathsize(buf, &totalnbfiles, &totalnbsubdirs, &totaldirsize, pipes);
+                        xf_pathsize(buf, &totalnbfiles, &totalnbsubdirs, &totaldirsize, &readsuccess, pipes);
                     }
                     else // Regular file
                     {
                         xf_strlcpy(buf, pathname.text(), pathname.length() + 1);
-                        xf_pathsize(buf, &totalnbfiles, &totalnbsubdirs, &totaldirsize, pipes);
+                        xf_pathsize(buf, &totalnbfiles, &totalnbsubdirs, &totaldirsize, &readsuccess, pipes);
                     }
                 }
 

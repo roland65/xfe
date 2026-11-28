@@ -109,6 +109,7 @@ private:
     FXCheckButton* diropen = NULL;
     FXCheckButton* fileopen = NULL;
     FXCheckButton* filetooltips = NULL;
+    FXCheckButton* expandablefolders = NULL;
     FXCheckButton* relativeresize = NULL;
     FXCheckButton* alwaysshowtabbar = NULL;
     FXCheckButton* restoretabs = NULL;
@@ -117,6 +118,10 @@ private:
     FXCheckButton* automountbutton = NULL;
     FXCheckButton* autoopenbutton = NULL;
     FXLabel* automountlabel = NULL;
+#endif
+#if defined(linux)
+    FXCheckButton* show_mount = NULL;
+    FXCheckButton* mountwarn = NULL;
 #endif
     FXCheckButton* rootmode = NULL;
     FXCheckButton* trashcan = NULL;
@@ -132,8 +137,6 @@ private:
     FXCheckButton* folder_warning = NULL;
     FXCheckButton* preserve_date_warning = NULL;
     FXCheckButton* root_warning = NULL;
-    FXCheckButton* mountwarn = NULL;
-    FXCheckButton* show_mount = NULL;
     FXCheckButton* scroll = NULL;
     FXRadioButton* dirpanel_places_tree = NULL;
     FXRadioButton* dirpanel_places = NULL;
@@ -193,6 +196,7 @@ private:
     FXbool diropen_prev = false;
     FXbool fileopen_prev = false;
     FXbool filetooltips_prev = false;
+    FXbool expandablefolders_prev = false;
     FXbool relativeresize_prev = false;
     FXbool alwaysshowtabbar_prev = false;
     FXbool restoretabs_prev = false;

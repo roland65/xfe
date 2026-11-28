@@ -3,8 +3,9 @@
 #
 
 # Initialize
-AC_INIT([xfe],[2.1.13])
+AC_INIT([xfe],[2.2.0])
 AC_CONFIG_SRCDIR([src/XFileExplorer.cpp])
+AC_CONFIG_MACRO_DIRS([m4])
 AM_INIT_AUTOMAKE([subdir-objects -Wall])
 AC_CONFIG_HEADERS([config.h])
 
@@ -20,6 +21,14 @@ fi
 
 # Minimal LIBS
 LIBS="$LIBS -lX11"
+
+# Use FreeBSD's system C++ compiler by default, matching the runtime used
+# by packaged FOX libraries.  Autoconf otherwise prefers an installed g++.
+# An explicit CXX setting still takes precedence.
+AC_CANONICAL_HOST
+AS_CASE([$host_os], [freebsd*], [
+    AC_CHECK_TOOLS([CXX], [c++ g++])
+])
 
 AC_USE_SYSTEM_EXTENSIONS
 
@@ -277,6 +286,11 @@ fi
 
 
 # Output
+# Desktop application discovery for the Open With dialog.
+PKG_CHECK_MODULES([GIO], [gio-unix-2.0 >= 2.28])
+CPPFLAGS="$CPPFLAGS $GIO_CFLAGS"
+LIBS="$LIBS $GIO_LIBS"
+
 AC_CONFIG_FILES([Makefile m4/Makefile po/Makefile.in xferc xfe.desktop.in xfa.desktop.in
           xfi.desktop.in xfp.desktop.in xfw.desktop.in automount/Makefile src/Makefile
           icons/Makefile

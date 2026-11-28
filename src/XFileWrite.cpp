@@ -296,7 +296,9 @@ int main(int argc, char* argv[])
         hand = new FXCursor(application, hand3_bits, hand3_mask_bits, hand3_width, hand3_height, hand3_x_hot,
                             hand3_y_hot);
     }
+    FXCursor* previousHand = application->getDefaultCursor(DEF_HAND_CURSOR);
     application->setDefaultCursor(DEF_HAND_CURSOR, hand);
+    delete previousHand;
 
     // Load all application icons
     FXuint iconpathstatus;
@@ -314,8 +316,8 @@ int main(int argc, char* argv[])
     fontspec = reg_xfe->readStringEntry("SETTINGS", "font", DEFAULT_NORMAL_FONT);
     if (!fontspec.empty())
     {
-        FXFont* normalFont = new FXFont(application, fontspec);
-        application->setNormalFont(normalFont);
+        // Keep the default font owned by the application.
+        application->getNormalFont()->setFont(fontspec);
     }
 
     // Set single click navigation according to the Xfe registry
@@ -421,5 +423,7 @@ int main(int argc, char* argv[])
     }
 
     // Run
-    return application->run();
+    int result = application->run();
+    delete application;
+    return result;
 }

@@ -27,7 +27,7 @@
 #ifndef __SN_LIST_H__
 #define __SN_LIST_H__
 
-#include <libsn/sn-util.h>
+#include "libsn/sn-util.h"
 
 SN_BEGIN_DECLS
 

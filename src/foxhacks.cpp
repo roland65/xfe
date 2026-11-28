@@ -1,6 +1,9 @@
 // This file contains FOX functions redefinitions used to fix some issues
 
+#include <sys/file.h>
+
 #include <X11/Xlib.h>
+#include <X11/XKBlib.h>
 #include <X11/Xutil.h>
 #include <X11/Xatom.h>
 
@@ -26,6 +29,19 @@ extern FXString xdgconfighome;
 
 #define DESKTOP         "xferc"
 #define REGISTRYPATH    "/etc:/usr/share:/usr/local/share"
+
+// Bookmark edits hold their own lock and explicitly replace the shared section.
+static FXRegistry* bookmarkwriter = NULL;
+
+bool xf_writebookmarks(FXRegistry& registry)
+{
+    FXRegistry* previous = bookmarkwriter;
+    bookmarkwriter = &registry;
+    bool written = registry.write();
+    bookmarkwriter = previous;
+    return written;
+}
+
 
 // Read registry
 bool FXRegistry::read()
@@ -141,6 +157,42 @@ bool FXRegistry::write()
 
         // Add application key
         pathname.append(PATHSEPSTRING + applicationkey + "rc");
+
+        // Other settings saves must not overwrite bookmarks from another instance.
+        FXFile bookmarklock;
+        if (applicationkey == XFEAPPNAME && bookmarkwriter != this)
+        {
+            FXString lockpath = xdgconfighome + PATHSEPSTRING XFECONFIGPATH + PATHSEPSTRING "bookmarks.lock";
+            if (!bookmarklock.open(lockpath, FXIO::Reading | FXIO::Writing | FXIO::Create, 0600))
+            {
+                return false;
+            }
+            int ret;
+            do
+            {
+                ret = flock(bookmarklock.handle(), LOCK_EX);
+            }
+            while (ret < 0 && errno == EINTR);
+            if (ret < 0)
+            {
+                return false;
+            }
+            FXSettings settings;
+            if (settings.parseFile(pathname, true))
+            {
+                deleteSection("BOOKMARKS");
+                for (FXuint i = 0; ; i++)
+                {
+                    FXString key = "bookmark" + FXStringVal(i);
+                    FXString data = settings.readStringEntry("BOOKMARKS", key.text(), "");
+                    if (data.empty())
+                    {
+                        break;
+                    }
+                    writeStringEntry("BOOKMARKS", key.text(), data.text());
+                }
+            }
+        }
 
         // Construct temp name
         tempname.format("%s_%d", pathname.text(), fxgetpid());
@@ -830,7 +882,8 @@ Atom fxsendrequest(Display* display, Window window, Atom selection, Atom prop, A
             //fxwarning("fxsendrequest:timed out!\n");
             return None;
         }
-        FXThread::sleep(10000000); // Don't burn too much CPU here:- the other guy needs it more....
+        // !!! Hack here to reduce timeout !!!
+        FXThread::sleep(1000000); // Don't burn too much CPU here:- the other guy needs it more....
         loops--;
     }
     return ev.xselection.property;
@@ -850,7 +903,8 @@ static FXbool fxwaitforevent(Display* display, Window window, int type, XEvent& 
             //fxwarning("fxwaitforevent:timed out!\n");
             return false;
         }
-        FXThread::sleep(10000000); // Don't burn too much CPU here:- the other guy needs it more....
+        // !!! Hack here to reduce timeout !!!
+        FXThread::sleep(1000000); // Don't burn too much CPU here:- the other guy needs it more....
         loops--;
     }
     return true;
@@ -1274,11 +1328,8 @@ ins:
 
 
 //
-// Hack of FXApp
+// Hacks of FXApp
 //
-// This hack fixes a bug in FOX that prevent to enter composed characters when the mouse pointer
-// lies outside the text field. The implementation differs if iBus is running or not
-// The bug is not fixed yet in FOX 1.6.50
 
 namespace FX
 {
@@ -1492,6 +1543,9 @@ static FXuint keysym(FXRawEvent& event)
 }
 
 
+// This hack for XWayland fixes popup not closing when clicking outside
+// The bug is not fixed yet in FOX 1.6.50
+
 // Dispatch event to widget
 bool FXApp::dispatchEvent(FXRawEvent& ev)
 {
@@ -1529,27 +1583,6 @@ bool FXApp::dispatchEvent(FXRawEvent& ev)
 
         // Keyboard
         case KeyPress:
-
-            // !!! Hack to fix the bug with composed characters !!!
-            FXWindow* focuswin;
-            focuswin = getFocusWindow();
-
-            if ((ev.xkey.keycode != 0) && focuswin && focuswin->getComposeContext())
-            {
-                // Mouse pointer is not over the text field
-                if (!focuswin->underCursor())
-                {
-                    if (XFilterEvent(&ev, (Window)focuswin->id()))
-                    {
-                        // Position mouse pointer within the text field
-                        (Window)focuswin->setCursorPosition(0, 0);
-
-                        return true;
-                    }
-                }
-            }
-            // !!! End of hack !!!
-            
         case KeyRelease:
             event.type = SEL_KEYPRESS + ev.xkey.type - KeyPress;
             event.time = ev.xkey.time;
@@ -1695,6 +1728,20 @@ bool FXApp::dispatchEvent(FXRawEvent& ev)
                 }
             }
 
+            // !!! Hack for XWayland to fix popup not closing when clicking outside !!!
+            // Popups own keyboard navigation even when the native focus remains
+            // in their owner, or activeWindow was cleared by a focus transition.
+            // An explicit keyboard grab above still takes precedence.
+            if (popupWindow)
+            {
+                if(popupWindow->handle(this, FXSEL(event.type, 0), &event))
+                {
+                    refresh();
+                }
+                return true;
+            }
+            // !!! End of hack !!!
+
             // Keyboard grabbed by specific window
             if (keyboardGrabWindow)
             {
@@ -1792,6 +1839,31 @@ bool FXApp::dispatchEvent(FXRawEvent& ev)
 
             // Mouse buttons and modifiers but no wheel buttons
             event.state = (ev.xmotion.state & ~(Button4Mask | Button5Mask)) | stickyMods;
+
+            // !!! Hack for XWayland to fix popup not closing when clicking outside !!!
+            // A popup may have released its grab while the pointer was inside it.
+            // If no crossing event restored the grab, dismiss it on a click in
+            // another widget rather than dispatching the click (or beeping in a
+            // modal loop).  Keep clicks in popup panes and their grab owners.
+            if (ev.xbutton.type == ButtonPress && ev.xbutton.button <= Button3 && popupWindow && !mouseGrabWindow)
+            {
+                FXPopup *popup = popupWindow;
+                while (popup)
+                {
+                    if (popup->containsChild(window) || popup->getGrabOwner()->containsChild(window))
+                    {
+                        break;
+                    }
+                    if (!popup->getPrevActive())
+                    {
+                        popup->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_UNPOST), NULL);
+                        refresh();
+                        return true;
+                    }
+                    popup = popup->getPrevActive();
+                }
+            }
+            // !!! End of hack !!!
 
             // Mouse Wheel
             if ((ev.xbutton.button == Button4) || (ev.xbutton.button == Button5))
@@ -1961,6 +2033,36 @@ bool FXApp::dispatchEvent(FXRawEvent& ev)
             window = window->getShell();
             if ((ev.xfocus.type == FocusOut) && (activeWindow == window))
             {
+                // XWayland cannot deliver grabbed pointer events from all native
+                // Wayland surfaces.  Losing keyboard focus is then the only notice
+                // we get of an outside click.  Ignore temporary grab focus changes
+                // and transfers to a popup or its owner.
+                if (popupWindow && (ev.xfocus.mode == NotifyNormal || ev.xfocus.mode == NotifyWhileGrabbed) && ev.xfocus.detail != NotifyInferior)
+                {
+                    Window focuswin;
+                    int revert;
+                    XGetInputFocus((Display*)display, &focuswin, &revert);
+                    FXWindow *focused = findWindowWithId(focuswin);
+                    FXPopup *popup = popupWindow;
+                    while(popup)
+                    {
+                        if (focused && (focused->getShell() == popup || (popup->getOwner() && focused->getShell() == popup->getOwner()->getShell())))
+                        {
+                            break;
+                        }
+                        if (!popup->getPrevActive())
+                        {
+                            // Focus events have no timestamp; release any grab using
+                            // CurrentTime rather than a possibly stale pointer time.
+                            event.time = CurrentTime;
+                            popup->handle(this, FXSEL(SEL_COMMAND, FXWindow::ID_UNPOST), NULL);
+                            refresh();
+                            break;
+                        }
+                        popup = popup->getPrevActive();
+                    }
+                }
+
                 event.type = SEL_FOCUSOUT;
                 if (window->handle(this, FXSEL(SEL_FOCUSOUT, 0), &event))
                 {
@@ -2551,6 +2653,358 @@ bool FXApp::dispatchEvent(FXRawEvent& ev)
 }
 
 
+// This hack fixes a bug in FOX that prevent to enter composed characters when the mouse pointer
+// lies outside the text field. The implementation differs if iBus is running or not
+// The bug is not fixed yet in FOX 1.6.50
+
+// Get an event
+bool FXApp::getNextEvent(FXRawEvent& ev, bool blocking)
+{
+    // !!! Hack to speed up keyboard navigation in text areas !!!
+    // Repeated keys normally generate a synthetic release before each press.
+    // Avoid sending those extra releases through XIM; keep every repeated press
+    // and the final physical release.  Unsupported servers retain normal repeat.
+    // Configure once per display, since this request waits for a server reply.
+    static Display* repeatdisplay = NULL;
+    if (initialized && (repeatdisplay != (Display*)display))
+    {
+        XkbSetDetectableAutoRepeat((Display*)display, true, NULL);
+        repeatdisplay = (Display*)display;
+    }
+    // !!! End of hack !!!
+
+    XEvent e;
+
+    // Set to no-op just in case
+    ev.xany.type = 0;
+
+    // Handle all past due timers
+    if (timers)
+    {
+        handleTimeouts();
+    }
+
+    // Check non-immediate signals that may have fired
+    if (nsignals)
+    {
+        for (FXint sig = 0; sig < MAXSIGNALS; sig++)
+        {
+            if (signals[sig].notified)
+            {
+                signals[sig].notified = FALSE;
+                if (signals[sig].target && signals[sig].target->tryHandle(this, FXSEL(SEL_SIGNAL, signals[sig].message),
+                                                                          (void*)(FXival)sig))
+                {
+                    refresh();
+                    return false;
+                }
+            }
+        }
+    }
+
+    // Are there no events already queued up?
+    if (!initialized || !XEventsQueued((Display*)display, QueuedAfterFlush))
+    {
+        struct timeval delta;
+        fd_set readfds;
+        fd_set writefds;
+        fd_set exceptfds;
+        int maxfds;
+        int nfds;
+
+        // Prepare fd's to check
+        maxfds = maxinput;
+        readfds = *((fd_set*)r_fds);
+        writefds = *((fd_set*)w_fds);
+        exceptfds = *((fd_set*)e_fds);
+
+        // Add connection to display if its open
+        if (initialized)
+        {
+            FD_SET(ConnectionNumber((Display*)display), &readfds);
+            if (ConnectionNumber((Display*)display) > maxfds)
+            {
+                maxfds = ConnectionNumber((Display*)display);
+            }
+        }
+
+        delta.tv_usec = 0;
+        delta.tv_sec = 0;
+
+        // Do a quick poll for any ready events or inputs
+        nfds = SELECT(maxfds + 1, &readfds, &writefds, &exceptfds, &delta);
+
+        // Nothing to do, so perform idle processing
+        if (nfds == 0)
+        {
+            // Release the expose events
+            if (repaints)
+            {
+                FXRepaint* r = repaints;
+                ev.xany.type = Expose;
+                ev.xexpose.window = r->window;
+                ev.xexpose.send_event = r->synth;
+                ev.xexpose.x = r->rect.x;
+                ev.xexpose.y = r->rect.y;
+                ev.xexpose.width = r->rect.w - r->rect.x;
+                ev.xexpose.height = r->rect.h - r->rect.y;
+                repaints = r->next;
+                r->next = repaintrecs;
+                repaintrecs = r;
+                return true;
+            }
+
+            // Do our chores :-)
+            if (chores)
+            {
+                FXChore* c = chores;
+                chores = c->next;
+                if (c->target && c->target->tryHandle(this, FXSEL(SEL_CHORE, c->message), c->data))
+                {
+                    refresh();
+                }
+                c->next = chorerecs;
+                chorerecs = c;
+            }
+
+            // GUI updating:- walk the whole widget tree.
+            if (refresher)
+            {
+                refresher->handle(this, FXSEL(SEL_UPDATE, 0), NULL);
+                if (refresher->getFirst())
+                {
+                    refresher = refresher->getFirst();
+                }
+                else
+                {
+                    while (refresher->getParent())
+                    {
+                        if (refresher->getNext())
+                        {
+                            refresher = refresher->getNext(); break;
+                        }
+                        refresher = refresher->getParent();
+                    }
+                }
+                FXASSERT(refresher);
+                if (refresher != refresherstop)
+                {
+                    return false;
+                }
+                refresher = refresherstop = NULL;
+            }
+
+            // There are more chores to do
+            if (chores)
+            {
+                return false;
+            }
+
+            // We're not blocking
+            if (!blocking)
+            {
+                return false;
+            }
+
+            // Now, block till timeout, i/o, or event
+            maxfds = maxinput;
+            readfds = *((fd_set*)r_fds);
+            writefds = *((fd_set*)w_fds);
+            exceptfds = *((fd_set*)e_fds);
+
+            // Add connection to display if its open
+            if (initialized)
+            {
+                FD_SET(ConnectionNumber((Display*)display), &readfds);
+                if (ConnectionNumber((Display*)display) > maxfds)
+                {
+                    maxfds = ConnectionNumber((Display*)display);
+                }
+            }
+
+            // If there are timers, we block only for a little while.
+            if (timers)
+            {
+                // All that testing above may have taken some time...
+                FXlong interval = timers->due - FXThread::time();
+
+                // Some timers are already due; do them right away!
+                if (interval <= 0)
+                {
+                    return false;
+                }
+
+                // Compute how long to wait
+                delta.tv_usec = (interval / 1000) % 1000000;
+                delta.tv_sec = interval / 1000000000;
+
+                // Exit critical section
+                appMutex.unlock();
+
+                // Block till timer or event or interrupt
+                nfds = SELECT(maxfds + 1, &readfds, &writefds, &exceptfds, &delta);
+
+                // Enter critical section
+                appMutex.lock();
+            }
+            // If no timers, we block till event or interrupt
+            else
+            {
+                // Exit critical section
+                appMutex.unlock();
+
+                // Block until something happens
+                nfds = SELECT(maxfds + 1, &readfds, &writefds, &exceptfds, NULL);
+
+                // Enter critical section
+                appMutex.lock();
+            }
+        }
+
+        // Timed out or interrupted
+        if (nfds <= 0)
+        {
+            if (nfds < 0 && errno != EAGAIN && errno != EINTR)
+            {
+                fxerror("Application terminated: interrupt or lost connection errno=%d\n", errno);
+            }
+            return false;
+        }
+
+        // Any other file descriptors set?
+        if (0 <= maxinput)
+        {
+            // Examine I/O file descriptors
+            for (FXInputHandle fff = 0; fff <= maxinput; fff++)
+            {
+                // Copy the record as the callbacks may try to change things
+                FXInput in = inputs[fff];
+
+                // Skip the display connection, which is treated differently
+                if (initialized && (fff == ConnectionNumber((Display*)display)))
+                {
+                    continue;
+                }
+
+                // Check file descriptors
+                if (FD_ISSET(fff, &readfds))
+                {
+                    if (in.read.target && in.read.target->tryHandle(this, FXSEL(SEL_IO_READ, in.read.message),
+                                                                    (void*)(FXival)fff))
+                    {
+                        refresh();
+                    }
+                }
+                if (FD_ISSET(fff, &writefds))
+                {
+                    if (in.write.target && in.write.target->tryHandle(this, FXSEL(SEL_IO_WRITE, in.write.message),
+                                                                      (void*)(FXival)fff))
+                    {
+                        refresh();
+                    }
+                }
+                if (FD_ISSET(fff, &exceptfds))
+                {
+                    if (in.excpt.target && in.excpt.target->tryHandle(this, FXSEL(SEL_IO_EXCEPT, in.excpt.message),
+                                                                      (void*)(FXival)fff))
+                    {
+                        refresh();
+                    }
+                }
+            }
+        }
+
+        // If there is no event, we're done
+        if (!initialized || !FD_ISSET(ConnectionNumber((Display*)display),
+                                      &readfds) || !XEventsQueued((Display*)display, QueuedAfterReading))
+        {
+            return false;
+        }
+    }
+
+    // Get an event
+    XNextEvent((Display*)display, &ev);
+
+    // !!! Hack to fix the bug with composed characters !!!
+    // Filter key events for the keyboard focus, just as in dispatchEvent().
+    // The event window may be the child under the pointer instead of the
+    // focused widget whose input context must process the compose sequence.
+    if (xim)
+    {
+        Window filterwindow = None;
+        if (ev.xany.type == KeyPress || ev.xany.type == KeyRelease)
+        {
+            FXWindow* focuswindow = getFocusWindow();
+            if (focuswindow && focuswindow->getComposeContext())
+            {
+                filterwindow = focuswindow->id();
+            }
+        }
+        if (XFilterEvent(&ev, filterwindow))
+        {
+            return false;
+        }
+    }
+    // !!! End of hack !!!
+
+    // Save expose events for later...
+    if (ev.xany.type == Expose || ev.xany.type == GraphicsExpose)
+    {
+        addRepaint((FXID)ev.xexpose.window, ev.xexpose.x, ev.xexpose.y, ev.xexpose.width, ev.xexpose.height, 0);
+        return false;
+    }
+
+    // Compress motion events
+    if (ev.xany.type == MotionNotify)
+    {
+        while (XPending((Display*)display))
+        {
+            XPeekEvent((Display*)display, &e);
+            if ((e.xany.type != MotionNotify) || (ev.xmotion.window != e.xmotion.window) ||
+                (ev.xmotion.state != e.xmotion.state))
+            {
+                break;
+            }
+            XNextEvent((Display*)display, &ev);
+        }
+    }
+    // Compress wheel events
+    else if ((ev.xany.type == ButtonPress) && (ev.xbutton.button == Button4 || ev.xbutton.button == Button5))
+    {
+        FXint ticks = 1;
+        while (XPending((Display*)display))
+        {
+            XPeekEvent((Display*)display, &e);
+            if ((e.xany.type != ButtonPress && e.xany.type != ButtonRelease) || (ev.xany.window != e.xany.window) ||
+                (ev.xbutton.button != e.xbutton.button))
+            {
+                break;
+            }
+            ticks += (e.xany.type == ButtonPress);
+            XNextEvent((Display*)display, &ev);
+        }
+        ev.xbutton.subwindow = (Window)ticks;   // Stick it here for later
+    }
+    // Compress configure events
+    else if (ev.xany.type == ConfigureNotify)
+    {
+        while (XCheckTypedWindowEvent((Display*)display, ev.xconfigure.window, ConfigureNotify, &e))
+        {
+            ev.xconfigure.width = e.xconfigure.width;
+            ev.xconfigure.height = e.xconfigure.height;
+            if (e.xconfigure.send_event)
+            {
+                ev.xconfigure.x = e.xconfigure.x;
+                ev.xconfigure.y = e.xconfigure.y;
+            }
+        }
+    }
+
+    // Regular event
+    return true;
+}
+
+
 //
 // Hack of FXScrollArea
 //
@@ -3095,31 +3549,38 @@ FXMenuSeparator::FXMenuSeparator(FXComposite* p, FXuint opts) :
 
 
 //
-// Hack of FxString
-// This hack allocates a much longer string
-// This is used in the SearchPanel when the path length is huge
+// Hack of FXString
+// Size formatted output exactly, including long paths in the SearchPanel.
 //
 
 // Print formatted string a-la vprintf
 FXString& FXString::vformat(const FXchar* fmt, va_list args)
 {
-    FXint len = 0;
-
+    FXString result;
     if (fmt && *fmt)
     {
-        FXint n = strlen(fmt); // Result is longer than format string
-
-        // !!! Hack here !!!
-        //n+=1024;
-        n += 8192;                    // Add a lot of slop
-        // !!! End of hack
-
-        length(n);
-        len = vsprintf(str, fmt, args);
-
-        FXASSERT(0 <= len && len <= n);
+        va_list copy;
+        va_copy(copy, args);
+        int len = vsnprintf(NULL, 0, fmt, copy);
+        va_end(copy);
+        if (len >= 0)
+        {
+            // fmt and arguments may refer to this string, so use a separate buffer.
+            result.length(len);
+            va_copy(copy, args);
+            int written = vsnprintf(result.str, (size_t)len + 1, fmt, copy);
+            va_end(copy);
+            if (written >= 0 && written <= len)
+            {
+                result.length(written);
+            }
+            else
+            {
+                result.clear();
+            }
+        }
     }
-    length(len);
+    *this = result;
     return *this;
 }
 

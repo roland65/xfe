@@ -20,6 +20,7 @@ protected:
     FXMenuPane* filemenu = NULL;                        // File menu
     FXMenuPane* helpmenu = NULL;                        // Help menu
     FXMenuPane* prefsmenu = NULL;                       // Preferences menu
+    FXFont* textfont = NULL;                           // Owned list/description font
     FXToolBar* toolbar = NULL;                          // Toolbar
     FXButton* extractbtn = NULL;                        // Extract button
     FXButton* extracttobtn = NULL;                      // Extract to button
@@ -64,6 +65,7 @@ public:
         ID_FILE_EXTRACT,
         ID_FILE_EXTRACT_TO,
         ID_QUIT,
+        ID_COMMAND_CLOSED,
         ID_LAST
     };
     void start(FXString);
@@ -85,6 +87,7 @@ public:
     long onQueryTip(FXObject*, FXSelector, void*);
     long onSigHarvest(FXObject*, FXSelector, void*);
     long onCmdQuit(FXObject*, FXSelector, void*);
+    long onCmdCommandClosed(FXObject*, FXSelector, void*);
     long onUpdOpen(FXObject*, FXSelector, void*);
     long onUpdExtractTo(FXObject*, FXSelector, void*);
     long onUpdExtract(FXObject*, FXSelector, void*);

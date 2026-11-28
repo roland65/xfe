@@ -620,7 +620,7 @@ long ConnectDialog::onUpdAccept(FXObject* sender, FXSelector sel, void* ptr)
                 break;
             }
             FXString str = server->getItemText(i);
-            xf_strlcpy(ServerHistory[i], str.text(), str.length() + 1);
+            xf_strlcpy(ServerHistory[i], str.text(), sizeof(ServerHistory[i]));
             ServerNum++;
         }
     }
@@ -640,7 +640,7 @@ long ConnectDialog::onUpdAccept(FXObject* sender, FXSelector sel, void* ptr)
                 break;
             }
             FXString str = share->getItemText(i);
-            xf_strlcpy(ShareHistory[i], str.text(), str.length() + 1);
+            xf_strlcpy(ShareHistory[i], str.text(), sizeof(ShareHistory[i]));
             ShareNum++;
         }
     }
@@ -660,7 +660,7 @@ long ConnectDialog::onUpdAccept(FXObject* sender, FXSelector sel, void* ptr)
                 break;
             }
             FXString str = domain->getItemText(i);
-            xf_strlcpy(DomainHistory[i], str.text(), str.length() + 1);
+            xf_strlcpy(DomainHistory[i], str.text(), sizeof(DomainHistory[i]));
             DomainNum++;
         }
     }
@@ -680,7 +680,7 @@ long ConnectDialog::onUpdAccept(FXObject* sender, FXSelector sel, void* ptr)
                 break;
             }
             FXString str = user->getItemText(i);
-            xf_strlcpy(UserHistory[i], str.text(), str.length() + 1);
+            xf_strlcpy(UserHistory[i], str.text(), sizeof(UserHistory[i]));
             UserNum++;
         }
     }

@@ -168,6 +168,7 @@ int runcmd(FXString cmd, FXString cmdname, FXString dir, FXString startdir, FXbo
             break;
         }
         sn_launcher_context_unref(context);
+        sn_display_unref(display);
         XCloseDisplay(xdisplay);
     }
     // Run command without startup notification

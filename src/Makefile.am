@@ -214,9 +214,6 @@ endif
 
 xfw_LDADD = @LIBINTL@ -lutil
 
-				
-
-
 localedir = $(datadir)/locale
 
 AM_CPPFLAGS = -I. -I$(top_srcdir) -I$(top_srcdir)/intl

@@ -9,12 +9,6 @@
 #include <sys/statfs.h>
 #endif
 
-// For Sun compatibility
-#ifdef __sun
-#include <alloca.h>
-#endif
-
-
 #include <fx.h>
 #include <fxkeys.h>
 #include <FXPNGIcon.h>
@@ -48,12 +42,11 @@ extern FXMainWindow* mainWindow;
 
 
 // Compute source size recursively (same algorithm as pathsize() function)
-FXulong computeSourceSize(File* f, FXApp* app, char* path, FXuint* nbfiles, FXuint* nbsubdirs,
+FXulong computeSourceSize(File* f, FXApp* app, const char* path, FXuint* nbfiles, FXuint* nbsubdirs,
                           FXulong* totalsize, FXButton* cancelButton, FXbool* cancelled)
 {
     struct stat statbuf;
     struct dirent* dirp;
-    char* ptr;
     DIR* dp;
     FXulong dsize;
     int ret;
@@ -94,13 +87,6 @@ FXulong computeSourceSize(File* f, FXApp* app, char* path, FXuint* nbfiles, FXui
     // Directory
     (*nbsubdirs)++;
 
-    ptr = (char*)path + strlen(path);
-    if (ptr[-1] != '/')
-    {
-        *ptr++ = '/';
-        *ptr = '\0';
-    }
-
     if ((dp = opendir(path)) == NULL)
     {
         return 0;
@@ -112,13 +98,16 @@ FXulong computeSourceSize(File* f, FXApp* app, char* path, FXuint* nbfiles, FXui
         {
             continue;
         }
-        xf_strlcpy(ptr, dirp->d_name, strlen(dirp->d_name) + 1);
+        FXString child = path;
+        if (child.empty() || child[child.length() - 1] != '/')
+        {
+            child += '/';
+        }
+        child += dirp->d_name;
 
         // Recursive call
-        dsize += computeSourceSize(f, app, path, nbfiles, nbsubdirs, totalsize, cancelButton, cancelled);
+        dsize += computeSourceSize(f, app, child.text(), nbfiles, nbsubdirs, totalsize, cancelButton, cancelled);
     }
-
-    ptr[-1] = '\0'; // ??
 
     if (closedir(dp) < 0)
     {
@@ -474,8 +463,9 @@ FXuint File::getOverwriteAnswer(FXString srcpath, FXString tgtpath, FXbool resta
             FXulong dirsize = 0;
             FXuint nbfiles = 0, nbsubfolders = 0;
             FXulong totalsize = 0;
-            xf_strlcpy(buf, srcpath.text(), srcpath.length() + 1);
-            dirsize = xf_pathsize(buf, &nbfiles, &nbsubfolders, &totalsize);
+            FXbool readsuccess = true;
+            dirsize = xf_pathsize(srcpath.text(), &nbfiles, &nbsubfolders, &totalsize, &readsuccess);
+
 #if __WORDSIZE == 64
             snprintf(buf, sizeof(buf), "%lu", dirsize);
 #else
@@ -502,8 +492,9 @@ FXuint File::getOverwriteAnswer(FXString srcpath, FXString tgtpath, FXbool resta
             FXulong dirsize = 0;
             FXuint nbfiles = 0, nbsubfolders = 0;
             FXulong totalsize = 0;
-            xf_strlcpy(buf, tgtpath.text(), tgtpath.length() + 1);
-            dirsize = xf_pathsize(buf, &nbfiles, &nbsubfolders, &totalsize);
+            FXbool readsuccess = true;
+            dirsize = xf_pathsize(tgtpath.text(), &nbfiles, &nbsubfolders, &totalsize, &readsuccess);
+
 #if __WORDSIZE == 64
             snprintf(buf, sizeof(buf), "%lu", dirsize);
 #else
@@ -949,6 +940,7 @@ int File::copydir(const FXString& source, const FXString& target, const FXString
     // Add this to the list
     inode.st_ino = linfo.st_ino;
     inode.next = inodes;
+    FXbool copyerror = false;
 
     // Copy stuff
     while ((dp = readdir(dirp)) != NULL)
@@ -967,16 +959,18 @@ int File::copydir(const FXString& source, const FXString& target, const FXString
                 newchild.append(PATHSEP);
             }
             newchild.append(dp->d_name);
-            if (!copyrec(oldchild, newchild, hsourcesize, sourcesize, tstart, &inode, preserve_date))
+            int result = copyrec(oldchild, newchild, hsourcesize, sourcesize, tstart, &inode, preserve_date);
+            if (result != true)
             {
+                copyerror = true;
                 // If the cancel button was pressed
                 if (cancelled)
                 {
                     closedir(dirp);
                     return false;
                 }
-                // Or a permission problem occured
-                else
+                // Report errors that have not already been displayed by copyrec().
+                else if (result == 0)
                 {
                     FXString str;
                     if (xf_isdirectory(oldchild))
@@ -1041,8 +1035,8 @@ int File::copydir(const FXString& source, const FXString& target, const FXString
         }
     }
 
-    // Success
-    return true;
+    // Preserve partial-copy failures so a move never deletes an incomplete source.
+    return copyerror ? -2 : true;
 }
 
 
@@ -1099,7 +1093,7 @@ int File::copyrec(const FXString& source, const FXString& target, const FXString
     // Source is fifo: make a new one
     if (S_ISFIFO(linfo1.st_mode))
     {
-        return mkfifo(target.text(), linfo1.st_mode);
+        return mkfifo(target.text(), linfo1.st_mode) == 0;
     }
 
     // Source is device: make a new one
@@ -1664,18 +1658,29 @@ int File::fmove(const FXString& source, const FXString& target, const FXString& 
         }
     }
 
-    // Get the size of the source
+    // A rename within one file system does not transfer the source data.
+    // Inspect the destination's parent: an existing target may be a symlink,
+    // and rename replaces that link rather than following it.
+    FXbool samefilesystem = false;
     FXulong srcsize = 0;
-    struct stat linfo;
+    struct stat linfo, targetinfo;
     if (xf_lstat(source.text(), &linfo) == 0)
     {
-        char buf[MAXPATHLEN];
+        FXString targetparent = FXPath::directory(targetfile);
+        samefilesystem = (xf_stat(targetparent.text(), &targetinfo) == 0 &&
+                          linfo.st_dev == targetinfo.st_dev);
+    }
+
+    // Compute the source size only when data may need to be copied.
+    // If either stat fails, keep the existing size calculation and error handling.
+    if (!samefilesystem && xf_lstat(source.text(), &linfo) == 0)
+    {
         if (S_ISDIR(linfo.st_mode)) // Folder
         {
             FXuint nbfiles = 0, nbsubfolders = 0;
             FXulong totalsize = 0;
-            xf_strlcpy(buf, source.text(), source.length() + 1);
-            srcsize = xf_pathsize(buf, &nbfiles, &nbsubfolders, &totalsize);
+            FXbool readsuccess = true;
+            srcsize = xf_pathsize(source.text(), &nbfiles, &nbsubfolders, &totalsize, &readsuccess);
             totaldataread += srcsize;
         }
         else // File
@@ -1685,7 +1690,7 @@ int File::fmove(const FXString& source, const FXString& target, const FXString& 
         }
     }
 
-    if (progressbar)
+    if (!samefilesystem && progressbar)
     {
         // Percentage
         int pct = (sourcesize == 0 ? 0 : (100.0 * totaldataread) / sourcesize);
@@ -1738,7 +1743,25 @@ int File::fmove(const FXString& source, const FXString& target, const FXString& 
     // If files are on different file systems, use the copy/delete scheme and preserve the original date
     totaldataread -= srcsize; // Avoid counting data twice
 
-    int ret = this->copy(source, target, hsourcesize, sourcesize, tstart, false, true);
+    FXString copysize = hsourcesize;
+    FXulong copybytes = sourcesize;
+    FXulong copystart = tstart;
+    if (samefilesystem || copybytes == 0)
+    {
+        FXulong size = 0;
+        this->sourcesize(source, &size);
+        if (cancelled)
+        {
+            return false;
+        }
+        copybytes = totaldataread + size;
+        char sizebuf[32];
+        snprintf(sizebuf, sizeof(sizebuf), "%llu", (unsigned long long)copybytes);
+        copysize = xf_humansize(sizebuf);
+        copystart = xf_getcurrenttime();
+    }
+
+    int ret = this->copy(source, target, copysize, copybytes, copystart, false, true);
 
     // Success
     if (ret == true)
@@ -2029,7 +2052,6 @@ int File::rchmod(char* path, char* file, mode_t mode, const FXbool dironly, cons
 
     DIR* dir;
     struct dirent* entry;
-    int pl = strlen(path);
 
     if (!(dir = opendir(path)))
     {
@@ -2042,19 +2064,17 @@ int File::rchmod(char* path, char* file, mode_t mode, const FXbool dironly, cons
                                           ((entry->d_name[1] != '.') ||
                                            (entry->d_name[2] != '\0'))))
         {
-            int pl1 = pl, l = strlen(entry->d_name);
-            char* path1 = (char*)alloca(pl1 + l + 2);
-
-            xf_strlcpy(path1, path, strlen(path) + 1);
-            if (path1[pl1 - 1] != '/')
+            // Release each child's path at the end of this iteration.
+            FXString path1(path);
+            if (path1.right(1) != PATHSEPSTRING)
             {
-                path1[pl1++] = '/';
+                path1 += PATHSEPSTRING;
             }
-            xf_strlcpy(path1 + pl1, entry->d_name, strlen(entry->d_name) + 1);
+            path1 += entry->d_name;
 
             // Modify the file variable with the new path
-            xf_strlcpy(file, path1, strlen(path1) + 1);
-            if (rchmod(path1, file, mode, dironly, fileonly))
+            xf_strlcpy(file, path1.text(), path1.length() + 1);
+            if (rchmod(&path1[0], file, mode, dironly, fileonly))
             {
                 closedir(dir);
                 return -1;
@@ -2221,7 +2241,6 @@ int File::rchown(char* path, char* file, uid_t uid, gid_t gid, const FXbool diro
 
     DIR* dir;
     struct dirent* entry;
-    int pl = strlen(path);
 
     if (!(dir = opendir(path)))
     {
@@ -2234,17 +2253,15 @@ int File::rchown(char* path, char* file, uid_t uid, gid_t gid, const FXbool diro
                                           ((entry->d_name[1] != '.') ||
                                            (entry->d_name[2] != '\0'))))
         {
-            int pl1 = pl, l = strlen(entry->d_name);
-            char* path1 = (char*)alloca(pl1 + l + 2);
-
-            xf_strlcpy(path1, path, strlen(path) + 1);
-            if (path1[pl1 - 1] != '/')
+            // Release each child's path at the end of this iteration.
+            FXString path1(path);
+            if (path1.right(1) != PATHSEPSTRING)
             {
-                path1[pl1++] = '/';
+                path1 += PATHSEPSTRING;
             }
-            xf_strlcpy(path1 + pl1, entry->d_name, strlen(entry->d_name) + 1);
-            xf_strlcpy(file, path1, strlen(path1) + 1);
-            if (rchown(path1, file, uid, gid, dironly, fileonly))
+            path1 += entry->d_name;
+            xf_strlcpy(file, path1.text(), path1.length() + 1);
+            if (rchown(&path1[0], file, uid, gid, dironly, fileonly))
             {
                 closedir(dir);
                 return -1;
@@ -2350,7 +2367,7 @@ int File::archive(const FXString name, const FXString cmd)
 
 
 // Compute data size and show progress dialog
-FXString File::sourcesize(const FXString src, FXulong* totalsize, const FXbool url)
+FXString File::sourcesize(const FXString src, FXulong* totalsize, const FXbool url, const FXString& target)
 {
     // Set label
     FXString msg;
@@ -2367,7 +2384,10 @@ FXString File::sourcesize(const FXString src, FXulong* totalsize, const FXbool u
     {
         msg = "";
     }
-    uplabel->setText(msg);
+    if (uplabel)
+    {
+        uplabel->setText(msg);
+    }
 
     // Compute data size
     *totalsize = 0;
@@ -2406,11 +2426,24 @@ FXString File::sourcesize(const FXString src, FXulong* totalsize, const FXbool u
             src_i = FXString(token);
         }
 
+        // Only transfers between file systems need a byte total for moves.
+        // Use lstat for the source so moving a symlink checks the link itself.
+        if (op == MOVE && !target.empty())
+        {
+            FXString targetdir = xf_isdirectory(target) ? target : FXPath::directory(target);
+            struct stat sourceinfo, targetinfo;
+            if (xf_lstat(src_i.text(), &sourceinfo) == 0 &&
+                xf_stat(targetdir.text(), &targetinfo) == 0 &&
+                sourceinfo.st_dev == targetinfo.st_dev)
+            {
+                continue;
+            }
+        }
+
         FXuint nbfiles = 0, nbsubfolders = 0;
         FXulong size_i = 0;
 
-        xf_strlcpy(buf, src_i.text(), src_i.length() + 1);
-        computeSourceSize(this, getApp(), buf, &nbfiles, &nbsubfolders, &size_i, cancelButton, &cancelled);
+        computeSourceSize(this, getApp(), src_i.text(), &nbfiles, &nbsubfolders, &size_i, cancelButton, &cancelled);
 
         // Give cancel button an opportunity to be clicked
         if (cancelButton)

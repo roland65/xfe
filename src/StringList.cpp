@@ -7,6 +7,12 @@
 #include "StringList.h"
 
 
+StringList::~StringList()
+{
+    removeAllItems();
+}
+
+
 // Insert an item before the given item
 void StringList::insertBeforeItem(FXString str, StringItem* item)
 {
@@ -22,9 +28,9 @@ void StringList::insertBeforeItem(FXString str, StringItem* item)
     {
         this->first = newItem;
     }
-    if (item->next == NULL)
+    else
     {
-        this->last = item;
+        item->prev->next = newItem;
     }
 
     item->prev = newItem;
@@ -66,6 +72,10 @@ void StringList::insertAfterItem(FXString str, StringItem* item)
     {
         this->last = newItem;
     }
+    else
+    {
+        item->next->prev = newItem;
+    }
     item->next = newItem;
 }
 
@@ -101,12 +111,7 @@ void StringList::removeLastItem(void)
 // Remove the item before the given item
 void StringList::removeBeforeItem(StringItem* item)
 {
-    if (item->prev == this->first)
-    {
-        this->first = item;
-        this->first->prev = NULL;
-    }
-    else
+    if (item)
     {
         removeItem(item->prev);
     }
@@ -116,12 +121,7 @@ void StringList::removeBeforeItem(StringItem* item)
 // Remove the item after the given item
 void StringList::removeAfterItem(StringItem* item)
 {
-    if (item->next == this->last)
-    {
-        this->last = item;
-        this->last->next = NULL;
-    }
-    else
+    if (item)
     {
         removeItem(item->next);
     }
@@ -148,6 +148,10 @@ int StringList::getNumItems(void)
 // Remove a particular item
 void StringList::removeItem(StringItem* item)
 {
+    if (!item)
+    {
+        return;
+    }
     if ((item == this->first) && (item == this->last))
     {
         this->first = NULL;
@@ -168,21 +172,18 @@ void StringList::removeItem(StringItem* item)
         item->prev->next = item->next;
         item->next->prev = item->prev;
     }
+    delete item;
 }
 
 
 // Remove all items before a given item
 void StringList::removeAllItemsBefore(StringItem* item)
 {
-    StringItem* previtem;
-
-    previtem = item->prev;
-    if (previtem != NULL)
+    if (item)
     {
-        while (previtem != NULL)
+        while (item->prev != NULL)
         {
-            removeItem(previtem);
-            previtem = item->prev;
+            removeItem(item->prev);
         }
     }
 }
@@ -191,15 +192,11 @@ void StringList::removeAllItemsBefore(StringItem* item)
 // Remove all items after a given item
 void StringList::removeAllItemsAfter(StringItem* item)
 {
-    StringItem* nextitem;
-
-    nextitem = item->next;
-    if (nextitem != NULL)
+    if (item)
     {
-        while (nextitem != NULL)
+        while (item->next != NULL)
         {
-            removeItem(nextitem);
-            nextitem = item->next;
+            removeItem(item->next);
         }
     }
 }
@@ -208,19 +205,9 @@ void StringList::removeAllItemsAfter(StringItem* item)
 // Remove all items
 void StringList::removeAllItems(void)
 {
-    StringItem* item, * previtem;
-
-    item = this->last;
-
-    while (item != NULL)
+    while (this->first != NULL)
     {
-        previtem = item->prev;
-        removeItem(item);
-        if (previtem == NULL)
-        {
-            break;
-        }
-        item = previtem;
+        removeItem(this->first);
     }
 }
 

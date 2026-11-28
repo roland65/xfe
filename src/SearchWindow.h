@@ -170,6 +170,18 @@ public:
         return searchpanel->getIgnoreCase();
     }
 
+    // Set natural sort
+    void setNaturalSort(FXbool naturalsort)
+    {
+        searchpanel->setNaturalSort(naturalsort);
+    }
+
+    // Get natural sort
+    FXbool getNaturalSort(void)
+    {
+        return searchpanel->getNaturalSort();
+    }
+
     // Set directory first
     void setDirsFirst(FXbool dirsfirst)
     {

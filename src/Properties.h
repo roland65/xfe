@@ -1,6 +1,8 @@
 #ifndef PROPERTIES_H
 #define PROPERTIES_H
 
+#include <memory>
+
 #include "ComboBox.h"
 #include "TextLabel.h"
 #include "DialogBox.h"
@@ -61,6 +63,7 @@ private:
     FXuint totalnbfiles = 0;
     FXuint totalnbsubdirs = 0;
     FXulong totaldirsize = 0;
+    FXbool readsuccess = true;
     int nbseldirs = 0;
     FXLabel* fileSize = NULL;
     FXLabel* fileSizeDetails = NULL;
@@ -71,6 +74,7 @@ private:
     FXTextField* ext = NULL;
     FXString* files = NULL;
     FXString* paths = NULL;
+    FXbool ownsFileArrays = false;
     FXLabel* name_encoding = NULL;
     FXString source;
     FXString parentdir;
@@ -104,6 +108,8 @@ private:
     FXButton* bigicbtn = NULL;
     FXTextField* miniic = NULL;
     FXButton* miniicbtn = NULL;
+    std::unique_ptr<FXIcon> ownedBigIcon;
+    std::unique_ptr<FXIcon> ownedMiniIcon;
     FXbool isDirectory = false;
     FXbool isMountpoint = false;
     FXbool recsize = false;
@@ -151,6 +157,7 @@ public:
 
 public:
     virtual void create();
+    virtual ~PropertiesBox();
 
     PropertiesBox(FXWindow* win, FXString file, FXString path, FXbool placeitem = false);
     PropertiesBox(FXWindow* win, FXString* file, int num, FXString* path);

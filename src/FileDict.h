@@ -55,10 +55,14 @@ public:
         return app;
     }
 
-    // Change icon source
+    // Take ownership of the icon source, releasing the previous one.
     void setIconSource(FXIconSource* src)
     {
-        source = src;
+        if (source != src)
+        {
+            delete source;
+            source = src;
+        }
     }
 
     // Return icon source
@@ -166,10 +170,15 @@ public:
         return app;
     }
 
-    // Change icon dictionary
+    // Take ownership of the icon dictionary. Bindings borrow its icons.
     void setIconDict(IconDict* icns)
     {
-        icons = icns;
+        if (icons != icns)
+        {
+            clear();
+            delete icons;
+            icons = icns;
+        }
     }
 
     // Return icon dictionary

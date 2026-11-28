@@ -245,7 +245,6 @@ XFilePackage::XFilePackage(FXApp* a) : FXMainWindow(a, "Xfp", NULL, NULL,
     mc->setAccelText(key);
     hotkey = xf_parseaccel(key);
     getAccelTable()->addAccel(hotkey, mc, FXSEL(SEL_COMMAND, FXMenuCommand::ID_ACCEL));
-    getAccelTable()->addAccel(KEY_Escape, this, FXSEL(SEL_COMMAND, ID_QUIT));
 
     // Preferences menu
     new FXMenuCheck(prefsmenu, _("&Toolbar"), toolbar, FXWindow::ID_TOGGLESHOWN);
@@ -325,6 +324,7 @@ XFilePackage::~XFilePackage()
     delete list;
     delete description;
     delete tabbook;
+    delete textfont;
 }
 
 
@@ -603,7 +603,11 @@ int XFilePackage::readFileList(void)
     // Next items
     while (fgets(text, sizeof(text), pcmd))
     {
-        text[strlen(text) - 1] = '\0'; // kill trailing lf
+        size_t length = strlen(text);
+        if (length && text[length - 1] == '\n')
+        {
+            text[length - 1] = '\0';
+        }
         list->appendItem(topmost, text, minidocicon, minidocicon);
 
         // Force refresh
@@ -727,10 +731,12 @@ void XFilePackage::create()
     fontspec = reg_xfe->readStringEntry("SETTINGS", "textfont", DEFAULT_TEXT_FONT);
     if (!fontspec.empty())
     {
-        FXFont* font = new FXFont(getApp(), fontspec);
-        font->create();
-        description->setFont(font);
-        list->setFont(font);
+        FXFont* newfont = new FXFont(getApp(), fontspec);
+        newfont->create();
+        description->setFont(newfont);
+        list->setFont(newfont);
+        delete textfont;
+        textfont = newfont;
     }
     delete reg_xfe;
 
@@ -772,7 +778,7 @@ void XFilePackage::create()
                 {
                     break;
                 }
-                xf_strlcpy(FilterHistory[i], histent.text(), histent.length() + 1);
+                xf_strlcpy(FilterHistory[i], histent.text(), sizeof(FilterHistory[i]));
             }
             else
             {
@@ -910,7 +916,9 @@ int main(int argc, char* argv[])
         hand = new FXCursor(application, hand3_bits, hand3_mask_bits, hand3_width, hand3_height, hand3_x_hot,
                             hand3_y_hot);
     }
+    FXCursor* previousHand = application->getDefaultCursor(DEF_HAND_CURSOR);
     application->setDefaultCursor(DEF_HAND_CURSOR, hand);
+    delete previousHand;
 
     // Load all application icons
     FXuint iconpathstatus;
@@ -928,9 +936,9 @@ int main(int argc, char* argv[])
     fontspec = reg_xfe->readStringEntry("SETTINGS", "font", DEFAULT_NORMAL_FONT);
     if (!fontspec.empty())
     {
-        FXFont* normalFont = new FXFont(application, fontspec);
-        normalFont->create();
-        application->setNormalFont(normalFont);
+        // Keep the default font owned by the application.
+        application->getNormalFont()->setFont(fontspec);
+        application->getNormalFont()->create();
     }
 
     // Set single click navigation according to the Xfe registry
@@ -1026,5 +1034,7 @@ int main(int argc, char* argv[])
     window->start(startpkg);
 
     // Run the application
-    return application->run();
+    int result = application->run();
+    delete application;
+    return result;
 }

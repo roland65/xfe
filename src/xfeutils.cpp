@@ -7,7 +7,6 @@
 #include "config.h"
 #include "i18n.h"
 
-
 #include <sys/time.h>
 #include <sys/wait.h>
 #include <time.h>
@@ -22,6 +21,79 @@
 #include "icons.h"
 #include "xfeutils.h"
 #include "../st/x.h"
+
+
+// FOX menu cascades do not own their popup panes. Clear nested panes explicitly
+// before deleting their cascade entries, including dynamically built script menus.
+void xf_clear_menu(FXComposite* menu)
+{
+    while (menu->getFirst())
+    {
+        FXWindow* item = menu->getFirst();
+        FXMenuCascade* cascade = dynamic_cast<FXMenuCascade*>(item);
+        if (cascade && cascade->getMenu())
+        {
+            FXPopup* submenu = cascade->getMenu();
+            cascade->setMenu(NULL);
+            xf_clear_menu(submenu);
+            delete submenu;
+        }
+        delete item;
+    }
+}
+
+
+#if defined(linux) && defined(XFE_AUTOMOUNTER)
+FXbool xf_setautomountautostart(const FXString& configdir, FXbool enabled)
+{
+    FXString directory = configdir + PATHSEPSTRING + "autostart";
+    FXString filename = directory + PATHSEPSTRING + "xfe-automount.desktop";
+
+    if (!enabled)
+    {
+        return unlink(filename.text()) == 0 || errno == ENOENT;
+    }
+
+    if (xf_mkpath(directory.text(), 0700) != 0)
+    {
+        return false;
+    }
+
+    // Replace the entry atomically, so a failed write leaves the old file intact.
+    FXString temporary = filename + ".XXXXXX";
+    int fd = mkstemp(&temporary[0]);
+    if (fd < 0)
+    {
+        return false;
+    }
+    FILE* file = fdopen(fd, "w");
+    if (file == NULL)
+    {
+        close(fd);
+        unlink(temporary.text());
+        return false;
+    }
+
+    const char entry[] = "[Desktop Entry]\n"
+                         "Type=Application\n"
+                         "Name=Xfe Automounter\n"
+                         "Comment=Automatically mount removable devices\n"
+                         "Exec=xfe-automount\n"
+                         "TryExec=xfe-automount\n"
+                         "Terminal=false\n";
+    FXbool success = fwrite(entry, 1, sizeof(entry) - 1, file) == sizeof(entry) - 1;
+    if (fclose(file) != 0)
+    {
+        success = false;
+    }
+    if (success && rename(temporary.text(), filename.text()) == 0)
+    {
+        return true;
+    }
+    unlink(temporary.text());
+    return false;
+}
+#endif
 
 
 // Get available space on the file system where the file is located
@@ -692,58 +764,76 @@ FXString xf_quote(FXString str)
 
 // Test if a string is encoded in UTF-8
 // "length" is the number of bytes of the string to consider
-// Taken from the weechat project. Original author FlashCode <flashcode@flashtux.org>
 FXbool xf_isutf8(const char* string, FXuint length)
 {
-    FXuint n = 0;
+    const FXuchar* ptr = (const FXuchar*)string;
+    const size_t highbits = (size_t)-1 / 0xFF * 0x80;
 
-    while (n < length)
+    while (length)
     {
-        // UTF-8, 2 bytes, should be: 110vvvvv 10vvvvvv
-        if (((FXuchar)(string[0]) & 0xE0) == 0xC0)
+        FXuchar ch = ptr[0];
+        if (ch < 0x80)
         {
-            if (!string[1] || (((FXuchar)(string[1]) & 0xC0) != 0x80))
+            // Skip whole ASCII words without alignment or aliasing assumptions.
+            while (length >= sizeof(size_t))
             {
-                return false;
+                size_t word;
+                memcpy(&word, ptr, sizeof(word));
+                if (word & highbits)
+                {
+                    break;
+                }
+                ptr += sizeof(word);
+                length -= sizeof(word);
             }
-            string += 2;
-            n += 2;
-        }
-        // UTF-8, 3 bytes, should be: 1110vvvv 10vvvvvv 10vvvvvv
-        else if (((FXuchar)(string[0]) & 0xF0) == 0xE0)
-        {
-            if (!string[1] || !string[2] ||
-                (((FXuchar)(string[1]) & 0xC0) != 0x80) ||
-                (((FXuchar)(string[2]) & 0xC0) != 0x80))
+            // Finish the word containing the first non-ASCII byte, or the tail.
+            while (length && ptr[0] < 0x80)
             {
-                return false;
+                ptr++;
+                length--;
             }
-            string += 3;
-            n += 3;
+            continue;
         }
-        // UTF-8, 4 bytes, should be: 11110vvv 10vvvvvv 10vvvvvv 10vvvvvv
-        else if (((FXuchar)(string[0]) & 0xF8) == 0xF0)
-        {
-            if (!string[1] || !string[2] || !string[3] ||
-                (((FXuchar)(string[1]) & 0xC0) != 0x80) ||
-                (((FXuchar)(string[2]) & 0xC0) != 0x80) ||
-                (((FXuchar)(string[3]) & 0xC0) != 0x80))
-            {
-                return false;
-            }
-            string += 4;
-            n += 4;
-        }
-        // UTF-8, 1 byte, should be: 0vvvvvvv
-        else if ((FXuchar)(string[0]) >= 0x80)
+        if (ch < 0xC2)
         {
             return false;
         }
-        // Next byte
+        // Two-byte sequence: exclude continuation bytes and overlong encodings.
+        if (ch < 0xE0)
+        {
+            if (length < 2 || (ptr[1] & 0xC0) != 0x80)
+            {
+                return false;
+            }
+            ptr += 2;
+            length -= 2;
+        }
+        // Three-byte sequence: exclude overlong encodings and UTF-16 surrogates.
+        else if (ch < 0xF0)
+        {
+            if (length < 3 || (ptr[1] & 0xC0) != 0x80 || (ptr[2] & 0xC0) != 0x80 ||
+                (ch == 0xE0 && ptr[1] < 0xA0) || (ch == 0xED && ptr[1] >= 0xA0))
+            {
+                return false;
+            }
+            ptr += 3;
+            length -= 3;
+        }
+        // Four-byte sequence: Unicode ends at U+10FFFF.
+        else if (ch <= 0xF4)
+        {
+            if (length < 4 || (ptr[1] & 0xC0) != 0x80 || (ptr[2] & 0xC0) != 0x80 ||
+                (ptr[3] & 0xC0) != 0x80 || (ch == 0xF0 && ptr[1] < 0x90) ||
+                (ch == 0xF4 && ptr[1] >= 0x90))
+            {
+                return false;
+            }
+            ptr += 4;
+            length -= 4;
+        }
         else
         {
-            string++;
-            n++;
+            return false;
         }
     }
     return true;
@@ -752,7 +842,7 @@ FXbool xf_isutf8(const char* string, FXuint length)
 
 // Safe strcpy function (Public domain, by C.B. Falconer)
 // The destination string is always null terminated
-// Size sz must be equal to strlen(src)+1
+// Size sz is the destination capacity, including the terminating null byte
 size_t xf_strlcpy(char* dst, const char* src, size_t sz)
 {
     const char* start = src;
@@ -867,12 +957,12 @@ FXulong xf_dirsize(const char* path)
 // Caution: this only works if nbfiles and nbsubdirs are initialized to 0 in the calling function
 // After that, nbfiles contains the total number of files (including the count of sub directories),
 // nbsubdirs contains the number of sub directories and totalsize the total directory size
+// readsuccess is set to false if some file or folder was not read (due to insufficient permissions or other reason)
 // The pipes are used to write partial results, for inter process communication
-FXulong xf_pathsize(char* path, FXuint* nbfiles, FXuint* nbsubdirs, FXulong* totalsize, int pipes[2])
+FXulong xf_pathsize(const char* path, FXuint* nbfiles, FXuint* nbsubdirs, FXulong* totalsize, FXbool* readsuccess, int pipes[2])
 {
     struct stat statbuf;
     struct dirent* dirp;
-    char* ptr;
     DIR* dp;
     FXulong dsize;
     int ret;
@@ -880,6 +970,7 @@ FXulong xf_pathsize(char* path, FXuint* nbfiles, FXuint* nbsubdirs, FXulong* tot
     ret = xf_lstat(path, &statbuf);
     if (ret < 0)
     {
+        *readsuccess = false;
         return 0;
     }
     dsize = (FXulong)statbuf.st_size;
@@ -892,9 +983,9 @@ FXulong xf_pathsize(char* path, FXuint* nbfiles, FXuint* nbsubdirs, FXulong* tot
         char buf[256];
 
 #if __WORDSIZE == 64
-        snprintf(buf, sizeof(buf), "%lu %u %u/", *totalsize, *nbfiles, *nbsubdirs);
+        snprintf(buf, sizeof(buf), "%lu %u %u %u/", *totalsize, *nbfiles, *nbsubdirs, *readsuccess);
 #else
-        snprintf(buf, sizeof(buf), "%llu %u %u/", *totalsize, *nbfiles, *nbsubdirs);
+        snprintf(buf, sizeof(buf), "%llu %u %u %u/", *totalsize, *nbfiles, *nbsubdirs, *readsuccess);
 #endif
 
         if (write(pipes[1], buf, strlen(buf)) == -1)
@@ -914,15 +1005,9 @@ FXulong xf_pathsize(char* path, FXuint* nbfiles, FXuint* nbsubdirs, FXulong* tot
     // Directory
     (*nbsubdirs)++;
 
-    ptr = (char*)path + strlen(path);
-    if (ptr[-1] != '/')
-    {
-        *ptr++ = '/';
-        *ptr = '\0';
-    }
-
     if ((dp = opendir(path)) == NULL)
     {
+        *readsuccess = false;
         return 0;
     }
 
@@ -932,13 +1017,16 @@ FXulong xf_pathsize(char* path, FXuint* nbfiles, FXuint* nbsubdirs, FXulong* tot
         {
             continue;
         }
-        xf_strlcpy(ptr, dirp->d_name, strlen(dirp->d_name) + 1);
+        FXString child = path;
+        if (child.empty() || child[child.length() - 1] != '/')
+        {
+            child += '/';
+        }
+        child += dirp->d_name;
 
         // Recursive call
-        dsize += xf_pathsize(path, nbfiles, nbsubdirs, totalsize, pipes);
+        dsize += xf_pathsize(child.text(), nbfiles, nbsubdirs, totalsize, readsuccess, pipes);
     }
-
-    ptr[-1] = '\0'; // ??
 
     if (closedir(dp) < 0)
     {
@@ -1018,7 +1106,7 @@ FXString xf_cleanpath(const FXString path)
 
     while (1)
     {
-        if ((in[in.length() - 1] == '/') && (in.length() != 1))
+        if ((in.length() > 1) && (in[in.length() - 1] == '/'))
         {
             out = in.trunc(in.length() - 1);
             in = out;
@@ -1042,7 +1130,7 @@ FXString xf_filepath(const FXString path)
 
     while (1)
     {
-        if ((in[in.length() - 1] == '/') && (in.length() != 1))
+        if ((in.length() > 1) && (in[in.length() - 1] == '/'))
         {
             out = in.trunc(in.length() - 1);
             in = out;
@@ -1076,7 +1164,7 @@ FXString xf_filepath(const FXString path, const FXString dir)
 
     while (1)
     {
-        if ((in[in.length() - 1] == '/') && (in.length() != 1))
+        if ((in.length() > 1) && (in[in.length() - 1] == '/'))
         {
             out = in.trunc(in.length() - 1);
             in = out;
@@ -1127,17 +1215,26 @@ FXString xf_realpath(const FXString path)
 FXString xf_execpath(char* path)
 {
     FXString execpath;
-    char abs_exe_path[MAXPATHLEN] = "";
-    int ret;
 
 #if defined(linux)
-    ret = readlink("/proc/self/exe", abs_exe_path, MAXPATHLEN);
-    if (ret < 0)
+    std::vector<char> buffer(MAXPATHLEN);
+    for (;;)
     {
-        goto err;
+        ssize_t len = readlink("/proc/self/exe", buffer.data(), buffer.size());
+        if (len < 0)
+        {
+            goto err;
+        }
+        if ((size_t)len < buffer.size())
+        {
+            // readlink does not append a terminator, even when it fills the buffer.
+            return FXString(buffer.data(), len);
+        }
+        buffer.resize(buffer.size() * 2);
     }
-    
 #else
+    char abs_exe_path[MAXPATHLEN] = "";
+    int ret;
     char path_save[MAXPATHLEN];
     char *p1, *p2;
 
@@ -1173,10 +1270,9 @@ FXString xf_execpath(char* path)
         }
     }
     
-#endif
-
     execpath = abs_exe_path;
     return execpath;
+#endif
 
 err:
         fprintf(stderr, _("Error: %s\n"), strerror(errno));
@@ -1501,44 +1597,41 @@ FXbool xf_isfile(const FXString& file)
 // (thanks to Armin Buehler <abuehler@users.sourceforge.net>)
 FXbool xf_isgroupmember(gid_t gid)
 {
-    static int ngroups = 0;
-    static gid_t* gids = NULL;
-    int i;
-    int ret;
+    static std::vector<gid_t> gids;
+    static FXbool initialized = false;
 
     // First call : initialization of the number of supplementary groups and the group list
-    if (ngroups == 0)
+    if (!initialized)
     {
-        ngroups = getgroups(0, gids);
+        int ngroups = getgroups(0, NULL);
 
         if (ngroups < 0)
         {
             goto err;
         }
-        else
+        gids.resize(ngroups);
+        if (ngroups > 0)
         {
-            gids = new gid_t[ngroups];
-            ret = getgroups(ngroups, gids);
+            int ret = getgroups(ngroups, gids.data());
             if (ret < 0)
             {
+                gids.clear();
                 goto err;
             }
+            gids.resize(ret);
         }
-    }
-    if (ngroups == 0)
-    {
-        return false;
+        initialized = true;
     }
 
     // Check if the group id is contained within the group list
-    i = ngroups;
-    while (i--)
+    for (size_t i = 0; i < gids.size(); i++)
     {
         if (gid == gids[i])
         {
             return true;
         }
     }
+    return false;
 
 err:
     int errcode = errno;
@@ -1747,69 +1840,38 @@ int xf_setwaitcursor(FXApp* app, FXuint type)
 int xf_runst(FXString cmd)
 {
     FXString str1, str2;
-    int nbargs, i, j;
+    std::vector<FXString> arguments;
+    int i = 0, j = 1;
 
-    // First pass to find the number of commmand arguments
-    nbargs = 0;
-    i = 0;
-    j = 1;
+    // Parse once; the strings own their storage until the forked terminal exits.
     while (1)
     {
         str1 = cmd.section(' ', i);
-        if (str1[0] == '\'') // If a ' is found, ignore the spaces till the next '
-        {
-            str2 = cmd.section('\'', j);
-            j += 2;
-            i += str2.contains(' ');
-            nbargs++;
-        }
-        else
-        {
-            nbargs++;
-        }
-
-        if (xf_strequal(str1.text(), ""))
+        if (str1.empty())
         {
             break;
         }
-
-        i++;
-    }
-    nbargs--;
-
-    // Second pass to allocate the argument strings
-    char** args = (char**)malloc((nbargs + 1) * sizeof(char*));
-    nbargs = 0;
-    i = 0;
-    j = 1;
-    while (1)
-    {
-        str1 = cmd.section(' ', i);
         if (str1[0] == '\'')
         {
             str2 = cmd.section('\'', j);
             j += 2;
             i += str2.contains(' ');
-            args[nbargs] = (char*)malloc(str2.length() + 1);
-            xf_strlcpy(args[nbargs], str2.text(), str2.length() + 1);
-            nbargs++;
+            arguments.push_back(str2);
         }
         else
         {
-            args[nbargs] = (char*)malloc(str1.length() + 1);
-            xf_strlcpy(args[nbargs], str1.text(), str1.length() + 1);
-            nbargs++;
+            arguments.push_back(str1);
         }
-
-        if (xf_strequal(str1.text(), ""))
-        {
-            break;
-        }
-
         i++;
     }
-    nbargs--;
-    args[nbargs] = NULL;
+
+    std::vector<char*> args;
+    for (size_t k = 0; k < arguments.size(); k++)
+    {
+        args.push_back(&arguments[k][0]);
+    }
+    args.push_back(NULL);
+    int nbargs = arguments.size();
 
     // Launch the command in an internal st terminal
     int res;
@@ -1821,7 +1883,7 @@ int xf_runst(FXString cmd)
     {
         if (childpid == 0) // Child
         {
-            st(nbargs, args);
+            st(nbargs, &args[0]);
             exit(EXIT_SUCCESS);
         }
         else // Parent
@@ -1843,13 +1905,6 @@ int xf_runst(FXString cmd)
         fprintf(stderr, _("Error: Fork failed: %s\n"), strerror(errno));
         res = -1;
     }
-
-    // Free allocated strings
-    for (int i = 0; i < nbargs; i++)
-    {
-        free(args[i]);
-    }
-    free(args);
 
     return res;
 }
@@ -2083,83 +2138,37 @@ FXString xf_secondstotimestring(FXuint seconds)
 }
 
 
-// Functions adapted from FXString class and used to substitute one string by another, case insensitive
-
-// Replace part of string
-void xf_replacestring(FXchar* str, FXint* slen, FXint pos, FXint m, const FXchar* s, FXint n)
-{
-    FXint len = *slen;
-
-    if (pos < 0)
-    {
-        m += pos;
-
-        if (m < 0)
-        {
-            m = 0;
-        }
-
-        pos = 0;
-    }
-
-    if (pos + m > len)
-    {
-        if (pos > len)
-        {
-            pos = len;
-        }
-
-        m = len - pos;
-    }
-
-    if (m < n)
-    {
-        *slen = len + n - m;
-        memmove(str + pos + n, str + pos + m, len - pos - m);
-    }
-    else if (m > n)
-    {
-        memmove(str + pos + n, str + pos + m, len - pos - m);
-        *slen = len + n - m;
-    }
-
-    memcpy(str + pos, s, n);
-}
-
-
-// Substitute one string by another, case insensitive
+// Substitute one string by another, case insensitive, without modifying the input.
 FXString xf_substitutecase(const FXString& str, const FXString& org, const FXString& rep, bool all)
 {
-    FXchar* s = (FXchar*)str.text();
-    FXint slen = str.length();
-    FXchar* o = (FXchar*)org.text();
-    FXint olen = org.length();
-    FXchar* r = (FXchar*)rep.text();
-    FXint rlen = rep.length();
-
-    if (0 < olen)
+    if (org.empty())
     {
-        FXint pos = 0;
+        return str;
+    }
 
-        while (pos <= slen - olen)
+    FXString result;
+    FXint pos = 0;
+    FXint start = 0;
+    while (pos <= str.length() - org.length())
+    {
+        if (::comparecase(str.text() + pos, org.text(), org.length()) == 0)
         {
-            if (::comparecase(s + pos, o, olen) == 0) // Function from FXString
+            result.append(str.text() + start, pos - start);
+            result.append(rep);
+            pos += org.length();
+            start = pos;
+            if (!all)
             {
-                xf_replacestring(s, &slen, pos, olen, r, rlen);
-
-                if (!all)
-                {
-                    break;
-                }
-
-                pos += rlen;
-                continue;
+                break;
             }
+        }
+        else
+        {
             pos++;
         }
     }
-
-    return FXString(s, slen);
+    result.append(str.text() + start, str.length() - start);
+    return result;
 }
 
 

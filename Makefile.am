@@ -30,19 +30,20 @@ endif
 
 do_subst = sed -e 's,[@]bindir[@],$(bindir),g'
 
+# Use explicit template names: BSD make does not set $< in these explicit rules.
 xfe.desktop: xfe.desktop.in Makefile
-		$(AM_V_GEN)$(MSGFMT) --desktop -d $(top_srcdir)/po --template $< -o $@
+		$(AM_V_GEN)$(MSGFMT) --desktop -d $(top_srcdir)/po --template xfe.desktop.in -o $@
 xfa.desktop: xfa.desktop.in Makefile
-		$(AM_V_GEN)$(MSGFMT) --desktop -d $(top_srcdir)/po --template $< -o $@
+		$(AM_V_GEN)$(MSGFMT) --desktop -d $(top_srcdir)/po --template xfa.desktop.in -o $@
 xfi.desktop: xfi.desktop.in Makefile
-		$(AM_V_GEN)$(MSGFMT) --desktop -d $(top_srcdir)/po --template $< -o $@
+		$(AM_V_GEN)$(MSGFMT) --desktop -d $(top_srcdir)/po --template xfi.desktop.in -o $@
 xfp.desktop: xfp.desktop.in Makefile
-		$(AM_V_GEN)$(MSGFMT) --desktop -d $(top_srcdir)/po --template $< -o $@
+		$(AM_V_GEN)$(MSGFMT) --desktop -d $(top_srcdir)/po --template xfp.desktop.in -o $@
 xfw.desktop: xfw.desktop.in Makefile
-		$(AM_V_GEN)$(MSGFMT) --desktop -d $(top_srcdir)/po --template $< -o $@
+		$(AM_V_GEN)$(MSGFMT) --desktop -d $(top_srcdir)/po --template xfw.desktop.in -o $@
 
 org.xfe.root.policy: org.xfe.root.policy.in Makefile
-		$(AM_V_GEN)$(MSGFMT) --xml -d $(top_srcdir)/po --template $< -o $@
+		$(AM_V_GEN)$(MSGFMT) --xml -d $(top_srcdir)/po --template org.xfe.root.policy.in -o $@
 
 org.xfe.root.policy.in: org.xfe.root.policy.in.in Makefile
 	$(do_subst) < org.xfe.root.policy.in.in > org.xfe.root.policy.in

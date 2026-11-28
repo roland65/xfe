@@ -303,7 +303,11 @@ enum
 #endif
 
 #ifndef DEFAULT_SU_CMD
-#define DEFAULT_SU_CMD    "su -c 'nohup xfe >& /dev/null &'"
+#if defined(__FreeBSD__)
+#define DEFAULT_SU_CMD    "su -m root -c 'xfe &'"
+#else
+#define DEFAULT_SU_CMD    "su -c 'setsid -f xfe'"
+#endif
 #endif
 
 // Tooltips setup time and duration

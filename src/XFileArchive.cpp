@@ -169,6 +169,7 @@ FXDEFMAP(XFileArchive) XFileArchiveMap[] =
     FXMAPFUNC(SEL_COMMAND, XFileArchive::ID_EXTRACT, XFileArchive::onCmdExtract),
     FXMAPFUNC(SEL_COMMAND, XFileArchive::ID_ABOUT, XFileArchive::onCmdAbout),
     FXMAPFUNC(SEL_COMMAND, XFileArchive::ID_QUIT, XFileArchive::onCmdQuit),
+    FXMAPFUNC(SEL_COMMAND, XFileArchive::ID_COMMAND_CLOSED, XFileArchive::onCmdCommandClosed),
     FXMAPFUNC(SEL_CLICKED, XFileArchive::ID_LIST, XFileArchive::onCmdClicked),
     FXMAPFUNC(SEL_DOUBLECLICKED, XFileArchive::ID_LIST, XFileArchive::onCmdDoubleClicked),
     FXMAPFUNC(SEL_COMMAND, XFileArchive::ID_FILE_OPEN, XFileArchive::onCmdFileOpen),
@@ -262,7 +263,6 @@ XFileArchive::XFileArchive(FXApp* a) : FXMainWindow(a, "Xfa", NULL, NULL, DECOR_
     mc->setAccelText(key);
     hotkey = xf_parseaccel(key);
     getAccelTable()->addAccel(hotkey, mc, FXSEL(SEL_COMMAND, FXMenuCommand::ID_ACCEL));
-    getAccelTable()->addAccel(KEY_Escape, this, FXSEL(SEL_COMMAND, ID_QUIT));
 
     // Preferences menu
     new FXMenuCheck(prefsmenu, _("&Toolbar"), toolbar, FXWindow::ID_TOGGLESHOWN);
@@ -342,6 +342,17 @@ XFileArchive::XFileArchive(FXApp* a) : FXMainWindow(a, "Xfa", NULL, NULL, DECOR_
 }
 
 
+// Command windows delete themselves; keep the tracking pointer synchronized.
+long XFileArchive::onCmdCommandClosed(FXObject* sender, FXSelector, void*)
+{
+    if (sender == cmdwin)
+    {
+        cmdwin = NULL;
+    }
+    return 1;
+}
+
+
 // Destructor
 XFileArchive::~XFileArchive()
 {
@@ -359,6 +370,7 @@ XFileArchive::~XFileArchive()
     {
         delete cmdwin;
     }
+    delete textfont;
 }
 
 
@@ -593,6 +605,8 @@ long XFileArchive::onCmdExtractTo(FXObject*, FXSelector, void*)
 
             // Make and show command window
             cmdwin = new CommandWindow(this, _("Extract Archive"), cmd, 30, 80);
+            cmdwin->setTarget(this);
+            cmdwin->setSelector(ID_COMMAND_CLOSED);
             cmdwin->create();
             cmdwin->setIcon(miniarchexticon);
 
@@ -796,6 +810,8 @@ long XFileArchive::onCmdExtract(FXObject*, FXSelector, void*)
 
         // Make and show command window
         cmdwin = new CommandWindow(this, _("Extract Archive"), cmd, 30, 80);
+        cmdwin->setTarget(this);
+        cmdwin->setSelector(ID_COMMAND_CLOSED);
         cmdwin->create();
         cmdwin->setIcon(miniarchexticon);
 
@@ -1048,6 +1064,9 @@ long XFileArchive::onCmdFileOpenWith(FXObject*, FXSelector, void*)
         opendialog = new HistInputDialog(this, "", _("Open selected file(s) with:"), _("Open With"), "",
                                          bigfileopenicon, false, true, HIST_INPUT_EXECUTABLE_FILE, false);
     }
+    FileDict associations(getApp());
+    FileAssoc* association = associations.findFileBinding(filename.text());
+    opendialog->setApplications(tmppathname, association ? association->command.section(',', 0) : FXString::null);
     opendialog->setText(cmd);
     opendialog->CursorEnd();
     opendialog->selectAll();
@@ -1123,11 +1142,10 @@ long XFileArchive::onCmdFileOpenWith(FXObject*, FXSelector, void*)
         if (newstr)
         {
             // FIFO
-            xf_strlcpy(OpenHistory[0], cmd.text(), cmd.length() + 1);
+            xf_strlcpy(OpenHistory[0], cmd.text(), sizeof(OpenHistory[0]));
             for (int i = 1; i < OpenNum; i++)
             {
-                xf_strlcpy(OpenHistory[i], opendialog->getHistoryItem(i - 1).text(),
-                         opendialog->getHistoryItem(i - 1).length() + 1);
+                xf_strlcpy(OpenHistory[i], opendialog->getHistoryItem(i - 1).text(), sizeof(OpenHistory[i]));
             }
         }
     }
@@ -2062,9 +2080,11 @@ void XFileArchive::create()
     fontspec = reg_xfe->readStringEntry("SETTINGS", "textfont", DEFAULT_TEXT_FONT);
     if (!fontspec.empty())
     {
-        FXFont* font = new FXFont(getApp(), fontspec);
-        font->create();
-        list->setFont(font);
+        FXFont* newfont = new FXFont(getApp(), fontspec);
+        newfont->create();
+        list->setFont(newfont);
+        delete textfont;
+        textfont = newfont;
     }
     delete reg_xfe;
 
@@ -2106,7 +2126,7 @@ void XFileArchive::create()
                 {
                     break;
                 }
-                xf_strlcpy(OpenHistory[i], histent.text(), histent.length() + 1);
+                xf_strlcpy(OpenHistory[i], histent.text(), sizeof(OpenHistory[i]));
             }
             else
             {
@@ -2132,7 +2152,7 @@ void XFileArchive::create()
                 {
                     break;
                 }
-                xf_strlcpy(FilterHistory[i], histent.text(), histent.length() + 1);
+                xf_strlcpy(FilterHistory[i], histent.text(), sizeof(FilterHistory[i]));
             }
             else
             {
@@ -2267,7 +2287,9 @@ int main(int argc, char* argv[])
         hand = new FXCursor(application, hand3_bits, hand3_mask_bits, hand3_width, hand3_height, hand3_x_hot,
                             hand3_y_hot);
     }
+    FXCursor* previousHand = application->getDefaultCursor(DEF_HAND_CURSOR);
     application->setDefaultCursor(DEF_HAND_CURSOR, hand);
+    delete previousHand;
 
     // Load all application icons
     FXuint iconpathstatus;
@@ -2285,9 +2307,9 @@ int main(int argc, char* argv[])
     fontspec = reg_xfe->readStringEntry("SETTINGS", "font", DEFAULT_NORMAL_FONT);
     if (!fontspec.empty())
     {
-        FXFont* normalFont = new FXFont(application, fontspec);
-        normalFont->create();
-        application->setNormalFont(normalFont);
+        // Keep the default font owned by the application.
+        application->getNormalFont()->setFont(fontspec);
+        application->getNormalFont()->create();
     }
 
     // Set single click navigation according to the Xfe registry
@@ -2356,5 +2378,7 @@ int main(int argc, char* argv[])
     window->start(startarch);
 
     // Run the application
-    return application->run();
+    int result = application->run();
+    delete application;
+    return result;
 }

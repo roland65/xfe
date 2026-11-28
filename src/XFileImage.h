@@ -54,6 +54,8 @@ protected:
     FXbool save_win_pos = false;                      // Save window position
 
 protected:
+    void setImage(FXImage* image);
+
     XFileImage()
     {
     }

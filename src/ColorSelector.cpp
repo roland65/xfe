@@ -322,18 +322,24 @@ long ColorWell::onDNDDrop(FXObject* sender, FXSelector sel, void* ptr)
     // Try and obtain the color first
     if (getDNDData(FROM_DRAGNDROP, colorType, pointer, length))
     {
-        color = FXRGBA((((FXushort*)pointer)[0] + 128) / 257, (((FXushort*)pointer)[1] + 128) / 257,
-                       (((FXushort*)pointer)[2] + 128) / 257, (((FXushort*)pointer)[3] + 128) / 257);
+        FXushort components[4];
+        if (length == sizeof(components))
+        {
+            memcpy(components, pointer, sizeof(components));
+            color = FXRGBA((components[0] + 128) / 257, (components[1] + 128) / 257,
+                           (components[2] + 128) / 257, (components[3] + 128) / 257);
+            FXFREE(&pointer);
+            setRGBA(color, TRUE);
+            return 1;
+        }
         FXFREE(&pointer);
-        setRGBA(color, TRUE);
-        return 1;
     }
 
     // Maybe its the name of a color
     if (getDNDData(FROM_DRAGNDROP, textType, pointer, length))
     {
-        FXRESIZE(&pointer, FXuchar, length + 1); pointer[length] = '\0';
-        color = fxcolorfromname((const FXchar*)pointer);
+        FXString name((const FXchar*)pointer, length);
+        color = fxcolorfromname(name.text());
         FXFREE(&pointer);
 
         // Accept the drop only if it was a valid color name
@@ -603,16 +609,22 @@ long ColorWell::onMiddleBtnRelease(FXObject*, FXSelector, void* ptr)
         }
         if (getDNDData(FROM_SELECTION, colorType, pointer, length))
         {
-            color = FXRGBA((((FXushort*)pointer)[0] + 128) / 257, (((FXushort*)pointer)[1] + 128) / 257,
-                           (((FXushort*)pointer)[2] + 128) / 257, (((FXushort*)pointer)[3] + 128) / 257);
-            FXFREE(&color);
-            setRGBA(color, TRUE);
-            return 1;
+            FXushort components[4];
+            if (length == sizeof(components))
+            {
+                memcpy(components, pointer, sizeof(components));
+                color = FXRGBA((components[0] + 128) / 257, (components[1] + 128) / 257,
+                               (components[2] + 128) / 257, (components[3] + 128) / 257);
+                FXFREE(&pointer);
+                setRGBA(color, TRUE);
+                return 1;
+            }
+            FXFREE(&pointer);
         }
         if (getDNDData(FROM_SELECTION, stringType, pointer, length))
         {
-            FXRESIZE(&pointer, FXuchar, length + 1); pointer[length] = '\0';
-            color = fxcolorfromname((const FXchar*)pointer);
+            FXString name((const FXchar*)pointer, length);
+            color = fxcolorfromname(name.text());
             FXFREE(&pointer);
             setRGBA(color, TRUE);
             return 1;
@@ -1695,7 +1707,10 @@ long ColorSelector::onChgCustomWell(FXObject*, FXSelector sel, void* ptr)
     FXColor color = (FXColor)(FXuval)ptr;
     FXuint which = FXSELID(sel) - ID_CUSTOM_FIRST;
 
-    FXASSERT(which < 24);
+    if (which >= ARRAYNUMBER(wellname))
+    {
+        return 0;
+    }
     getApp()->reg().writeColorEntry("SETTINGS", wellname[which], color);
     return 1;
 }

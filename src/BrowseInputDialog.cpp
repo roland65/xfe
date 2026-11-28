@@ -21,6 +21,7 @@ FXDEFMAP(BrowseInputDialog) BrowseInputDialogMap[] =
 {
     FXMAPFUNC(SEL_KEYPRESS, 0, BrowseInputDialog::onCmdKeyPress),
     FXMAPFUNC(SEL_COMMAND, BrowseInputDialog::ID_BROWSE_PATH, BrowseInputDialog::onCmdBrowsePath),
+    FXMAPFUNC(SEL_UPDATE, BrowseInputDialog::ID_ACCEPT, BrowseInputDialog::onUpdAccept),
 };
 
 
@@ -41,10 +42,10 @@ BrowseInputDialog::BrowseInputDialog(FXWindow* win, FXString inp, FXString messa
                                                        0, 0, 0, 0, 10, 10, 5, 5);
 
     // Accept
-    new FXButton(buttons, _("&Accept"), NULL, this, ID_ACCEPT, FRAME_GROOVE | LAYOUT_RIGHT, 0, 0, 0, 0, 20, 20);
+    accept = new FXButton(buttons, _("&Accept"), NULL, this, ID_ACCEPT, FRAME_GROOVE | LAYOUT_RIGHT, 0, 0, 0, 0, 20, 20);
 
     // Cancel
-    new FXButton(buttons, _("&Cancel"), NULL, this, ID_CANCEL, FRAME_GROOVE | LAYOUT_RIGHT, 0, 0, 0, 0, 20, 20);
+    cancel = new FXButton(buttons, _("&Cancel"), NULL, this, ID_CANCEL, FRAME_GROOVE | LAYOUT_RIGHT, 0, 0, 0, 0, 20, 20);
 
     // Optional check box
     checkbutton = new FXHorizontalFrame(this, JUSTIFY_RIGHT | LAYOUT_SIDE_BOTTOM | LAYOUT_FILL_X, 0, 0, 0, 0, 10, 10, 0,
@@ -173,6 +174,22 @@ long BrowseInputDialog::onCmdBrowsePath(FXObject* sender, FXSelector sel, void* 
     }
 
     return 1;
+}
+
+
+// Update accept button
+long BrowseInputDialog::onUpdAccept(FXObject* sender, FXSelector sel, void* ptr)
+{
+    if (input->getText() == "")
+    {
+        accept->disable();
+    }
+    else
+    {
+        accept->enable();
+    }
+    
+    return 1;    
 }
 
 

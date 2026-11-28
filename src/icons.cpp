@@ -149,6 +149,7 @@ FXIcon* minireloadicon;
 FXIcon* minirenameicon;
 FXIcon* minireplaceicon;
 FXIcon* minireverticon;
+FXIcon* minireverseicon;
 FXIcon* minirotatelefticon;
 FXIcon* minirotaterighticon;
 FXIcon* minirunicon;
@@ -391,6 +392,7 @@ load:
     success = ((minirenameicon = xf_loadiconfile(app, iconpath, "minirename.png", scalefrac, baseColor)) != NULL) & success;
     success = ((minireplaceicon = xf_loadiconfile(app, iconpath, "minireplace.png", scalefrac, baseColor)) != NULL) & success;
     success = ((minireverticon = xf_loadiconfile(app, iconpath, "minirevert.png", scalefrac, baseColor)) != NULL) & success;
+    success = ((minireverseicon = xf_loadiconfile(app, iconpath, "minireverse.png", scalefrac, baseColor)) != NULL) & success;
     success = ((minirotatelefticon = xf_loadiconfile(app, iconpath, "minirotateleft.png", scalefrac, baseColor)) != NULL) & success;
     success = ((minirotaterighticon = xf_loadiconfile(app, iconpath, "minirotateright.png", scalefrac, baseColor)) != NULL) & success;
     success = ((minirunicon = xf_loadiconfile(app, iconpath, "minirun.png", scalefrac, baseColor)) != NULL) & success;

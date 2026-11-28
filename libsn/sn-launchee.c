@@ -21,9 +21,9 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-#include "sn-launchee.h"
-#include "sn-internals.h"
-#include "sn-xmessages.h"
+#include "libsn/sn-launchee.h"
+#include "libsn/sn-internals.h"
+#include "libsn/sn-xmessages.h"
 #include <errno.h>
 
 struct SnLauncheeContext

@@ -24,7 +24,6 @@ protected:
     ArchInputDialog* archdialog = NULL;
     HistInputDialog* opendialog = NULL;
     BrowseInputDialog* operationdialogsingle = NULL;
-    InputDialog* operationdialogrename = NULL;
     BrowseInputDialog* operationdialogmultiple = NULL;
     BrowseInputDialog* comparedialog = NULL;
     FXString searchdir;
@@ -34,6 +33,7 @@ protected:
     FXPacker* statusbar = NULL;
     FXLabel* statuslabel = NULL;
     FXDragCorner* corner = NULL;
+    FXString inlineRenameSource;                        // Source captured when editing begins
     FXString trashlocation;
     FXString trashfileslocation;
     FXString trashinfolocation;
@@ -102,6 +102,7 @@ public:
         ID_FILE_SYMLINK,
         ID_FILE_DELETE,
         ID_FILE_TRASH,
+        ID_RENAME_APPLY,
         ID_LAST
     };
     SearchPanel(FXComposite*, FXuint*, FXuint, FXuint name_size = 200, FXuint dir_size = 150, FXuint size_size = 60,
@@ -157,6 +158,12 @@ public:
 #endif
 
 public:
+
+    // Return file list object
+    FileList* getFileList(void) const
+    {
+        return list;
+    }
 
     // Get header size given its index
     int getHeaderSize(FXuint index) const
@@ -226,6 +233,18 @@ public:
     FXbool getIgnoreCase(void)
     {
         return list->getIgnoreCase();
+    }
+
+    // Set natural sort
+    void setNaturalSort(FXbool naturalsort)
+    {
+        list->setNaturalSort(naturalsort);
+    }
+
+    // Get natural sort
+    FXbool getNaturalSort(void)
+    {
+        return list->getNaturalSort();
     }
 
     // Set directory first

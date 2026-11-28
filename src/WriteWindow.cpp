@@ -5,6 +5,7 @@
 #include "i18n.h"
 
 #include <stdio.h>
+#include <limits.h>
 #include <stdlib.h>
 #include <sys/stat.h>
 #include <sys/wait.h>
@@ -40,7 +41,7 @@ FXIMPLEMENT_ABSTRACT(FXTextCommand, FXCommand, NULL, 0)
 // Return size of record plus any data kept here
 FXuint FXTextCommand::size() const
 {
-    return sizeof(FXTextCommand) + ndel;
+    return sizeof(FXTextCommand) + ndel + nins;
 }
 
 
@@ -49,8 +50,14 @@ FXIMPLEMENT_ABSTRACT(FXTextInsert, FXTextCommand, NULL, 0)
 // Insert command
 FXTextInsert::FXTextInsert(FXText* txt, int p, int ni, const char* ins) : FXTextCommand(txt, p, 0, ni)
 {
-    FXMALLOC(&buffer, char, ni);
-    memcpy(buffer, ins, ni);
+    if (ni < 0 || !FXMALLOC(&buffer, char, ni))
+    {
+        throw FXMemoryException(_("Unable to allocate undo buffer"));
+    }
+    if (ni)
+    {
+        memcpy(buffer, ins, ni);
+    }
 }
 
 
@@ -77,8 +84,14 @@ FXIMPLEMENT_ABSTRACT(FXTextDelete, FXTextCommand, NULL, 0)
 // Delete command
 FXTextDelete::FXTextDelete(FXText* txt, int p, int nd, const char* del) : FXTextCommand(txt, p, nd, 0)
 {
-    FXMALLOC(&buffer, char, nd);
-    memcpy(buffer, del, nd);
+    if (nd < 0 || !FXMALLOC(&buffer, char, nd))
+    {
+        throw FXMemoryException(_("Unable to allocate undo buffer"));
+    }
+    if (nd)
+    {
+        memcpy(buffer, del, nd);
+    }
 }
 
 
@@ -106,9 +119,18 @@ FXIMPLEMENT_ABSTRACT(FXTextReplace, FXTextCommand, NULL, 0)
 FXTextReplace::FXTextReplace(FXText* txt, int p, int nd, int ni, const char* del, const char* ins) :
     FXTextCommand(txt, p, nd, ni)
 {
-    FXMALLOC(&buffer, char, nd + ni);
-    memcpy(buffer, del, nd);
-    memcpy(buffer + nd, ins, ni);
+    if (nd < 0 || ni < 0 || nd > INT_MAX - ni || !FXMALLOC(&buffer, char, nd + ni))
+    {
+        throw FXMemoryException(_("Unable to allocate undo buffer"));
+    }
+    if (nd)
+    {
+        memcpy(buffer, del, nd);
+    }
+    if (ni)
+    {
+        memcpy(buffer + nd, ins, ni);
+    }
 }
 
 
@@ -1078,7 +1100,7 @@ void WriteWindow::create()
                 {
                     break;
                 }
-                xf_strlcpy(FilterHistory[i], histent.text(), histent.length() + 1);
+                xf_strlcpy(FilterHistory[i], histent.text(), sizeof(FilterHistory[i]));
             }
             else
             {
@@ -1178,8 +1200,14 @@ FXbool WriteWindow::loadFile(const FXString& file)
         return false;
     }
 
-    // Get file size
-    size = textfile.size();
+    // FOX text positions and read lengths are signed ints. Check before narrowing.
+    FXlong filesize = textfile.size();
+    if (filesize < 0 || filesize > INT_MAX)
+    {
+        MessageBox::error(this, BOX_OK, _("Error"), _("File is too big: %s"), file.text());
+        return false;
+    }
+    size = (int)filesize;
 
     // Make buffer to load file
     if (!FXMALLOC(&text, char, size))
@@ -1235,6 +1263,9 @@ FXbool WriteWindow::loadFile(const FXString& file)
     // Kill wait cursor
     getApp()->endWaitCursor();
 
+    // Closing a file can update its timestamp on remote file systems (sshfs).
+    // Capture the timestamp only after the handle has been closed.
+    textfile.close();
     mrufiles.appendFile(file);
     filetime = FXStat::modified(file);
     filenameset = true;
@@ -1286,7 +1317,7 @@ FXbool WriteWindow::saveFile(const FXString& file)
     }
 
     // Alloc buffer
-    if (!FXMALLOC(&text, char, size + 1))
+    if (!FXMALLOC(&text, char, (size_t)size + 1))
     {
         MessageBox::error(this, BOX_OK, _("Error"), _("File is too big: %s"), file.text());
         return false;
@@ -1314,6 +1345,12 @@ FXbool WriteWindow::saveFile(const FXString& file)
         return false;
     }
 
+    // Finish remote writes before recording the saved file's timestamp.
+    if (!textfile.close())
+    {
+        MessageBox::error(this, BOX_OK, _("Error"), _("Unable to save file: %s"), file.text());
+        return false;
+    }
     mrufiles.appendFile(file);
     filetime = FXStat::modified(file);
     filenameset = true;
@@ -1807,7 +1844,7 @@ FXbool WriteWindow::saveChanges()
                     }
                 }
             }
-            saveFile(file);
+            return saveFile(file);
         }
     }
     return true;
@@ -2256,19 +2293,18 @@ long WriteWindow::onCmdReplace(FXObject*, FXSelector, void*)
     FXString replacestring;
     FXString replacevalue;
 
-    // Get text into buffer
-    char* buffer;
-    int length = editor->getLength();
-    FXMALLOC(&buffer, char, length);
-    editor->getText(buffer, length);
+    FXString buffer;
 
     do
     {
         code = replacedialog->execute();
         if (code == FXReplaceDialog::DONE)
         {
-            goto ret;
+            return 1;
         }
+        // Match offsets refer to the current document, including previous replacements.
+        editor->getText(buffer);
+        int length = buffer.length();
         searchflags = replacedialog->getSearchMode();
         searchstring = replacedialog->getSearchText();
         replacestring = replacedialog->getReplaceText();
@@ -2285,7 +2321,7 @@ long WriteWindow::onCmdReplace(FXObject*, FXSelector, void*)
                 {
                     replacevalue.append(&buffer[pos], beg[0] - pos);
                 }
-                replacevalue.append(FXRex::substitute(buffer, length, beg, end, replacestring, 10));
+                replacevalue.append(FXRex::substitute(buffer.text(), length, beg, end, replacestring, 10));
                 if (fm < 0)
                 {
                     fm = beg[0];
@@ -2304,7 +2340,7 @@ long WriteWindow::onCmdReplace(FXObject*, FXSelector, void*)
                   editor->getSelStartPos() - 1 : editor->getSelEndPos() : editor->getCursorPos();
             if (editor->findText(searchstring, beg, end, pos, searchflags | SEARCH_WRAP, 10))
             {
-                replacevalue = FXRex::substitute(buffer, length, beg, end, replacestring, 10);
+                replacevalue = FXRex::substitute(buffer.text(), length, beg, end, replacestring, 10);
                 fm = beg[0];
                 to = end[0];
             }
@@ -2324,8 +2360,6 @@ long WriteWindow::onCmdReplace(FXObject*, FXSelector, void*)
     }
     while (code == FXReplaceDialog::REPLACE_NEXT);
 
-ret:
-    FXFREE(&buffer);
     return 1;
 }
 

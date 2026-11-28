@@ -95,9 +95,15 @@ void TextWindow::appendText(const char* str)
 
 
 // Change the text in the buffer to new text
-void TextWindow::setFont(FXFont* font)
+void TextWindow::setFont(FXFont* font, FXbool owned)
 {
+    FXFont* previous = ownedFont;
     text->setFont(font);
+    ownedFont = owned ? font : NULL;
+    if (previous != font)
+    {
+        delete previous;
+    }
     getApp()->repaint();
 }
 
@@ -120,5 +126,6 @@ int TextWindow::getLength(void)
 // Clean up
 TextWindow::~TextWindow()
 {
+    delete ownedFont;
     text = (FXText*)-1;
 }

@@ -176,7 +176,7 @@ FontSelector::FontSelector(FXComposite* p, FXObject* tgt, FXSelector sel, FXuint
     preview->setBackColor(getApp()->getBackColor());
 
     FXString fontname = FXString(DEFAULT_NORMAL_FONT);
-    xf_strlcpy(selected.face, fontname.before(',').text(), sizeof(selected.face) + 1);
+    xf_strlcpy(selected.face, fontname.before(',').text(), sizeof(selected.face));
     selected.size = 90;
     selected.weight = FXFont::Bold;
     selected.slant = 0;
@@ -226,7 +226,7 @@ void FontSelector::listFontFaces()
             familylist->setCurrentItem(selindex);
             familylist->makeItemVisible(selindex);
             family->setText(familylist->getItemText(selindex));
-            xf_strlcpy(selected.face, familylist->getItemText(selindex).text(), sizeof(selected.face) + 1);
+            xf_strlcpy(selected.face, familylist->getItemText(selindex).text(), sizeof(selected.face));
         }
         FXFREE(&fonts);
     }
@@ -489,7 +489,7 @@ void FontSelector::previewFont()
 // Selected font family
 long FontSelector::onCmdFamily(FXObject*, FXSelector, void* ptr)
 {
-    xf_strlcpy(selected.face, familylist->getItemText((int)(FXival)ptr).text(), sizeof(selected.face) + 1);
+    xf_strlcpy(selected.face, familylist->getItemText((int)(FXival)ptr).text(), sizeof(selected.face));
     family->setText(selected.face);
     listWeights();
     listSlants();
